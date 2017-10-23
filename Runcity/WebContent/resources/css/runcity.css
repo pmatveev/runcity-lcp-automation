@@ -1,0 +1,15 @@
+.top-buffer {
+	margin-top: 10%;
+}
+
+.right-aligned {
+	float: right;
+}
+
+.centered {
+	text-align: center;
+}
+
+h1 {
+	text-align: center;
+}
