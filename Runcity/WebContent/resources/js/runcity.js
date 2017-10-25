@@ -39,6 +39,23 @@ function checkPwdComplex(pwdId, translations) {
 	return true;
 }
 
+function checkEmail(emailId, translations) {
+	var element = $("#" + emailId);
+	
+	if (element.val() == "") {
+		setErrorMessageStrict(element, translations['required']);
+		return false;
+	}
+
+	var re = /^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/;
+	if (!re.test(element.val())) {
+		setErrorMessageStrict(element, translations['invalidEmail']);
+		return false;
+	}
+	removeErrorMessage(element);
+	return true;
+}
+
 function checkPwd2(pwdId, pwd2Id, translations) {
 	var pwd1 = $("#" + pwdId);
 	var pwd2 = $("#" + pwd2Id);
@@ -60,7 +77,11 @@ function validateElem(element, translations) {
 	if (element.attr("checkpassword") == 1) {
 		return checkPwdComplex(element.attr("id"), translations);
 	}
-
+	
+	if (element.attr("checkemail") == 1) {
+		return checkEmail(element.attr("id"), translations);
+	}
+	
 	var checkPwdEqual = element.attr("checkpwdequal");
 	if (typeof checkPwdEqual !== typeof undefined && checkPwdEqual !== false) {
 		return checkPwd2(element.attr("checkpwdequal"), element.attr("id"),

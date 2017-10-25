@@ -9,7 +9,7 @@
 		<h1>
 			<fmt:message key="login.header" bundle="${msg}" />
 		</h1>
-		<form method="post" action="${doLogin}">
+		<form method="post" action="${doLogin}" id="loginForm" onsubmit="return validateForm('loginForm', translations)">
 			<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
 			<c:if test="${!empty error}">
 				<fmt:message key="${error}" bundle="${msg}" var="errorMsg"/>
@@ -21,14 +21,14 @@
 				<label class="control-label" for="username">
 					<c:out value="${msgUsername}"/>
 				</label> 
-				<input type="text" id="j_username" name="j_username"  class="form-control" placeholder="${msgUsername}"/>
+				<input type="text" id="j_username" name="j_username"  class="form-control" placeholder="${msgUsername}" checkrequired="1"/>
 			</div>			
 
 			<div class="form-group">
 				<label class="control-label" for="password">
 					<c:out value="${msgPassword}"/>
 				</label> 
-				<input type="password" id="j_password" name="j_password" class="form-control" placeholder="${msgPassword}"/>
+				<input type="password" id="j_password" name="j_password" class="form-control" placeholder="${msgPassword}" checkrequired="1"/>
 			</div>			
 
 			<div class="form-group">

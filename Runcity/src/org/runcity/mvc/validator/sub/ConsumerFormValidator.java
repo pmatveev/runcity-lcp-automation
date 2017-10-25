@@ -35,15 +35,15 @@ public class ConsumerFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "mvc.required");
 		
 		if (!emailValidator.valid(form.getEmail())) {
-			errors.rejectValue("email", "mvc.invalidEmail");
+			errors.rejectValue("email", "js.invalidEmail");
 		}
 		
 		if (!passwordValidator.valid(form.getPassword())) {
-			errors.rejectValue("password", "mvc.passwordStrength");
+			errors.rejectValue("password", "js.passwordStrength");
 		}
 		
 		if (!StringUtils.isEqual(form.getPassword(), form.getPassword2())) {
-			errors.rejectValue("password2", "mvc.passwordMatch");
+			errors.rejectValue("password2", "js.passwordMatch");
 		}
 		
 		if (consumerService.selectByUsername(form.getUsername()) != null) {
