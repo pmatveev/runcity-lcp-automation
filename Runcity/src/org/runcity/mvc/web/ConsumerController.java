@@ -29,7 +29,7 @@ public class ConsumerController {
 	private ConsumerService consumerService;
 
 	@InitBinder
-	protected void InitBinder(WebDataBinder binder) {
+	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
 	}
 
