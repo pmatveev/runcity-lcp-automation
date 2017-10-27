@@ -19,7 +19,7 @@
 					<label class="control-label" for="credentials">
 						<c:out value="${msgCredentials}"/>
 					</label> 
-					<form:input path="credentials" id="credentials" type="text" class="form-control" placeholder="${msgCredentials}" checkrequired="1" />
+					<form:input path="credentials.value" id="credentials" type="text" class="form-control" placeholder="${msgCredentials}" checkrequired="1" />
 					<form:errors path="credentials" class="help-block"/>
 				</div>			
 			</spring:bind>		
@@ -29,7 +29,7 @@
 					<label class="control-label" for="username">
 						<c:out value="${msgUsername}"/>
 					</label> 
-					<form:input path="username" id="username" type="text" class="form-control" placeholder="${msgUsername}" checkrequired="1" />
+					<form:input path="username.value" id="username" type="text" class="form-control" placeholder="${msgUsername}" checkrequired="1" />
 					<form:errors path="username" class="help-block"/>
 				</div>			
 			</spring:bind>
@@ -39,7 +39,7 @@
 					<label class="control-label" for="password">
 						<c:out value="${msgPassword}"/>
 					</label> 
-					<form:password path="password" id="password" class="form-control" placeholder="${msgPassword}"
+					<form:password path="password.value" id="password" class="form-control" placeholder="${msgPassword}"
 						checkrequired="1" checkpassword="1" 
 						onchange="(function() {checkPwd2('password', 'password2', translations); return checkPwdComplex('password', translations)})()"/>
 					<form:errors path="password" class="help-block"/>
@@ -51,7 +51,7 @@
 					<label class="control-label" for="password2">
 						<c:out value="${msgPassword2}"/>
 					</label> 
-					<form:password path="password2" id="password2" class="form-control" placeholder="${msgPassword2}"
+					<form:password path="password2.value" id="password2" class="form-control" placeholder="${msgPassword2}"
 						checkrequired="1" checkpwdequal="password" 
 						onchange="return checkPwd2('password', 'password2', translations)"/>
 					<form:errors path="password2" class="help-block"/>
@@ -63,7 +63,7 @@
 					<label class="control-label" for="email">
 						<c:out value="${msgEmail}"/>
 					</label> 
-					<form:input path="email" id="email" type="text" class="form-control" placeholder="${msgEmail}" 
+					<form:input path="email.value" id="email" type="text" class="form-control" placeholder="${msgEmail}" 
 						checkrequired="1" checkemail="1"
 						onchange="return checkEmail('email', translations)" />
 					<form:errors path="email" class="help-block"/>

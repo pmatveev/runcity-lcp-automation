@@ -1,82 +1,79 @@
 package org.runcity.mvc.web.formdata;
 
-public class ConsumerForm {
-	private Long id;
-	private String username;
-	private Boolean isActive;
-	private String credentials;
-	private String password;
-	private String password2;
-	private String email;
+import org.runcity.mvc.web.util.*;
+import org.springframework.validation.Errors;
+
+public class ConsumerForm implements ValidatedForm {
+	private FormStringColumn username;
+	private FormStringColumn credentials;
+	private FormStringColumn password;
+	private FormStringColumn password2;
+	private FormStringColumn email;
 
 	public ConsumerForm() {
+		this.username = new FormPlainStringColumn("username", true, 4, 32);
+		this.credentials = new FormPlainStringColumn("credentials", true, 4, 32);
+		this.password = new FormPasswordColumn("password", true);
+		this.password2 = new FormPasswordConfirmationColumn("password2", true, this.password);
+		this.email = new FormEmailColumn("email", true, 255);
 	}
 
-	public ConsumerForm(Long id, String username, Boolean isActive, String credentials, String password,
+	public ConsumerForm(String username, String credentials, String password,
 			String password2, String email) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.isActive = isActive;
-		this.credentials = credentials;
-		this.password = password;
-		this.password2 = password2;
-		this.email = email;
+		this();
+		this.username.setValue(username);
+		this.credentials.setValue(credentials);
+		this.password.setValue(password);
+		this.password2.setValue(password2);
+		this.email.setValue(email);
 	}
 
-	public String getPassword() {
+	public FormStringColumn getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(FormPasswordColumn password) {
 		this.password = password;
 	}
 
-	public String getPassword2() {
+	public FormStringColumn getPassword2() {
 		return password2;
 	}
 
-	public void setPassword2(String password2) {
+	public void setPassword2(FormPasswordConfirmationColumn password2) {
 		this.password2 = password2;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
+	public FormStringColumn getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(FormPlainStringColumn username) {
 		this.username = username;
 	}
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public String getCredentials() {
+	public FormStringColumn getCredentials() {
 		return credentials;
 	}
 
-	public void setCredentials(String credentials) {
+	public void setCredentials(FormPlainStringColumn credentials) {
 		this.credentials = credentials;
 	}
 
-	public String getEmail() {
+	public FormStringColumn getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setEmail(FormEmailColumn email) {
 		this.email = email;
+	}
+
+	@Override
+	public void validate(Errors errors) {
+		username.validate(errors);
+		credentials.validate(errors);
+		password.validate(errors);
+		password2.validate(errors);
+		email.validate(errors);
 	}
 }
