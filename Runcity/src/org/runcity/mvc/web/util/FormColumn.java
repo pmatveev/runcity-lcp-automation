@@ -1,9 +1,12 @@
 package org.runcity.mvc.web.util;
 
+import org.apache.log4j.Logger;
 import org.runcity.util.StringUtils;
 import org.springframework.validation.Errors;
 
 public abstract class FormColumn<T> {
+	private static final Logger logger = Logger.getLogger(FormColumn.class);
+	
 	protected Long id;
 	protected ColumnDefinition definition;
 	protected String formName;
@@ -31,9 +34,18 @@ public abstract class FormColumn<T> {
 		this.value = value;
 	}
 	
+	public String getSafeValue() {
+		if (this instanceof FormPasswordColumn || this instanceof FormPasswordConfirmationColumn) {
+			return "******";
+		}
+		return getValue().toString();
+	}
+	
 	public String getHtmlId() {
 		return StringUtils.concatNvl("_", id, formName, definition.getName());
 	}
 	
-	public abstract void validate(Errors errors);
+	public void validate(Errors errors) {
+		logger.debug(getName() + "=" + getSafeValue());
+	}
 }

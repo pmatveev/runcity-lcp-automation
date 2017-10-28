@@ -1,11 +1,13 @@
 package org.runcity.mvc.web.formdata;
 
+import org.apache.log4j.Logger;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.web.util.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public class ConsumerForm implements ValidatedForm {
+	private static final Logger logger = Logger.getLogger(ConsumerForm.class);
 	
 	private String formName;
 	private FormStringColumn username;
@@ -83,6 +85,7 @@ public class ConsumerForm implements ValidatedForm {
 	
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
+		logger.debug("Validating ConsumerForm");
 		username.validate(errors);
 		credentials.validate(errors);
 		password.validate(errors);
@@ -91,10 +94,12 @@ public class ConsumerForm implements ValidatedForm {
 		
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 		if (consumerService.selectByUsername(username.getValue()) != null) {
+			logger.debug(username.getName() + " is not unique");
 			errors.rejectValue(username.getName(), "mvc.userExists");
 		}
 		
 		if (consumerService.selectByEmail(email.getValue()) != null) {
+			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "mvc.emailExists");
 		}
 	}
@@ -111,6 +116,7 @@ public class ConsumerForm implements ValidatedForm {
 
 	@Override
 	public String getOnSubmit() {
-		return "return validateForm('" + getHtmlId() + "', translations)";
+		return "";
+		//return "return validateForm('" + getHtmlId() + "', translations)";
 	}
 }
