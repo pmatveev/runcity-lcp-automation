@@ -1,5 +1,6 @@
 package org.runcity.mvc.web;
 
+import org.apache.log4j.Logger;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
@@ -22,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ConsumerController {
+	private static final Logger logger = Logger.getLogger(ConsumerController.class);
+	
 	@Autowired
 	private FormValidator validator;
 
@@ -35,6 +38,7 @@ public class ConsumerController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
+		logger.info("INDEX PAGE");
 		return "redirect:/login";
 	}
 
