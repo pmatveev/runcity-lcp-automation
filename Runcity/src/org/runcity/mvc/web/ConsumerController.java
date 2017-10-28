@@ -2,7 +2,7 @@ package org.runcity.mvc.web;
 
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
-import org.runcity.mvc.validator.ConsumerValidator;
+import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.ConsumerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class ConsumerController {
 	@Autowired
-	private ConsumerValidator validator;
+	private FormValidator validator;
 
 	@Autowired
 	private ConsumerService consumerService;
@@ -62,12 +62,12 @@ public class ConsumerController {
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String showRegisterForm(Model model) {
 		ConsumerForm form = new ConsumerForm();
-		model.addAttribute("registerForm", form);
+		model.addAttribute(form.getFormName(), form);
 		return "common/register";
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String doRegister(@ModelAttribute("registerForm") @Validated ConsumerForm form, BindingResult result,
+	public String doRegister(@ModelAttribute("consumerForm") @Validated ConsumerForm form, BindingResult result,
 			Model model, final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "common/register";

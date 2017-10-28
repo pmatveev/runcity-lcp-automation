@@ -1,26 +1,25 @@
 package org.runcity.mvc.validator;
 
-import org.runcity.mvc.validator.sub.ConsumerFormValidator;
+import org.runcity.mvc.web.util.ValidatedForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Component
-public class ConsumerValidator implements Validator {
+public class FormValidator implements Validator {
 	@Autowired
-	private ConsumerFormValidator consumerFormValidator;
+	private ApplicationContext appContext;
 	
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return consumerFormValidator.supports(clazz);
+		return ValidatedForm.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		if (consumerFormValidator.supports(target.getClass())) {
-			consumerFormValidator.validate(target, errors);
-		}
+		((ValidatedForm) target).validate(appContext, errors);
 	}
 
 }

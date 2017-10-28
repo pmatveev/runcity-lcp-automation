@@ -32,7 +32,9 @@
 		required : '<fmt:message key="js.required" bundle="${msg}" />',
 		passwordStrength : '<fmt:message key="js.passwordStrength" bundle="${msg}" />',
 		passwordMatch : '<fmt:message key="js.passwordMatch" bundle="${msg}" />',
-		invalidEmail : '<fmt:message key="js.invalidEmail" bundle="${msg}" />'
+		invalidEmail : '<fmt:message key="js.invalidEmail" bundle="${msg}" />',
+		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
+		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />'
 	}
 </script>
 <body>

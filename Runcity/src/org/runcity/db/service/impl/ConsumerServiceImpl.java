@@ -37,11 +37,11 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	public Consumer addNewConsumer(ConsumerForm form) throws DBException {
 		Consumer c = new Consumer();
-		c.setCredentials(form.getCredentials());
-		c.setEmail(form.getEmail());
+		c.setCredentials(form.getCredentials().getValue());
+		c.setEmail(form.getEmail().getValue());
 		c.setIsActive(true);
-		c.setUsername(form.getUsername());
-		c.setPassHash(new BCryptPasswordEncoder(10).encode(form.getPassword()));
+		c.setUsername(form.getUsername().getValue());
+		c.setPassHash(new BCryptPasswordEncoder(10).encode(form.getPassword().getValue()));
 
 		try {
 			return consumerRepository.saveAndFlush(c);
