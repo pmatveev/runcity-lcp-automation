@@ -54,7 +54,7 @@
 					<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
-					<li><a class="btn-link" href="#" role="button"><span class="glyphicon glyphicon-user"></span> <sec:authentication property="principal.username" /></a></li>
+					<li><a class="btn-link" href="#" role="button"><span class="glyphicon glyphicon-user"></span> <sec:authentication property="principal.credentials" /></a></li>
 					<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
 				</sec:authorize>
 			</ul>

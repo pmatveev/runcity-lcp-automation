@@ -7,6 +7,7 @@ import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.ConsumerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -26,10 +27,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class ConsumerController {
 	private static final Logger logger = Logger.getLogger(ConsumerController.class);
-	
+
 	@Autowired
 	private ExceptionHandlerController exceptionHandler;
-	
+
 	@Autowired
 	private FormValidator validator;
 
@@ -50,7 +51,7 @@ public class ConsumerController {
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String showLoginForm(Model model, @RequestParam(required = false) String error) {
 		logger.info("GET /login");
-		if (isRememberMeAuthenticated()) {
+		if (isAlreadyAuthenticated()) {
 			return "redirect:/home";
 		}
 
@@ -60,16 +61,18 @@ public class ConsumerController {
 		return "common/login";
 	}
 
-	private boolean isRememberMeAuthenticated() {
+	private boolean isAlreadyAuthenticated() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("\tchecking remember-me");
+		logger.debug("\tchecking authentication");
 		if (authentication == null) {
 			logger.debug("\t\tnot found");
 			return false;
 		}
 
-		logger.debug("\t\tfound");
-		return RememberMeAuthenticationToken.class.isAssignableFrom(authentication.getClass());
+		logger.debug("\t\tfound " + authentication.getClass().getSimpleName());
+
+		return authentication instanceof RememberMeAuthenticationToken
+				|| authentication instanceof UsernamePasswordAuthenticationToken;
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -98,7 +101,6 @@ public class ConsumerController {
 		}
 		return "redirect:/login";
 	}
-	
 
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleException(Exception e) {

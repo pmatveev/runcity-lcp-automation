@@ -1,5 +1,6 @@
 package org.runcity.exception;
 
+@SuppressWarnings("serial")
 public class DBException extends Exception {
 	public DBException() {
 		super();
