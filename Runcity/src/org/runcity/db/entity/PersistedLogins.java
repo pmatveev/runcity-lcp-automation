@@ -7,13 +7,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "persistent_logins")
 public class PersistedLogins {
-	@Id
 	@Column(name = "username", length = 64, nullable = false)
 	private String username;
 
 	@Column(name = "series", length = 64, nullable = false)
 	private String series;
 
+	@Id
 	@Column(name = "token", length = 64, nullable = false)
 	private String token;
 
