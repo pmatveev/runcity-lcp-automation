@@ -1,9 +1,13 @@
 package org.runcity.mvc.web.formdata;
 
+import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.web.util.*;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public class ConsumerForm implements ValidatedForm {
+	
+	private String formName;
 	private FormStringColumn username;
 	private FormStringColumn credentials;
 	private FormStringColumn password;
@@ -11,15 +15,24 @@ public class ConsumerForm implements ValidatedForm {
 	private FormStringColumn email;
 
 	public ConsumerForm() {
-		this.username = new FormPlainStringColumn("username", true, 4, 32);
-		this.credentials = new FormPlainStringColumn("credentials", true, 4, 32);
-		this.password = new FormPasswordColumn("password", true);
-		this.password2 = new FormPasswordConfirmationColumn("password2", true, this.password);
-		this.email = new FormEmailColumn("email", true, 255);
+		this.formName = "consumerForm";
+		this.username = new FormPlainStringColumn(null, new ColumnDefinition("username", "user.username"), formName,
+				true, 4, 32);
+		this.credentials = new FormPlainStringColumn(null, new ColumnDefinition("credentials", "user.credentials"),
+				formName, true, 4, 32);
+
+		FormPasswordColumn pwd = new FormPasswordColumn(null, new ColumnDefinition("password", "login.password"),
+				formName, true);
+		FormPasswordConfirmationColumn pwd2 = new FormPasswordConfirmationColumn(null,
+				new ColumnDefinition("password2", "register.password2"), formName, true, pwd);
+		pwd.setPasswordConfirmation(pwd2);
+		this.password = pwd;
+		this.password2 = pwd2;
+
+		this.email = new FormEmailColumn(null, new ColumnDefinition("email", "user.email"), formName, true, 255);
 	}
 
-	public ConsumerForm(String username, String credentials, String password,
-			String password2, String email) {
+	public ConsumerForm(String username, String credentials, String password, String password2, String email) {
 		this();
 		this.username.setValue(username);
 		this.credentials.setValue(credentials);
@@ -67,13 +80,37 @@ public class ConsumerForm implements ValidatedForm {
 	public void setEmail(FormEmailColumn email) {
 		this.email = email;
 	}
-
+	
 	@Override
-	public void validate(Errors errors) {
+	public void validate(ApplicationContext context, Errors errors) {
 		username.validate(errors);
 		credentials.validate(errors);
 		password.validate(errors);
 		password2.validate(errors);
 		email.validate(errors);
+		
+		ConsumerService consumerService = context.getBean(ConsumerService.class);
+		if (consumerService.selectByUsername(username.getValue()) != null) {
+			errors.rejectValue(username.getName(), "mvc.userExists");
+		}
+		
+		if (consumerService.selectByEmail(email.getValue()) != null) {
+			errors.rejectValue(email.getName(), "mvc.emailExists");
+		}
+	}
+
+	@Override
+	public String getFormName() {
+		return this.formName;
+	}
+
+	@Override
+	public String getHtmlId() {
+		return formName;
+	}
+
+	@Override
+	public String getOnSubmit() {
+		return "return validateForm('" + getHtmlId() + "', translations)";
 	}
 }

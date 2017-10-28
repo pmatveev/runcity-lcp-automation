@@ -12,7 +12,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "org.runcity.mvc.web", "org.runcity.mvc.validator", "org.runcity.mvc.validator.sub" })
+@ComponentScan({ "org.runcity.mvc.web", "org.runcity.mvc.validator", "org.runcity.mvc.web.formdata" })
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {

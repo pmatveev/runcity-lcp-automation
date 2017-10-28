@@ -16,4 +16,19 @@ public class StringUtils {
 		
 		return s1.equals(s2);
 	}
+	
+	public static String toNvlString(Object o) {
+		return o == null ? "" : o.toString();
+	}
+	
+	public static String concatNvl(String delimiter, Object ... objects) {
+		StringBuilder sb = new StringBuilder();
+		
+		for (Object o : objects) {
+			sb.append(toNvlString(o));
+			sb.append(delimiter);
+		}
+		
+		return sb.toString();
+	}
 }

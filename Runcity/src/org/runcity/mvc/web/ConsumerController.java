@@ -62,12 +62,12 @@ public class ConsumerController {
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String showRegisterForm(Model model) {
 		ConsumerForm form = new ConsumerForm();
-		model.addAttribute("registerForm", form);
+		model.addAttribute(form.getFormName(), form);
 		return "common/register";
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String doRegister(@ModelAttribute("registerForm") @Validated ConsumerForm form, BindingResult result,
+	public String doRegister(@ModelAttribute("consumerForm") @Validated ConsumerForm form, BindingResult result,
 			Model model, final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "common/register";

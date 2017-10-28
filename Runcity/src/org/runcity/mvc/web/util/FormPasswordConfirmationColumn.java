@@ -6,13 +6,15 @@ import org.springframework.validation.Errors;
 public class FormPasswordConfirmationColumn extends FormStringColumn {
 	private FormStringColumn password;
 
-	public FormPasswordConfirmationColumn(String name, boolean required, FormStringColumn password2) {
-		super(name, required, null, null);
+	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required,
+			FormStringColumn password2) {
+		super(id, definition, formName, required, null, null);
 		this.password = password2;
 	}
 
-	public FormPasswordConfirmationColumn(String name, boolean required, FormPasswordColumn password, String value) {
-		super(name, required, null, null, value);
+	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required,
+			FormPasswordColumn password, String value) {
+		super(id, definition, formName, required, null, null, value);
 		this.password = password;
 	}
 
@@ -21,7 +23,12 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 		super.validate(errors);
 
 		if (!StringUtils.isEqual(value, password.getValue())) {
-			errors.rejectValue(name, "js.passwordMatch");
+			errors.rejectValue(getName(), "js.passwordMatch");
 		}
+	}	
+
+	@Override
+	public String getOnChange() {
+		return "checkPwdInput('" + password.getHtmlId() + "', '" + getHtmlId() + "', translations)";
 	}
 }

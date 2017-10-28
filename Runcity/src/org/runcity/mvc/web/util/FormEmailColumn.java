@@ -9,12 +9,12 @@ public class FormEmailColumn extends FormStringColumn {
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	private Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
-	public FormEmailColumn(String name, boolean required, Integer maxLength) {
-		super(name, required, null, maxLength);
+	public FormEmailColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer maxLength) {
+		super(id, definition, formName, required, null, maxLength);
 	}
 
-	public FormEmailColumn(String name, boolean required, Integer maxLength, String value) {
-		super(name, required, null, maxLength, value);
+	public FormEmailColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer maxLength, String value) {
+		super(id, definition, formName, required, null, maxLength, value);
 	}
 
 	@Override
@@ -22,8 +22,12 @@ public class FormEmailColumn extends FormStringColumn {
 		super.validate(errors);
 
 		if (!pattern.matcher(value).matches()) {
-			errors.rejectValue(name, "js.invalidEmail");
+			errors.rejectValue(getName(), "js.invalidEmail");
 		}
 	}
 
+	@Override
+	public String getJsChecks() {
+		return super.getJsChecks() + "email;";
+	}
 }
