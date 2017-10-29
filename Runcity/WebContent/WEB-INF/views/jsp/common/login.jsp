@@ -1,6 +1,5 @@
 <%@ include file="../template/head.jsp"%>
 <spring:url value="/j_spring_security_check" var="doLogin" />
-<spring:url value="/register" var="goRegister" />
 <fmt:message key="user.username" bundle="${msg}" var="msgUsername"/>
 <fmt:message key="login.password" bundle="${msg}" var="msgPassword"/>
 <fmt:message key="login.keepLogin" bundle="${msg}" var="msgKeepLogin"/>
@@ -21,14 +20,16 @@
 				<label class="control-label" for="username">
 					<c:out value="${msgUsername}"/>
 				</label> 
-				<input type="text" id="j_username" name="j_username"  class="form-control" placeholder="${msgUsername}" checkrequired="1"/>
+				<input type="text" id="j_username" name="j_username"  class="form-control" 
+					placeholder="${msgUsername}" jschecks="required;" onchange="checkInput('j_username', translations)"/>
 			</div>			
 
 			<div class="form-group">
 				<label class="control-label" for="password">
 					<c:out value="${msgPassword}"/>
 				</label> 
-				<input type="password" id="j_password" name="j_password" class="form-control" placeholder="${msgPassword}" checkrequired="1"/>
+				<input type="password" id="j_password" name="j_password" class="form-control" 
+					placeholder="${msgPassword}" jschecks="required;" onchange="checkInput('j_password', translations)"/>
 			</div>			
 
 			<div class="form-group">

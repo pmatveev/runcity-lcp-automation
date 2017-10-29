@@ -116,7 +116,6 @@ public class ConsumerForm implements ValidatedForm {
 
 	@Override
 	public String getOnSubmit() {
-		return "";
-		//return "return validateForm('" + getHtmlId() + "', translations)";
+		return "return validateForm('" + getHtmlId() + "', translations)";
 	}
 }
