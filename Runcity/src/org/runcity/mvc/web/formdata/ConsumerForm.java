@@ -6,10 +6,9 @@ import org.runcity.mvc.web.util.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
-public class ConsumerForm implements ValidatedForm {
+public class ConsumerForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerForm.class);
 	
-	private String formName;
 	private FormStringColumn username;
 	private FormStringColumn credentials;
 	private FormStringColumn password;
@@ -102,20 +101,5 @@ public class ConsumerForm implements ValidatedForm {
 			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "mvc.emailExists");
 		}
-	}
-
-	@Override
-	public String getFormName() {
-		return this.formName;
-	}
-
-	@Override
-	public String getHtmlId() {
-		return formName;
-	}
-
-	@Override
-	public String getOnSubmit() {
-		return "return validateForm('" + getHtmlId() + "', translations)";
 	}
 }

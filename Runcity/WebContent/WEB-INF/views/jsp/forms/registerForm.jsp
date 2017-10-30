@@ -3,12 +3,12 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<h1>
-	<fmt:message key="register.header" bundle="${msg}" />
-</h1>
 <c:set value="${consumerForm}" var="formVar"/>
-<spring:url value="/register" var="doRegister" />
-<form:form method="post" modelAttribute="${formVar.formName}" action="${doRegister}" id="${formVar.htmlId}" onsubmit="${formVar.onSubmit}">
+<h1>
+	<fmt:message key="${formVar.title}" bundle="${msg}" />
+</h1>
+<spring:url value="/register" var="doSubmit" />
+<form:form method="post" modelAttribute="${formVar.formName}" action="${doSubmit}" id="${formVar.htmlId}" onsubmit="${formVar.onSubmit}">
 	<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
 	<form:errors cssClass="alert alert-danger" element="div"/>
 	
@@ -38,7 +38,6 @@
 	</spring:bind>
 
 	<c:set value="${formVar.password}" var="col"/>
-	<c:set value="${formVar.password2}" var="checkCol"/>
 	<fmt:message key="${col.label}" bundle="${msg}" var="label"/>
 	<spring:bind path="${col.name}">
 		<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -52,7 +51,6 @@
 	</spring:bind>
 
 	<c:set value="${formVar.password2}" var="col"/>
-	<c:set value="${formVar.password}" var="checkCol"/>
 	<fmt:message key="${col.label}" bundle="${msg}" var="label"/>
 	<spring:bind path="${col.name}">
 		<div class="form-group ${status.error ? 'has-error' : ''}">

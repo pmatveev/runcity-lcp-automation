@@ -79,6 +79,7 @@ public class ConsumerController {
 	public String showRegisterForm(Model model) {
 		logger.info("GET /register");
 		ConsumerForm form = new ConsumerForm();
+		form.setTitle("register.header");
 		model.addAttribute(form.getFormName(), form);
 		return "common/register";
 	}

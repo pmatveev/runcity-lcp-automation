@@ -11,6 +11,7 @@ public abstract class FormColumn<T> {
 	protected ColumnDefinition definition;
 	protected String formName;
 	protected T value;
+	protected boolean passwordValue = false;
 	
 	protected FormColumn(Long id, ColumnDefinition definition, String formName) {
 		this.id = id;
@@ -34,8 +35,12 @@ public abstract class FormColumn<T> {
 		this.value = value;
 	}
 	
+	public boolean isPasswordValue() {
+		return passwordValue;
+	}
+	
 	public String getSafeValue() {
-		if (this instanceof FormPasswordColumn || this instanceof FormPasswordConfirmationColumn) {
+		if (isPasswordValue()) {
 			return "******";
 		}
 		return getValue().toString();

@@ -15,10 +15,12 @@ public class FormPasswordColumn extends FormStringColumn {
 
 	public FormPasswordColumn(Long id, ColumnDefinition definition, String formName, boolean required) {
 		super(id, definition, formName, required, null, null);
+		this.passwordValue = true;
 	}
 
 	public FormPasswordColumn(Long id, ColumnDefinition definition, String formName, boolean required, String value) {
 		super(id, definition, formName, required, null, null, value);
+		this.passwordValue = true;
 	}
 
 	@Override
