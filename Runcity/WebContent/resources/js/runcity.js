@@ -1,3 +1,24 @@
+function removeFormErrorMessage(form) {
+	form.find(".errorHolder").html("");
+}
+
+function removerFormFieldErrorMessage(form) {
+	form.find("input").not('[type="submit"]')
+		.each(function() {
+			removeErrorMessage($(this));
+		});
+}
+
+function setFormErrorMessage(form, message) {
+	var errHolder = form.find(".errorHolder");
+	var errDiv = errHolder.find(".alert-danger");
+	if (!errDiv.length) {
+		errHolder.append('<div class="alert alert-danger">' + message + '</div>');
+	} else {
+		errDiv.append('<br/>' + message);
+	}
+}
+
 function removeErrorMessage(element) {
 	element.parent().removeClass("has-error");
 	element.parent().find(".help-block").remove();
@@ -10,7 +31,7 @@ function setErrorMessage(element, message) {
 		element.parent().append(
 				'<span class="help-block">' + message + '</span>');
 	} else {
-		help.html(help.html() + '<br/>' + message);
+		help.append('<br/>' + message);
 	}
 }
 
@@ -66,8 +87,7 @@ function checkElem(elem, rule, translations) {
 	return true;
 }
 
-function checkInput(elemId, translations) {
-	var elem = $('#' + elemId);
+function checkInput(elem, translations) {
 	var checkList = elem.attr("jschecks").split(";");
 	var result = true;
 	
@@ -81,10 +101,7 @@ function checkInput(elemId, translations) {
 	return result;
 }
 
-function checkPwdIdent(pwdId, pwdConfId, translations) {
-	var pwd1 = $("#" + pwdId);
-	var pwd2 = $("#" + pwdConfId);
-	
+function checkPwdIdent(pwd1, pwd2, translations) {
 	if (pwd1.val() != pwd2.val()) {
 		setErrorMessageStrict(pwd2, translations['passwordMatch']);
 		return false;
@@ -93,10 +110,10 @@ function checkPwdIdent(pwdId, pwdConfId, translations) {
 	return true;
 }
 
-function checkPwdInput(pwdId, pwdConfId, translations) {
-	var res1 = checkInput(pwdId, translations);
-	var res2 = checkInput(pwdConfId, translations);
-	var res3 = checkPwdIdent(pwdId, pwdConfId, translations);
+function checkPwdInput(pwd, pwdConf, translations) {
+	var res1 = checkInput(pwd, translations);
+	var res2 = checkInput(pwdConf, translations);
+	var res3 = checkPwdIdent(pwd, pwdConf, translations);
 	
 	return res1 && res2 && res3;
 }
@@ -111,10 +128,10 @@ function validateElem(element, translations) {
 	}
 }
 
-function validateForm(formId, translations) {
+function validateForm(form, translations) {
 	var result = true;
 
-	$("form[id='" + formId + "']").find("input,select").not('[type="submit"]')
+	form.find("input,select").not('[type="submit"]')
 			.each(function() {
 				if (!validateElem($(this), translations)) {
 					result = false;
@@ -122,4 +139,130 @@ function validateForm(formId, translations) {
 			});
 
 	return result;
+}
+
+function beforeOpenModal(form) {
+	removeFormErrorMessage(form);
+	form.find("input").not('[type="submit"]')
+			.each(function() {
+				if (($(this)).attr('name') != "_csrf") {
+						$(this).val("");
+				}
+				removeErrorMessage($(this));
+			});
+}
+
+function afterOpenModal(form) {
+	form.find('[autofocus="autofocus"]')[0].focus();
+}
+
+function beforeCloseModal(form) {
+	if (form.attr("loading") == "true") {
+		return false;
+	}
+	return true;
+}
+
+function changeModalFormState(form, submitDisabled, loading) {
+	var submit = form.find('[type="submit"]');
+	submit.prop("disabled", submitDisabled);
+	form.find('[data-dismiss="modal"]').prop("disabled", submitDisabled);
+	
+	if (submitDisabled) {
+		submit.parent().html("<div class='loader'></div>" + submit.parent().html());
+	} else {
+		submit.parent().find(".loader").remove();		
+	}
+	
+	if (loading) {
+		form.attr("loading", true);
+	} else {
+		form.attr("loading", false);
+	}
+}
+
+function getFormData(form) {
+	var res = {};
+	
+	$.map(form.serializeArray(), function(n, i){
+		res[n['name']] = n['value'];
+	});
+	
+	return res;
+}
+
+function closeModalForm(form) {
+	$('#modal_' + form.attr("id")).modal('hide');
+}
+
+function modalFormSuccess(form, data) {
+	changeModalFormState(form, false, false);
+	
+	if (data.responseClass == "INFO") {
+		closeModalForm(form);
+		return;
+	}
+	
+	removeFormErrorMessage(form);
+	if (data.errors) {
+		data.errors.forEach(function(item, i, arr) {
+			setFormErrorMessage(form, item);
+		});
+	}
+	form.find("input").not('[type="submit"]')
+			.each(function() {
+				var elem = $(this);
+				removeErrorMessage(elem);
+				var err = data.colErrors[elem.attr("name")];
+				if (err) {
+					err.forEach(function(item, i, arr) {
+						setErrorMessage(elem, item);
+					});
+				}
+			});
+}
+
+function modalFormError(form, data) {
+	console.log("ERROR: ", data);
+	changeModalFormState(form, false, false);
+
+	removeFormErrorMessage(form);
+	removerFormFieldErrorMessage(form);
+	if (data.statusText = "error" && data.status != 0) {
+		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+	} else {
+		setFormErrorMessage(form, translations['ajaxHang']);
+	}
+}
+
+function submitModalForm(form, translations) {
+	event.preventDefault();
+	if (!validateForm(form, translations)) {
+		return;
+	}
+
+	changeModalFormState(form, true, true);
+	
+	var csrfToken = $("meta[name='_csrf']").attr("content"); 
+	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	
+	console.log("Sending JSON:\n" + JSON.stringify(getFormData(form)));
+	
+	$.ajax({
+		type: "POST",
+		contentType: "application/json",
+		url: form.attr("action"),
+		data: JSON.stringify(getFormData(form)),
+		dataType: "json",
+		timeout: 10000,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        },
+		success: function(data) {
+			modalFormSuccess(form, data);
+		},
+		error: function(data) {
+			modalFormError(form, data);
+		}
+	});
 }

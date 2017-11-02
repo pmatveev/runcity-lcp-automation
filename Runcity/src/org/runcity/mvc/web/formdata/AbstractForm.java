@@ -1,10 +1,12 @@
 package org.runcity.mvc.web.formdata;
 
-import org.runcity.mvc.web.util.ValidatedForm;
-
 public abstract class AbstractForm implements ValidatedForm {
 	protected String formName;
 	protected String formTitle;
+	
+	protected AbstractForm(String formName) {
+		this.formName = formName;
+	}
 	
 	public String getTitle() {
 		return formTitle;
@@ -23,7 +25,10 @@ public abstract class AbstractForm implements ValidatedForm {
 	}
 
 	public String getOnSubmit() {
-		return "return validateForm('" + getHtmlId() + "', translations)";
+		return "return validateForm($('#" + getHtmlId() + "'), translations)";
 	}
 
+	public String getOnModalSubmit() {
+		return "submitModalForm($('#" + getHtmlId() + "'), translations)";
+	}
 }

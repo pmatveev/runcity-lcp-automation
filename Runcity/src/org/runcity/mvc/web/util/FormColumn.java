@@ -28,10 +28,12 @@ public abstract class FormColumn<T> {
 	}
 	
 	public T getValue() {
+		logger.trace("Reading value from " + getName() + ": " + value);
 		return value;
 	}
 
 	public void setValue(T value) {
+		logger.trace("Setting value to " + getName() + ": " + value);
 		this.value = value;
 	}
 	
@@ -43,7 +45,7 @@ public abstract class FormColumn<T> {
 		if (isPasswordValue()) {
 			return "******";
 		}
-		return getValue().toString();
+		return value.toString();
 	}
 	
 	public String getHtmlId() {

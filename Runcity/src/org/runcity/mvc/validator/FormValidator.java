@@ -1,6 +1,6 @@
 package org.runcity.mvc.validator;
 
-import org.runcity.mvc.web.util.ValidatedForm;
+import org.runcity.mvc.web.formdata.ValidatedForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

@@ -8,20 +8,22 @@
 		<h1>
 			<fmt:message key="login.header" bundle="${msg}" />
 		</h1>
-		<form method="post" action="${doLogin}" id="loginForm" onsubmit="return validateForm('loginForm', translations)">
+		<form method="post" action="${doLogin}" id="loginForm" onsubmit="return validateForm($('#loginForm'), translations)">
 			<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
-			<c:if test="${!empty error}">
-				<fmt:message key="${error}" bundle="${msg}" var="errorMsg"/>
-				<div class="alert alert-danger">
-					${errorMsg}
-				</div>
-			</c:if>
+			<div class="errorHolder">
+				<c:if test="${!empty error}">
+					<fmt:message key="${error}" bundle="${msg}" var="errorMsg"/>
+					<div class="alert alert-danger">
+						${errorMsg}
+					</div>
+				</c:if>
+			</div>
 			<div class="form-group">
 				<label class="control-label" for="username">
 					<c:out value="${msgUsername}"/>
 				</label> 
 				<input type="text" id="j_username" name="j_username"  class="form-control" 
-					placeholder="${msgUsername}" jschecks="required;" onchange="checkInput('j_username', translations)"/>
+					placeholder="${msgUsername}" jschecks="required;" onchange="checkInput($('#j_username'), translations)"/>
 			</div>			
 
 			<div class="form-group">
@@ -29,7 +31,7 @@
 					<c:out value="${msgPassword}"/>
 				</label> 
 				<input type="password" id="j_password" name="j_password" class="form-control" 
-					placeholder="${msgPassword}" jschecks="required;" onchange="checkInput('j_password', translations)"/>
+					placeholder="${msgPassword}" jschecks="required;" onchange="checkInput($('#j_password'), translations)"/>
 			</div>			
 
 			<div class="form-group">
@@ -38,7 +40,7 @@
 						<input type="checkbox" id="remember-me" name="remember-me" /><c:out value="${msgKeepLogin}"/>
 					</label>
 					<div class="right-aligned">
-					<a class="btn-link" href="#"><fmt:message	key="login.reissuePassword" bundle="${msg}" /></a>
+					<a class="btn btn-link" href="#"><fmt:message key="login.reissuePassword" bundle="${msg}" /></a>
 					<button type="submit" class="btn btn-primary">
 						<fmt:message key="login.dologin" bundle="${msg}" />
 					</button>	

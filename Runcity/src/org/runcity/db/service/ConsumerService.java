@@ -14,4 +14,10 @@ public interface ConsumerService {
 	public Consumer selectByEmail(String email);
 	
 	public Consumer addNewConsumer(ConsumerForm form) throws DBException;
+	
+	public boolean validatePassword(Consumer c, String password);
+	
+	public Consumer updateConsumer(Consumer c) throws DBException;
+	
+	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException;
 }

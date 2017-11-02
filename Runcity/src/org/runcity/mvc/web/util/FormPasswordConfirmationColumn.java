@@ -8,20 +8,20 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 	private static final Logger logger = Logger.getLogger(FormPasswordConfirmationColumn.class);
 	private FormStringColumn password;
 
-	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required,
-			FormStringColumn password2) {
+	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required) {
 		super(id, definition, formName, required, null, null);
-		this.password = password2;
 		this.passwordValue = true;
 	}
 
-	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required,
-			FormPasswordColumn password, String value) {
+	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required, String value) {
 		super(id, definition, formName, required, null, null, value);
-		this.password = password;
 		this.passwordValue = true;
 	}
 
+	public void setPassword(FormPasswordColumn password) {
+		this.password = password;
+	}
+	
 	@Override
 	public void validate(Errors errors) {
 		super.validate(errors);
@@ -34,6 +34,6 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 
 	@Override
 	public String getOnChange() {
-		return "checkPwdInput('" + password.getHtmlId() + "', '" + getHtmlId() + "', translations)";
+		return "checkPwdInput($('#" + password.getHtmlId() + "'), $('#" + getHtmlId() + "'), translations)";
 	}
 }

@@ -1,4 +1,4 @@
-package org.runcity.mvc.web.util;
+package org.runcity.mvc.web.formdata;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;

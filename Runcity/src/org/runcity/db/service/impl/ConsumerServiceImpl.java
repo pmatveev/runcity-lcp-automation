@@ -37,17 +37,37 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	public Consumer addNewConsumer(ConsumerForm form) throws DBException {
 		Consumer c = new Consumer();
-		c.setCredentials(form.getCredentials().getValue());
-		c.setEmail(form.getEmail().getValue());
+		c.setCredentials(form.getCredentials());
+		c.setEmail(form.getEmail());
 		c.setIsActive(true);
-		c.setUsername(form.getUsername().getValue());
-		c.setPassHash(new BCryptPasswordEncoder(10).encode(form.getPassword().getValue()));
+		c.setUsername(form.getUsername());
+		c.setPassHash(new BCryptPasswordEncoder(10).encode(form.getPassword()));
 
 		try {
 			return consumerRepository.saveAndFlush(c);
 		} catch (Throwable t) {
 			throw new DBException(t);
 		}
+	}
+
+	@Override
+	public boolean validatePassword(Consumer c, String password) {
+		return new BCryptPasswordEncoder().matches(password, c.getPassHash());
+	}
+
+	@Override
+	public Consumer updateConsumer(Consumer c) throws DBException {
+		try {
+			return consumerRepository.saveAndFlush(c);
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
+	}
+
+	@Override
+	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
+		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
+		return updateConsumer(c);
 	}
 
 }

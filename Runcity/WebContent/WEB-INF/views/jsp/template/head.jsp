@@ -11,6 +11,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <fmt:setBundle basename="org.runcity.resources.i18n.main" var="msg" />
 
+<sec:csrfMetaTags />
+
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
@@ -34,8 +36,24 @@
 		passwordMatch : '<fmt:message key="js.passwordMatch" bundle="${msg}" />',
 		invalidEmail : '<fmt:message key="js.invalidEmail" bundle="${msg}" />',
 		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
-		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />'
+		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />',
+		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
+		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />'
 	}
+	
+	var popupForms = [];
+	
+
+	$(document).ready(function() {
+		popupForms.forEach(function(item, index, array) {
+			$('#modal_' + item).on('shown.bs.modal', function(e) {
+				afterOpenModal($('#' + item));
+			});
+			$('#modal_' + item).on('hide.bs.modal', function(e) {
+				return beforeCloseModal($('#' + item));
+			});
+		});
+	});
 </script>
 <body>
 	<nav class="navbar navbar-inverse">
@@ -54,9 +72,27 @@
 					<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
-					<li><a class="btn-link" href="#" role="button"><span class="glyphicon glyphicon-user"></span> <sec:authentication property="principal.credentials" /></a></li>
+					<li>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<span class="glyphicon glyphicon-user"></span> 
+							<sec:authentication property="principal.credentials" />
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a data-toggle="modal" data-target="#modal_${changePasswordByPassword.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPassword.htmlId}'))" href="#">
+									<fmt:message key="changePassword.header" bundle="${msg}" />
+								</a>
+							</li>
+						</ul>
+					</li>
 					<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
 				</sec:authorize>
 			</ul>
 		</div>
 	</nav>
+	<!-- Modals -->
+	<sec:authorize access="isAuthenticated()">
+			<c:set value="${true}" var="modal"/>
+			<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
+	</sec:authorize>

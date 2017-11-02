@@ -8,7 +8,7 @@ import org.springframework.validation.Errors;
 
 public class ConsumerForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerForm.class);
-	
+
 	private FormStringColumn username;
 	private FormStringColumn credentials;
 	private FormStringColumn password;
@@ -16,19 +16,21 @@ public class ConsumerForm extends AbstractForm {
 	private FormStringColumn email;
 
 	public ConsumerForm() {
-		this.formName = "consumerForm";
+		super("consumerForm");
+		logger.trace("Creating form " + getFormName());
+		setTitle("register.header");
 		this.username = new FormPlainStringColumn(null, new ColumnDefinition("username", "user.username"), formName,
 				true, 4, 32);
 		this.credentials = new FormPlainStringColumn(null, new ColumnDefinition("credentials", "user.credentials"),
 				formName, true, 4, 32);
 
-		FormPasswordColumn pwd = new FormPasswordColumn(null, new ColumnDefinition("password", "login.password"),
-				formName, true);
-		FormPasswordConfirmationColumn pwd2 = new FormPasswordConfirmationColumn(null,
-				new ColumnDefinition("password2", "register.password2"), formName, true, pwd);
-		pwd.setPasswordConfirmation(pwd2);
-		this.password = pwd;
-		this.password2 = pwd2;
+		FormPasswordPair passwords = new FormPasswordPair(
+				new FormPasswordColumn(null, new ColumnDefinition("password", "login.password"), formName, true),
+				new FormPasswordConfirmationColumn(null, new ColumnDefinition("password2", "register.password2"),
+						formName, true));
+
+		this.password = passwords.getPassword();
+		this.password2 = passwords.getPasswordConfirmation();
 
 		this.email = new FormEmailColumn(null, new ColumnDefinition("email", "user.email"), formName, true, 255);
 	}
@@ -42,61 +44,81 @@ public class ConsumerForm extends AbstractForm {
 		this.email.setValue(email);
 	}
 
-	public FormStringColumn getPassword() {
-		return password;
+	public String getPassword() {
+		return password.getValue();
 	}
 
-	public void setPassword(FormPasswordColumn password) {
-		this.password = password;
+	public void setPassword(String password) {
+		this.password.setValue(password);
 	}
 
-	public FormStringColumn getPassword2() {
-		return password2;
+	public String getPassword2() {
+		return password2.getValue();
 	}
 
-	public void setPassword2(FormPasswordConfirmationColumn password2) {
-		this.password2 = password2;
+	public void setPassword2(String password2) {
+		this.password2.setValue(password2);
 	}
 
-	public FormStringColumn getUsername() {
+	public String getUsername() {
+		return username.getValue();
+	}
+
+	public void setUsername(String username) {
+		this.username.setValue(username);
+	}
+
+	public String getCredentials() {
+		return credentials.getValue();
+	}
+
+	public void setCredentials(String credentials) {
+		this.credentials.setValue(credentials);
+	}
+
+	public String getEmail() {
+		return email.getValue();
+	}
+	
+	public FormStringColumn getUsernameColumn() {
 		return username;
 	}
-
-	public void setUsername(FormPlainStringColumn username) {
-		this.username = username;
+	
+	public FormStringColumn getPasswordColumn() {
+		return password;
 	}
-
-	public FormStringColumn getCredentials() {
+	
+	public FormStringColumn getPassword2Column() {
+		return password2;
+	}
+	
+	public FormStringColumn getCredentialsColumn() {
 		return credentials;
 	}
-
-	public void setCredentials(FormPlainStringColumn credentials) {
-		this.credentials = credentials;
-	}
-
-	public FormStringColumn getEmail() {
+	
+	public FormStringColumn getEmailColumn() {
 		return email;
 	}
 
-	public void setEmail(FormEmailColumn email) {
-		this.email = email;
+	public void setEmail(String email) {
+		this.email.setValue(email);
 	}
-	
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
-		logger.debug("Validating ConsumerForm");
+		logger.debug("Validating " + getFormName());
 		username.validate(errors);
 		credentials.validate(errors);
 		password.validate(errors);
 		password2.validate(errors);
 		email.validate(errors);
-		
+
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 		if (consumerService.selectByUsername(username.getValue()) != null) {
 			logger.debug(username.getName() + " is not unique");
 			errors.rejectValue(username.getName(), "mvc.userExists");
 		}
-		
+
 		if (consumerService.selectByEmail(email.getValue()) != null) {
 			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "mvc.emailExists");

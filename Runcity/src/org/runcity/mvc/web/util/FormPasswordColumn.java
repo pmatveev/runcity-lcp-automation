@@ -44,6 +44,6 @@ public class FormPasswordColumn extends FormStringColumn {
 	
 	@Override
 	public String getOnChange() {
-		return "checkPwdInput('" + getHtmlId() + "', '" + passwordConfirmation.getHtmlId() + "', translations)";
+		return "checkPwdInput($('#" + getHtmlId() + "'), $('#" + passwordConfirmation.getHtmlId() + "'), translations)";
 	}
 }
