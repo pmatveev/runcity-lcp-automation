@@ -1,0 +1,1 @@
+insert into consumer(id, username, credentials, email, is_active, passhash) values (1, 'admin', 'Administrator', 'admin@runcity.org', 1, '$2a$10$mVfrrJmajq8eud2fKg4UrupgG/FoPMin1Vk067IHqKaSxyvQWzpiG'); 
