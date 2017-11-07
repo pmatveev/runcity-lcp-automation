@@ -6,8 +6,8 @@ import org.runcity.mvc.web.util.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
-public class ConsumerForm extends AbstractForm {
-	private static final Logger logger = Logger.getLogger(ConsumerForm.class);
+public class ConsumerRegisterForm extends AbstractForm {
+	private static final Logger logger = Logger.getLogger(ConsumerRegisterForm.class);
 
 	private FormStringColumn username;
 	private FormStringColumn credentials;
@@ -15,27 +15,27 @@ public class ConsumerForm extends AbstractForm {
 	private FormStringColumn password2;
 	private FormStringColumn email;
 
-	public ConsumerForm() {
-		super("consumerForm");
+	public ConsumerRegisterForm() {
+		super("consumerRegisterForm", null, "/register", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
-		this.username = new FormPlainStringColumn(null, new ColumnDefinition("username", "user.username"), formName,
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), formName,
 				true, 4, 32);
-		this.credentials = new FormPlainStringColumn(null, new ColumnDefinition("credentials", "user.credentials"),
+		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
 				formName, true, 4, 32);
 
 		FormPasswordPair passwords = new FormPasswordPair(
-				new FormPasswordColumn(null, new ColumnDefinition("password", "login.password"), formName, true),
-				new FormPasswordConfirmationColumn(null, new ColumnDefinition("password2", "register.password2"),
+				new FormPasswordColumn(this, new ColumnDefinition("password", "login.password"), formName, true),
+				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "register.password2"),
 						formName, true));
 
 		this.password = passwords.getPassword();
 		this.password2 = passwords.getPasswordConfirmation();
 
-		this.email = new FormEmailColumn(null, new ColumnDefinition("email", "user.email"), formName, true, 255);
+		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), formName, true, 255);
 	}
 
-	public ConsumerForm(String username, String credentials, String password, String password2, String email) {
+	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email) {
 		this();
 		this.username.setValue(username);
 		this.credentials.setValue(credentials);
@@ -79,6 +79,10 @@ public class ConsumerForm extends AbstractForm {
 	public String getEmail() {
 		return email.getValue();
 	}
+
+	public void setEmail(String email) {
+		this.email.setValue(email);
+	}
 	
 	public FormStringColumn getUsernameColumn() {
 		return username;
@@ -98,10 +102,6 @@ public class ConsumerForm extends AbstractForm {
 	
 	public FormStringColumn getEmailColumn() {
 		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email.setValue(email);
 	}
 
 	@Override

@@ -1,10 +1,11 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
-import org.runcity.mvc.web.formdata.ConsumerForm;
+import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -78,13 +79,13 @@ public class ConsumerController {
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String showRegisterForm(Model model) {
 		logger.info("GET /register");
-		ConsumerForm form = new ConsumerForm();
+		ConsumerRegisterForm form = new ConsumerRegisterForm();
 		model.addAttribute(form.getFormName(), form);
 		return "common/register";
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String doRegister(@ModelAttribute("consumerForm") @Validated ConsumerForm form, BindingResult result,
+	public String doRegister(@ModelAttribute("consumerForm") @Validated ConsumerRegisterForm form, BindingResult result,
 			Model model, final RedirectAttributes redirectAttributes) {
 		logger.info("POST /register");
 		if (result.hasErrors()) {
@@ -93,7 +94,9 @@ public class ConsumerController {
 		}
 
 		try {
-			consumerService.addNewConsumer(form);
+			Consumer c = new Consumer(null, form.getUsername(), true, form.getPassword(), form.getCredentials(),
+					form.getEmail());
+			consumerService.addNewConsumer(c);
 		} catch (DBException e) {
 			result.reject("mvc.db.fail");
 			logger.error("DB exception", e);

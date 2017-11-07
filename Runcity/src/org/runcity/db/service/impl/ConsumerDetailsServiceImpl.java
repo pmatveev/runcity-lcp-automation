@@ -30,7 +30,7 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 		Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
 		roles.add(new SimpleGrantedAuthority("USER"));
 		
-		SecureUserDetails details = new SecureUserDetails(username, c.getPassHash(), c.getCredentials(), roles);
+		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.getPassHash(), c.getCredentials(), roles);
 		return details;
 	}
 

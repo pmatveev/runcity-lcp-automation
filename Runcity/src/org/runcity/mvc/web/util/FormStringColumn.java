@@ -1,6 +1,7 @@
 package org.runcity.mvc.web.util;
 
 import org.apache.log4j.Logger;
+import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -11,15 +12,15 @@ public abstract class FormStringColumn extends FormColumn<String> {
 	protected Integer minLength;
 	protected Integer maxLength;
 
-	protected FormStringColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer minLength, Integer maxLength) {
-		super(id, definition, formName);
+	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, Integer minLength, Integer maxLength) {
+		super(form, definition, formName);
 		this.required = required;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 	}
 
-	protected FormStringColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer minLength, Integer maxLength, String value) {
-		this(id, definition, formName, required, minLength, maxLength);
+	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, Integer minLength, Integer maxLength, String value) {
+		this(form, definition, formName, required, minLength, maxLength);
 		this.value = value;
 	}
 	

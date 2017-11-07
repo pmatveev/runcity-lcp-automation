@@ -152,6 +152,20 @@ function beforeOpenModal(form) {
 			});
 }
 
+function beforeOpenModalFetch(form, recId) {
+	removeFormErrorMessage(form);
+	form.find("input").not('[type="submit"]')
+			.each(function() {
+				if (($(this)).attr('name') != "_csrf") {
+						$(this).val("");
+				}
+				removeErrorMessage($(this));
+			});
+	
+	changeModalFormState(form, true, false);
+	// TODO
+}
+
 function afterOpenModal(form) {
 	form.find('[autofocus="autofocus"]')[0].focus();
 }
@@ -163,18 +177,28 @@ function beforeCloseModal(form) {
 	return true;
 }
 
-function changeModalFormState(form, submitDisabled, loading) {
+function changeModalFormState(form, submitDisabled, keepOnScreen) {
 	var submit = form.find('[type="submit"]');
 	submit.prop("disabled", submitDisabled);
 	form.find('[data-dismiss="modal"]').prop("disabled", submitDisabled);
 	
 	if (submitDisabled) {
-		submit.parent().html("<div class='loader'></div>" + submit.parent().html());
+		if (!submit.parent().find(".loader").length) {
+			submit.parent().html("<div class='loader'></div>" + submit.parent().html());
+		}
+		form.find("input").not('[type="submit"]')
+			.each(function() {
+				$(this).prop("disabled", "true");
+			});
 	} else {
 		submit.parent().find(".loader").remove();		
+		form.find("input").not('[type="submit"]')
+			.each(function() {
+				$(this).prop("disabled", "false");
+			});
 	}
 	
-	if (loading) {
+	if (keepOnScreen) {
 		form.attr("loading", true);
 	} else {
 		form.attr("loading", false);

@@ -72,6 +72,7 @@
 					<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal.id" var="userId" />
 					<li>
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 							<span class="glyphicon glyphicon-user"></span> 
@@ -80,8 +81,11 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li>
-								<a data-toggle="modal" data-target="#modal_${changePasswordByPassword.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPassword.htmlId}'))" href="#">
+								<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPassword.htmlId}'))" href="#">
 									<fmt:message key="changePassword.header" bundle="${msg}" />
+								</a>
+								<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), ${userId})" href="#">
+									<fmt:message key="common.edit" bundle="${msg}" />
 								</a>
 							</li>
 						</ul>
@@ -95,4 +99,5 @@
 	<sec:authorize access="isAuthenticated()">
 			<c:set value="${true}" var="modal"/>
 			<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
+			<%@ include file="../forms/consumerSelfEditForm.jsp"%>
 	</sec:authorize>

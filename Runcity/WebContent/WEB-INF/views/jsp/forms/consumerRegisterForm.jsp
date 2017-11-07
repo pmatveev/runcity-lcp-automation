@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<c:set value="${consumerForm}" var="formVar"/>
+<c:set value="${consumerRegisterForm}" var="formVar"/>
 <c:choose>
     <c:when test="${modal}">
     	<script>
@@ -24,7 +24,9 @@
     </c:otherwise>
 </c:choose>
 
-<spring:url value="/register" var="doSubmit" />
+<spring:url value="${formVar.urlOnOpenAjax}" var="doOpenAjax" />
+<spring:url value="${formVar.urlOnSubmit}" var="doSubmit" />
+<spring:url value="${formVar.urlOnSubmitAjax}" var="doSubmitAjax" />
 
 <c:choose>
     <c:when test="${modal}">
@@ -37,7 +39,8 @@
     </c:otherwise>
 </c:choose>
 
-<form:form method="post" modelAttribute="${formVar.formName}" action="${formAction}" id="${formVar.htmlId}" onsubmit="${onSubmit}">	<c:if test="${modal}">
+<form:form method="post" modelAttribute="${formVar.formName}" action="${formAction}" id="${formVar.htmlId}" onsubmit="${onSubmit}" fetchFrom="${doOpenAjax}">	
+	<c:if test="${modal}">
 		<div class="modal-body">
 	</c:if>	
 	

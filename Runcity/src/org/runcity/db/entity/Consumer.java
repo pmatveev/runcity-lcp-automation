@@ -3,6 +3,7 @@ package org.runcity.db.entity;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "consumer")
@@ -31,11 +32,11 @@ public class Consumer {
 	public Consumer() {
 	}
 
-	public Consumer(Long id, String username, Boolean isActive, String passHash, String credentials, String email) {
+	public Consumer(Long id, String username, Boolean isActive, String password, String credentials, String email) {
 		this.id = id;
 		this.username = username;
 		this.isActive = isActive;
-		this.passHash = passHash;
+		this.passHash = new BCryptPasswordEncoder(10).encode(password);
 		this.credentials = credentials;
 		this.email = email;
 	}

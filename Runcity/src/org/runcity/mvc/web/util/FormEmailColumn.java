@@ -3,6 +3,7 @@ package org.runcity.mvc.web.util;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.runcity.mvc.web.formdata.AbstractForm;
 import org.springframework.validation.Errors;
 
 public class FormEmailColumn extends FormStringColumn {
@@ -12,12 +13,12 @@ public class FormEmailColumn extends FormStringColumn {
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	private Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
-	public FormEmailColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer maxLength) {
-		super(id, definition, formName, required, null, maxLength);
+	public FormEmailColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, Integer maxLength) {
+		super(form, definition, formName, required, null, maxLength);
 	}
 
-	public FormEmailColumn(Long id, ColumnDefinition definition, String formName, boolean required, Integer maxLength, String value) {
-		super(id, definition, formName, required, null, maxLength, value);
+	public FormEmailColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, Integer maxLength, String value) {
+		super(form, definition, formName, required, null, maxLength, value);
 	}
 
 	@Override

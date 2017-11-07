@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "persistent_logins")
-public class PersistedLogins {
+public class PersistentLogins {
 	@Column(name = "username", length = 64, nullable = false)
 	private String username;
 
@@ -20,10 +20,10 @@ public class PersistedLogins {
 	@Column(name = "last_used", columnDefinition = "datetime", nullable = false)
 	private Date lastUsed;
 
-	public PersistedLogins() {
+	public PersistentLogins() {
 	}
 
-	public PersistedLogins(String username, String series, String token, Date lastUsed) {
+	public PersistentLogins(String username, String series, String token, Date lastUsed) {
 		super();
 		this.username = username;
 		this.series = series;

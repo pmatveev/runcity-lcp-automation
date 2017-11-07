@@ -1,6 +1,7 @@
 package org.runcity.mvc.web.util;
 
 import org.apache.log4j.Logger;
+import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -8,13 +9,13 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 	private static final Logger logger = Logger.getLogger(FormPasswordConfirmationColumn.class);
 	private FormStringColumn password;
 
-	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required) {
-		super(id, definition, formName, required, null, null);
+	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required) {
+		super(form, definition, formName, required, null, null);
 		this.passwordValue = true;
 	}
 
-	public FormPasswordConfirmationColumn(Long id, ColumnDefinition definition, String formName, boolean required, String value) {
-		super(id, definition, formName, required, null, null, value);
+	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, String value) {
+		super(form, definition, formName, required, null, null, value);
 		this.passwordValue = true;
 	}
 
