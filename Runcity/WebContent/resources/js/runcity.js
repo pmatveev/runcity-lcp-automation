@@ -152,6 +152,81 @@ function beforeOpenModal(form) {
 			});
 }
 
+function addReloadLink(form, recId) {
+	var reload = "<a href='#' onclick='beforeOpenModalFetch($(\"#" + form.attr("id") + "\"), " + recId + ")'>" + translations['reload'] + "</a>";
+	setFormErrorMessage(form, reload);
+}
+
+function modalFormOpenSuccess(form, data, recId) {
+	console.log("SUCCESS: ", data);
+	if (data.responseClass == "INFO") {
+		changeModalFormState(form, false, false, false);
+		
+		form.find("input").not('[type="submit"]')
+				.each(function() {
+					var elem = $(this);
+					elem.val(data[elem.attr("name")]);
+				});
+		
+		return;
+	}
+	
+	changeModalFormState(form, true, false, false);
+	removeFormErrorMessage(form);
+	if (data.errors) {
+		data.errors.forEach(function(item, i, arr) {
+			setFormErrorMessage(form, item);
+		});
+	}
+	addReloadLink(form, recId);
+}
+
+function modalFormOpenError(form, data, recId) {
+	console.log("ERROR: ", data);
+	changeModalFormState(form, true, false, false);
+
+	removeFormErrorMessage(form);
+	removerFormFieldErrorMessage(form);
+	if (data.statusText = "error" && data.status != 0) {
+		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+	} else {
+		setFormErrorMessage(form, translations['ajaxHang']);
+	}
+	addReloadLink(form, recId);
+}
+
+function beforeOpenModalFetch(form, recId) {
+	removeFormErrorMessage(form);
+	form.find("input").not('[type="submit"]')
+			.each(function() {
+				if (($(this)).attr('name') != "_csrf") {
+						$(this).val("");
+				}
+				removeErrorMessage($(this));
+			});
+	
+	changeModalFormState(form, true, true, false);
+
+	var jsonUrl = form.attr("fetchFrom"); 
+	if (jsonUrl.indexOf('{0}') >= 0) {
+		jsonUrl.replace("{0}", recId);
+	}
+	
+	$.ajax({
+		type: "GET",
+		contentType: "application/json",
+		url: jsonUrl,
+		dataType: "json",
+		timeout: 10000,
+		success: function(data) {
+			modalFormOpenSuccess(form, data, recId);
+		},
+		error: function(data) {
+			modalFormOpenError(form, data, recId);
+		}
+	});
+}
+
 function afterOpenModal(form) {
 	form.find('[autofocus="autofocus"]')[0].focus();
 }
@@ -163,18 +238,25 @@ function beforeCloseModal(form) {
 	return true;
 }
 
-function changeModalFormState(form, submitDisabled, loading) {
+function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 	var submit = form.find('[type="submit"]');
 	submit.prop("disabled", submitDisabled);
-	form.find('[data-dismiss="modal"]').prop("disabled", submitDisabled);
+	form.find('[data-dismiss="modal"]').prop("disabled", keepOnScreen);
 	
-	if (submitDisabled) {
-		submit.parent().html("<div class='loader'></div>" + submit.parent().html());
+	if (loader) {
+		if (!submit.parent().find(".loader").length) {
+			submit.parent().html("<div class='loader'></div>" + submit.parent().html());
+		}		
 	} else {
-		submit.parent().find(".loader").remove();		
+		submit.parent().find(".loader").remove();			
 	}
 	
-	if (loading) {
+	form.find("input").not('[type="submit"]')
+		.each(function() {
+			$(this).prop("disabled", submitDisabled);
+		});
+	
+	if (keepOnScreen) {
 		form.attr("loading", true);
 	} else {
 		form.attr("loading", false);
@@ -196,7 +278,7 @@ function closeModalForm(form) {
 }
 
 function modalFormSuccess(form, data) {
-	changeModalFormState(form, false, false);
+	changeModalFormState(form, false, false, false);
 	
 	if (data.responseClass == "INFO") {
 		closeModalForm(form);
@@ -223,8 +305,7 @@ function modalFormSuccess(form, data) {
 }
 
 function modalFormError(form, data) {
-	console.log("ERROR: ", data);
-	changeModalFormState(form, false, false);
+	changeModalFormState(form, false, false, false);
 
 	removeFormErrorMessage(form);
 	removerFormFieldErrorMessage(form);
@@ -241,18 +322,18 @@ function submitModalForm(form, translations) {
 		return;
 	}
 
-	changeModalFormState(form, true, true);
+	var jsonString = JSON.stringify(getFormData(form));
+	
+	changeModalFormState(form, true, true, true);
 	
 	var csrfToken = $("meta[name='_csrf']").attr("content"); 
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
-	
-	console.log("Sending JSON:\n" + JSON.stringify(getFormData(form)));
 	
 	$.ajax({
 		type: "POST",
 		contentType: "application/json",
 		url: form.attr("action"),
-		data: JSON.stringify(getFormData(form)),
+		data: jsonString,
 		dataType: "json",
 		timeout: 10000,
         beforeSend: function(xhr) {

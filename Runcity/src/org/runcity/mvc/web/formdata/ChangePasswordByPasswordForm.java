@@ -3,36 +3,42 @@ package org.runcity.mvc.web.formdata;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormPasswordColumn;
 import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
 import org.runcity.mvc.web.util.FormPasswordPair;
 import org.runcity.mvc.web.util.FormPasswordValidationColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
-import org.runcity.secure.SecureUserDetails;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 public class ChangePasswordByPasswordForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ChangePasswordByPasswordForm.class);
 
+	@JsonView(Views.Public.class)
 	private FormStringColumn currPassword;
-	private FormStringColumn password;
-	private FormStringColumn password2;
 	
+	@JsonView(Views.Public.class)
+	private FormStringColumn password;
+	
+	@JsonView(Views.Public.class)
+	private FormStringColumn password2;
+
 	private Consumer consumerFor;
 
 	public ChangePasswordByPasswordForm() {
-		super("changePasswordByPassword");
+		super("changePasswordByPasswordForm", null, null, "/api/v1/changePasswordByPassword");
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
-		this.currPassword = new FormPasswordValidationColumn(null,
+		this.currPassword = new FormPasswordValidationColumn(this,
 				new ColumnDefinition("currPassword", "changePassword.currPassword"), formName);
 		FormPasswordPair passwords = new FormPasswordPair(
-				new FormPasswordColumn(null, new ColumnDefinition("password", "changePassword.password"), formName,
+				new FormPasswordColumn(this, new ColumnDefinition("password", "changePassword.password"), formName,
 						true),
-				new FormPasswordConfirmationColumn(null, new ColumnDefinition("password2", "changePassword.password2"),
+				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "changePassword.password2"),
 						formName, true));
 
 		this.password = passwords.getPassword();
@@ -45,7 +51,7 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 		this.password.setValue(password);
 		this.password2.setValue(password2);
 	}
-	
+
 	public String getCurrPassword() {
 		return currPassword.getValue();
 	}
@@ -69,15 +75,15 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 	public void setPassword2(String password2) {
 		this.password2.setValue(password2);
 	}
-	
+
 	public FormStringColumn getCurrPasswordColumn() {
 		return currPassword;
 	}
-	
+
 	public FormStringColumn getPasswordColumn() {
 		return password;
 	}
-	
+
 	public FormStringColumn getPassword2Column() {
 		return password2;
 	}
@@ -88,16 +94,15 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 		currPassword.validate(errors);
 		password.validate(errors);
 		password2.validate(errors);
-		
+
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		SecureUserDetails user = (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		consumerFor = consumerService.selectByUsername(user.getUsername());
+		consumerFor = consumerService.getCurrent();
 		if (!consumerService.validatePassword(consumerFor, getCurrPassword())) {
 			logger.debug("Wrong current password");
-			errors.rejectValue(currPassword.getName(), "changePassword.invalidPwd");			
+			errors.rejectValue(currPassword.getName(), "changePassword.invalidPwd");
 		}
 	}
-	
+
 	public Consumer getConsumerFor() {
 		return consumerFor;
 	}

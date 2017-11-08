@@ -8,15 +8,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @SuppressWarnings("serial")
 public class SecureUserDetails implements UserDetails {
+	private Long id;
 	private String username;
 	private String password;
 	private String credentials;
+	private String email;
 	private Set<GrantedAuthority> roles;
 
-	public SecureUserDetails(String username, String password, String credentials, Set<GrantedAuthority> roles) {
+	public SecureUserDetails(Long id, String username, String password, String credentials, String email, Set<GrantedAuthority> roles) {
+		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.credentials = credentials;
+		this.email = email;
 		this.roles = roles;
 	}
 
@@ -55,7 +59,28 @@ public class SecureUserDetails implements UserDetails {
 		return true;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
 	public String getCredentials() {
 		return credentials;
 	}
+	
+	public void setCredentials(String credentials) {
+		this.credentials = credentials;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 }

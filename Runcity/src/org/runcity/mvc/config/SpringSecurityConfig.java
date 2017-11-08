@@ -37,6 +37,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			.antMatchers("/secure/**").authenticated()
+			.antMatchers("/register").anonymous()
 			.and()
 				.formLogin()
 					.defaultSuccessUrl("/home")
@@ -55,7 +56,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.rememberMe()
 					.tokenRepository(persistentTokenRepository())
-					.tokenValiditySeconds(REMEMBER_ME_SEC);
+					.tokenValiditySeconds(REMEMBER_ME_SEC)
+			.and()
+				.exceptionHandling().accessDeniedPage("/403");
 	}
 
 	@Bean

@@ -1,13 +1,37 @@
 package org.runcity.mvc.web.formdata;
 
-public abstract class AbstractForm implements ValidatedForm {
+import org.runcity.mvc.rest.util.RestGetResponseBody;
+import org.runcity.mvc.rest.util.RestResponseClass;
+
+public abstract class AbstractForm extends RestGetResponseBody implements ValidatedForm {
+	protected Long id;
 	protected String formName;
 	protected String formTitle;
-	
-	protected AbstractForm(String formName) {
+	protected String urlOnOpenAjax;
+	protected String urlOnSubmit;
+	protected String urlOnSubmitAjax;
+
+	protected AbstractForm(String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax) {
 		this.formName = formName;
+		this.urlOnOpenAjax = urlOnOpenAjax;
+		this.urlOnSubmit = urlOnSubmit;
+		this.urlOnSubmitAjax = urlOnSubmitAjax;
+		setResponseClass(RestResponseClass.INFO);
 	}
-	
+
+	protected AbstractForm(Long id, String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax) {
+		this(formName, urlOnOpenAjax, urlOnSubmit, urlOnSubmitAjax);
+		this.id = id;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getTitle() {
 		return formTitle;
 	}
@@ -30,5 +54,29 @@ public abstract class AbstractForm implements ValidatedForm {
 
 	public String getOnModalSubmit() {
 		return "submitModalForm($('#" + getHtmlId() + "'), translations)";
+	}
+
+	public String getUrlOnOpenAjax() {
+		return urlOnOpenAjax;
+	}
+
+	public void setUrlOnOpenAjax(String urlOnOpenAjax) {
+		this.urlOnOpenAjax = urlOnOpenAjax;
+	}
+
+	public String getUrlOnSubmit() {
+		return urlOnSubmit;
+	}
+
+	public void setUrlOnSubmit(String urlOnSubmit) {
+		this.urlOnSubmit = urlOnSubmit;
+	}
+
+	public String getUrlOnSubmitAjax() {
+		return urlOnSubmitAjax;
+	}
+
+	public void setUrlOnSubmitAjax(String urlOnSubmitAjax) {
+		this.urlOnSubmitAjax = urlOnSubmitAjax;
 	}
 }

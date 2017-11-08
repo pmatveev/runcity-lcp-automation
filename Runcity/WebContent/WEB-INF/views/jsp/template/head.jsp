@@ -38,7 +38,8 @@
 		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
 		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />',
 		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
-		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />'
+		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />',
+		reload : '<fmt:message key="common.reload" bundle="${msg}" />'
 	}
 	
 	var popupForms = [];
@@ -80,8 +81,11 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li>
-								<a data-toggle="modal" data-target="#modal_${changePasswordByPassword.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPassword.htmlId}'))" href="#">
+								<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'))" href="#">
 									<fmt:message key="changePassword.header" bundle="${msg}" />
+								</a>
+								<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
+									<fmt:message key="common.edit" bundle="${msg}" />
 								</a>
 							</li>
 						</ul>
@@ -95,4 +99,5 @@
 	<sec:authorize access="isAuthenticated()">
 			<c:set value="${true}" var="modal"/>
 			<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
+			<%@ include file="../forms/consumerSelfEditForm.jsp"%>
 	</sec:authorize>
