@@ -3,21 +3,27 @@ package org.runcity.mvc.web.formdata;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
-import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 public class ConsumerSelfEditForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerSelfEditForm.class);
 
+	@JsonView(Views.Public.class)
 	private FormStringColumn username;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn email;
 
 	public ConsumerSelfEditForm() {
@@ -83,9 +89,7 @@ public class ConsumerSelfEditForm extends AbstractForm {
 		email.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		SecureUserDetails user = (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		Consumer current = consumerService.selectById(user.getId());
+		Consumer current = consumerService.getCurrent();
 
 		if (!StringUtils.isEqual(current.getUsername(), username.getValue())
 				&& consumerService.selectByUsername(username.getValue()) != null) {

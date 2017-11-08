@@ -9,9 +9,7 @@ import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
 import org.runcity.mvc.web.util.FormPasswordPair;
 import org.runcity.mvc.web.util.FormPasswordValidationColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
-import org.runcity.secure.SecureUserDetails;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 
 public class ChangePasswordByPasswordForm extends AbstractForm {
@@ -90,9 +88,7 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 		password2.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		SecureUserDetails user = (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		consumerFor = consumerService.selectById(user.getId());
+		consumerFor = consumerService.getCurrent();
 		if (!consumerService.validatePassword(consumerFor, getCurrPassword())) {
 			logger.debug("Wrong current password");
 			errors.rejectValue(currPassword.getName(), "changePassword.invalidPwd");

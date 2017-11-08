@@ -23,4 +23,6 @@ public interface ConsumerService {
 	public Consumer updateConsumer(Consumer c) throws DBException;
 	
 	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException;
+	
+	public Consumer getCurrent();
 }

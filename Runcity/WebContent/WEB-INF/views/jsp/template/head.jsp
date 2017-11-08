@@ -38,7 +38,8 @@
 		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
 		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />',
 		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
-		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />'
+		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />',
+		reload : '<fmt:message key="common.reload" bundle="${msg}" />'
 	}
 	
 	var popupForms = [];
@@ -72,7 +73,6 @@
 					<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
 				</sec:authorize>
 				<sec:authorize access="isAuthenticated()">
-					<sec:authentication property="principal.id" var="userId" />
 					<li>
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 							<span class="glyphicon glyphicon-user"></span> 
@@ -84,7 +84,7 @@
 								<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPassword.htmlId}'))" href="#">
 									<fmt:message key="changePassword.header" bundle="${msg}" />
 								</a>
-								<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), ${userId})" href="#">
+								<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
 									<fmt:message key="common.edit" bundle="${msg}" />
 								</a>
 							</li>

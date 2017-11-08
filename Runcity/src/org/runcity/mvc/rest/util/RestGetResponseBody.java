@@ -10,7 +10,7 @@ import org.springframework.validation.ObjectError;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public abstract class RestGetResponseBody {
+public class RestGetResponseBody {
 	@JsonView(Views.Public.class)
 	private RestResponseClass responseClass;
 	

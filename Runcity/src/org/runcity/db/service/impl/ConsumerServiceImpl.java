@@ -8,10 +8,12 @@ import org.runcity.db.repository.PersistedLoginsRepository;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.UnexpectedArgumentException;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -96,6 +98,13 @@ public class ConsumerServiceImpl implements ConsumerService {
 	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
 		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
 		return updateConsumer(c);
+	}
+
+	@Override
+	public Consumer getCurrent() {
+		SecureUserDetails user = (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		return selectById(user.getId());
 	}
 
 }

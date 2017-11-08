@@ -1,14 +1,17 @@
 package org.runcity.mvc.rest;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
+import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
+import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
@@ -65,5 +68,21 @@ public class RestConsumerController {
 		
 		result.setResponseClass(RestResponseClass.INFO);
 		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerSelfEdit", method = RequestMethod.GET)
+	public RestGetResponseBody initConsumerSelfEditForm() {
+		logger.info("GET /api/v1/consumerSelfEdit");
+		
+		Consumer c = consumerService.getCurrent();
+		if (c == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new ConsumerSelfEditForm(c.getUsername(), c.getCredentials(), c.getEmail());
 	}
 }
