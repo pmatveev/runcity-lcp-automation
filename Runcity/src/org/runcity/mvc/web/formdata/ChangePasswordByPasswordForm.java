@@ -3,6 +3,7 @@ package org.runcity.mvc.web.formdata;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormPasswordColumn;
 import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
@@ -12,11 +13,18 @@ import org.runcity.mvc.web.util.FormStringColumn;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class ChangePasswordByPasswordForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ChangePasswordByPasswordForm.class);
 
+	@JsonView(Views.Public.class)
 	private FormStringColumn currPassword;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn password;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn password2;
 
 	private Consumer consumerFor;

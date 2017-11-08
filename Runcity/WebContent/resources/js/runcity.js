@@ -322,18 +322,18 @@ function submitModalForm(form, translations) {
 		return;
 	}
 
+	var jsonString = JSON.stringify(getFormData(form));
+	
 	changeModalFormState(form, true, true, true);
 	
 	var csrfToken = $("meta[name='_csrf']").attr("content"); 
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 	
-	console.log("Sending JSON:\n" + JSON.stringify(getFormData(form)));
-	
 	$.ajax({
 		type: "POST",
 		contentType: "application/json",
 		url: form.attr("action"),
-		data: JSON.stringify(getFormData(form)),
+		data: jsonString,
 		dataType: "json",
 		timeout: 10000,
         beforeSend: function(xhr) {

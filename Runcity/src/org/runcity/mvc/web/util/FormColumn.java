@@ -29,12 +29,12 @@ public abstract class FormColumn<T> {
 	}
 	
 	public T getValue() {
-		logger.trace("Reading value from " + getName() + ": " + value);
+		logger.trace("Reading value from " + getName() + ": " + getSafeValue());
 		return value;
 	}
 
 	public void setValue(T value) {
-		logger.trace("Setting value to " + getName() + ": " + value);
+		logger.trace("Setting value to " + getName() + ": " + getSafeValue());
 		this.value = value;
 	}
 	
@@ -43,6 +43,9 @@ public abstract class FormColumn<T> {
 	}
 	
 	public String getSafeValue() {
+		if (value == null) {
+			return "<<null>>";
+		}
 		if (isPasswordValue()) {
 			return "******";
 		}

@@ -28,7 +28,7 @@ public class FormPasswordColumn extends FormStringColumn {
 	public void validate(Errors errors) {
 		super.validate(errors);
 		
-		if (!pattern.matcher(value).matches()) {
+		if (value == null || !pattern.matcher(value).matches()) {
 			logger.debug(getName() + " does not match password regexp");
 			errors.rejectValue(getName(), "js.passwordStrength");
 		}

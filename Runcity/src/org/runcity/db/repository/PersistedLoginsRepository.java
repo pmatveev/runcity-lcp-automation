@@ -10,6 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface PersistedLoginsRepository extends JpaRepository<PersistentLogins, Long> {
     @Modifying
     @Transactional
-    @Query("update PersistentLogins set username = ?1 where username = ?2")
+    @Query("update PersistentLogins set username = ?2 where username = ?1")
     public void updateUsername(String oldUsername, String newUsername);
 }

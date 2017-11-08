@@ -20,9 +20,9 @@ public interface ConsumerService {
 	
 	public boolean validatePassword(Consumer c, String password);
 	
-	public Consumer updateConsumer(Consumer c) throws DBException;
-	
 	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException;
 	
 	public Consumer getCurrent();
+	
+	public Consumer updateCurrentData(String username, String credentials, String email);
 }

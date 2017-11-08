@@ -28,9 +28,11 @@ public class RestPostResponseBody {
 	private Locale locale = LocaleContextHolder.getLocale();
 
 	public RestPostResponseBody() {
+		responseClass = RestResponseClass.INFO;
 	}
 	
 	public RestPostResponseBody(MessageSource messageSource) {
+		this();
 		this.messageSource = messageSource;
 	}
 	

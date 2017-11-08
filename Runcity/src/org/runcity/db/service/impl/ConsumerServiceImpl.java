@@ -26,7 +26,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Autowired
 	private PersistedLoginsRepository persistedLoginsRepository;
-	
+
 	@Override
 	public List<Consumer> selectAll() {
 		return consumerRepository.findAll(new Sort(new Order(Direction.ASC, "credentials")));
@@ -52,7 +52,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
 		}
-		
+
 		try {
 			return consumerRepository.save(c);
 		} catch (Throwable t) {
@@ -69,11 +69,11 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 		try {
 			Consumer prev = selectById(c.getId());
-			
+
 			if (!StringUtils.isEqual(c.getUsername(), prev.getUsername())) {
 				persistedLoginsRepository.updateUsername(prev.getUsername(), c.getUsername());
 			}
-			
+
 			return consumerRepository.save(c);
 		} catch (Throwable t) {
 			throw new DBException(t);
@@ -82,29 +82,51 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public boolean validatePassword(Consumer c, String password) {
-		return new BCryptPasswordEncoder().matches(password, c.getPassHash());
-	}
-
-	@Override
-	public Consumer updateConsumer(Consumer c) throws DBException {
-		try {
-			return consumerRepository.saveAndFlush(c);
-		} catch (Throwable t) {
-			throw new DBException(t);
-		}
+		return new BCryptPasswordEncoder().matches(StringUtils.toNvlString(password), c.getPassHash());
 	}
 
 	@Override
 	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
 		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
-		return updateConsumer(c);
+		return editConsumer(c);
+	}
+
+	private SecureUserDetails getCurrentUser() {
+		return (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
+	
+	private Long getCurrentUserId() {
+		return getCurrentUser().getId();
 	}
 
 	@Override
 	public Consumer getCurrent() {
-		SecureUserDetails user = (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		return selectById(user.getId());
+		return selectById(getCurrentUserId());
+	}
+
+	@Override
+	public Consumer updateCurrentData(String username, String credentials, String email) {
+		Consumer c = getCurrent();
+		
+		if (c == null) {
+			return null;
+		}
+		
+		c.setUsername(username);
+		c.setCredentials(credentials);
+		c.setEmail(email);
+		try {
+			c = editConsumer(c);
+			
+			SecureUserDetails user = getCurrentUser();
+			user.setUsername(c.getUsername());
+			user.setCredentials(c.getCredentials());
+			user.setEmail(c.getEmail());
+			
+			return c;
+		} catch (DBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
