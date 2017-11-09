@@ -190,7 +190,7 @@ function modalFormOpenError(form, data, recId) {
 	if (data.statusText = "error" && data.status != 0) {
 		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
 	} else {
-		setFormErrorMessage(form, translations['ajaxHang']);
+		setFormErrorMessage(form, translations['ajaxHangGet']);
 	}
 	addReloadLink(form, recId);
 }
@@ -310,9 +310,13 @@ function modalFormError(form, data) {
 	removeFormErrorMessage(form);
 	removerFormFieldErrorMessage(form);
 	if (data.statusText = "error" && data.status != 0) {
-		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+		if (data.status == 403) {
+			setFormErrorMessage(form, translations['forbidden']);
+		} else {
+			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+		}
 	} else {
-		setFormErrorMessage(form, translations['ajaxHang']);
+		setFormErrorMessage(form, translations['ajaxHangPost']);
 	}
 }
 

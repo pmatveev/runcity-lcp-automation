@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -20,9 +19,9 @@ public class ExceptionHandlerController {
 		return model;
 	}
 	
-	@RequestMapping(value = "/403", method = RequestMethod.GET)
-	public String accesssDenied(Model model) {
-		logger.info("403 error");
+	@RequestMapping(value = "/403")
+	public String getAccessDenied(Model model) {
+		logger.info("GET 403");
 		return "redirect:/login";
 	}
 }

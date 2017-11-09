@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @PropertySource("/WEB-INF/conf/app.properties")
 @EnableJpaRepositories("org.runcity.db.repository")
-@ComponentScan({ "org.runcity.db.entity", "org.runcity.db.service", "org.runcity.db.service.impl" })
+@ComponentScan({ "org.runcity.db.entity" })
 public class SpringRootConfig {
 	private static final String PROP_DATABASE_DRIVER = "db.driver";
 	private static final String PROP_DATABASE_PASSWORD = "db.password";
@@ -30,7 +30,7 @@ public class SpringRootConfig {
 	private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
 	private static final String PROP_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 	private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
-	private static final String PROP_HIBERNATE_HBM2DDL_IMPORT = "hibernate.hbm2ddl.import_files"; 
+	private static final String PROP_HIBERNATE_HBM2DDL_IMPORT = "hibernate.hbm2ddl.import_files";
 
 	@Resource
 	private Environment env;

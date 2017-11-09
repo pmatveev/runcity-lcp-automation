@@ -1,9 +1,14 @@
 package org.runcity.secure;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.runcity.db.entity.ConsumerRole;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @SuppressWarnings("serial")
@@ -15,13 +20,20 @@ public class SecureUserDetails implements UserDetails {
 	private String email;
 	private Set<GrantedAuthority> roles;
 
-	public SecureUserDetails(Long id, String username, String password, String credentials, String email, Set<GrantedAuthority> roles) {
+	public SecureUserDetails(Long id, String username, String password, String credentials, String email, List<ConsumerRole> roles) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.credentials = credentials;
 		this.email = email;
-		this.roles = roles;
+		
+		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
+		for (ConsumerRole r : roles) {
+			if (Arrays.binarySearch(SecureUserRole.values(), r.getCode()) >= 0) {
+				userRoles.add(new SimpleGrantedAuthority("ROLE_" + r.getCode()));
+			}
+		}
+		this.roles = userRoles;
 	}
 
 	@Override

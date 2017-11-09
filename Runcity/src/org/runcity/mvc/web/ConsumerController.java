@@ -1,7 +1,6 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
-import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
@@ -94,9 +93,7 @@ public class ConsumerController {
 		}
 
 		try {
-			Consumer c = new Consumer(null, form.getUsername(), true, form.getPassword(), form.getCredentials(),
-					form.getEmail());
-			consumerService.addNewConsumer(c);
+			consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail());
 		} catch (DBException e) {
 			result.reject("mvc.db.fail");
 			logger.error("DB exception", e);

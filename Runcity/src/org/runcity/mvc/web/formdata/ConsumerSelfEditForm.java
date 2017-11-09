@@ -25,7 +25,7 @@ public class ConsumerSelfEditForm extends AbstractForm {
 	
 	@JsonView(Views.Public.class)
 	private FormStringColumn email;
-
+	
 	public ConsumerSelfEditForm() {
 		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", null, "/api/v1/consumerSelfEdit");
 		logger.trace("Creating form " + getFormName());

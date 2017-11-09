@@ -1,14 +1,9 @@
 package org.runcity.db.service.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.secure.SecureUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,10 +22,7 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException(username);
 		}
 		
-		Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
-		roles.add(new SimpleGrantedAuthority("USER"));
-		
-		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.getPassHash(), c.getCredentials(), c.getEmail(), roles);
+		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.getPassHash(), c.getCredentials(), c.getEmail(), c.getRoles());
 		return details;
 	}
 

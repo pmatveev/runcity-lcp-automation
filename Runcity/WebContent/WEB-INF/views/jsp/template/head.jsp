@@ -38,8 +38,10 @@
 		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
 		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />',
 		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
-		ajaxHang : '<fmt:message key="ajax.hanging" bundle="${msg}" />',
-		reload : '<fmt:message key="common.reload" bundle="${msg}" />'
+		ajaxHangGet : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
+		ajaxHangPost : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
+		reload : '<fmt:message key="common.reload" bundle="${msg}" />',
+		forbidden : '<fmt:message key="common.forbidden" bundle="${msg}" />'
 	}
 	
 	var popupForms = [];

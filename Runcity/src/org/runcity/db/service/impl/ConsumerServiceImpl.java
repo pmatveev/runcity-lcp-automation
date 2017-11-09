@@ -13,6 +13,7 @@ import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.Sort.Direction;
@@ -47,7 +48,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 		return consumerRepository.findById(id);
 	}
 
-	@Override
 	public Consumer addNewConsumer(Consumer c) throws DBException {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
@@ -60,7 +60,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
-	@Override
 	@Transactional
 	public Consumer editConsumer(Consumer c) throws DBException {
 		if (c.getId() == null) {
@@ -86,6 +85,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
+	@Secured("ROLE_ADMIN")
 	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
 		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
 		return editConsumer(c);
@@ -94,7 +94,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	private SecureUserDetails getCurrentUser() {
 		return (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
-	
+
 	private Long getCurrentUserId() {
 		return getCurrentUser().getId();
 	}
@@ -107,26 +107,37 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	public Consumer updateCurrentData(String username, String credentials, String email) {
 		Consumer c = getCurrent();
-		
+
 		if (c == null) {
 			return null;
 		}
-		
+
 		c.setUsername(username);
 		c.setCredentials(credentials);
 		c.setEmail(email);
 		try {
 			c = editConsumer(c);
-			
+
 			SecureUserDetails user = getCurrentUser();
 			user.setUsername(c.getUsername());
 			user.setCredentials(c.getCredentials());
 			user.setEmail(c.getEmail());
-			
+
 			return c;
 		} catch (DBException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Consumer updateCurrentPassword(String newPassword) throws DBException {
+		return updateConsumerPassword(getCurrent(), newPassword);
+	}
+
+	@Override
+	public Consumer register(String username, String password, String credentials, String email) throws DBException {
+		Consumer c = new Consumer(null, username, true, password, credentials, email, null);
+		return addNewConsumer(c);
 	}
 
 }
