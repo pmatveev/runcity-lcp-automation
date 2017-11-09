@@ -1,6 +1,5 @@
 package org.runcity.secure;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +28,7 @@ public class SecureUserDetails implements UserDetails {
 		
 		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
 		for (ConsumerRole r : roles) {
-			if (Arrays.binarySearch(SecureUserRole.values(), r.getCode()) >= 0) {
+			if (SecureUserRole.getByCode(r.getCode()) != null) {
 				userRoles.add(new SimpleGrantedAuthority("ROLE_" + r.getCode()));
 			}
 		}
