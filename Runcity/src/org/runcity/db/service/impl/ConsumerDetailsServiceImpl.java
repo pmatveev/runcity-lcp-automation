@@ -17,12 +17,13 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Consumer c = consumerService.selectByUsername(username);
-		
+
 		if (c == null) {
 			throw new UsernameNotFoundException(username);
 		}
-		
-		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.getPassHash(), c.getCredentials(), c.getEmail(), c.getRoles());
+
+		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.isActive(), c.getPassHash(),
+				c.getCredentials(), c.getEmail(), c.getRoles());
 		return details;
 	}
 

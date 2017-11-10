@@ -22,7 +22,7 @@ public class Consumer {
 	private String username;
 
 	@Column(name = "is_active", columnDefinition = "BIT", length = 1, nullable = false)
-	private Boolean isActive;
+	private Boolean active;
 
 	@Column(name = "passhash", length = 256, nullable = false)
 	private String passHash;
@@ -32,17 +32,18 @@ public class Consumer {
 
 	@Column(name = "email", length = 255, unique = true, nullable = false)
 	private String email;
-	
+
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "consumer")
 	private List<ConsumerRole> roles;
 
 	public Consumer() {
 	}
 
-	public Consumer(Long id, String username, Boolean isActive, String password, String credentials, String email, List<ConsumerRole> roles) {
+	public Consumer(Long id, String username, Boolean active, String password, String credentials, String email,
+			List<ConsumerRole> roles) {
 		this.id = id;
 		this.username = username;
-		this.isActive = isActive;
+		this.active = active;
 		this.passHash = new BCryptPasswordEncoder(10).encode(password);
 		this.credentials = credentials;
 		this.email = email;
@@ -65,12 +66,12 @@ public class Consumer {
 		this.username = username;
 	}
 
-	public Boolean getIsActive() {
-		return isActive;
+	public Boolean isActive() {
+		return active;
 	}
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	public String getPassHash() {
@@ -100,7 +101,7 @@ public class Consumer {
 	public List<ConsumerRole> getRoles() {
 		return roles;
 	}
-	
+
 	public List<String> getRoleNames() {
 		List<String> names = new LinkedList<String>();
 		for (ConsumerRole r : roles) {
