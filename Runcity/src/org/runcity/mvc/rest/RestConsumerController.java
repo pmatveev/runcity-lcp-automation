@@ -64,7 +64,7 @@ public class RestConsumerController {
 			consumerService.updateCurrentPassword(form.getPassword());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("mvc.db.fail");
+			result.addCommonError("common.db.fail");
 		}
 
 		result.setResponseClass(RestResponseClass.INFO);

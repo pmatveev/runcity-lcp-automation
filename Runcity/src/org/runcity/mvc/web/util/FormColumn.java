@@ -10,14 +10,12 @@ public abstract class FormColumn<T> {
 	
 	protected AbstractForm form;
 	protected ColumnDefinition definition;
-	protected String formName;
 	protected T value;
 	protected boolean passwordValue = false;
 	
-	protected FormColumn(AbstractForm form, ColumnDefinition definition, String formName) {
+	protected FormColumn(AbstractForm form, ColumnDefinition definition) {
 		this.form = form;
 		this.definition = definition;
-		this.formName = formName;
 	}
 	
 	public String getName() {
@@ -53,10 +51,14 @@ public abstract class FormColumn<T> {
 	}
 	
 	public String getHtmlId() {
-		return StringUtils.concatNvl("_", form.getId(), formName, definition.getName());
+		return StringUtils.concatNvl("_", form.getId(), form.getFormName(), definition.getName());
 	}
 	
 	public void validate(Errors errors) {
 		logger.debug(getName() + "=" + getSafeValue());
+	}
+
+	public String getJsChecks() {
+		return "";
 	}
 }

@@ -19,23 +19,22 @@ public class ConsumerSelfEditForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormStringColumn username;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn email;
-	
+
 	public ConsumerSelfEditForm() {
 		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", null, "/api/v1/consumerSelfEdit");
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), formName,
-				true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				formName, true, 4, 32);
+				true, 4, 32);
 
-		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), formName, true, 255);
+		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 	}
 
 	public ConsumerSelfEditForm(String username, String credentials, String email) {
@@ -94,13 +93,13 @@ public class ConsumerSelfEditForm extends AbstractForm {
 		if (!StringUtils.isEqual(current.getUsername(), username.getValue())
 				&& consumerService.selectByUsername(username.getValue()) != null) {
 			logger.debug(username.getName() + " changed but not unique");
-			errors.rejectValue(username.getName(), "mvc.userExists");
+			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
 		if (!StringUtils.isEqual(current.getEmail(), email.getValue())
 				&& consumerService.selectByEmail(email.getValue()) != null) {
 			logger.debug(email.getName() + " changed but not unique");
-			errors.rejectValue(email.getName(), "mvc.emailExists");
+			errors.rejectValue(email.getName(), "validation.emailExists");
 		}
 	}
 }

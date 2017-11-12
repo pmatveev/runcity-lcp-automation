@@ -1,12 +1,10 @@
 package org.runcity.db.entity;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.secure.SecureUserRole;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
@@ -100,17 +98,6 @@ public class Consumer {
 
 	public List<ConsumerRole> getRoles() {
 		return roles;
-	}
-
-	public List<String> getRoleNames() {
-		List<String> names = new LinkedList<String>();
-		for (ConsumerRole r : roles) {
-			SecureUserRole rr = SecureUserRole.getByCode(r.getCode());
-			if (rr != null) {
-				names.add(rr.getName());
-			}
-		}
-		return names;
 	}
 
 	public void setRoles(List<ConsumerRole> roles) {

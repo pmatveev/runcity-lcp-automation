@@ -1,7 +1,7 @@
 package org.runcity.secure;
 
 public enum SecureUserRole {
-	ADMIN("role.admin"), COORDINATOR("role.coordinator"), USER("role.user");
+	ADMIN("role.admin"), VOLUNTEER("role.volunteer");
 	private String name;
 
 	private SecureUserRole(String name) {

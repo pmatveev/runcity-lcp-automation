@@ -19,20 +19,19 @@ public class ConsumerRegisterForm extends AbstractForm {
 		super("consumerRegisterForm", null, "/register", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), formName,
-				true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				formName, true, 4, 32);
+				true, 4, 32);
 
 		FormPasswordPair passwords = new FormPasswordPair(
-				new FormPasswordColumn(this, new ColumnDefinition("password", "login.password"), formName, true),
-				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "register.password2"),
-						formName, true));
+				new FormPasswordColumn(this, new ColumnDefinition("password", "user.password"), true),
+				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "user.password2"),
+						true));
 
 		this.password = passwords.getPassword();
 		this.password2 = passwords.getPasswordConfirmation();
 
-		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), formName, true, 255);
+		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 	}
 
 	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email) {
@@ -83,23 +82,23 @@ public class ConsumerRegisterForm extends AbstractForm {
 	public void setEmail(String email) {
 		this.email.setValue(email);
 	}
-	
+
 	public FormStringColumn getUsernameColumn() {
 		return username;
 	}
-	
+
 	public FormStringColumn getPasswordColumn() {
 		return password;
 	}
-	
+
 	public FormStringColumn getPassword2Column() {
 		return password2;
 	}
-	
+
 	public FormStringColumn getCredentialsColumn() {
 		return credentials;
 	}
-	
+
 	public FormStringColumn getEmailColumn() {
 		return email;
 	}
@@ -116,12 +115,12 @@ public class ConsumerRegisterForm extends AbstractForm {
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 		if (consumerService.selectByUsername(username.getValue()) != null) {
 			logger.debug(username.getName() + " is not unique");
-			errors.rejectValue(username.getName(), "mvc.userExists");
+			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
 		if (consumerService.selectByEmail(email.getValue()) != null) {
 			logger.debug(email.getName() + " is not unique");
-			errors.rejectValue(email.getName(), "mvc.emailExists");
+			errors.rejectValue(email.getName(), "validation.emailExists");
 		}
 	}
 }

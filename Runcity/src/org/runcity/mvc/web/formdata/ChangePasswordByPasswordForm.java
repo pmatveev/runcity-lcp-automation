@@ -20,10 +20,10 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormStringColumn currPassword;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn password;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn password2;
 
@@ -36,10 +36,9 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 		this.currPassword = new FormPasswordValidationColumn(this,
 				new ColumnDefinition("currPassword", "changePassword.currPassword"), formName);
 		FormPasswordPair passwords = new FormPasswordPair(
-				new FormPasswordColumn(this, new ColumnDefinition("password", "changePassword.password"), formName,
-						true),
+				new FormPasswordColumn(this, new ColumnDefinition("password", "changePassword.password"), true),
 				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "changePassword.password2"),
-						formName, true));
+						true));
 
 		this.password = passwords.getPassword();
 		this.password2 = passwords.getPasswordConfirmation();

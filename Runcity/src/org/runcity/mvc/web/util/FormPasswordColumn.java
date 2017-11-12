@@ -14,13 +14,13 @@ public class FormPasswordColumn extends FormStringColumn {
 	private static final String PWD_PATTERN = "^(?=.*[A-Za-z])(?=.*\\d).{8,}$";
 	private Pattern pattern = Pattern.compile(PWD_PATTERN);
 
-	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required) {
-		super(form, definition, formName, required, null, null);
+	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
+		super(form, definition, required, null, null);
 		this.passwordValue = true;
 	}
 
-	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, String formName, boolean required, String value) {
-		super(form, definition, formName, required, null, null, value);
+	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required, String value) {
+		super(form, definition, required, null, null, value);
 		this.passwordValue = true;
 	}
 
@@ -30,7 +30,7 @@ public class FormPasswordColumn extends FormStringColumn {
 		
 		if (value == null || !pattern.matcher(value).matches()) {
 			logger.debug(getName() + " does not match password regexp");
-			errors.rejectValue(getName(), "js.passwordStrength");
+			errors.rejectValue(getName(), "validation.passwordStrength");
 		}
 	}
 	
@@ -45,6 +45,6 @@ public class FormPasswordColumn extends FormStringColumn {
 	
 	@Override
 	public String getOnChange() {
-		return "checkPwdInput($('#" + getHtmlId() + "'), $('#" + passwordConfirmation.getHtmlId() + "'), translations)";
+		return "checkPwdInput($('#" + getHtmlId() + "'), $('#" + passwordConfirmation.getHtmlId() + "'))";
 	}
 }

@@ -15,28 +15,62 @@
 
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
+<spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'></link>
 <link rel='stylesheet' href='${bootstrapThemeCss}'></link>
+<link rel='stylesheet' href='${bootstrapSelectCss}'></link>
 <link rel='stylesheet' href='${runcityCss}'></link>
 <script src="${jqueryJs}"></script>
 <script src="${bootstrapJs}"></script>
+<script src="${bootstrapSelectJs}"></script>
 <script src="${runcityJs}"></script>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
 </head>
 <script>
+	(function (root, factory) {
+		  if (typeof define === 'function' && define.amd) {
+		    // AMD. Register as an anonymous module unless amdModuleId is set
+		    define(["jquery"], function (a0) {
+		      return (factory(a0));
+		    });
+		  } else if (typeof module === 'object' && module.exports) {
+		    // Node. Does not work with strict CommonJS, but
+		    // only CommonJS-like environments that support module.exports,
+		    // like Node.
+		    module.exports = factory(require("jquery"));
+		  } else {
+		    factory(root["jQuery"]);
+		  }
+		}(this, function (jQuery) {
+	
+		(function ($) {
+		  $.fn.selectpicker.defaults = {
+		    noneSelectedText: '<fmt:message key="selectpicker.noneSelectedText" bundle="${msg}" />',
+		    noneResultsText: '<fmt:message key="selectpicker.noneResultsText" bundle="${msg}" />',
+		    countSelectedText: '<fmt:message key="selectpicker.countSelectedText" bundle="${msg}" />',
+		    maxOptionsText: ['<fmt:message key="selectpicker.maxOptionsText" bundle="${msg}" />', '<fmt:message key="selectpicker.maxOptionsTextGroup" bundle="${msg}" />'],
+		    doneButtonText: '<fmt:message key="selectpicker.doneButtonText" bundle="${msg}" />',
+		    selectAllText: '<fmt:message key="selectpicker.selectAllText" bundle="${msg}" />',
+		    deselectAllText: '<fmt:message key="selectpicker.deselectAllText" bundle="${msg}" />',
+		    multipleSeparator: '<fmt:message key="selectpicker.multipleSeparator" bundle="${msg}" />'
+		  };
+		})(jQuery);
+		}));
+
 	var translations = {
-		required : '<fmt:message key="js.required" bundle="${msg}" />',
-		passwordStrength : '<fmt:message key="js.passwordStrength" bundle="${msg}" />',
-		passwordMatch : '<fmt:message key="js.passwordMatch" bundle="${msg}" />',
-		invalidEmail : '<fmt:message key="js.invalidEmail" bundle="${msg}" />',
-		minLen : '<fmt:message key="js.minLength" bundle="${msg}" />',
-		maxLen : '<fmt:message key="js.maxLength" bundle="${msg}" />',
+		required : '<fmt:message key="validation.required" bundle="${msg}" />',
+		passwordStrength : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
+		passwordMatch : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
+		invalidEmail : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
+		minLen : '<fmt:message key="validation.minLength" bundle="${msg}" />',
+		maxLen : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
 		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
 		ajaxHangGet : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
 		ajaxHangPost : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
@@ -44,17 +78,18 @@
 		forbidden : '<fmt:message key="common.forbidden" bundle="${msg}" />'
 	}
 	
-	var popupForms = [];
-	
-
 	$(document).ready(function() {
-		popupForms.forEach(function(item, index, array) {
-			$('#modal_' + item).on('shown.bs.modal', function(e) {
-				afterOpenModal($('#' + item));
-			});
-			$('#modal_' + item).on('hide.bs.modal', function(e) {
-				return beforeCloseModal($('#' + item));
-			});
+		$(".modal").each(function() {
+				var modal = $(this);
+				var item = $('#' + modal.attr("id").substring(6));
+				
+				modal.on('shown.bs.modal', function(e) {
+					afterOpenModal($(item));
+				});
+				
+				modal.on('hide.bs.modal', function(e) {
+					beforeCloseModal($(item));
+				});
 		});
 	});
 </script>

@@ -4,13 +4,13 @@ import org.runcity.mvc.web.formdata.AbstractForm;
 
 public class FormPasswordValidationColumn extends FormStringColumn {
 
-	public FormPasswordValidationColumn(AbstractForm form, ColumnDefinition definition, String formName) {
-		super(form, definition, formName, true, null, null);
+	public FormPasswordValidationColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition, true, null, null);
 		this.passwordValue = true;
 	}
 
-	public FormPasswordValidationColumn(AbstractForm form, ColumnDefinition definition, String formName, String value) {
-		super(form, definition, formName, true, null, null, value);
+	public FormPasswordValidationColumn(AbstractForm form, ColumnDefinition definition, String value) {
+		super(form, definition, true, null, null, value);
 		this.passwordValue = true;
 	}
 	

@@ -48,7 +48,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		return consumerRepository.findById(id);
 	}
 
-	public Consumer addNewConsumer(Consumer c) throws DBException {
+	private Consumer addNewConsumer(Consumer c) throws DBException {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
 		}
@@ -61,7 +61,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Transactional
-	public Consumer editConsumer(Consumer c) throws DBException {
+	private Consumer editConsumer(Consumer c) throws DBException {
 		if (c.getId() == null) {
 			throw new UnexpectedArgumentException("Cannot create new user with this service");
 		}

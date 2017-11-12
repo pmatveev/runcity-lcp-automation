@@ -20,16 +20,31 @@ function setFormErrorMessage(form, message) {
 }
 
 function removeErrorMessage(element) {
-	element.parent().removeClass("has-error");
-	element.parent().find(".help-block").remove();
+	var parent = element;
+	
+	while (!parent.hasClass("form-group") && !(parent.prop("tagName") == "BODY")) {
+		parent = parent.parent();
+	}
+	if (parent.prop("tagName") == "BODY") {
+		return;
+	}
+	parent.removeClass("has-error");
+	parent.find(".help-block").remove();
 }
 
 function setErrorMessage(element, message) {
-	element.parent().addClass("has-error");
-	var help = element.parent().find(".help-block");
+	var parent = element;
+	
+	while (!parent.hasClass("form-group") && !(parent.prop("tagName") == "BODY")) {
+		parent = parent.parent();
+	}
+	if (parent.prop("tagName") == "BODY") {
+		return;
+	}
+	parent.addClass("has-error");
+	var help = parent.find(".help-block");
 	if (!help.length) {
-		element.parent().append(
-				'<span class="help-block">' + message + '</span>');
+		parent.append('<span class="help-block">' + message + '</span>');
 	} else {
 		help.append('<br/>' + message);
 	}
@@ -46,7 +61,7 @@ function setErrorMessageStrict(element, message) {
 	}
 }
 
-function checkElem(elem, rule, translations) {
+function checkElem(elem, rule) {
 	if (rule == "required") {
 		if (elem.val().length == 0) {
 			setErrorMessage(elem, translations['required']);
@@ -87,13 +102,13 @@ function checkElem(elem, rule, translations) {
 	return true;
 }
 
-function checkInput(elem, translations) {
+function checkInput(elem) {
 	var checkList = elem.attr("jschecks").split(";");
 	var result = true;
 	
 	removeErrorMessage(elem);
 	checkList.forEach(function(item, i, arr) {
-		if (!checkElem(elem, item, translations)) {
+		if (!checkElem(elem, item)) {
 			result = false;
 		}
 	});
@@ -101,7 +116,7 @@ function checkInput(elem, translations) {
 	return result;
 }
 
-function checkPwdIdent(pwd1, pwd2, translations) {
+function checkPwdIdent(pwd1, pwd2) {
 	if (pwd1.val() != pwd2.val()) {
 		setErrorMessageStrict(pwd2, translations['passwordMatch']);
 		return false;
@@ -110,15 +125,15 @@ function checkPwdIdent(pwd1, pwd2, translations) {
 	return true;
 }
 
-function checkPwdInput(pwd, pwdConf, translations) {
-	var res1 = checkInput(pwd, translations);
-	var res2 = checkInput(pwdConf, translations);
-	var res3 = checkPwdIdent(pwd, pwdConf, translations);
+function checkPwdInput(pwd, pwdConf) {
+	var res1 = checkInput(pwd);
+	var res2 = checkInput(pwdConf);
+	var res3 = checkPwdIdent(pwd, pwdConf);
 	
 	return res1 && res2 && res3;
 }
 
-function validateElem(element, translations) {
+function validateElem(element) {
 	var foo = element.attr("onchange");
 	
 	if (typeof foo !== 'undefined') {
@@ -128,12 +143,12 @@ function validateElem(element, translations) {
 	}
 }
 
-function validateForm(form, translations) {
+function validateForm(form) {
 	var result = true;
 
 	form.find("input,select").not('[type="submit"]')
 			.each(function() {
-				if (!validateElem($(this), translations)) {
+				if (!validateElem($(this))) {
 					result = false;
 				}
 			});
@@ -320,9 +335,9 @@ function modalFormError(form, data) {
 	}
 }
 
-function submitModalForm(form, translations) {
+function submitModalForm(form) {
 	event.preventDefault();
-	if (!validateForm(form, translations)) {
+	if (!validateForm(form)) {
 		return;
 	}
 
