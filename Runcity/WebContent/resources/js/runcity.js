@@ -366,3 +366,28 @@ function submitModalForm(form) {
 		}
 	});
 }
+
+function sortListbox(listbox) {
+	console.log("Sorting: " + listbox.text());
+	var options = listbox.find(".text");
+	console.log(options);
+	var arr = options.map(function(_, o) {
+		return {
+			t : $(o).text(),
+			v : o.value
+		};
+	}).get();
+	console.log(arr);
+	arr.sort(function(o1, o2) {
+		if (o1.t == "") { return -1; }
+		if (o2.t == "") { return 1; }
+		
+		return o1.t.toUpperCase() > o2.t.toUpperCase() ? 1
+				: o1.t.toUpperCase() < o2.t.toUpperCase() ? -1 : 0;
+	});
+	console.log("Sorted: ", arr);
+	options.each(function(i, o) {
+		o.value = arr[i].v;
+		$(o).text(arr[i].t);
+	});
+}

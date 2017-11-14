@@ -91,6 +91,10 @@
 					beforeCloseModal($(item));
 				});
 		});
+		
+		$(".dropdown-menu .inner").each(function() {
+			sortListbox($(this));		
+		});
 	});
 </script>
 <body>
