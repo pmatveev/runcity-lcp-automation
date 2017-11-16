@@ -7,6 +7,7 @@ import org.runcity.exception.DBException;
 import org.springframework.security.access.annotation.Secured;
 
 public interface ConsumerService {
+	@Secured("ROLE_ADMIN")
 	public List<Consumer> selectAll();
 
 	public Consumer selectByUsername(String username);

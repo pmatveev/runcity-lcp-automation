@@ -12,6 +12,8 @@ import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
 import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
+import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.mvc.web.util.ButtonDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
@@ -105,5 +107,27 @@ public class RestConsumerController {
 			result.addCommonError("common.popupProcessError");
 		}
 		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
+	public ConsumerTable getConsumerTable() {
+		logger.info("GET /api/v1/consumerTable");
+		ConsumerTable table = new ConsumerTable(messageSource);
+		table.fetchAll(consumerService);
+		return table;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerTableButtons", method = RequestMethod.GET)
+	public ButtonDefinition getConsumerTableButtons() {
+		logger.info("GET /api/v1/consumerTableButtons");
+		
+		ButtonDefinition buttons = new ButtonDefinition(messageSource);
+		buttons.addButton(buttons.new Button("actions.create", "btn btn-primary", "alert(1);", null));
+		buttons.addButton(buttons.new Button("actions.edit", "btn", "alert(2);", "selectedSingle"));
+		buttons.addButton(buttons.new Button("actions.delete", null, "alert(3);", "selected"));
+		
+		return buttons;
 	}
 }

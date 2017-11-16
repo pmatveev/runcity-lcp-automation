@@ -1,7 +1,6 @@
 package org.runcity.mvc.web.formdata;
 
 import org.runcity.mvc.rest.util.RestGetResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormIdColumn;
 
@@ -14,11 +13,11 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 	protected String urlOnSubmitAjax;
 
 	protected AbstractForm(String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax) {
+		super();
 		this.formName = formName;
 		this.urlOnOpenAjax = urlOnOpenAjax;
 		this.urlOnSubmit = urlOnSubmit;
 		this.urlOnSubmitAjax = urlOnSubmitAjax;
-		setResponseClass(RestResponseClass.INFO);
 	}
 
 	protected AbstractForm(Long id, String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax) {

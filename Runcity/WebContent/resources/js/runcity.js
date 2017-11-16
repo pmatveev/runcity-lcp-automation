@@ -1,3 +1,15 @@
+function findParentWithClass(element, cls) {
+	var parent = element;
+	
+	while (!parent.hasClass(cls) && !(parent.prop("tagName") == "BODY")) {
+		parent = parent.parent();
+	}
+	if (parent.prop("tagName") == "BODY") {
+		return null;
+	}
+	return parent;
+}
+
 function removeFormErrorMessage(form) {
 	form.find(".errorHolder").html("");
 }
@@ -20,12 +32,9 @@ function setFormErrorMessage(form, message) {
 }
 
 function removeErrorMessage(element) {
-	var parent = element;
+	var parent = findParentWithClass(element, "form-group");
 	
-	while (!parent.hasClass("form-group") && !(parent.prop("tagName") == "BODY")) {
-		parent = parent.parent();
-	}
-	if (parent.prop("tagName") == "BODY") {
+	if (parent == null) {
 		return;
 	}
 	parent.removeClass("has-error");
@@ -33,12 +42,9 @@ function removeErrorMessage(element) {
 }
 
 function setErrorMessage(element, message) {
-	var parent = element;
+	var parent = findParentWithClass(element, "form-group");
 	
-	while (!parent.hasClass("form-group") && !(parent.prop("tagName") == "BODY")) {
-		parent = parent.parent();
-	}
-	if (parent.prop("tagName") == "BODY") {
+	if (parent == null) {
 		return;
 	}
 	parent.addClass("has-error");
@@ -367,6 +373,18 @@ function submitModalForm(form) {
 	});
 }
 
+function initModal(modal) {
+	var item = $('#' + modal.attr("id").substring(6));
+	
+	modal.on('shown.bs.modal', function(e) {
+		afterOpenModal($(item));
+	});
+	
+	modal.on('hide.bs.modal', function(e) {
+		beforeCloseModal($(item));
+	});
+}
+
 function sortListbox(listbox) {
 	console.log("Sorting: " + listbox.text());
 	var options = listbox.find(".text");
@@ -390,4 +408,59 @@ function sortListbox(listbox) {
 		o.value = arr[i].v;
 		$(o).text(arr[i].t);
 	});
+}
+
+function initDatatables(table) {
+	var buttonsAjax = table.attr('ajaxButtonSource');
+	
+	if (typeof buttonsAjax !== 'undefined') {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: buttonsAjax,
+			dataType: "json",
+			timeout: 10000,
+			success: function(data) {
+				initDatatablesWithButtons(table, data);
+			},
+			error: function(data) {
+				console.log(data);
+				initDatatablesWithButtons(table, { buttons : [] });
+			}
+		});
+	} else {
+		initDatatablesWithButtons(table, { buttons : [] });
+	}
+}
+
+function initDatatablesWithButtons(table, buttons) {
+	var columnDefs = [];
+	table.find("th").each(function() {
+		var cd = $(this);
+		columnDefs.push({
+			data : cd.attr("mapping"),
+			name : cd.attr("mapping")
+		});
+	});
+	
+	var dataTable = table.DataTable({
+		dom : "<'row'<'col-sm-6'l><'col-sm-6'f>>" 
+				+ "<'row'<'col-sm-12'B>>"
+				+ "<'row'<'col-sm-12'tr>>"
+				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+		ajaxSource : table.attr("ajaxSource"),
+		columns : columnDefs,
+		buttons : {
+			dom : {
+				container: {
+		            tag: 'div',
+		            className: 'button-item'
+		        }
+			},
+			buttons : buttons.buttons
+		},
+		select : true
+	});
+	
+	dataTable.column("id:name").visible(false);
 }

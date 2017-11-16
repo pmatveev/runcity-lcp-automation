@@ -3,10 +3,12 @@ package org.runcity.mvc.web.util;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.secure.SecureUserRole;
+import org.springframework.context.MessageSource;
 
 public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 	private static Map<String, String> options = new HashMap<String, String>();
@@ -42,6 +44,10 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 	@Override
 	public Map<String, String> getOptions() {
 		return options;
+	}
+
+	public static String getOptionDisplay(String key, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(options.get(key), null, l);
 	}
 
 }

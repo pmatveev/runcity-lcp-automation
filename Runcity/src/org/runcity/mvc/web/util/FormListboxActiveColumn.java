@@ -1,9 +1,11 @@
 package org.runcity.mvc.web.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.runcity.mvc.web.formdata.AbstractForm;
+import org.springframework.context.MessageSource;
 
 public class FormListboxActiveColumn extends FormListboxColumn<Boolean> {	
 	private static Map<String, String> options = new HashMap<String, String>();
@@ -24,6 +26,10 @@ public class FormListboxActiveColumn extends FormListboxColumn<Boolean> {
 	@Override
 	public Map<String, String> getOptions() {
 		return options;
+	}
+
+	public static String getOptionDisplay(String key, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(options.get(key), null, l);
 	}
 
 }

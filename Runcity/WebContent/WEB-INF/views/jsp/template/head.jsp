@@ -16,24 +16,44 @@
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
+<spring:url value="/resources/css/dataTables.bootstrap.min.css" var="dtCss" />
+<spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
+<spring:url value="/resources/css/fixedHeader.bootstrap.min.css" var="dtFixedHeaderCss" />
+<spring:url value="/resources/css/select.bootstrap.min.css" var="dtSelectCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
+<spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
+<spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
+<spring:url value="/resources/js/dataTables.buttons.min.js" var="dtButtonsMainJs" />
+<spring:url value="/resources/js/buttons.bootstrap.min.js" var="dtButtonsJs" />
+<spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
+<spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'></link>
 <link rel='stylesheet' href='${bootstrapThemeCss}'></link>
 <link rel='stylesheet' href='${bootstrapSelectCss}'></link>
+<link rel='stylesheet' href='${dtCss}'></link>
+<link rel='stylesheet' href='${dtButtonsCss}'></link>
+<link rel='stylesheet' href='${dtFixedHeaderCss}'></link>
+<link rel='stylesheet' href='${dtSelectCss}'></link>
 <link rel='stylesheet' href='${runcityCss}'></link>
-<script src="${jqueryJs}"></script>
-<script src="${bootstrapJs}"></script>
-<script src="${bootstrapSelectJs}"></script>
-<script src="${runcityJs}"></script>
+<script type="text/javascript" src="${jqueryJs}"></script>
+<script type="text/javascript" src="${bootstrapJs}"></script>
+<script type="text/javascript" src="${bootstrapSelectJs}"></script>
+<script type="text/javascript" src="${dtMainJs}"></script>
+<script type="text/javascript" src="${dtJs}"></script>
+<script type="text/javascript" src="${dtButtonsMainJs}"></script>
+<script type="text/javascript" src="${dtButtonsJs}"></script>
+<script type="text/javascript" src="${dtFinedHeaderJs}"></script>
+<script type="text/javascript" src="${dtSelectJs}"></script>
+<script type="text/javascript" src="${runcityJs}"></script>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
 </head>
-<script>
+<script type="text/javascript">
 	(function (root, factory) {
 		  if (typeof define === 'function' && define.amd) {
 		    // AMD. Register as an anonymous module unless amdModuleId is set
@@ -80,21 +100,16 @@
 	
 	$(document).ready(function() {
 		$(".modal").each(function() {
-				var modal = $(this);
-				var item = $('#' + modal.attr("id").substring(6));
-				
-				modal.on('shown.bs.modal', function(e) {
-					afterOpenModal($(item));
-				});
-				
-				modal.on('hide.bs.modal', function(e) {
-					beforeCloseModal($(item));
-				});
+			initModal($(this));
 		});
 		
 		$(".dropdown-menu .inner").each(function() {
 			sortListbox($(this));		
 		});
+		$.fn.dataTable.ext.errMode = 'throw';
+		$("table.datatables").each(function() {
+			initDatatables($(this));
+		})
 	});
 </script>
 <body>

@@ -29,6 +29,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	private PersistedLoginsRepository persistedLoginsRepository;
 
 	@Override
+	@Secured("ROLE_ADMIN")
 	public List<Consumer> selectAll() {
 		return consumerRepository.findAll(new Sort(new Order(Direction.ASC, "credentials")));
 	}

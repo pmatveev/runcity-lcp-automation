@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestGetResponseBody {
 	@JsonView(Views.Public.class)
-	private RestResponseClass responseClass;
+	private RestResponseClass responseClass= RestResponseClass.INFO;
 	
 	@JsonView(Views.Public.class)
 	private List<String> errors;
 	
-	private MessageSource messageSource;
-	private Locale locale = LocaleContextHolder.getLocale();
+	protected MessageSource messageSource;
+	protected Locale locale = LocaleContextHolder.getLocale();
 
 	public RestGetResponseBody() {
 	}
