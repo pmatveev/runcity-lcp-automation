@@ -86,4 +86,23 @@
 			<fragment>false</fragment>
 		</attribute>
 	</tag>
+	<tag>
+		<name>table</name>
+		<tag-class>org.runcity.jsp.FormTableTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>table</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>org.runcity.mvc.web.tabledata.AbstractTable</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
+			<name>bundle</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
+			<fragment>false</fragment>
+		</attribute>
+	</tag>
 </taglib>

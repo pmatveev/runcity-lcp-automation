@@ -9,6 +9,7 @@ import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
 import org.runcity.util.StringUtils;
@@ -79,8 +80,21 @@ public class ConsumerTable extends AbstractTable {
 		}
 	}
 
+	public ConsumerTable() {
+		this.columns.add(new ColumnDefinition("id", null));
+		this.columns.add(new ColumnDefinition("username", "user.username"));
+		this.columns.add(new ColumnDefinition("credentials", "user.credentials"));
+		this.columns.add(new ColumnDefinition("email", "user.email"));
+		this.columns.add(new ColumnDefinition("active", "user.active"));
+		this.columns.add(new ColumnDefinition("roles", "user.roles"));
+		this.ajaxData = "/api/v1/consumerTable";
+		this.ajaxButtons = "/api/v1/consumerTableButtons";
+		this.id = "consumerTable";
+	}
+	
 	public ConsumerTable(MessageSource messageSource) {
-		super(messageSource);
+		this();
+		super.setMessageSource(messageSource);
 	}
 
 	public void fetchAll(ConsumerService service) {
