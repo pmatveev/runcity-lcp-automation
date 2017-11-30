@@ -85,6 +85,7 @@ public class ConsumerTable extends AbstractTable {
 	}
 
 	public ConsumerTable() {
+		super("user.tableHeader");
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
 		this.columns.add(new ColumnDefinition("credentials", "user.credentials"));

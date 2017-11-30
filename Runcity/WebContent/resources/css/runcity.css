@@ -1,4 +1,8 @@
-.top-buffer {
+.nav-buffer {
+	margin-top: 60px;
+}
+
+.static-margin-top {
 	margin-top: 10%;
 }
 

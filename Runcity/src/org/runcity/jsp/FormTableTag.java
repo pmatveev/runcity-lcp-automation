@@ -73,6 +73,10 @@ public class FormTableTag extends TagSupport {
 
 		tagWriter.endTag();
 
+		tagWriter.startTag("h1");
+		tagWriter.appendValue(bundle.getResourceBundle().getString(table.getTitle()));
+		tagWriter.endTag();
+		
 		processUrl(table.getAjaxData(), table.getId() + "_ajaxSource");
 
 		tagWriter.startTag("table");

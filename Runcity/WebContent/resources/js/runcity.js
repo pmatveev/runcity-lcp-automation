@@ -556,12 +556,12 @@ function initDatatables(table) {
 						message : confirmation,
 						buttons : {
 							confirm : {
-								label : translations['confOK'],
+								label : translations['modalOK'],
 								className : 'btn btn-primary'
 							},
 							cancel : {
-								label : translations['confCancel'],
-								className : 'btn'
+								label : translations['modalCancel'],
+								className : 'btn btn-link'
 							}
 						},
 						backdrop : true,

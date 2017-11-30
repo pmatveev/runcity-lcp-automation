@@ -11,20 +11,31 @@ import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
 
 public abstract class AbstractTable extends RestGetResponseBody {
+	protected String title;
 	protected String id;
 	protected List<ColumnDefinition> columns = new LinkedList<ColumnDefinition>();
 	protected String ajaxData;
 	protected List<ButtonDefinition> buttons = new LinkedList<ButtonDefinition>();
 	protected List<AbstractForm> relatedForms = new LinkedList<AbstractForm>();
 	
-	protected AbstractTable() {
+	protected AbstractTable(String title) {
 		super();
+		this.title = title;
 	}
 	
-	protected AbstractTable(MessageSource messageSource) {
-		super(messageSource);
+	protected AbstractTable(String title, MessageSource messageSource) {
+		this(title);
+		super.setMessageSource(messageSource);
 	}
 	
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public List<ColumnDefinition> getColumns() {
 		return columns;
 	}

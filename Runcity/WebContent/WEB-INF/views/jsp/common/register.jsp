@@ -1,6 +1,6 @@
 <%@ include file="../template/head.jsp"%>
-<div class="row">
-	<div class="container form-container">
+<div class="container form-container static-margin-top">
+	<div class="row">
 		<c:set value="${false}" var="modal"/>
 		<%@ include file="../forms/consumerRegisterForm.jsp"%>
 	</div>

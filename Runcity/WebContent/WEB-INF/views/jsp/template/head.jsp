@@ -34,14 +34,14 @@
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
-<link rel='stylesheet' href='${bootstrapCss}'></link>
-<link rel='stylesheet' href='${bootstrapThemeCss}'></link>
-<link rel='stylesheet' href='${bootstrapSelectCss}'></link>
-<link rel='stylesheet' href='${dtCss}'></link>
-<link rel='stylesheet' href='${dtButtonsCss}'></link>
-<link rel='stylesheet' href='${dtFixedHeaderCss}'></link>
-<link rel='stylesheet' href='${dtSelectCss}'></link>
-<link rel='stylesheet' href='${runcityCss}'></link>
+<link rel='stylesheet' href='${bootstrapCss}'/>
+<link rel='stylesheet' href='${bootstrapThemeCss}'/>
+<link rel='stylesheet' href='${bootstrapSelectCss}'/>
+<link rel='stylesheet' href='${dtCss}'/>
+<link rel='stylesheet' href='${dtButtonsCss}'/>
+<link rel='stylesheet' href='${dtFixedHeaderCss}'/>
+<link rel='stylesheet' href='${dtSelectCss}'/>
+<link rel='stylesheet' href='${runcityCss}'/>
 <script type="text/javascript" src="${jqueryJs}"></script>
 <script type="text/javascript" src="${bootstrapJs}"></script>
 <script type="text/javascript" src="${bootboxJs}"></script>
@@ -55,7 +55,6 @@
 <script type="text/javascript" src="${runcityJs}"></script>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
-</head>
 <script type="text/javascript">
 	(function (root, factory) {
 		  if (typeof define === 'function' && define.amd) {
@@ -115,8 +114,8 @@
 		reload                   : '<fmt:message key="common.reload" bundle="${msg}" />',
 		forbidden                : '<fmt:message key="common.forbidden" bundle="${msg}" />',
 		confTitle                : '<fmt:message key="confirmation.title" bundle="${msg}" />',
-		confCancel               : '<fmt:message key="confirmation.cancel" bundle="${msg}" />',
-		confOK                   : '<fmt:message key="confirmation.ok" bundle="${msg}" />'
+		modalCancel              : '<fmt:message key="common.closeModal" bundle="${msg}" />',
+		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />'
 	}
 	
 	$(document).ready(function() {
@@ -129,43 +128,64 @@
 		})
 	});
 </script>
+</head>
+
 <body>
-	<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span>
+				</button>
 				<p class="navbar-brand">Runcity</p>
 			</div>
-			<ul class="nav navbar-nav navbar-right">
-				<spring:url value="/register" var="goRegister"/>
-				<spring:url value="/login" var="goLogin"/>
-				<spring:url value="/logout" var="goLogout"/>
-				<sec:authorize access="!isAuthenticated()">
-					<li><a href="${goRegister}" role="button"><span class="glyphicon glyphicon-user"></span> <fmt:message key="register.header" bundle="${msg}" /></a></li>
-					<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
-				</sec:authorize>
+			<div class="nav collapse navbar-collapse" id="mainNav">
 				<sec:authorize access="isAuthenticated()">
-					<li>
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							<span class="glyphicon glyphicon-user"></span> 
-							<sec:authentication property="principal.credentials" />
-							<span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu">
-							<li>
-								<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'))" href="#">
-									<fmt:message key="changePassword.header" bundle="${msg}" />
-								</a>
-								<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
-									<fmt:message key="common.edit" bundle="${msg}" />
-								</a>
-							</li>
-						</ul>
-					</li>
-					<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
+					<ul class="nav navbar-nav">
+						<sec:authorize ifAllGranted="ROLE_ADMIN">
+							<li><a href="#" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a></li>
+							<li><a href="#" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
+						</sec:authorize>
+						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
+							<li><a href="#" role="button"><fmt:message key="menu.control" bundle="${msg}" /></a></li>
+						</sec:authorize>
+					</ul>
 				</sec:authorize>
-			</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<spring:url value="/register" var="goRegister"/>
+					<spring:url value="/login" var="goLogin"/>
+					<spring:url value="/logout" var="goLogout"/>
+					<sec:authorize access="!isAuthenticated()">
+						<li><a href="${goRegister}" role="button"><span class="glyphicon glyphicon-user"></span> <fmt:message key="register.header" bundle="${msg}" /></a></li>
+						<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
+					</sec:authorize>
+					<sec:authorize access="isAuthenticated()">
+						<li>
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+								<span class="glyphicon glyphicon-user"></span> 
+								<sec:authentication property="principal.credentials" />
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'))" href="#">
+										<fmt:message key="changePassword.header" bundle="${msg}" />
+									</a>
+									<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
+										<fmt:message key="common.edit" bundle="${msg}" />
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
+					</sec:authorize>
+				</ul>
+			</div>
 		</div>
 	</nav>
+	<div class="nav-buffer"></div>
 	<!-- Modals -->
 	<sec:authorize access="isAuthenticated()">
 			<c:set value="${true}" var="modal"/>
