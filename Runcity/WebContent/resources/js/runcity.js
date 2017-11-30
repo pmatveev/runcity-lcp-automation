@@ -603,13 +603,7 @@ function initDatatablesWithButtons(table, buttons) {
 	});
 
 	var dataTable = table.DataTable({
-		dom : "<'row'<'col-sm-12 errorHolder'>>"
-				+ "<'row'<'col-sm-6'l><'col-sm-6'f>>"
-				+ "<'row'<'col-sm-12'B>>"
-				+ "<'row'<'col-sm-12'tr>>"
-				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 		ajaxSource : table.attr("ajaxSource"),
-		columns : columnDefs,
 		buttons : {
 			dom : {
 				container : {
@@ -618,6 +612,36 @@ function initDatatablesWithButtons(table, buttons) {
 				}
 			},
 			buttons : buttons
+		},
+		columns : columnDefs,
+		dom : "<'row'<'col-sm-12 errorHolder'>>"
+				+ "<'row'<'col-sm-6'l><'col-sm-6'f>>"
+				+ "<'row'<'col-sm-12'B>>"
+				+ "<'row'<'col-sm-12'tr>>"
+				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+		language : {
+		    "decimal":        "",
+		    "emptyTable":     translations['datatablesEmptyTable'],
+		    "info":           translations['datatablesInfo'],
+		    "infoEmpty":      translations['datatablesInfoEmpty'],
+		    "infoFiltered":   translations['datatablesInfoFiltered'],
+		    "infoPostFix":    "",
+		    "thousands":      ",",
+		    "lengthMenu":     translations['datatablesLengthMenu'],
+		    "loadingRecords": translations['datatablesLoadingRecords'],
+		    "processing":     translations['datatablesProcessing'],
+		    "search":         translations['datatablesSearch'],
+		    "zeroRecords":    translations['datatablesZeroRecords'],
+		    "paginate": {
+		        "first":      translations['datatablesPFirst'],
+		        "last":       translations['datatablesPLast'],
+		        "next":       translations['datatablesPNext'],
+		        "previous":   translations['datatablesPPrevios']
+		    },
+		    "aria": {
+		        "sortAscending":  translations['datatablesASortA'],
+		        "sortDescending": translations['datatablesASortD']
+		    }
 		},
 		select : true
 	});
