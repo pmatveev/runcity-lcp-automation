@@ -434,8 +434,8 @@ function setTableErrorMessage(dt, message) {
 
 
 function dataTablesAjaxSuccess(dt, data) {
-	dt.ajax.reload(null, false);
 	if (data.responseClass == "INFO") {
+		dt.ajax.reload(null, false);
 		return;
 	}
 	if (data.errors) {
