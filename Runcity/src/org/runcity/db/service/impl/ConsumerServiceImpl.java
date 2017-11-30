@@ -1,5 +1,6 @@
 package org.runcity.db.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.runcity.db.entity.Consumer;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(rollbackFor = {DBException.class, UnexpectedArgumentException.class})
 public class ConsumerServiceImpl implements ConsumerService {
 	@Autowired
 	private ConsumerRepository consumerRepository;
@@ -49,7 +51,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 		return consumerRepository.findById(id);
 	}
 
-	private Consumer addNewConsumer(Consumer c) throws DBException {
+	@Override
+	@Secured("ROLE_ADMIN")
+	public Consumer addNewConsumer(Consumer c) throws DBException {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
 		}
@@ -61,8 +65,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
-	@Transactional
-	private Consumer editConsumer(Consumer c) throws DBException {
+	@Override
+	@Secured("ROLE_ADMIN")
+	public Consumer editConsumer(Consumer c) throws DBException {
 		if (c.getId() == null) {
 			throw new UnexpectedArgumentException("Cannot create new user with this service");
 		}
@@ -74,9 +79,28 @@ public class ConsumerServiceImpl implements ConsumerService {
 				persistedLoginsRepository.updateUsername(prev.getUsername(), c.getUsername());
 			}
 
-			return consumerRepository.save(c);
+			prev.update(c);
+
+			return consumerRepository.save(prev);
 		} catch (Throwable t) {
 			throw new DBException(t);
+		}
+	}
+
+	private void deleteConsumer(Long id) throws DBException {
+		try {
+			Consumer c = consumerRepository.findById(id);
+			consumerRepository.delete(c);
+			persistedLoginsRepository.deleteConsumer(c.getUsername());
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
+	}
+
+	@Secured("ROLE_ADMIN")
+	public void deleteConsumer(List<Long> id) throws DBException {
+		for (Long i : id) {
+			deleteConsumer(i);
 		}
 	}
 
@@ -85,9 +109,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		return new BCryptPasswordEncoder().matches(StringUtils.toNvlString(password), c.getPassHash());
 	}
 
-	@Override
-	@Secured("ROLE_ADMIN")
-	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
+	private Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
 		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
 		return editConsumer(c);
 	}
@@ -141,4 +163,17 @@ public class ConsumerServiceImpl implements ConsumerService {
 		return addNewConsumer(c);
 	}
 
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<Consumer> updateConsumerPassword(List<Long> id, String newPassword) throws DBException {
+		List<Consumer> result = new ArrayList<Consumer>(id.size());
+		
+		for (Long i : id) {
+			Consumer c = selectById(i);
+			c = updateConsumerPassword(c, newPassword);
+			result.add(c);
+		}
+		
+		return result;
+	}
 }

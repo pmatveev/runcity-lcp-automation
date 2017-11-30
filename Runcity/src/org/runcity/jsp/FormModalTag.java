@@ -4,6 +4,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 import org.runcity.mvc.web.formdata.AbstractForm;
+import org.runcity.mvc.web.tabledata.AbstractTable;
 import org.springframework.web.servlet.tags.UrlTag;
 import org.springframework.web.servlet.tags.form.FormTag;
 import org.springframework.web.servlet.tags.form.TagWriter;
@@ -13,6 +14,7 @@ public class FormModalTag extends FormTag {
 	private AbstractForm form;
 	private Boolean modal;
 	private LocalizationContext bundle;
+	private AbstractTable relatedTable;
 	private TagWriter tagWriter;
 	
 	public void setForm(AbstractForm form) {
@@ -25,6 +27,10 @@ public class FormModalTag extends FormTag {
 	
 	public void setBundle(LocalizationContext bundle) {
 		this.bundle = bundle;
+	}
+	
+	public void setRelatedTable(AbstractTable relatedTable) {
+		this.relatedTable = relatedTable;
 	}
 	
 	public FormModalTag() {
@@ -44,17 +50,29 @@ public class FormModalTag extends FormTag {
 			urlTag.setPageContext(pageContext);
 			urlTag.doStartTag();
 			urlTag.doEndTag();
+		} else {
+			pageContext.setAttribute(var, null);
 		}
+	}
+	
+	private boolean skipForm() {
+		return form == null || Boolean.TRUE.equals(pageContext.getAttribute("written_" + form.getFormName()));
 	}
 	
 	@Override
 	protected int writeTagContent(TagWriter tagWriter) throws JspException {
+		if (skipForm()) {
+			return SKIP_BODY;
+		}
+		if (this.getDynamicAttributes() != null) {
+			this.getDynamicAttributes().clear();
+		}
 		this.tagWriter = tagWriter;
-
+		
 		String onSubmit;
 		if (modal) {
-			processUrl(form.getUrlOnSubmitAjax(), "formAction");
-			processUrl(form.getUrlOnOpenAjax(), "formFetchFrom");
+			processUrl(form.getUrlOnSubmitAjax(), form.getFormName() + "_formAction");
+			processUrl(form.getUrlOnOpenAjax(), form.getFormName() + "_formFetchFrom");
 			
 			onSubmit = form.getOnModalSubmit();
 			
@@ -79,7 +97,7 @@ public class FormModalTag extends FormTag {
 			
 			tagWriter.endTag();
 		} else {
-			processUrl(form.getUrlOnSubmit(), "formAction");
+			processUrl(form.getUrlOnSubmit(), form.getFormName() + "_formAction");
 
 			onSubmit = form.getOnSubmit();
 			
@@ -90,13 +108,17 @@ public class FormModalTag extends FormTag {
 		
 		setMethod("POST");
 		setModelAttribute(form.getFormName());
-		setAction(pageContext.getAttribute("formAction").toString());
+		setAction(pageContext.getAttribute(form.getFormName() + "_formAction").toString());
 		setId(form.getHtmlId());
 		setOnsubmit(onSubmit);
 		if (modal) {
-			Object val = pageContext.getAttribute("formFetchFrom");
+			Object val = pageContext.getAttribute(form.getFormName() + "_formFetchFrom");
 			if (val != null) {
 				setDynamicAttribute(null, "fetchFrom", val.toString());
+			}
+			
+			if (relatedTable != null) {
+				setDynamicAttribute(null, "related-table", relatedTable.getId());
 			}
 		}
 
@@ -105,12 +127,16 @@ public class FormModalTag extends FormTag {
 	
 	@Override
 	public int doEndTag() throws JspException {
+		if (skipForm()) {
+			return EVAL_PAGE;
+		}
 		int result = super.doEndTag();
 		if (modal) {
 			tagWriter.endTag();
 			tagWriter.endTag();
 			tagWriter.endTag();
 		}
+		pageContext.setAttribute("written_" + form.getFormName(), Boolean.TRUE);
 		return result;
 	}
 }

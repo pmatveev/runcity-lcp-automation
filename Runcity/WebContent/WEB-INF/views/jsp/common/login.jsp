@@ -4,7 +4,7 @@
 <fmt:message key="user.password" bundle="${msg}" var="msgPassword"/>
 <fmt:message key="login.keepLogin" bundle="${msg}" var="msgKeepLogin"/>
 <div class="row top-buffer">
-	<div class="container">
+	<div class="container form-container">
 		<h1>
 			<fmt:message key="login.header" bundle="${msg}" />
 		</h1>

@@ -12,4 +12,9 @@ public interface PersistedLoginsRepository extends JpaRepository<PersistentLogin
     @Transactional
     @Query("update PersistentLogins set username = ?2 where username = ?1")
     public void updateUsername(String oldUsername, String newUsername);
+
+    @Modifying
+    @Transactional
+    @Query("delete from PersistentLogins where username = ?1")
+    public void deleteConsumer(String username);
 }

@@ -1,26 +1,25 @@
 package org.runcity.mvc.web.util;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.secure.SecureUserRole;
-import org.springframework.context.MessageSource;
 
 public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
-	private static Map<String, String> options = new HashMap<String, String>();
-	
-	static {
+	@Override
+	protected void initDictionary() {
 		options.put(SecureUserRole.ADMIN.name(), "role.admin");
 		options.put(SecureUserRole.VOLUNTEER.name(), "role.volunteer");
 	}
-	
+
+	public FormListboxUserRoleColumn() {
+	}
+
 	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, true, required, options.size());
-		value = new LinkedList<String>();
+		super(form, definition, true, required);
+		this.value = new LinkedList<String>();
 	}
 
 	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required, String value) {
@@ -28,13 +27,14 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 		this.value.add(value);
 	}
 
-	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required, List<String> value) {
-		super(form, definition, true, required, options.size(), value);
+	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required,
+			List<String> value) {
+		super(form, definition, true, required, value);
 		if (this.value == null) {
-			value = new LinkedList<String>();			
+			this.value = new LinkedList<String>();
 		}
 	}
-	
+
 	public void addValue(String value) {
 		if (!this.value.contains(value)) {
 			this.value.add(value);
@@ -45,9 +45,4 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 	public Map<String, String> getOptions() {
 		return options;
 	}
-
-	public static String getOptionDisplay(String key, MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(options.get(key), null, l);
-	}
-
 }

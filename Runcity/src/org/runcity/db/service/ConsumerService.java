@@ -16,10 +16,16 @@ public interface ConsumerService {
 	
 	public Consumer selectById(Long id);
 	
-	public boolean validatePassword(Consumer c, String password);
+	@Secured("ROLE_ADMIN")
+	public Consumer addNewConsumer(Consumer c) throws DBException;
 	
 	@Secured("ROLE_ADMIN")
-	public Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException;
+	public Consumer editConsumer(Consumer c) throws DBException;
+		
+	@Secured("ROLE_ADMIN")
+	public void deleteConsumer(List<Long> id) throws DBException;
+	
+	public boolean validatePassword(Consumer c, String password);
 	
 	public Consumer register(String username, String password, String credentials, String email) throws DBException;
 	
@@ -28,4 +34,7 @@ public interface ConsumerService {
 	public Consumer updateCurrentData(String username, String credentials, String email);
 
 	public Consumer updateCurrentPassword(String newPassword) throws DBException;
+	
+	@Secured("ROLE_ADMIN")
+	public List<Consumer> updateConsumerPassword(List<Long> id, String newPassword) throws DBException;
 }

@@ -1,12 +1,15 @@
 package org.runcity.jsp;
 
 
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
+import org.runcity.mvc.web.util.FormIdListColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.StringUtils;
@@ -42,8 +45,8 @@ public class FormInputTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
-		if (column instanceof FormIdColumn) {
-			writeIdColumn((FormIdColumn) column);
+		if (column instanceof FormIdColumn || column instanceof FormIdListColumn) {
+			writeIdColumn(column);
 			return SKIP_BODY;
 		}
 		
@@ -64,11 +67,15 @@ public class FormInputTag extends TagSupport {
 		return bundle.getResourceBundle().getString(message);
 	}
 
-	private void writeIdColumn(FormIdColumn column) throws JspException {
+	private void writeIdColumn(FormColumn<?> column) throws JspException {
 		InputTag input = new InputTag();
 		input.setPath(column.getName());
 		input.setId(column.getHtmlId());
 		input.setDynamicAttribute(null, "hidden", "hidden");
+		
+		if (column instanceof FormIdListColumn) {
+			input.setDynamicAttribute(null, "format", "array");
+		}
 		
 		input.setPageContext(pageContext);
 		input.doStartTag();
@@ -165,8 +172,8 @@ public class FormInputTag extends TagSupport {
 		if (!column.isMultiple()) {
 			writeOption(select, tagWriter, "", "");
 		}
-		for (String key : column.getOptions().keySet()) {
-			writeOption(select, tagWriter, key, localize(column.getOptions().get(key)));
+		for (Map.Entry<String, String> entry : column.renderOptions(bundle.getResourceBundle())) {
+			writeOption(select, tagWriter, entry.getKey(), entry.getValue());
 		}
 		
 		select.doEndTag();

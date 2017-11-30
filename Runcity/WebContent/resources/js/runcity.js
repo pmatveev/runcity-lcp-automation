@@ -1,6 +1,6 @@
 function findParentWithClass(element, cls) {
 	var parent = element;
-	
+
 	while (!parent.hasClass(cls) && !(parent.prop("tagName") == "BODY")) {
 		parent = parent.parent();
 	}
@@ -15,17 +15,17 @@ function removeFormErrorMessage(form) {
 }
 
 function removerFormFieldErrorMessage(form) {
-	form.find("input").not('[type="submit"]')
-		.each(function() {
-			removeErrorMessage($(this));
-		});
+	form.find("input").not('[type="submit"]').each(function() {
+		removeErrorMessage($(this));
+	});
 }
 
 function setFormErrorMessage(form, message) {
 	var errHolder = form.find(".errorHolder");
 	var errDiv = errHolder.find(".alert-danger");
 	if (!errDiv.length) {
-		errHolder.append('<div class="alert alert-danger">' + message + '</div>');
+		errHolder.append('<div class="alert alert-danger">' + message
+				+ '</div>');
 	} else {
 		errDiv.append('<br/>' + message);
 	}
@@ -33,7 +33,7 @@ function setFormErrorMessage(form, message) {
 
 function removeErrorMessage(element) {
 	var parent = findParentWithClass(element, "form-group");
-	
+
 	if (parent == null) {
 		return;
 	}
@@ -43,7 +43,7 @@ function removeErrorMessage(element) {
 
 function setErrorMessage(element, message) {
 	var parent = findParentWithClass(element, "form-group");
-	
+
 	if (parent == null) {
 		return;
 	}
@@ -72,9 +72,9 @@ function checkElem(elem, rule) {
 		if (elem.val().length == 0) {
 			setErrorMessage(elem, translations['required']);
 			return false;
-		}		
+		}
 	}
-	
+
 	if (rule.indexOf("min=") == 0) {
 		var len = Number(rule.substring(4));
 		if (elem.val().length > 0 && elem.val().length < len) {
@@ -82,7 +82,7 @@ function checkElem(elem, rule) {
 			return false;
 		}
 	}
-	
+
 	if (rule.indexOf("max=") == 0) {
 		var len = Number(rule.substring(4));
 		if (elem.val().length > len) {
@@ -90,35 +90,36 @@ function checkElem(elem, rule) {
 			return false;
 		}
 	}
-	
+
 	if (rule == "pwd") {
 		if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(elem.val())) {
 			setErrorMessage(elem, translations['passwordStrength']);
 			return false;
 		}
 	}
-	
-	if (rule == "email") {	// 
-		if (!/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/.test(elem.val())) {
+
+	if (rule == "email") { // 
+		if (!/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/
+				.test(elem.val())) {
 			setErrorMessage(elem, translations['invalidEmail']);
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
 function checkInput(elem) {
 	var checkList = elem.attr("jschecks").split(";");
 	var result = true;
-	
+
 	removeErrorMessage(elem);
 	checkList.forEach(function(item, i, arr) {
 		if (!checkElem(elem, item)) {
 			result = false;
 		}
 	});
-	
+
 	return result;
 }
 
@@ -135,13 +136,13 @@ function checkPwdInput(pwd, pwdConf) {
 	var res1 = checkInput(pwd);
 	var res2 = checkInput(pwdConf);
 	var res3 = checkPwdIdent(pwd, pwdConf);
-	
+
 	return res1 && res2 && res3;
 }
 
 function validateElem(element) {
 	var foo = element.attr("onchange");
-	
+
 	if (typeof foo !== 'undefined') {
 		return eval(foo);
 	} else {
@@ -152,46 +153,57 @@ function validateElem(element) {
 function validateForm(form) {
 	var result = true;
 
-	form.find("input,select").not('[type="submit"]')
-			.each(function() {
-				if (!validateElem($(this))) {
-					result = false;
-				}
-			});
+	form.find("input,select").not('[type="submit"]').each(function() {
+		if (!validateElem($(this))) {
+			result = false;
+		}
+	});
 
 	return result;
 }
 
 function beforeOpenModal(form) {
 	removeFormErrorMessage(form);
-	form.find("input").not('[type="submit"]')
-			.each(function() {
-				if (($(this)).attr('name') != "_csrf") {
-						$(this).val("");
-				}
-				removeErrorMessage($(this));
-			});
+	form.find("input").not('[type="submit"]').each(function() {
+		if (($(this)).attr('name') != "_csrf") {
+			$(this).val("");
+		}
+		removeErrorMessage($(this));
+	});
+	form.find("select").each(function() {
+		$(this).selectpicker('val', "");
+		removeErrorMessage($(this));
+	});
 }
 
 function addReloadLink(form, recId) {
-	var reload = "<a href='#' onclick='beforeOpenModalFetch($(\"#" + form.attr("id") + "\"), " + recId + ")'>" + translations['reload'] + "</a>";
+	var reload = "<a href='#' onclick='beforeOpenModalFetch($(\"#"
+			+ form.attr("id") + "\"), " + recId + ")'>"
+			+ translations['reload'] + "</a>";
 	setFormErrorMessage(form, reload);
 }
 
 function modalFormOpenSuccess(form, data, recId) {
-	console.log("SUCCESS: ", data);
 	if (data.responseClass == "INFO") {
 		changeModalFormState(form, false, false, false);
-		
-		form.find("input").not('[type="submit"]')
-				.each(function() {
-					var elem = $(this);
-					elem.val(data[elem.attr("name")]);
-				});
-		
+
+		form.find("input").not('[type="submit"]').each(function() {
+			var elem = $(this);
+			elem.val(data[elem.attr("name")]);
+		});
+		form.find("select").each(function() {
+			var elem = $(this);
+			var val = data[elem.attr("name")];
+			if (typeof val === 'boolean') {
+				val = val.toString();
+			}
+
+			elem.selectpicker('val', val);
+		});
+
 		return;
 	}
-	
+
 	changeModalFormState(form, true, false, false);
 	removeFormErrorMessage(form);
 	if (data.errors) {
@@ -203,13 +215,13 @@ function modalFormOpenSuccess(form, data, recId) {
 }
 
 function modalFormOpenError(form, data, recId) {
-	console.log("ERROR: ", data);
 	changeModalFormState(form, true, false, false);
 
 	removeFormErrorMessage(form);
 	removerFormFieldErrorMessage(form);
 	if (data.statusText = "error" && data.status != 0) {
-		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
+				data.status));
 	} else {
 		setFormErrorMessage(form, translations['ajaxHangGet']);
 	}
@@ -217,32 +229,22 @@ function modalFormOpenError(form, data, recId) {
 }
 
 function beforeOpenModalFetch(form, recId) {
-	removeFormErrorMessage(form);
-	form.find("input").not('[type="submit"]')
-			.each(function() {
-				if (($(this)).attr('name') != "_csrf") {
-						$(this).val("");
-				}
-				removeErrorMessage($(this));
-			});
-	
+	beforeOpenModal(form);
+
 	changeModalFormState(form, true, true, false);
 
-	var jsonUrl = form.attr("fetchFrom"); 
-	if (jsonUrl.indexOf('{0}') >= 0) {
-		jsonUrl.replace("{0}", recId);
-	}
-	
+	var jsonUrl = form.attr("fetchFrom").replace("{0}", recId);
+
 	$.ajax({
-		type: "GET",
-		contentType: "application/json",
-		url: jsonUrl,
-		dataType: "json",
-		timeout: 10000,
-		success: function(data) {
+		type : "GET",
+		contentType : "application/json",
+		url : jsonUrl,
+		dataType : "json",
+		timeout : 10000,
+		success : function(data) {
 			modalFormOpenSuccess(form, data, recId);
 		},
-		error: function(data) {
+		error : function(data) {
 			modalFormOpenError(form, data, recId);
 		}
 	});
@@ -263,20 +265,20 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 	var submit = form.find('[type="submit"]');
 	submit.prop("disabled", submitDisabled);
 	form.find('[data-dismiss="modal"]').prop("disabled", keepOnScreen);
-	
+
 	if (loader) {
 		if (!submit.parent().find(".loader").length) {
-			submit.parent().html("<div class='loader'></div>" + submit.parent().html());
-		}		
+			submit.parent().html(
+					"<div class='loader'></div>" + submit.parent().html());
+		}
 	} else {
-		submit.parent().find(".loader").remove();			
+		submit.parent().find(".loader").remove();
 	}
-	
-	form.find("input").not('[type="submit"]')
-		.each(function() {
-			$(this).prop("disabled", submitDisabled);
-		});
-	
+
+	form.find("input").not('[type="submit"]').each(function() {
+		$(this).prop("disabled", submitDisabled);
+	});
+
 	if (keepOnScreen) {
 		form.attr("loading", true);
 	} else {
@@ -286,12 +288,27 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 function getFormData(form) {
 	var res = {};
-	
-	$.map(form.serializeArray(), function(n, i){
-		res[n['name']] = n['value'];
+
+	form.find("input").not('[type="submit"]').each(function() {
+		var elem = $(this);
+		var format = elem.attr('format');
+		if (format == 'array') {
+			res[elem.attr('name')] = elem.val().split(',');
+		} else {
+			res[elem.attr('name')] = elem.val();			
+		}
 	});
-	
+
+	form.find("select").each(function() {
+		var elem = $(this);
+		res[elem.attr('name')] = elem.selectpicker('val');
+	});
+
 	return res;
+}
+
+function showModalForm(form) {
+	$('#modal_' + form.attr("id")).modal('toggle');
 }
 
 function closeModalForm(form) {
@@ -300,29 +317,33 @@ function closeModalForm(form) {
 
 function modalFormSuccess(form, data) {
 	changeModalFormState(form, false, false, false);
-	
+
 	if (data.responseClass == "INFO") {
 		closeModalForm(form);
+
+		var refresh = form.attr("related-table");
+		if (typeof refresh !== 'undefined') {
+			$('#' + refresh).DataTable().ajax.reload(null, false);
+		}
 		return;
 	}
-	
+
 	removeFormErrorMessage(form);
 	if (data.errors) {
 		data.errors.forEach(function(item, i, arr) {
 			setFormErrorMessage(form, item);
 		});
 	}
-	form.find("input").not('[type="submit"]')
-			.each(function() {
-				var elem = $(this);
-				removeErrorMessage(elem);
-				var err = data.colErrors[elem.attr("name")];
-				if (err) {
-					err.forEach(function(item, i, arr) {
-						setErrorMessage(elem, item);
-					});
-				}
+	form.find("input,select").not('[type="submit"]').each(function() {
+		var elem = $(this);
+		removeErrorMessage(elem);
+		var err = data.colErrors[elem.attr("name")];
+		if (err) {
+			err.forEach(function(item, i, arr) {
+				setErrorMessage(elem, item);
 			});
+		}
+	});
 }
 
 function modalFormError(form, data) {
@@ -334,7 +355,8 @@ function modalFormError(form, data) {
 		if (data.status == 403) {
 			setFormErrorMessage(form, translations['forbidden']);
 		} else {
-			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}", data.status));
+			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status));
 		}
 	} else {
 		setFormErrorMessage(form, translations['ajaxHangPost']);
@@ -348,26 +370,26 @@ function submitModalForm(form) {
 	}
 
 	var jsonString = JSON.stringify(getFormData(form));
-	
+
 	changeModalFormState(form, true, true, true);
-	
-	var csrfToken = $("meta[name='_csrf']").attr("content"); 
+
+	var csrfToken = $("meta[name='_csrf']").attr("content");
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
-	
+
 	$.ajax({
-		type: "POST",
-		contentType: "application/json",
-		url: form.attr("action"),
-		data: jsonString,
-		dataType: "json",
-		timeout: 10000,
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader(csrfHeader, csrfToken);
-        },
-		success: function(data) {
+		type : "POST",
+		contentType : "application/json",
+		url : form.attr("action"),
+		data : jsonString,
+		dataType : "json",
+		timeout : 10000,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		success : function(data) {
 			modalFormSuccess(form, data);
 		},
-		error: function(data) {
+		error : function(data) {
 			modalFormError(form, data);
 		}
 	});
@@ -375,62 +397,199 @@ function submitModalForm(form) {
 
 function initModal(modal) {
 	var item = $('#' + modal.attr("id").substring(6));
-	
+
 	modal.on('shown.bs.modal', function(e) {
 		afterOpenModal($(item));
 	});
-	
+
 	modal.on('hide.bs.modal', function(e) {
 		beforeCloseModal($(item));
 	});
 }
 
-function sortListbox(listbox) {
-	console.log("Sorting: " + listbox.text());
-	var options = listbox.find(".text");
-	console.log(options);
-	var arr = options.map(function(_, o) {
-		return {
-			t : $(o).text(),
-			v : o.value
-		};
-	}).get();
-	console.log(arr);
-	arr.sort(function(o1, o2) {
-		if (o1.t == "") { return -1; }
-		if (o2.t == "") { return 1; }
-		
-		return o1.t.toUpperCase() > o2.t.toUpperCase() ? 1
-				: o1.t.toUpperCase() < o2.t.toUpperCase() ? -1 : 0;
+function removeTableErrorMessage(dt) {
+	var parent = findParentWithClass($(dt.table().node()), "dataTables_wrapper");
+
+	if (parent == null) {
+		return;
+	}
+	parent.find(".errorHolder").html("");
+}
+
+function setTableErrorMessage(dt, message) {
+	var parent = findParentWithClass($(dt.table().node()), "dataTables_wrapper");
+
+	if (parent == null) {
+		return;
+	}
+	var errHolder = parent.find(".errorHolder");
+	var errDiv = errHolder.find(".alert-danger");
+	if (!errDiv.length) {
+		errHolder.append('<div class="alert alert-danger">' + message
+				+ '</div>');
+	} else {
+		errDiv.append('<br/>' + message);
+	}
+}
+
+
+function dataTablesAjaxSuccess(dt, data) {
+	dt.ajax.reload(null, false);
+	if (data.responseClass == "INFO") {
+		return;
+	}
+	if (data.errors) {
+		data.errors.forEach(function(item, i, arr) {
+			setTableErrorMessage(dt, item);
+		});
+	}
+}
+
+function dataTablesAjaxError(dt, data) {
+	if (data.statusText = "error" && data.status != 0) {
+		if (data.status == 403) {
+			setTableErrorMessage(dt, translations['forbidden']);
+		} else {
+			setTableErrorMessage(dt, translations['ajaxErr'].replace("{0}",
+					data.status));
+		}
+	} else {
+		setTableErrorMessage(dt, translations['ajaxHangPost']);
+	}
+}
+
+function dataTablesSelected(dt, refCol, selector) {
+	var refData = [];
+	dt.rows({
+		selected : true
+	}).data().each(function(d) {
+		refData.push(d[refCol]);
 	});
-	console.log("Sorted: ", arr);
-	options.each(function(i, o) {
-		o.value = arr[i].v;
-		$(o).text(arr[i].t);
+	
+	if (selector == 'selectedSingle') {
+		return refData[0];
+	}
+	
+	return refData;
+}
+
+function dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, selector) {
+	var refData = dataTablesSelected(dt, refCol, selector);
+	
+	var csrfToken = $("meta[name='_csrf']").attr("content");
+	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	
+	$.ajax({
+		type : ajaxMethod,
+		contentType : "application/json",
+		url : ajaxAddress,
+		data : JSON.stringify(refData),
+		dataType : "json",
+		timeout : 10000,
+		beforeSend : function(xhr) {
+			if (ajaxMethod !== 'GET') {
+				xhr.setRequestHeader(csrfHeader, csrfToken);
+			}
+		},
+		success : function(data) {
+			dataTablesAjaxSuccess(dt, data);
+		},
+		error : function(data) {
+			dataTablesAjaxError(dt, data);
+		}
 	});
 }
 
 function initDatatables(table) {
-	var buttonsAjax = table.attr('ajaxButtonSource');
-	
-	if (typeof buttonsAjax !== 'undefined') {
-		$.ajax({
-			type: "GET",
-			contentType: "application/json",
-			url: buttonsAjax,
-			dataType: "json",
-			timeout: 10000,
-			success: function(data) {
-				initDatatablesWithButtons(table, data);
-			},
-			error: function(data) {
-				console.log(data);
-				initDatatablesWithButtons(table, { buttons : [] });
+	var buttonDiv = $('#' + table.attr('id') + '_buttons');
+	var buttons = [];
+	buttonDiv.find('button').each(function() {
+		var button = $(this);
+
+		var func = function(e, dt, node, config) {
+			console.warn("Unknown action: " + button.attr("action"));
+		}
+		var action = button.attr("action").split(":");
+		if (action.length > 1 && action[0] == "form") {
+			var form = $('#' + action[1]);
+			var refCol = action[2];
+
+			if (typeof form.attr("id") == 'undefined') {
+				console.warn("Form not found: " + action[1]);
 			}
+
+			if (typeof form.attr("fetchFrom") !== 'undefined') {
+				if (typeof refCol === 'undefined') {
+					refCol = "id";
+				}
+				func = function(e, dt, node, config) {
+					removeTableErrorMessage(dt);
+					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")));
+					showModalForm(form);
+				}
+			} else {
+				func = function(e, dt, node, config) {
+					removeTableErrorMessage(dt);
+					beforeOpenModal(form);
+					if (typeof refCol !== 'undefined') {
+						var refData = dataTablesSelected(dt, refCol, button.attr("extend"));
+						form.find('input[name="' + refCol + '"]').val(refData);
+					}
+					showModalForm(form);
+				}
+			}
+		} else if (action.length > 1 && action[0] == "ajax") {
+			var ajaxMethod = action[1];
+			var ajaxAddress = action[2];
+			var refCol = action[3];
+			if (typeof refCol === 'undefined') {
+				refCol = "id";
+			}
+
+			var confirmation = button.attr("confirmation");
+			if (typeof confirmation !== 'undefined') {
+				func = function(e, dt, node, config) {
+					removeTableErrorMessage(dt);
+					bootbox.confirm({
+						animate : false,
+						title : translations['confTitle'],
+						message : confirmation,
+						buttons : {
+							confirm : {
+								label : translations['confOK'],
+								className : 'btn btn-primary'
+							},
+							cancel : {
+								label : translations['confCancel'],
+								className : 'btn'
+							}
+						},
+						backdrop : true,
+						closeButton : false,
+						callback : function(result) {
+							if (result) {
+								dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, button.attr("extend"));
+							}
+						}
+					});
+				}
+			} else {
+				func = function(e, dt, node, config) {
+					removeTableErrorMessage(dt);
+					dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
+				}
+			}
+		}
+
+		buttons.push({
+			text : button.text(),
+			className : button.attr("class"),
+			extend : button.attr("extend"),
+			action : func
 		});
-	} else {
-		initDatatablesWithButtons(table, { buttons : [] });
-	}
+	});
+	buttonDiv.remove();
+	initDatatablesWithButtons(table, buttons);
 }
 
 function initDatatablesWithButtons(table, buttons) {
@@ -442,9 +601,10 @@ function initDatatablesWithButtons(table, buttons) {
 			name : cd.attr("mapping")
 		});
 	});
-	
+
 	var dataTable = table.DataTable({
-		dom : "<'row'<'col-sm-6'l><'col-sm-6'f>>" 
+		dom : "<'row'<'col-sm-12 errorHolder'>>"
+				+ "<'row'<'col-sm-6'l><'col-sm-6'f>>"
 				+ "<'row'<'col-sm-12'B>>"
 				+ "<'row'<'col-sm-12'tr>>"
 				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -452,15 +612,15 @@ function initDatatablesWithButtons(table, buttons) {
 		columns : columnDefs,
 		buttons : {
 			dom : {
-				container: {
-		            tag: 'div',
-		            className: 'button-item'
-		        }
+				container : {
+					tag : 'div',
+					className : 'button-item'
+				}
 			},
-			buttons : buttons.buttons
+			buttons : buttons
 		},
 		select : true
 	});
-	
+
 	dataTable.column("id:name").visible(false);
 }

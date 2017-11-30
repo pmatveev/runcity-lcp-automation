@@ -1,11 +1,8 @@
 package org.runcity.mvc.web.formdata;
 
 import org.runcity.mvc.rest.util.RestGetResponseBody;
-import org.runcity.mvc.web.util.ColumnDefinition;
-import org.runcity.mvc.web.util.FormIdColumn;
 
 public abstract class AbstractForm extends RestGetResponseBody implements ValidatedForm {
-	protected FormIdColumn id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 	protected String formName;
 	protected String formTitle;
 	protected String urlOnOpenAjax;
@@ -18,23 +15,6 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 		this.urlOnOpenAjax = urlOnOpenAjax;
 		this.urlOnSubmit = urlOnSubmit;
 		this.urlOnSubmitAjax = urlOnSubmitAjax;
-	}
-
-	protected AbstractForm(Long id, String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax) {
-		this(formName, urlOnOpenAjax, urlOnSubmit, urlOnSubmitAjax);
-		this.id.setValue(id);
-	}
-
-	public Long getId() {
-		return id.getValue();
-	}
-
-	public void setId(Long id) {
-		this.id.setValue(id);
-	}
-	
-	public FormIdColumn getIdColumn() {
-		return id;
 	}
 
 	public String getTitle() {

@@ -1,64 +1,61 @@
 package org.runcity.mvc.web.util;
 
-import java.util.LinkedList;
-import java.util.List;
+public class ButtonDefinition {
+	private String text;
+	private String confirmation;
+	private String className;
+	private String action;
+	private String extend;
 
-import org.runcity.mvc.rest.util.RestGetResponseBody;
-import org.runcity.mvc.rest.util.Views;
-import org.springframework.context.MessageSource;
-
-import com.fasterxml.jackson.annotation.JsonView;
-
-public class ButtonDefinition extends RestGetResponseBody {
-	@JsonView(Views.Public.class)
-	private List<Button> buttons = new LinkedList<Button>();
-		
-	public class Button {
-		@JsonView(Views.Public.class)
-		private String text;
-		
-		@JsonView(Views.Public.class)
-		private String className;
-		
-		@JsonView(Views.Public.class)
-		private String action;
-
-		@JsonView(Views.Public.class)
-		private String extend;
-
-		public Button(String text, String className, String action, String extend) {
-			this.text = messageSource.getMessage(text, null, locale);
-			this.className = className;
-			this.action = action;
-			this.extend = extend;
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public String getClassName() {
-			return className;
-		}
-
-		public String getAction() {
-			return action;
-		}
-
-		public String getExtend() {
-			return extend;
-		}
+	public ButtonDefinition() {
 	}
 
-	public ButtonDefinition(MessageSource messageSource) {
-		super(messageSource);
+	public ButtonDefinition(String text, String confirmation, String className, String action, String extend) {
+		this.text = text;
+		this.confirmation = confirmation;
+		this.className = className;
+		this.action = action;
+		this.extend = extend;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 	
-	public List<Button> getButtons() {
-		return buttons;
+	public String getConfirmation() {
+		return confirmation;
+	}
+	
+	public void setConfirmation(String confirmation) {
+		this.confirmation = confirmation;
 	}
 
-	public void addButton(Button button) {
-		this.buttons.add(button);
+	public String getClassName() {
+		return className;
 	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getExtend() {
+		return extend;
+	}
+
+	public void setExtend(String extend) {
+		this.extend = extend;
+	}
+
 }

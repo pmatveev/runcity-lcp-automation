@@ -9,6 +9,10 @@ import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.ChangePasswordByIdForm;
+import org.runcity.mvc.web.formdata.ConsumerCreateForm;
+import org.runcity.mvc.web.formdata.ConsumerEditForm;
+import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
@@ -45,11 +49,11 @@ public class ConsumerTable extends AbstractTable {
 			this.username = StringUtils.xss(c.getUsername());
 			this.credentials = StringUtils.xss(c.getCredentials());
 			this.email = StringUtils.xss(c.getEmail());
-			this.active = FormListboxActiveColumn.getOptionDisplay(c.isActive().toString(), messageSource, l);
-
+			this.active = new FormListboxActiveColumn().getOptionDisplay(c.isActive().toString(), messageSource, l);
+			
 			List<String> rolesTmp = new LinkedList<String>();
 			for (ConsumerRole r : c.getRoles()) {
-				rolesTmp.add(FormListboxUserRoleColumn.getOptionDisplay(r.getCode(), messageSource, l));
+				rolesTmp.add(new FormListboxUserRoleColumn().getOptionDisplay(r.getCode(), messageSource, l));
 			}
 			Collections.sort(rolesTmp);
 			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, l));
@@ -88,7 +92,16 @@ public class ConsumerTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("active", "user.active"));
 		this.columns.add(new ColumnDefinition("roles", "user.roles"));
 		this.ajaxData = "/api/v1/consumerTable";
-		this.ajaxButtons = "/api/v1/consumerTableButtons";
+
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:consumerCreateForm", null));
+		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:consumerEditForm:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/consumerDelete/:id", "selected"));
+		this.buttons.add(new ButtonDefinition("changePassword.header", null, "btn", "form:changePasswordByIdForm:id", "selected"));
+
+		this.relatedForms.add(new ConsumerCreateForm());
+		this.relatedForms.add(new ConsumerEditForm());
+		this.relatedForms.add(new ChangePasswordByIdForm());
+		
 		this.id = "consumerTable";
 	}
 	

@@ -1,6 +1,5 @@
 package org.runcity.mvc.web;
 
-import org.runcity.mvc.web.formdata.ConsumerEditForm;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +15,8 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
-		ConsumerEditForm form = new ConsumerEditForm();
-		model.addAttribute(form.getFormName(), form);
-		
 		ConsumerTable table = new ConsumerTable();
-		model.addAttribute(table.getId(), table);
+		table.processModel(model);
 		
 		return "/secure/home";
 	}

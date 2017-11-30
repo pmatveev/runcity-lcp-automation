@@ -23,6 +23,7 @@
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
 <spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
 <spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
@@ -42,6 +43,7 @@
 <link rel='stylesheet' href='${runcityCss}'></link>
 <script type="text/javascript" src="${jqueryJs}"></script>
 <script type="text/javascript" src="${bootstrapJs}"></script>
+<script type="text/javascript" src="${bootboxJs}"></script>
 <script type="text/javascript" src="${bootstrapSelectJs}"></script>
 <script type="text/javascript" src="${dtMainJs}"></script>
 <script type="text/javascript" src="${dtJs}"></script>
@@ -85,26 +87,25 @@
 		}));
 
 	var translations = {
-		required : '<fmt:message key="validation.required" bundle="${msg}" />',
-		passwordStrength : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
-		passwordMatch : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
-		invalidEmail : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
-		minLen : '<fmt:message key="validation.minLength" bundle="${msg}" />',
-		maxLen : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
-		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
-		ajaxHangGet : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
-		ajaxHangPost : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
-		reload : '<fmt:message key="common.reload" bundle="${msg}" />',
-		forbidden : '<fmt:message key="common.forbidden" bundle="${msg}" />'
+		required           : '<fmt:message key="validation.required" bundle="${msg}" />',
+		passwordStrength   : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
+		passwordMatch      : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
+		invalidEmail       : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
+		minLen             : '<fmt:message key="validation.minLength" bundle="${msg}" />',
+		maxLen             : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
+		ajaxErr            : '<fmt:message key="ajax.error" bundle="${msg}" />',
+		ajaxHangGet        : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
+		ajaxHangPost       : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
+		reload             : '<fmt:message key="common.reload" bundle="${msg}" />',
+		forbidden          : '<fmt:message key="common.forbidden" bundle="${msg}" />',
+		confTitle          : '<fmt:message key="confirmation.title" bundle="${msg}" />',
+		confCancel         : '<fmt:message key="confirmation.cancel" bundle="${msg}" />',
+		confOK             : '<fmt:message key="confirmation.ok" bundle="${msg}" />'
 	}
 	
 	$(document).ready(function() {
 		$(".modal").each(function() {
 			initModal($(this));
-		});
-		
-		$(".dropdown-menu .inner").each(function() {
-			sortListbox($(this));		
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {

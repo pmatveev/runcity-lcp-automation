@@ -5,9 +5,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="runcity" uri="/WEB-INF/runcity.tld"%>
 
-<c:set value="${consumerSelfEditForm}" var="formVar"/>
-
-<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${consumerTable}">	
+<c:set value="${consumerCreateForm}" var="formVar"/>
+<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}">	
 	<runcity:form-body modal="${modal}">
 	<div class="errorHolder">
 		<form:errors cssClass="alert alert-danger" element="div"/>
@@ -23,10 +22,30 @@
 		<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />	
 	</spring:bind>
 
+	<c:set value="${formVar.passwordColumn}" var="col"/>
+	<spring:bind path="${col.name}">
+		<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>		
+	</spring:bind>
+
+	<c:set value="${formVar.password2Column}" var="col"/>
+	<spring:bind path="${col.name}">
+		<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>		
+	</spring:bind>	
+
 	<c:set value="${formVar.emailColumn}" var="col"/>
 	<spring:bind path="${col.name}">
-		<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />		
+		<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 	</spring:bind>
+	
+	<c:set value="${formVar.activeColumn}" var="col"/>
+	<spring:bind path="${col.name}">
+		<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
+	</spring:bind>	
+	
+	<c:set value="${formVar.rolesColumn}" var="col"/>
+	<spring:bind path="${col.name}">
+		<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
+	</spring:bind>	
 	
 	</runcity:form-body>
 	<runcity:form-footer modal="${modal}">

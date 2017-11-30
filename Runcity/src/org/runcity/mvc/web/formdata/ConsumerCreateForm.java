@@ -5,76 +5,62 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
-import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
-import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
+import org.runcity.mvc.web.util.FormPasswordColumn;
+import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
+import org.runcity.mvc.web.util.FormPasswordPair;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
-import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
-import com.fasterxml.jackson.annotation.JsonView;
+public class ConsumerCreateForm extends AbstractForm {
+	private static final Logger logger = Logger.getLogger(ConsumerCreateForm.class);
 
-public class ConsumerEditForm extends AbstractForm {
-	private static final Logger logger = Logger.getLogger(ConsumerEditForm.class);
-
-	@JsonView(Views.Public.class)
-	protected FormIdColumn id;
-
-	@JsonView(Views.Public.class)
 	private FormStringColumn username;
 
-	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
 
-	@JsonView(Views.Public.class)
+	private FormStringColumn password;
+
+	private FormStringColumn password2;
+
 	private FormStringColumn email;
 
-	@JsonView(Views.Public.class)
 	private FormListboxActiveColumn active;
 
-	@JsonView(Views.Public.class)
 	private FormListboxUserRoleColumn roles;
 
-	public ConsumerEditForm() {
-		super("consumerEditForm", "/api/v1/consumerEdit/{0}", null, "/api/v1/consumerEdit");
+	public ConsumerCreateForm() {
+		super("consumerCreateForm", null, null, "/api/v1/consumerCreate");
 		logger.trace("Creating form " + getFormName());
-		setTitle("common.edit");
-		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
+		setTitle("common.create");
 		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
 				true, 4, 32);
+
+		FormPasswordPair passwords = new FormPasswordPair(
+				new FormPasswordColumn(this, new ColumnDefinition("password", "user.password"), true),
+				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "user.password2"), true));
+
+		this.password = passwords.getPassword();
+		this.password2 = passwords.getPasswordConfirmation();
 
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
 		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"), true);
 	}
 
-	public ConsumerEditForm(Long id, String username, String credentials, String email, boolean active,
-			List<String> roles) {
+	public ConsumerCreateForm(String username, String credentials, String email, boolean active, List<String> roles) {
 		this();
-		this.id.setValue(id);
 		this.username.setValue(username);
 		this.credentials.setValue(credentials);
 		this.email.setValue(email);
 		this.active.setValue(active);
 		this.roles.setValue(roles);
-	}
-
-	public ConsumerEditForm(Consumer c) {
-		this(c.getId(), c.getUsername(), c.getCredentials(), c.getEmail(), c.isActive(), c.getStringRoles());
-	}
-
-	public Long getId() {
-		return id.getValue();
-	}
-
-	public void setId(Long id) {
-		this.id.setValue(id);
 	}
 
 	public String getUsername() {
@@ -91,6 +77,22 @@ public class ConsumerEditForm extends AbstractForm {
 
 	public void setCredentials(String credentials) {
 		this.credentials.setValue(credentials);
+	}
+
+	public String getPassword() {
+		return password.getValue();
+	}
+
+	public void setPassword(String password) {
+		this.password.setValue(password);
+	}
+
+	public String getPassword2() {
+		return password2.getValue();
+	}
+
+	public void setPassword2(String password2) {
+		this.password2.setValue(password2);
 	}
 
 	public String getEmail() {
@@ -117,16 +119,20 @@ public class ConsumerEditForm extends AbstractForm {
 		this.roles.setValue(roles);
 	}
 
-	public FormIdColumn getIdColumn() {
-		return id;
-	}
-
 	public FormStringColumn getUsernameColumn() {
 		return username;
 	}
 
 	public FormStringColumn getCredentialsColumn() {
 		return credentials;
+	}
+
+	public FormStringColumn getPasswordColumn() {
+		return password;
+	}
+
+	public FormStringColumn getPassword2Column() {
+		return password2;
 	}
 
 	public FormStringColumn getEmailColumn() {
@@ -146,42 +152,28 @@ public class ConsumerEditForm extends AbstractForm {
 		logger.debug("Validating " + getFormName());
 		username.validate(errors);
 		credentials.validate(errors);
+		password.validate(errors);
+		password2.validate(errors);
 		email.validate(errors);
 		active.validate(errors);
 		roles.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 
-		if (getId() == null) {
-			// new record not supported in this form
-			logger.warn("unexpected id: " + id.getSafeValue());
-			errors.reject("common.popupProcessError");
-			return;
-		} else {
-			// editing existing record
-			Consumer current = consumerService.selectById(getId());
-			if (current == null) {
-				logger.warn("unexpected id: " + id.getSafeValue());
-				errors.reject("common.popupProcessError");
-				return;
-			}
+		// creating new record
+		if (consumerService.selectByUsername(username.getValue()) != null) {
+			logger.debug(username.getName() + " is not unique");
+			errors.rejectValue(username.getName(), "validation.userExists");
+		}
 
-			if (!StringUtils.isEqual(current.getUsername(), username.getValue())
-					&& consumerService.selectByUsername(username.getValue()) != null) {
-				logger.debug(username.getName() + " changed but not unique");
-				errors.rejectValue(username.getName(), "validation.userExists");
-			}
-
-			if (!StringUtils.isEqual(current.getEmail(), email.getValue())
-					&& consumerService.selectByEmail(email.getValue()) != null) {
-				logger.debug(email.getName() + " changed but not unique");
-				errors.rejectValue(email.getName(), "validation.emailExists");
-			}
+		if (consumerService.selectByEmail(email.getValue()) != null) {
+			logger.debug(email.getName() + " is not unique");
+			errors.rejectValue(email.getName(), "validation.emailExists");
 		}
 	}
 
 	public Consumer getConsumer() {
-		Consumer c = new Consumer(getId(), getUsername(), getActive(), null, getCredentials(), getEmail(), null);
+		Consumer c = new Consumer(null, getUsername(), getActive(), getPassword(), getCredentials(), getEmail(), null);
 		for (String s : getRoles()) {
 			c.addRole(s);
 		}

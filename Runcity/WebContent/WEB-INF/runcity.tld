@@ -61,6 +61,13 @@
 			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
 			<fragment>false</fragment>
 		</attribute>
+		<attribute>
+			<name>relatedTable</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>false</required>
+			<type>org.runcity.mvc.web.tabledata.AbstractTable</type>
+			<fragment>false</fragment>
+		</attribute>
 	</tag>
 	<tag>
 		<name>form-body</name>
