@@ -1,10 +1,13 @@
 package org.runcity.db.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.util.CollectionUtils;
+import org.runcity.util.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
@@ -31,7 +34,7 @@ public class Consumer {
 	@Column(name = "email", length = 255, unique = true, nullable = false)
 	private String email;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "consumer")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "consumer", orphanRemoval = true)
 	private List<ConsumerRole> roles;
 
 	public Consumer() {
@@ -42,10 +45,27 @@ public class Consumer {
 		this.id = id;
 		this.username = username;
 		this.active = active;
-		this.passHash = new BCryptPasswordEncoder(10).encode(password);
+		if (password != null) {
+			this.passHash = new BCryptPasswordEncoder(10).encode(password);
+		}
 		this.credentials = credentials;
 		this.email = email;
 		this.roles = roles;
+		if (this.roles == null) {
+			this.roles = new ArrayList<ConsumerRole>();
+		}
+	}
+
+	public void update(Consumer c) {
+		this.username = c.username;
+		this.active = c.active;
+		if (c.passHash != null) {
+			this.passHash = c.passHash;
+		}
+		this.credentials = c.credentials;
+		this.email = c.email;
+
+		CollectionUtils.applyChanges(roles, c.roles);
 	}
 
 	public Long getId() {
@@ -100,8 +120,34 @@ public class Consumer {
 		return roles;
 	}
 
-	public void setRoles(List<ConsumerRole> roles) {
-		this.roles = roles;
+	public void addRole(ConsumerRole role) {
+		roles.add(role);
 	}
 
+	public void addRole(String code) {
+		addRole(new ConsumerRole(null, code, this));
+	}
+
+	public List<String> getStringRoles() {
+		List<String> str = new ArrayList<String>();
+		for (ConsumerRole r : roles) {
+			str.add(r.getCode());
+		}
+		return str;
+	}
+	
+	@Override
+	public int hashCode() {
+		return username.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Consumer)) {
+			return false;
+		}
+
+		Consumer c = (Consumer) o;
+		return StringUtils.isEqual(username, c.username);
+	}
 }

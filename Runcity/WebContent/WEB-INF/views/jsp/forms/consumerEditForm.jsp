@@ -6,7 +6,7 @@
 <%@ taglib prefix="runcity" uri="/WEB-INF/runcity.tld"%>
 
 <c:set value="${consumerEditForm}" var="formVar"/>
-<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}">	
+<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}">	
 	<runcity:form-body modal="${modal}">
 	<div class="errorHolder">
 		<form:errors cssClass="alert alert-danger" element="div"/>

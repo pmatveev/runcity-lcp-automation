@@ -3,6 +3,7 @@ package org.runcity.db.entity;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "consumer_role")
@@ -16,7 +17,7 @@ public class ConsumerRole {
 	@Column(name = "code", length = 32, nullable = false)
 	private String code;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "consumer__id", nullable = false)
 	private Consumer consumer;
 
@@ -51,5 +52,20 @@ public class ConsumerRole {
 
 	public void setConsumer(Consumer consumer) {
 		this.consumer = consumer;
+	}
+	
+	@Override
+	public int hashCode() {
+		return  (code + consumer.getId()).hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ConsumerRole)) {
+			return false;
+		}
+		
+		ConsumerRole r = (ConsumerRole) o;
+		return StringUtils.isEqual(code, r.code) && consumer.getId().equals(r.consumer.getId());
 	}
 }

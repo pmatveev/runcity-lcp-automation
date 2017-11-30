@@ -43,6 +43,10 @@ public class ConsumerSelfEditForm extends AbstractForm {
 		this.credentials.setValue(credentials);
 		this.email.setValue(email);
 	}
+	
+	public ConsumerSelfEditForm(Consumer c) {
+		this(c.getUsername(), c.getCredentials(), c.getEmail());
+	}
 
 	public String getUsername() {
 		return username.getValue();

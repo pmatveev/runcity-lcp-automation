@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -16,24 +17,46 @@
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
+<spring:url value="/resources/css/dataTables.bootstrap.min.css" var="dtCss" />
+<spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
+<spring:url value="/resources/css/fixedHeader.bootstrap.min.css" var="dtFixedHeaderCss" />
+<spring:url value="/resources/css/select.bootstrap.min.css" var="dtSelectCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
+<spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
+<spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
+<spring:url value="/resources/js/dataTables.buttons.min.js" var="dtButtonsMainJs" />
+<spring:url value="/resources/js/buttons.bootstrap.min.js" var="dtButtonsJs" />
+<spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
+<spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'></link>
 <link rel='stylesheet' href='${bootstrapThemeCss}'></link>
 <link rel='stylesheet' href='${bootstrapSelectCss}'></link>
+<link rel='stylesheet' href='${dtCss}'></link>
+<link rel='stylesheet' href='${dtButtonsCss}'></link>
+<link rel='stylesheet' href='${dtFixedHeaderCss}'></link>
+<link rel='stylesheet' href='${dtSelectCss}'></link>
 <link rel='stylesheet' href='${runcityCss}'></link>
-<script src="${jqueryJs}"></script>
-<script src="${bootstrapJs}"></script>
-<script src="${bootstrapSelectJs}"></script>
-<script src="${runcityJs}"></script>
+<script type="text/javascript" src="${jqueryJs}"></script>
+<script type="text/javascript" src="${bootstrapJs}"></script>
+<script type="text/javascript" src="${bootboxJs}"></script>
+<script type="text/javascript" src="${bootstrapSelectJs}"></script>
+<script type="text/javascript" src="${dtMainJs}"></script>
+<script type="text/javascript" src="${dtJs}"></script>
+<script type="text/javascript" src="${dtButtonsMainJs}"></script>
+<script type="text/javascript" src="${dtButtonsJs}"></script>
+<script type="text/javascript" src="${dtFinedHeaderJs}"></script>
+<script type="text/javascript" src="${dtSelectJs}"></script>
+<script type="text/javascript" src="${runcityJs}"></script>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
 </head>
-<script>
+<script type="text/javascript">
 	(function (root, factory) {
 		  if (typeof define === 'function' && define.amd) {
 		    // AMD. Register as an anonymous module unless amdModuleId is set
@@ -65,32 +88,45 @@
 		}));
 
 	var translations = {
-		required : '<fmt:message key="validation.required" bundle="${msg}" />',
-		passwordStrength : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
-		passwordMatch : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
-		invalidEmail : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
-		minLen : '<fmt:message key="validation.minLength" bundle="${msg}" />',
-		maxLen : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
-		ajaxErr : '<fmt:message key="ajax.error" bundle="${msg}" />',
-		ajaxHangGet : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
-		ajaxHangPost : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
-		reload : '<fmt:message key="common.reload" bundle="${msg}" />',
-		forbidden : '<fmt:message key="common.forbidden" bundle="${msg}" />'
+		datatablesEmptyTable     : '<fmt:message key="datatables.emptyTable" bundle="${msg}" />',
+		datatablesInfo           : '<fmt:message key="datatables.info" bundle="${msg}" />',
+		datatablesInfoEmpty      : '<fmt:message key="datatables.infoEmpty" bundle="${msg}" />',
+		datatablesInfoFiltered   : '<fmt:message key="datatables.infoFiltered" bundle="${msg}" />',
+		datatablesLengthMenu     : '<fmt:message key="datatables.lengthMenu" bundle="${msg}" />',
+		datatablesLoadingRecords : '<fmt:message key="datatables.loadingRecords" bundle="${msg}" />',
+		datatablesProcessing     : '<fmt:message key="datatables.processing" bundle="${msg}" />',
+		datatablesSearch         : '<fmt:message key="datatables.search" bundle="${msg}" />',
+		datatablesZeroRecords    : '<fmt:message key="datatables.zeroRecords" bundle="${msg}" />',
+		datatablesPFirst         : '<fmt:message key="datatables.pFirst" bundle="${msg}" />',
+		datatablesPLast          : '<fmt:message key="datatables.pLast" bundle="${msg}" />',
+		datatablesPNext          : '<fmt:message key="datatables.pNext" bundle="${msg}" />',
+		datatablesPPrevios       : '<fmt:message key="datatables.pPrevios" bundle="${msg}" />',
+		datatablesASortA         : '<fmt:message key="datatables.aSortA" bundle="${msg}" />',
+		datatablesASortD         : '<fmt:message key="datatables.aSortD" bundle="${msg}" />',
+		required                 : '<fmt:message key="validation.required" bundle="${msg}" />',
+		passwordStrength         : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
+		passwordMatch            : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
+		invalidEmail             : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
+		minLen                   : '<fmt:message key="validation.minLength" bundle="${msg}" />',
+		maxLen                   : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
+		ajaxErr                  : '<fmt:message key="ajax.error" bundle="${msg}" />',
+		ajaxHangGet              : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
+		ajaxHangPost             : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
+		reload                   : '<fmt:message key="common.reload" bundle="${msg}" />',
+		forbidden                : '<fmt:message key="common.forbidden" bundle="${msg}" />',
+		confTitle                : '<fmt:message key="confirmation.title" bundle="${msg}" />',
+		confCancel               : '<fmt:message key="confirmation.cancel" bundle="${msg}" />',
+		confOK                   : '<fmt:message key="confirmation.ok" bundle="${msg}" />'
 	}
 	
 	$(document).ready(function() {
 		$(".modal").each(function() {
-				var modal = $(this);
-				var item = $('#' + modal.attr("id").substring(6));
-				
-				modal.on('shown.bs.modal', function(e) {
-					afterOpenModal($(item));
-				});
-				
-				modal.on('hide.bs.modal', function(e) {
-					beforeCloseModal($(item));
-				});
+			initModal($(this));
 		});
+		$.fn.dataTable.ext.errMode = 'throw';
+		$("table.datatables").each(function() {
+			initDatatables($(this));
+		})
 	});
 </script>
 <body>
@@ -99,8 +135,6 @@
 			<div class="navbar-header">
 				<p class="navbar-brand">Runcity</p>
 			</div>
-			<ul class="nav navbar-nav">
-			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<spring:url value="/register" var="goRegister"/>
 				<spring:url value="/login" var="goLogin"/>

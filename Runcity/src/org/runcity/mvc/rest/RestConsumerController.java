@@ -1,5 +1,7 @@
 package org.runcity.mvc.rest;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
@@ -9,13 +11,14 @@ import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.validator.FormValidator;
-import org.runcity.mvc.web.formdata.AbstractForm;
-import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
-import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
+import org.runcity.mvc.web.formdata.*;
+import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -70,6 +73,29 @@ public class RestConsumerController {
 		result.setResponseClass(RestResponseClass.INFO);
 		return result;
 	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/changePasswordById", method = RequestMethod.POST)
+	public RestPostResponseBody changePasswordById(@RequestBody ChangePasswordByIdForm form) {
+		logger.info("POST /api/v1/changePasswordById");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+
+		try {
+			consumerService.updateConsumerPassword(form.getId(), form.getPassword());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+		}
+
+		result.setResponseClass(RestResponseClass.INFO);
+		return result;
+	}	
 
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/consumerSelfEdit", method = RequestMethod.GET)
@@ -84,12 +110,12 @@ public class RestConsumerController {
 			return result;
 		}
 
-		return new ConsumerSelfEditForm(c.getUsername(), c.getCredentials(), c.getEmail());
+		return new ConsumerSelfEditForm(c);
 	}
 
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/consumerSelfEdit", method = RequestMethod.POST)
-	public RestPostResponseBody ConsumerSelfEdit(@RequestBody ConsumerSelfEditForm form) {
+	public RestPostResponseBody consumerSelfEdit(@RequestBody ConsumerSelfEditForm form) {
 		logger.info("POST /api/v1/consumerSelfEdit");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -105,5 +131,107 @@ public class RestConsumerController {
 			result.addCommonError("common.popupProcessError");
 		}
 		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerCreate", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody consumerCreate(@RequestBody ConsumerCreateForm form) {
+		logger.info("POST /api/v1/consumerCreate");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Consumer c = null;
+		try {
+			c = consumerService.addNewConsumer(form.getConsumer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;
+		}
+		if (c == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerEdit/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initConsumerEditForm(@PathVariable Long id) {
+		logger.info("GET /api/v1/consumerSelfEdit/" + id);
+
+		Consumer c = consumerService.selectById(id);
+		if (c == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new ConsumerEditForm(c);
+	}
+
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerEdit", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody consumerEdit(@RequestBody ConsumerEditForm form) {
+		logger.info("POST /api/v1/consumerEdit");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Consumer c = null;
+		try {
+			c = consumerService.editConsumer(form.getConsumer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;
+		}
+		if (c == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerDelete", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody consumerDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/consumerDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		
+		try {
+			consumerService.deleteConsumer(id);
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;
+		}
+		
+		return result;		
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
+	public ConsumerTable getConsumerTable() {
+		logger.info("GET /api/v1/consumerTable");
+		ConsumerTable table = new ConsumerTable(messageSource);
+		table.fetchAll(consumerService);
+		return table;
 	}
 }
