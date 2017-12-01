@@ -139,14 +139,16 @@
 					<span class="icon-bar"></span> 
 					<span class="icon-bar"></span>
 				</button>
-				<p class="navbar-brand">Runcity</p>
+				<spring:url value="/secure/home" var="goHome"/>
+				<a href="${goHome}" role="button" class="navbar-brand"><fmt:message key="common.brand" bundle="${msg}" /></a>
 			</div>
 			<div class="nav collapse navbar-collapse" id="mainNav">
 				<sec:authorize access="isAuthenticated()">
 					<ul class="nav navbar-nav">
 						<sec:authorize ifAllGranted="ROLE_ADMIN">
+							<spring:url value="/secure/users" var="goUsers"/>
 							<li><a href="#" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a></li>
-							<li><a href="#" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
+							<li><a href="${goUsers}" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
 						</sec:authorize>
 						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
 							<li><a href="#" role="button"><fmt:message key="menu.control" bundle="${msg}" /></a></li>

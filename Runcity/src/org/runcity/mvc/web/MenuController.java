@@ -14,10 +14,15 @@ public class MenuController {
 	}
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
-	public String home(Model model) {
+	public String home() {
+		return "/secure/home";
+	}
+	
+	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)
+	public String users(Model model) {
 		ConsumerTable table = new ConsumerTable();
 		table.processModel(model);
 		
-		return "/secure/home";
+		return "/secure/users";
 	}
 }
