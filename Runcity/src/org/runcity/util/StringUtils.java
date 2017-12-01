@@ -66,7 +66,8 @@ public class StringUtils {
 		return sb.toString();
 	}
 	
-	public static String xss(String s) {
+	public static String xss(Object o) {
+		String s = o == null ? "" : o.toString();
 		return s.replace("<", "&lt;").replace(">", "&gt;");
 	}
 }

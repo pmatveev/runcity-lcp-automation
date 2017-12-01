@@ -1,5 +1,7 @@
 package org.runcity.mvc.web.util;
 
+import java.text.MessageFormat;
+
 import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.StringUtils;
@@ -23,7 +25,7 @@ public abstract class FormColumn<T> {
 	}
 	
 	public String getLabel() {
-		return definition.getLabel();
+		return MessageFormat.format(definition.getLabel(), definition.getSubstitution());
 	}
 	
 	public T getValue() {

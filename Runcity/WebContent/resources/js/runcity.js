@@ -643,6 +643,7 @@ function initDatatablesWithButtons(table, buttons) {
 		        "sortDescending": translations['datatablesASortD']
 		    }
 		},
+		order : [],
 		select : true
 	});
 

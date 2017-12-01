@@ -1,5 +1,6 @@
 package org.runcity.jsp;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 import javax.servlet.jsp.JspException;
@@ -45,33 +46,35 @@ public class FormTableTag extends TagSupport {
 		TagWriter tagWriter = new TagWriter(pageContext);
 
 		// buttons div - to be destroyed by JS
-		tagWriter.startTag("div");
-		tagWriter.writeAttribute("style", "display: none;");
-		tagWriter.writeAttribute("id", table.getId() + "_buttons");
-
-		for (ButtonDefinition b : table.getButtons()) {
-			tagWriter.startTag("button");
-			tagWriter.writeOptionalAttributeValue("class", b.getClassName());
-			tagWriter.writeOptionalAttributeValue("extend", b.getExtend());
-			if (b.getAction() == null || !b.getAction().startsWith("ajax")) {
-				tagWriter.writeOptionalAttributeValue("action", b.getAction());
-			} else {
-				// need to correct URL
-				String[] action = b.getAction().split(":");
-				if (action.length > 2) {
-					processUrl(action[2], "ajaxButton");
-					action[2] = (String) pageContext.getAttribute("ajaxButton");
-					tagWriter.writeOptionalAttributeValue("action", StringUtils.toString(Arrays.asList(action), ":", null));
+		if (table.getButtons().size() > 0) {
+			tagWriter.startTag("div");
+			tagWriter.writeAttribute("style", "display: none;");
+			tagWriter.writeAttribute("id", table.getId() + "_buttons");
+	
+			for (ButtonDefinition b : table.getButtons()) {
+				tagWriter.startTag("button");
+				tagWriter.writeOptionalAttributeValue("class", b.getClassName());
+				tagWriter.writeOptionalAttributeValue("extend", b.getExtend());
+				if (b.getAction() == null || !b.getAction().startsWith("ajax")) {
+					tagWriter.writeOptionalAttributeValue("action", b.getAction());
+				} else {
+					// need to correct URL
+					String[] action = b.getAction().split(":");
+					if (action.length > 2) {
+						processUrl(action[2], "ajaxButton");
+						action[2] = (String) pageContext.getAttribute("ajaxButton");
+						tagWriter.writeOptionalAttributeValue("action", StringUtils.toString(Arrays.asList(action), ":", null));
+					}
+				}			
+				if (b.getConfirmation() != null) {
+					tagWriter.writeOptionalAttributeValue("confirmation", bundle.getResourceBundle().getString(b.getConfirmation()));
 				}
-			}			
-			if (b.getConfirmation() != null) {
-				tagWriter.writeOptionalAttributeValue("confirmation", bundle.getResourceBundle().getString(b.getConfirmation()));
+				tagWriter.appendValue(bundle.getResourceBundle().getString(b.getText()));
+				tagWriter.endTag();
 			}
-			tagWriter.appendValue(bundle.getResourceBundle().getString(b.getText()));
+	
 			tagWriter.endTag();
 		}
-
-		tagWriter.endTag();
 
 		tagWriter.startTag("h1");
 		tagWriter.appendValue(bundle.getResourceBundle().getString(table.getTitle()));
@@ -91,7 +94,7 @@ public class FormTableTag extends TagSupport {
 			tagWriter.startTag("th");
 			tagWriter.writeAttribute("mapping", cd.getName());
 			if (cd.getLabel() != null) {
-				tagWriter.appendValue(bundle.getResourceBundle().getString(cd.getLabel()));
+				tagWriter.appendValue(MessageFormat.format(bundle.getResourceBundle().getString(cd.getLabel()), cd.getSubstitution()));
 			}
 			tagWriter.endTag();
 		}

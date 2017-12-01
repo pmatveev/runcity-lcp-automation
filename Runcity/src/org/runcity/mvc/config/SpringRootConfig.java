@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ public class SpringRootConfig {
 	private static final String PROP_DATABASE_PASSWORD = "db.password";
 	private static final String PROP_DATABASE_URL = "db.url";
 	private static final String PROP_DATABASE_USERNAME = "db.username";
+	private static final String PROP_LANGLIST = "runcity.langlist";
 	private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
 	private static final String PROP_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 	private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
@@ -65,6 +67,22 @@ public class SpringRootConfig {
 		transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
 
 		return transactionManager;
+	}
+	
+	@Bean
+	public DynamicLocaleList getLocaleList() {
+		DynamicLocaleList localeList = new DynamicLocaleList();
+		
+		String[] locales = env.getRequiredProperty(PROP_LANGLIST).split(",");
+		if (locales.length % 2 != 0) {
+			throw new RuntimeException(PROP_LANGLIST + " has incorrect format");
+		}
+		
+		for (int i = 0; i < locales.length; i += 2) {
+			localeList.addLocale(locales[i], locales[i + 1]);
+		}
+		
+		return localeList;
 	}
 
 	private Properties getHibernateProperties() {

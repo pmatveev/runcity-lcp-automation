@@ -7,7 +7,6 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.util.CollectionUtils;
-import org.runcity.util.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
@@ -38,10 +37,12 @@ public class Consumer {
 	private List<ConsumerRole> roles;
 
 	public Consumer() {
+		this.roles = new ArrayList<ConsumerRole>();
 	}
 
 	public Consumer(Long id, String username, Boolean active, String password, String credentials, String email,
 			List<ConsumerRole> roles) {
+		this();
 		this.id = id;
 		this.username = username;
 		this.active = active;
@@ -50,9 +51,8 @@ public class Consumer {
 		}
 		this.credentials = credentials;
 		this.email = email;
-		this.roles = roles;
-		if (this.roles == null) {
-			this.roles = new ArrayList<ConsumerRole>();
+		if (roles != null) {
+			this.roles = roles;
 		}
 	}
 
@@ -134,20 +134,5 @@ public class Consumer {
 			str.add(r.getCode());
 		}
 		return str;
-	}
-	
-	@Override
-	public int hashCode() {
-		return username.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Consumer)) {
-			return false;
-		}
-
-		Consumer c = (Consumer) o;
-		return StringUtils.isEqual(username, c.username);
 	}
 }

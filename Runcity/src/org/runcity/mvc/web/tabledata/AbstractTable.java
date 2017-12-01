@@ -18,13 +18,15 @@ public abstract class AbstractTable extends RestGetResponseBody {
 	protected List<ButtonDefinition> buttons = new LinkedList<ButtonDefinition>();
 	protected List<AbstractForm> relatedForms = new LinkedList<AbstractForm>();
 	
-	protected AbstractTable(String title) {
+	protected AbstractTable(String id, String title, String ajaxData) {
 		super();
+		this.id = id;
 		this.title = title;
+		this.ajaxData = ajaxData;
 	}
 	
-	protected AbstractTable(String title, MessageSource messageSource) {
-		this(title);
+	protected AbstractTable(String id, String title, String ajaxData, MessageSource messageSource) {
+		this(id, title, ajaxData);
 		super.setMessageSource(messageSource);
 	}
 	

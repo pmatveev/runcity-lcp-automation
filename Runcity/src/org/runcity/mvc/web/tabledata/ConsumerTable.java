@@ -45,7 +45,7 @@ public class ConsumerTable extends AbstractTable {
 		private String roles;
 
 		public TableRow(Consumer c, MessageSource messageSource, Locale l) {
-			this.id = StringUtils.xss(c.getId().toString());
+			this.id = StringUtils.xss(c.getId());
 			this.username = StringUtils.xss(c.getUsername());
 			this.credentials = StringUtils.xss(c.getCredentials());
 			this.email = StringUtils.xss(c.getEmail());
@@ -84,16 +84,15 @@ public class ConsumerTable extends AbstractTable {
 		}
 	}
 
-	public ConsumerTable() {
-		super("user.tableHeader");
+	public ConsumerTable(String ajaxData) {
+		super("consumerTable", "user.tableHeader", ajaxData);
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
 		this.columns.add(new ColumnDefinition("credentials", "user.credentials"));
 		this.columns.add(new ColumnDefinition("email", "user.email"));
 		this.columns.add(new ColumnDefinition("active", "user.active"));
 		this.columns.add(new ColumnDefinition("roles", "user.roles"));
-		this.ajaxData = "/api/v1/consumerTable";
-
+		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:consumerCreateForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:consumerEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/consumerDelete/:id", "selected"));
@@ -102,12 +101,10 @@ public class ConsumerTable extends AbstractTable {
 		this.relatedForms.add(new ConsumerCreateForm());
 		this.relatedForms.add(new ConsumerEditForm());
 		this.relatedForms.add(new ChangePasswordByIdForm());
-		
-		this.id = "consumerTable";
 	}
 	
-	public ConsumerTable(MessageSource messageSource) {
-		this();
+	public ConsumerTable(String ajaxData, MessageSource messageSource) {
+		this(null);
 		super.setMessageSource(messageSource);
 	}
 

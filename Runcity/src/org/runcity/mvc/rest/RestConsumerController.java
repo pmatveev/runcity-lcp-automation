@@ -10,13 +10,10 @@ import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
-import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,29 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
-public class RestConsumerController {
+public class RestConsumerController extends AbstractRestController {
 	private static final Logger logger = Logger.getLogger(RestConsumerController.class);
 
 	@Autowired
-	private FormValidator formValidator;
-
-	@Autowired
-	private MessageSource messageSource;
-
-	@Autowired
 	private ConsumerService consumerService;
-
-	private Errors validateForm(AbstractForm form, RestPostResponseBody result) {
-		Errors errors = new BindException(form, form.getFormName());
-		if (formValidator.supports(form.getClass())) {
-			formValidator.validate(form, errors);
-		}
-		if (errors.hasErrors()) {
-			result.setResponseClass(RestResponseClass.ERROR);
-			result.parseErrors(errors);
-		}
-		return errors;
-	}
 
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/changePasswordByPassword", method = RequestMethod.POST)
@@ -230,7 +209,7 @@ public class RestConsumerController {
 	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
 	public ConsumerTable getConsumerTable() {
 		logger.info("GET /api/v1/consumerTable");
-		ConsumerTable table = new ConsumerTable(messageSource);
+		ConsumerTable table = new ConsumerTable(null, messageSource);
 		table.fetchAll(consumerService);
 		return table;
 	}
