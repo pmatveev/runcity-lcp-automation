@@ -7,19 +7,14 @@ import org.springframework.context.MessageSource;
 public abstract class AbstractLocalizedTable extends AbstractTable {
 	protected DynamicLocaleList localeList;
 
-	protected AbstractLocalizedTable(String id, String title, String ajaxData, DynamicLocaleList localeList) {
-		super(id, title, ajaxData);
+	protected AbstractLocalizedTable(String id, String title, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
+		super(id, title, ajaxData, messageSource);
 		this.localeList = localeList;
 	}
 	
-	protected AbstractLocalizedTable(String id, String title, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		this(id, title, ajaxData, localeList);
-		super.setMessageSource(messageSource);
-	}
-	
 	protected void addLocalizedColumn(String name, String label) {
-		for (String l : localeList.keySet()) {
-			this.columns.add(new ColumnDefinition(name + "." + localeList.get(l), label, localeList.get(l)));
+		for (String l : localeList.locales()) {
+			this.columns.add(new ColumnDefinition(name + "." + l, null, label, messageSource.getMessage("locale." + l, null, locale)));
 		}
 	}
 }

@@ -9,6 +9,4 @@ public interface ConsumerRepository extends JpaRepository<Consumer, Long> {
 	public Consumer findByUsername(String username);
 
 	public Consumer findByEmail(String email);
-	
-	public Consumer findById(Long id);
 }

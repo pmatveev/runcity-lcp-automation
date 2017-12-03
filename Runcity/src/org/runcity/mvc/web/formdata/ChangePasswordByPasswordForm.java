@@ -46,9 +46,9 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 
 	public ChangePasswordByPasswordForm(String currPassword, String password, String password2) {
 		this();
-		this.currPassword.setValue(currPassword);
-		this.password.setValue(password);
-		this.password2.setValue(password2);
+		setCurrPassword(currPassword);
+		setPassword(password);
+		setPassword2(password2);
 	}
 
 	public String getCurrPassword() {

@@ -4,6 +4,7 @@ import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class MenuController {
+	@Autowired
+	protected MessageSource messageSource;
+	
 	@Autowired
 	private DynamicLocaleList localeList;
 	
@@ -20,13 +24,13 @@ public class MenuController {
 	}
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
-	public String home() {
+	public String home(Model model) {
 		return "/secure/home";
 	}
 	
 	@RequestMapping(value = "/secure/categories", method = RequestMethod.GET)
 	public String categories(Model model) {
-		CategoryTable table = new CategoryTable("/api/v1/categoryTable", localeList);
+		CategoryTable table = new CategoryTable("/api/v1/categoryTable", messageSource, localeList);
 		table.processModel(model);
 		
 		return "/secure/categories";

@@ -108,7 +108,13 @@ public class FormModalTag extends FormTag {
 		
 		setMethod("POST");
 		setModelAttribute(form.getFormName());
-		setAction(pageContext.getAttribute(form.getFormName() + "_formAction").toString());
+		
+		Object action = pageContext.getAttribute(form.getFormName() + "_formAction");
+		if (action != null) {
+			setAction(action.toString());
+		} else {
+			setAction(null);
+		}
 		setId(form.getHtmlId());
 		setOnsubmit(onSubmit);
 		if (modal) {

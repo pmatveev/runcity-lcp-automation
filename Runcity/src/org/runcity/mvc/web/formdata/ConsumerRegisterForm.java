@@ -36,11 +36,11 @@ public class ConsumerRegisterForm extends AbstractForm {
 
 	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email) {
 		this();
-		this.username.setValue(username);
-		this.credentials.setValue(credentials);
-		this.password.setValue(password);
-		this.password2.setValue(password2);
-		this.email.setValue(email);
+		setUsername(username);
+		setCredentials(credentials);
+		setPassword(password);
+		setPassword2(password2);
+		setEmail(email);
 	}
 
 	public String getPassword() {

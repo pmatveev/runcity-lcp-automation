@@ -74,12 +74,9 @@ public class SpringRootConfig {
 		DynamicLocaleList localeList = new DynamicLocaleList();
 		
 		String[] locales = env.getRequiredProperty(PROP_LANGLIST).split(",");
-		if (locales.length % 2 != 0) {
-			throw new RuntimeException(PROP_LANGLIST + " has incorrect format");
-		}
 		
-		for (int i = 0; i < locales.length; i += 2) {
-			localeList.addLocale(locales[i], locales[i + 1]);
+		for (int i = 0; i < locales.length; i ++) {
+			localeList.add(locales[i]);
 		}
 		
 		return localeList;

@@ -1,7 +1,9 @@
 package org.runcity.db.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 
@@ -58,6 +60,14 @@ public class Category {
 		return names;
 	}
 
+	public Map<String, String> getStringNames() {
+		Map<String, String> str = new HashMap<String, String>();
+		for (Translation t : names) {
+			str.put(t.getLocale(), t.getContent());
+		}
+		return str;
+	}
+	
 	public String getBgcolor() {
 		return bgcolor;
 	}

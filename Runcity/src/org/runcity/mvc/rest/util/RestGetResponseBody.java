@@ -21,9 +21,11 @@ public class RestGetResponseBody {
 	protected Locale locale = LocaleContextHolder.getLocale();
 
 	public RestGetResponseBody() {
+		responseClass = RestResponseClass.INFO;
 	}
 	
 	public RestGetResponseBody(MessageSource messageSource) {
+		this();
 		this.messageSource = messageSource;
 	}
 	

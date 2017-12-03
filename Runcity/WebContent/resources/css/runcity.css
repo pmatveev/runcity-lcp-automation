@@ -44,3 +44,12 @@ h1, h2 {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.input-group-add-locale {
+	width: 50px;
+}
+
+.input-group-locale {
+	width: 100%;
+	margin-bottom: 5px;
+}

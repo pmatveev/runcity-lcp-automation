@@ -23,7 +23,7 @@ public class ConsumerEditForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerEditForm.class);
 
 	@JsonView(Views.Public.class)
-	protected FormIdColumn id;
+	private FormIdColumn id;
 
 	@JsonView(Views.Public.class)
 	private FormStringColumn username;
@@ -57,12 +57,12 @@ public class ConsumerEditForm extends AbstractForm {
 	public ConsumerEditForm(Long id, String username, String credentials, String email, boolean active,
 			List<String> roles) {
 		this();
-		this.id.setValue(id);
-		this.username.setValue(username);
-		this.credentials.setValue(credentials);
-		this.email.setValue(email);
-		this.active.setValue(active);
-		this.roles.setValue(roles);
+		setId(id);
+		setUsername(username);
+		setCredentials(credentials);
+		setEmail(email);
+		setActive(active);
+		setRoles(roles);
 	}
 
 	public ConsumerEditForm(Consumer c) {

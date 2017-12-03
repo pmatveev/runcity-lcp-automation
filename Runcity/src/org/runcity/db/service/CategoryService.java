@@ -8,6 +8,9 @@ import org.springframework.security.access.annotation.Secured;
 
 public interface CategoryService {
 	@Secured("ROLE_ADMIN")
+	public Category selectById(Long id);
+	
+	@Secured("ROLE_ADMIN")
 	public List<Category> selectAll();
 	
 	@Secured("ROLE_ADMIN")

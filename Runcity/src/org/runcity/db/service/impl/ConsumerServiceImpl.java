@@ -48,7 +48,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public Consumer selectById(Long id) {
-		return consumerRepository.findById(id);
+		return consumerRepository.findOne(id);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	private void deleteConsumer(Long id) throws DBException {
 		try {
-			Consumer c = consumerRepository.findById(id);
+			Consumer c = consumerRepository.findOne(id);
 			consumerRepository.delete(c);
 			persistedLoginsRepository.deleteConsumer(c.getUsername());
 		} catch (Throwable t) {

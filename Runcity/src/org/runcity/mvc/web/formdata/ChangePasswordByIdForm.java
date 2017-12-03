@@ -43,9 +43,9 @@ public class ChangePasswordByIdForm extends AbstractForm {
 
 	public ChangePasswordByIdForm(List<Long> id, String password, String password2) {
 		this();
-		this.id.setValue(id);
-		this.password.setValue(password);
-		this.password2.setValue(password2);
+		setId(id);
+		setPassword(password);
+		setPassword2(password2);
 	}
 
 	public List<Long> getId() {

@@ -1,6 +1,7 @@
 package org.runcity.jsp;
 
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
@@ -11,6 +12,7 @@ import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdListColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
+import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.StringUtils;
 import org.springframework.web.servlet.tags.form.ErrorsTag;
@@ -52,6 +54,11 @@ public class FormInputTag extends TagSupport {
 		
 		if (column instanceof FormStringColumn) {
 			writeStringColumn((FormStringColumn) column);
+			return SKIP_BODY;
+		}
+		
+		if (column instanceof FormLocalizedStringColumn) {
+			writeLocalizedStringColumn((FormLocalizedStringColumn) column);
 			return SKIP_BODY;
 		}
 		
@@ -129,6 +136,75 @@ public class FormInputTag extends TagSupport {
 		input.doStartTag();
 		input.doEndTag();
 		
+		writeErrors(tagWriter);
+		
+		tagWriter.endTag();
+	}
+	
+	private void writeLocalizedStringColumn(FormLocalizedStringColumn column) throws JspException {
+		String label = localize(column.getLabel());
+		TagWriter tagWriter = new TagWriter(pageContext);
+		
+		tagWriter.startTag("div");	
+		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
+
+		writeLabel(tagWriter, localize(column.getGroupLabel()));
+		
+		boolean autofocusAllowed = true;
+		for (String l : column.keySet()) {
+			String localeDisplay = localize("locale." + l);
+			tagWriter.startTag("div");
+			tagWriter.writeAttribute("class", "input-group input-group-locale");
+			
+			tagWriter.startTag("span");
+			tagWriter.writeAttribute("class", "input-group-addon input-group-add-locale");
+			tagWriter.writeAttribute("id", column.getHtmlId() + l);
+			tagWriter.appendValue(localeDisplay);
+			tagWriter.endTag();
+			
+			InputTag input = new InputTag();
+			input.setPath(column.getName() + "['" + l + "']");
+			input.setId(column.getHtmlId() + "." + l);
+			input.setCssClass("form-control");
+			// TODO
+			
+			String placeholder = MessageFormat.format(label, localeDisplay);
+			input.setDynamicAttribute(null, "placeholder", placeholder);
+			input.setDynamicAttribute(null, "aria-label", placeholder);
+			input.setDynamicAttribute(null, "aria-describedby", column.getHtmlId() + l);
+
+			if (!StringUtils.isEmpty(autofocus) && autofocusAllowed) {
+				input.setDynamicAttribute(null, "autofocus", autofocus);
+				autofocusAllowed = false;
+			}
+			
+			input.setPageContext(pageContext);
+			input.doStartTag();
+			input.doEndTag();
+			
+			tagWriter.endTag();
+		}
+		/*
+		InputTag input;
+		if (column.isPasswordValue()) {
+			input = new PasswordInputTag();
+		} else {
+			input = new InputTag();
+		}
+		input.setPath(column.getName());
+		input.setId(column.getHtmlId());
+		input.setCssClass("form-control");
+		input.setOnchange(column.getOnChange());
+		input.setDynamicAttribute(null, "placeholder", label);
+		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		if (!StringUtils.isEmpty(autofocus)) {
+			input.setDynamicAttribute(null, "autofocus", autofocus);
+		}
+		
+		input.setPageContext(pageContext);
+		input.doStartTag();
+		input.doEndTag();
+		*/
 		writeErrors(tagWriter);
 		
 		tagWriter.endTag();

@@ -19,6 +19,12 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
+	public Category selectById(Long id) {
+		return categoryRepository.findOne(id);
+	}
+	
+	@Override
+	@Secured("ROLE_ADMIN")
 	public List<Category> selectAll() {
 		return categoryRepository.findAll();
 	}
@@ -42,5 +48,4 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new DBException(t);
 		}
 	}
-
 }

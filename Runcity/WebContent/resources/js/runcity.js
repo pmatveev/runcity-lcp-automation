@@ -189,7 +189,14 @@ function modalFormOpenSuccess(form, data, recId) {
 
 		form.find("input").not('[type="submit"]').each(function() {
 			var elem = $(this);
-			elem.val(data[elem.attr("name")]);
+			var name = elem.attr("name");
+			var index = name.indexOf("['"); 
+			if (index == -1) {
+				elem.val(data[name]);
+			} else {
+				var to = name.substring(index + 2, name.length - 2);
+				elem.val(data[name.substring(0, index)][to]);
+			}
 		});
 		form.find("select").each(function() {
 			var elem = $(this);
@@ -231,6 +238,10 @@ function modalFormOpenError(form, data, recId) {
 function beforeOpenModalFetch(form, recId) {
 	beforeOpenModal(form);
 
+	if (typeof recId === 'undefined') {
+		return;
+	}
+	
 	changeModalFormState(form, true, true, false);
 
 	var jsonUrl = form.attr("fetchFrom").replace("{0}", recId);
@@ -459,6 +470,10 @@ function dataTablesAjaxError(dt, data) {
 }
 
 function dataTablesSelected(dt, refCol, selector) {
+	if (typeof refCol === 'undefined') {
+		return undefined;
+	}
+	
 	var refData = [];
 	dt.rows({
 		selected : true
@@ -519,9 +534,6 @@ function initDatatables(table) {
 			}
 
 			if (typeof form.attr("fetchFrom") !== 'undefined') {
-				if (typeof refCol === 'undefined') {
-					refCol = "id";
-				}
 				func = function(e, dt, node, config) {
 					removeTableErrorMessage(dt);
 					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")));

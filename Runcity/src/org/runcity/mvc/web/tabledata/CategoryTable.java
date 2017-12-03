@@ -9,6 +9,8 @@ import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Translation;
 import org.runcity.db.service.CategoryService;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
+import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
@@ -44,8 +46,8 @@ public class CategoryTable extends AbstractLocalizedTable {
 			this.name = localeList.prepareMap();
 			
 			for (Translation t : c.getNames()) {
-				if (localeList.containsKey(t.getLocale())) {
-					this.name.put(localeList.get(t.getLocale()), t.getContent());
+				if (localeList.contains(t.getLocale())) {
+					this.name.put(t.getLocale(), t.getContent());
 				}
 			}
 		}
@@ -62,17 +64,18 @@ public class CategoryTable extends AbstractLocalizedTable {
 			return "<span class='label' style='background-color: #" + bgcolor + "; color: #" + color + "'>" + prefix + "</span>";
 		}
 	}
-	
-	public CategoryTable(String ajaxData, DynamicLocaleList localeList) {
-		super("categoryTable", "category.tableHeader", ajaxData, localeList);
+
+	public CategoryTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
+		super("categoryTable", "category.tableHeader", ajaxData, messageSource, localeList);
+
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("prefix", "category.prefix"));
 		addLocalizedColumn("name", "category.name");
-	}
 
-	public CategoryTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		this(ajaxData, localeList);
-		super.setMessageSource(messageSource);
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
+		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
+		
+		this.relatedForms.add(new CategoryCreateEditForm(localeList));
 	}
 	
 	public void fetchAll(CategoryService service) {

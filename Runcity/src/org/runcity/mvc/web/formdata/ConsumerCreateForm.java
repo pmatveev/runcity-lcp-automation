@@ -56,11 +56,11 @@ public class ConsumerCreateForm extends AbstractForm {
 
 	public ConsumerCreateForm(String username, String credentials, String email, boolean active, List<String> roles) {
 		this();
-		this.username.setValue(username);
-		this.credentials.setValue(credentials);
-		this.email.setValue(email);
-		this.active.setValue(active);
-		this.roles.setValue(roles);
+		setUsername(username);
+		setCredentials(credentials);
+		setEmail(email);
+		setActive(active);
+		setRoles(roles);
 	}
 
 	public String getUsername() {
