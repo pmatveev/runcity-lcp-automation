@@ -162,16 +162,44 @@ function validateForm(form) {
 	return result;
 }
 
+function setInputValue(elem, val) {
+	if (elem.attr('name') != "_csrf") {
+		var dt = elem.attr('display-type');
+		
+		if (dt === 'colorpicker') {
+			if (typeof val !== 'undefined') {
+				elem.parent().colorpicker('setValue', val);
+			} else {
+				elem.parent().colorpicker('setValue', "");
+			}
+		} else {
+			if (typeof val !== 'undefined') {
+				elem.val(val);
+			} else {
+				elem.val("");
+			}
+		}
+	}
+}
+
 function beforeOpenModal(form) {
 	removeFormErrorMessage(form);
 	form.find("input").not('[type="submit"]').each(function() {
-		if (($(this)).attr('name') != "_csrf") {
-			$(this).val("");
-		}
-		removeErrorMessage($(this));
+		var elem = $(this);
+		var val = elem.attr('default');
+		setInputValue(elem, val);
+
+		removeErrorMessage(elem);
 	});
 	form.find("select").each(function() {
-		$(this).selectpicker('val', "");
+		var elem = $(this);
+		var val = elem.attr('default');
+		if (typeof val !== 'undefined') {
+			$(this).selectpicker('val', val);
+		} else {
+			$(this).selectpicker('val', "");
+		}
+		
 		removeErrorMessage($(this));
 	});
 }
@@ -192,10 +220,10 @@ function modalFormOpenSuccess(form, data, recId) {
 			var name = elem.attr("name");
 			var index = name.indexOf("['"); 
 			if (index == -1) {
-				elem.val(data[name]);
+				setInputValue(elem, data[name]);
 			} else {
 				var to = name.substring(index + 2, name.length - 2);
-				elem.val(data[name.substring(0, index)][to]);
+				setInputValue(elem, data[name.substring(0, index)][to]);
 			}
 		});
 		form.find("select").each(function() {

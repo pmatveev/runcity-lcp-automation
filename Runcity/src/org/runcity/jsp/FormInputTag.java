@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdListColumn;
@@ -116,11 +117,20 @@ public class FormInputTag extends TagSupport {
 
 		writeLabel(tagWriter, label);
 		
+		if (column instanceof FormColorPickerColumn) {
+			tagWriter.startTag("div");
+			tagWriter.writeAttribute("class", "input-group colorpicker-component");
+			tagWriter.appendValue("");
+		}
+		
 		InputTag input;
 		if (column.isPasswordValue()) {
 			input = new PasswordInputTag();
 		} else {
 			input = new InputTag();
+		}
+		if (column instanceof FormColorPickerColumn) {
+			input.setDynamicAttribute(null, "display-type", "colorpicker");
 		}
 		input.setPath(column.getName());
 		input.setId(column.getHtmlId());
@@ -128,6 +138,11 @@ public class FormInputTag extends TagSupport {
 		input.setOnchange(column.getOnChange());
 		input.setDynamicAttribute(null, "placeholder", label);
 		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		
+		if (column.getValue() != null) {
+			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+		
 		if (!StringUtils.isEmpty(autofocus)) {
 			input.setDynamicAttribute(null, "autofocus", autofocus);
 		}
@@ -135,6 +150,16 @@ public class FormInputTag extends TagSupport {
 		input.setPageContext(pageContext);
 		input.doStartTag();
 		input.doEndTag();
+
+		if (column instanceof FormColorPickerColumn) {
+			tagWriter.startTag("span");
+			tagWriter.writeAttribute("class", "input-group-addon");
+			tagWriter.startTag("i");
+			tagWriter.appendValue("");
+			tagWriter.endTag();
+			tagWriter.endTag();
+			tagWriter.endTag();
+		}
 		
 		writeErrors(tagWriter);
 		

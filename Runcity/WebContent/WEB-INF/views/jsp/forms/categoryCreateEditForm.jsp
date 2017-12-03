@@ -26,6 +26,16 @@
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
+		
+		<c:set value="${formVar.fontColorColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
+		</spring:bind>	
+		
+		<c:set value="${formVar.bgColorColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
+		</spring:bind>	
 	</runcity:form-body>
 	<runcity:form-footer modal="${modal}">
 		<div class="form-group">

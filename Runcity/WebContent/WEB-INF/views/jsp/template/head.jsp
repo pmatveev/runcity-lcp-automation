@@ -17,6 +17,7 @@
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
+<spring:url value="/resources/css/bootstrap-colorpicker.min.css" var="bootstrapColorCss" />
 <spring:url value="/resources/css/dataTables.bootstrap.min.css" var="dtCss" />
 <spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
 <spring:url value="/resources/css/fixedHeader.bootstrap.min.css" var="dtFixedHeaderCss" />
@@ -26,6 +27,7 @@
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 <spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
+<spring:url value="/resources/js/bootstrap-colorpicker.min.js" var="bootstrapColorJs" />
 <spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
 <spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
 <spring:url value="/resources/js/dataTables.buttons.min.js" var="dtButtonsMainJs" />
@@ -37,6 +39,7 @@
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
 <link rel='stylesheet' href='${bootstrapSelectCss}'/>
+<link rel='stylesheet' href='${bootstrapColorCss}'/>
 <link rel='stylesheet' href='${dtCss}'/>
 <link rel='stylesheet' href='${dtButtonsCss}'/>
 <link rel='stylesheet' href='${dtFixedHeaderCss}'/>
@@ -46,6 +49,7 @@
 <script type="text/javascript" src="${bootstrapJs}"></script>
 <script type="text/javascript" src="${bootboxJs}"></script>
 <script type="text/javascript" src="${bootstrapSelectJs}"></script>
+<script type="text/javascript" src="${bootstrapColorJs}"></script>
 <script type="text/javascript" src="${dtMainJs}"></script>
 <script type="text/javascript" src="${dtJs}"></script>
 <script type="text/javascript" src="${dtButtonsMainJs}"></script>
@@ -122,10 +126,15 @@
 		$(".modal").each(function() {
 			initModal($(this));
 		});
+		$(".colorpicker-component").colorpicker({
+			format : 'hex6', 
+			useAlpha : false,
+			useHashPrefix : false
+		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {
 			initDatatables($(this));
-		})
+		});
 	});
 </script>
 </head>

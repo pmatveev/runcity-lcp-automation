@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.runcity.db.entity.Category;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
+import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
@@ -28,6 +29,12 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 	@JsonView(Views.Public.class)
 	private FormPlainStringColumn prefix;
 	
+	@JsonView(Views.Public.class)
+	private FormColorPickerColumn fontColor;
+	
+	@JsonView(Views.Public.class)
+	private FormColorPickerColumn bgColor;
+	
 	public CategoryCreateEditForm() {
 		this(null);
 	}
@@ -38,17 +45,21 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this, new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, true, false, null, 32);
 		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), true, 1, 3);
+		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true, "000000");
+		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true, "ffffff");
 	}	
 	
-	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, DynamicLocaleList localeList) {
+	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setName(name);
 		setPrefix(prefix);
+		setFontColor(fontColor);
+		setBgColor(bgColor);
 	}
 	
 	public CategoryCreateEditForm(Category c, DynamicLocaleList localeList) {
-		this(c.getId(), c.getStringNames(), c.getPrefix(), localeList);
+		this(c.getId(), c.getStringNames(), c.getPrefix(), c.getColor(), c.getBgcolor(), localeList);
 	}
 
 	public Long getId() {
@@ -75,6 +86,22 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.prefix.setValue(prefix);
 	}
 	
+	public String getFontColor() {
+		return fontColor.getValue();
+	}
+	
+	public void setFontColor(String color) {
+		this.fontColor.setValue(color);
+	}
+	
+	public String getBgColor() {
+		return bgColor.getValue();
+	}
+	
+	public void setBgColor(String color) {
+		this.bgColor.setValue(color);
+	}
+	
 	public FormIdColumn getIdColumn() {
 		return id;
 	}
@@ -85,6 +112,14 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 	
 	public FormStringColumn getPrefixColumn() {
 		return prefix;
+	}
+	
+	public FormStringColumn getFontColorColumn() {
+		return fontColor;
+	}
+	
+	public FormStringColumn getBgColorColumn() {
+		return bgColor;
 	}
 
 	@Override
