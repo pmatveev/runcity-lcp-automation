@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.JstlView;
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(60*60*24*30);
 	}
 
 	@Bean
