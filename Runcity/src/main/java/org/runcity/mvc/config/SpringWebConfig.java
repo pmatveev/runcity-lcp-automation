@@ -33,7 +33,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource rb = new ResourceBundleMessageSource();
-		rb.setBasenames(new String[] { "/org/runcity/resources/i18n/main" });
+		rb.setBasenames(new String[] { "/i18n/main" });
 		return rb;
 	}
 }

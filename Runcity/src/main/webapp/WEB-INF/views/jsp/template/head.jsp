@@ -10,7 +10,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<fmt:setBundle basename="org.runcity.resources.i18n.main" var="msg" />
+<fmt:setBundle basename="i18n.main" var="msg" />
 
 <sec:csrfMetaTags />
 

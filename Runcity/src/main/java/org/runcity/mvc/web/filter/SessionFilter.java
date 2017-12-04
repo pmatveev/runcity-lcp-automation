@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -14,7 +15,10 @@ import org.apache.log4j.MDC;
 
 @WebFilter(urlPatterns = { "/*" }, description = "Session Checker Filter")
 public class SessionFilter implements Filter {
-
+	@Override
+	public void	init(FilterConfig filterConfig)  {
+	}
+	
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
@@ -26,4 +30,7 @@ public class SessionFilter implements Filter {
 		}
 	}
 
+	@Override
+	public void destroy() {
+	}
 }
