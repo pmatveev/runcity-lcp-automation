@@ -24,11 +24,10 @@ public class PersistentLogins {
 	}
 
 	public PersistentLogins(String username, String series, String token, Date lastUsed) {
-		super();
-		this.username = username;
-		this.series = series;
-		this.token = token;
-		this.lastUsed = lastUsed;
+		setUsername(username);
+		setSeries(series);
+		setToken(token);
+		setLastUsed(lastUsed);
 	}
 
 	public String getUsername() {

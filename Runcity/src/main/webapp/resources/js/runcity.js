@@ -74,6 +74,28 @@ function checkElem(elem, rule) {
 			return false;
 		}
 	}
+	
+	if (rule == "onerequired" || rule == "allrequired") {
+		var par = findParentWithClass(elem, "form-group");
+		var filled = 0;
+		var total = 0;
+		par.find("input").each(function(){
+			total++;
+			if ($(this).val().length > 0) {
+				filled++;
+			}
+		});
+		
+		if (rule == "onerequired" && filled == 0) {
+			setErrorMessage(elem, translations['oneRequired']);
+			return false;
+		}
+		
+		if (rule == "allrequired" && filled < total) {
+			setErrorMessage(elem, translations['allRequired']);
+			return false;			
+		}
+	}
 
 	if (rule.indexOf("min=") == 0) {
 		var len = Number(rule.substring(4));
@@ -333,6 +355,21 @@ function getFormData(form) {
 		var format = elem.attr('format');
 		if (format == 'array') {
 			res[elem.attr('name')] = elem.val().split(',');
+		} else if (format == 'langObj') {
+			var name = elem.attr('name');
+			var index = name.indexOf("['"); 
+			if (index >= 0) {
+				var obj = name.substring(0, index);
+				var to = name.substring(index + 2, name.length - 2);
+				
+				if (typeof res[obj] === 'undefined') {
+					res[obj] = {};
+				}
+				
+				res[obj][to] = elem.val();
+			} else {
+				res[elem.attr('name')] = elem.val();
+			}
 		} else {
 			res[elem.attr('name')] = elem.val();			
 		}
@@ -376,7 +413,13 @@ function modalFormSuccess(form, data) {
 	form.find("input,select").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		removeErrorMessage(elem);
-		var err = data.colErrors[elem.attr("name")];
+		var name = elem.attr("name");
+		var index = name.indexOf("['"); 
+		if (index >= 0) {
+			name = name.substring(0, index);
+		}
+		
+		var err = data.colErrors[name];
 		if (err) {
 			err.forEach(function(item, i, arr) {
 				setErrorMessage(elem, item);

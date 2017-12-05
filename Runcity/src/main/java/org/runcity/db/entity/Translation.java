@@ -5,11 +5,14 @@ import javax.persistence.*;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.util.DBEntity;
+import org.runcity.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 @Entity
 @Table(name = "translation")
-@FilterDefs(value = { @FilterDef(name = "category", defaultCondition = "ref_table='category'") })
-public class Translation {
+@FilterDefs(value = { @FilterDef(name = "category", defaultCondition = "ref_table='category' and ref_column='name'") })
+public class Translation implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -19,7 +22,10 @@ public class Translation {
 	@Column(name = "ref_table", length = 32, nullable = false)
 	private String refTable;
 
-	@Column(name = "ref_record", columnDefinition = "int", length = 18, nullable = false)
+	@Column(name = "ref_column", length = 32, nullable = false)
+	private String refCol;
+
+	@Column(name = "ref_record", columnDefinition = "int", length = 18)
 	private Long refRecord;
 
 	@Column(name = "locale", length = 32, nullable = false)
@@ -31,12 +37,13 @@ public class Translation {
 	public Translation() {
 	}
 
-	public Translation(Long id, String refTable, Long refRecord, String locale, String content) {
-		this.id = id;
-		this.refTable = refTable;
-		this.refRecord = refRecord;
-		this.locale = locale;
-		this.content = content;
+	public Translation(Long id, String refTable, String refCol, Long refRecord, String locale, String content) {
+		setId(id);
+		setRefTable(refTable);
+		setRefCol(refCol);
+		setRefRecord(refRecord);
+		setLocale(locale);
+		setContent(content);
 	}
 
 	public Long getId() {
@@ -53,6 +60,14 @@ public class Translation {
 
 	public void setRefTable(String refTable) {
 		this.refTable = refTable;
+	}
+
+	public String getRefCol() {
+		return refCol;
+	}
+
+	public void setRefCol(String refCol) {
+		this.refCol = refCol;
 	}
 
 	public Long getRefRecord() {
@@ -77,5 +92,22 @@ public class Translation {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	@Override
+	public int hashCode() {
+		return StringUtils.concatNvl(".", refTable, refCol, refRecord, locale, content).hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Translation)) {
+			return false;
+		}
+
+		Translation t = (Translation) o;
+		return StringUtils.isEqual(refTable, t.refTable) && StringUtils.isEqual(refCol, t.refCol)
+				&& ObjectUtils.nullSafeEquals(refRecord, t.refRecord) && StringUtils.isEqual(locale, t.locale)
+				&& StringUtils.isEqual(content, t.content);
 	}
 }

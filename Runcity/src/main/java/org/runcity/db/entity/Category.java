@@ -9,10 +9,13 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.util.DBEntity;
+import org.runcity.db.entity.util.TranslatedEntity;
+import org.runcity.util.CollectionUtils;
 
 @Entity
 @Table(name = "category")
-public class Category {
+public class Category extends TranslatedEntity<Category> implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -39,13 +42,27 @@ public class Category {
 
 	public Category(Long id, List<Translation> names, String bgcolor, String color, String prefix) {
 		this();
-		this.id = id;
-		this.bgcolor = bgcolor;
-		this.color = color;
-		this.prefix = prefix;
+		setId(id);
+		setBgcolor(bgcolor);
+		setColor(color);
+		setPrefix(prefix);
 		if (names != null) {
 			this.names = names;
 		}
+	}
+	
+	public void update(Category c) {
+		this.bgcolor = c.bgcolor;
+		this.color = c.color;
+		this.prefix = c.prefix;
+		
+		CollectionUtils.applyChanges(names, c.names);
+		updateRef(names, getId());
+	}
+
+	@Override
+	public Category cloneForAdd() {
+		return new Category(id, null, bgcolor, color, prefix);
 	}
 
 	public Long getId() {
@@ -54,12 +71,15 @@ public class Category {
 
 	public void setId(Long id) {
 		this.id = id;
+		for (Translation t : names) {
+			t.setRefRecord(id);
+		}
 	}
 
 	public List<Translation> getNames() {
 		return names;
 	}
-
+	
 	public Map<String, String> getStringNames() {
 		Map<String, String> str = new HashMap<String, String>();
 		for (Translation t : names) {
@@ -90,5 +110,13 @@ public class Category {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+	}
+	
+	public void addName(Translation t) {
+		names.add(t);
+	}
+	
+	public void addName(String locale, String name) {
+		addName(new Translation(null, "category", "name", getId(), locale, name));
 	}
 }

@@ -3,11 +3,13 @@ package org.runcity.db.entity;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.util.DBEntity;
+import org.runcity.util.ObjectUtils;
 import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "consumer_role")
-public class ConsumerRole {
+public class ConsumerRole implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -25,9 +27,9 @@ public class ConsumerRole {
 	}
 
 	public ConsumerRole(Long id, String code, Consumer consumer) {
-		this.id = id;
-		this.code = code;
-		this.consumer = consumer;
+		setId(id);
+		setCode(code);
+		setConsumer(consumer);
 	}
 
 	public Long getId() {
@@ -56,7 +58,7 @@ public class ConsumerRole {
 	
 	@Override
 	public int hashCode() {
-		return  (code + consumer.getId()).hashCode();
+		return (code + consumer.getId()).hashCode();
 	}
 	
 	@Override
@@ -66,6 +68,6 @@ public class ConsumerRole {
 		}
 		
 		ConsumerRole r = (ConsumerRole) o;
-		return StringUtils.isEqual(code, r.code) && consumer.getId().equals(r.consumer.getId());
+		return StringUtils.isEqual(code, r.code) && ObjectUtils.equals(consumer, r.consumer);
 	}
 }

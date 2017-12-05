@@ -78,6 +78,10 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.name.setValue(name);
 	}
 	
+	public void setName(String locale, String content) {
+		this.name.put(locale, content);
+	}
+	
 	public String getPrefix() {
 		return prefix.getValue();
 	}
@@ -128,6 +132,13 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		id.validate(errors);
 		name.validate(errors);
 		prefix.validate(errors);
-		// TODO
+	}
+	
+	public Category getCategory() {
+		Category c = new Category(getId(), null, getBgColor(), getFontColor(), getPrefix());
+		for (String s : getName().keySet()) {
+			c.addName(s, getName().get(s));
+		}
+		return c;
 	}
 }

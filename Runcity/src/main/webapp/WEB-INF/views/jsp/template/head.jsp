@@ -107,6 +107,8 @@
 		datatablesASortA         : '<fmt:message key="datatables.aSortA" bundle="${msg}" />',
 		datatablesASortD         : '<fmt:message key="datatables.aSortD" bundle="${msg}" />',
 		required                 : '<fmt:message key="validation.required" bundle="${msg}" />',
+		allRequired              : '<fmt:message key="validation.allRequired" bundle="${msg}" />',
+		oneRequired              : '<fmt:message key="validation.oneRequired" bundle="${msg}" />',
 		passwordStrength         : '<fmt:message key="validation.passwordStrength" bundle="${msg}" />',
 		passwordMatch            : '<fmt:message key="validation.passwordMatch" bundle="${msg}" />',
 		invalidEmail             : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',

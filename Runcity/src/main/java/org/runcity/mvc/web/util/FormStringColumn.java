@@ -26,6 +26,7 @@ public abstract class FormStringColumn extends FormColumn<String> {
 		this.value = value;
 	}
 
+	@Override
 	public void validate(Errors errors) {
 		super.validate(errors);
 

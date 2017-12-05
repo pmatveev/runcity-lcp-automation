@@ -66,7 +66,7 @@ public class RestConsumerController extends AbstractRestController {
 		}
 
 		try {
-			consumerService.updateConsumerPassword(form.getId(), form.getPassword());
+			consumerService.updatePassword(form.getId(), form.getPassword());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.db.fail");
@@ -127,7 +127,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		Consumer c = null;
 		try {
-			c = consumerService.addNewConsumer(form.getConsumer());
+			c = consumerService.add(form.getConsumer());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.db.fail");
@@ -172,7 +172,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		Consumer c = null;
 		try {
-			c = consumerService.editConsumer(form.getConsumer());
+			c = consumerService.update(form.getConsumer());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.db.fail");
@@ -194,7 +194,7 @@ public class RestConsumerController extends AbstractRestController {
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		
 		try {
-			consumerService.deleteConsumer(id);
+			consumerService.delete(id);
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.db.fail");

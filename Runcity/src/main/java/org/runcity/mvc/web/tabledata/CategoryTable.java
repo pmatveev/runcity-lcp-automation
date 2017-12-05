@@ -74,6 +74,7 @@ public class CategoryTable extends AbstractLocalizedTable {
 
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/categoryDelete/:id", "selected"));
 		
 		this.relatedForms.add(new CategoryCreateEditForm(localeList));
 	}

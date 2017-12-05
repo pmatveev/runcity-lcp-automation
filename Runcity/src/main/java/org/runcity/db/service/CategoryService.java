@@ -17,5 +17,5 @@ public interface CategoryService {
 	public Category addOrUpdate(Category c) throws DBException;
 	
 	@Secured("ROLE_ADMIN")
-	public void delete(Category c) throws DBException;
+	public void delete(List<Long> id) throws DBException;
 }

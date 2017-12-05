@@ -6,12 +6,13 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.CollectionUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "consumer")
-public class Consumer {
+public class Consumer implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -43,14 +44,16 @@ public class Consumer {
 	public Consumer(Long id, String username, Boolean active, String password, String credentials, String email,
 			List<ConsumerRole> roles) {
 		this();
-		this.id = id;
-		this.username = username;
-		this.active = active;
+		setId(id);
+		setUsername(username);
+		setActive(active);
+
 		if (password != null) {
-			this.passHash = new BCryptPasswordEncoder(10).encode(password);
+			setPassHash(new BCryptPasswordEncoder(10).encode(password));
 		}
-		this.credentials = credentials;
-		this.email = email;
+		
+		setCredentials(credentials);
+		setEmail(email);
 		if (roles != null) {
 			this.roles = roles;
 		}

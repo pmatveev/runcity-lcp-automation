@@ -183,20 +183,22 @@ public class FormInputTag extends TagSupport {
 			
 			tagWriter.startTag("span");
 			tagWriter.writeAttribute("class", "input-group-addon input-group-add-locale");
-			tagWriter.writeAttribute("id", column.getHtmlId() + l);
+			tagWriter.writeAttribute("id", "span_" + column.getHtmlId() + l);
 			tagWriter.appendValue(localeDisplay);
 			tagWriter.endTag();
 			
 			InputTag input = new InputTag();
 			input.setPath(column.getName() + "['" + l + "']");
-			input.setId(column.getHtmlId() + "." + l);
+			input.setId(column.getHtmlId() + l);
 			input.setCssClass("form-control");
-			// TODO
+			input.setDynamicAttribute(null, "format", "langObj");
+			input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+			input.setOnchange(column.getOnChange(l));
 			
 			String placeholder = MessageFormat.format(label, localeDisplay);
 			input.setDynamicAttribute(null, "placeholder", placeholder);
 			input.setDynamicAttribute(null, "aria-label", placeholder);
-			input.setDynamicAttribute(null, "aria-describedby", column.getHtmlId() + l);
+			input.setDynamicAttribute(null, "aria-describedby", "span_" + column.getHtmlId() + l);
 
 			if (!StringUtils.isEmpty(autofocus) && autofocusAllowed) {
 				input.setDynamicAttribute(null, "autofocus", autofocus);
@@ -209,27 +211,6 @@ public class FormInputTag extends TagSupport {
 			
 			tagWriter.endTag();
 		}
-		/*
-		InputTag input;
-		if (column.isPasswordValue()) {
-			input = new PasswordInputTag();
-		} else {
-			input = new InputTag();
-		}
-		input.setPath(column.getName());
-		input.setId(column.getHtmlId());
-		input.setCssClass("form-control");
-		input.setOnchange(column.getOnChange());
-		input.setDynamicAttribute(null, "placeholder", label);
-		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
-		if (!StringUtils.isEmpty(autofocus)) {
-			input.setDynamicAttribute(null, "autofocus", autofocus);
-		}
-		
-		input.setPageContext(pageContext);
-		input.doStartTag();
-		input.doEndTag();
-		*/
 		writeErrors(tagWriter);
 		
 		tagWriter.endTag();

@@ -33,7 +33,25 @@ public class CategoryServiceImpl implements CategoryService {
 	@Secured("ROLE_ADMIN")
 	public Category addOrUpdate(Category c) throws DBException {
 		try {
-			return categoryRepository.save(c); // TODO test
+			if (c.getId() != null) {
+				Category prev = selectById(c.getId());
+				prev.update(c);
+				return categoryRepository.save(prev);
+			} else {
+				Category n = c.cloneForAdd();
+				n = categoryRepository.save(n); 
+				n.update(c);
+				return categoryRepository.save(n); 
+			}
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
+	}
+	
+	private void delete(Long id) throws DBException {
+		try {
+			Category c = selectById(id);
+			categoryRepository.delete(c);
 		} catch (Throwable t) {
 			throw new DBException(t);
 		}
@@ -41,11 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public void delete(Category c) throws DBException {
-		try {
-			categoryRepository.delete(c); // TODO test
-		} catch (Throwable t) {
-			throw new DBException(t);
+	public void delete(List<Long> id) throws DBException {
+		for (Long i : id) {
+			delete(i);
 		}
 	}
 }

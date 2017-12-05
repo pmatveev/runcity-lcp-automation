@@ -53,7 +53,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public Consumer addNewConsumer(Consumer c) throws DBException {
+	public Consumer add(Consumer c) throws DBException {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
 		}
@@ -67,7 +67,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public Consumer editConsumer(Consumer c) throws DBException {
+	public Consumer update(Consumer c) throws DBException {
 		if (c.getId() == null) {
 			throw new UnexpectedArgumentException("Cannot create new user with this service");
 		}
@@ -87,9 +87,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
-	private void deleteConsumer(Long id) throws DBException {
+	private void delete(Long id) throws DBException {
 		try {
-			Consumer c = consumerRepository.findOne(id);
+			Consumer c = selectById(id);
 			consumerRepository.delete(c);
 			persistedLoginsRepository.deleteConsumer(c.getUsername());
 		} catch (Throwable t) {
@@ -98,9 +98,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Secured("ROLE_ADMIN")
-	public void deleteConsumer(List<Long> id) throws DBException {
+	public void delete(List<Long> id) throws DBException {
 		for (Long i : id) {
-			deleteConsumer(i);
+			delete(i);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	private Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
 		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
-		return editConsumer(c);
+		return update(c);
 	}
 
 	private SecureUserDetails getCurrentUser() {
@@ -139,7 +139,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		c.setCredentials(credentials);
 		c.setEmail(email);
 		try {
-			c = editConsumer(c);
+			c = update(c);
 
 			SecureUserDetails user = getCurrentUser();
 			user.setUsername(c.getUsername());
@@ -160,12 +160,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	public Consumer register(String username, String password, String credentials, String email) throws DBException {
 		Consumer c = new Consumer(null, username, true, password, credentials, email, null);
-		return addNewConsumer(c);
+		return add(c);
 	}
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public List<Consumer> updateConsumerPassword(List<Long> id, String newPassword) throws DBException {
+	public List<Consumer> updatePassword(List<Long> id, String newPassword) throws DBException {
 		List<Consumer> result = new ArrayList<Consumer>(id.size());
 		
 		for (Long i : id) {
