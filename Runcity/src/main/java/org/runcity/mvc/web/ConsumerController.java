@@ -4,10 +4,8 @@ import org.apache.log4j.Logger;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
-import org.runcity.mvc.web.formdata.ConsumerEditForm;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -107,12 +105,5 @@ public class ConsumerController {
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleException(Exception e) {
 		return exceptionHandler.handleException(e);
-	}
-	
-	//TODO
-	@RequestMapping(value="/secure/consumerEdit", method = RequestMethod.POST) 
-	@Secured("ADMIN_ROLE")
-	public String doConsumerEdit(@ModelAttribute("consumerEditForm") @Validated ConsumerEditForm form, BindingResult result, Model model, final RedirectAttributes redirectAttributes) {	
-		return "/secure/home";
 	}
 }

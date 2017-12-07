@@ -27,7 +27,7 @@ public class ConsumerTable extends AbstractTable {
 
 	protected class TableRow {
 		@JsonView(Views.Public.class)
-		private String id;
+		private Long id;
 
 		@JsonView(Views.Public.class)
 		private String username;
@@ -45,7 +45,7 @@ public class ConsumerTable extends AbstractTable {
 		private String roles;
 
 		public TableRow(Consumer c, MessageSource messageSource, Locale l) {
-			this.id = StringUtils.xss(c.getId());
+			this.id = c.getId();
 			this.username = StringUtils.xss(c.getUsername());
 			this.credentials = StringUtils.xss(c.getCredentials());
 			this.email = StringUtils.xss(c.getEmail());
@@ -59,7 +59,7 @@ public class ConsumerTable extends AbstractTable {
 			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, l));
 		}
 
-		public String getId() {
+		public Long getId() {
 			return id;
 		}
 

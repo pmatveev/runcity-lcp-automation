@@ -26,7 +26,7 @@ public class CategoryTable extends AbstractLocalizedTable {
 	
 	protected class TableRow {
 		@JsonView(Views.Public.class)
-		private String id;
+		private Long id;
 		
 		@JsonView(Views.Public.class)
 		private Map<String, String> name; 
@@ -38,7 +38,7 @@ public class CategoryTable extends AbstractLocalizedTable {
 		private String color;
 		
 		public TableRow(Category c, MessageSource messageSource, Locale l) {
-			this.id = StringUtils.xss(c.getId());
+			this.id = c.getId();
 			this.prefix = StringUtils.xss(c.getPrefix()) + DEFAULT_POSTFIX;
 			this.bgcolor = StringUtils.xss(c.getBgcolor());
 			this.color = StringUtils.xss(c.getColor());
@@ -52,7 +52,7 @@ public class CategoryTable extends AbstractLocalizedTable {
 			}
 		}
 
-		public String getId() {
+		public Long getId() {
 			return id;
 		}
 
