@@ -1,11 +1,14 @@
 package org.runcity.mvc.config;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,16 +23,18 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 @Configuration
 @EnableWebMvcSecurity
+@PropertySource("/WEB-INF/conf/app.properties")
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @ComponentScan({"org.runcity.db.service", "org.runcity.db.service.impl"})
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
-	private static final int REMEMBER_ME_SEC = 1209600;
-	
 	@Autowired
 	private DataSource dataSource;
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+
+	@Resource
+	private Environment env;
 
 	@Autowired
 	public void registerGlobalAuthentication(AuthenticationManagerBuilder auth) throws Exception {
@@ -66,7 +71,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.rememberMe()
 					.tokenRepository(persistentTokenRepository())
-					.tokenValiditySeconds(REMEMBER_ME_SEC)
+					.tokenValiditySeconds(new Integer(env.getRequiredProperty("runcity.rememberme_time")))
 			.and()
 				.exceptionHandling().accessDeniedHandler(new CommonAccessDeniedHandler("/403"));
 	}
