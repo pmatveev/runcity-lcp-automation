@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestGetResponseBody {
 	@JsonView(Views.Public.class)
-	private RestResponseClass responseClass= RestResponseClass.INFO;
+	private RestResponseClass responseClass;
 	
 	@JsonView(Views.Public.class)
 	private List<String> errors;
