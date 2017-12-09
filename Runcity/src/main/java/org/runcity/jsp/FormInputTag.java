@@ -10,6 +10,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormColumn;
+import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdListColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
@@ -65,6 +66,11 @@ public class FormInputTag extends TagSupport {
 		
 		if (column instanceof FormListboxColumn<?>) {
 			writeListboxColumn((FormListboxColumn<?>) column);
+			return SKIP_BODY;
+		}
+		
+		if (column instanceof FormDateColumn) {
+			writeDateColumn((FormDateColumn) column);
 			return SKIP_BODY;
 		}
 		
@@ -264,4 +270,72 @@ public class FormInputTag extends TagSupport {
 		
 		tagWriter.endTag();
 	}
+	
+	private void writeDateColumn(FormDateColumn column) throws JspException {
+		String label = localize(column.getLabel());
+		TagWriter tagWriter = new TagWriter(pageContext);
+		
+		tagWriter.startTag("div");	
+		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
+
+		writeLabel(tagWriter, label);
+		
+		// "display" input
+		tagWriter.startTag("div");
+		tagWriter.writeAttribute("class", "input-group date datepicker-component");
+		tagWriter.writeAttribute("data-date-format", localize("common.dateFormat"));
+		tagWriter.writeAttribute("data-link-field", column.getHtmlId());
+		tagWriter.writeAttribute("data-link-format", "ddmmyyyy");
+		if (Boolean.TRUE.equals(pageContext.getAttribute("modal"))) {
+			tagWriter.writeAttribute("data-date-container", "#modal_" + column.getFormHtmlId());
+		} else {
+			tagWriter.writeAttribute("data-date-container", "html");
+		}
+		
+		tagWriter.startTag("input");
+		tagWriter.writeAttribute("class", "form-control ignore-value");
+		tagWriter.writeAttribute("type", "text");
+		tagWriter.writeAttribute("placeholder", label);
+		if (!StringUtils.isEmpty(autofocus)) {
+			tagWriter.writeAttribute("autofocus", autofocus);
+		}
+		tagWriter.endTag();
+		
+		tagWriter.startTag("span");
+		tagWriter.writeAttribute("class", "input-group-addon");
+		tagWriter.startTag("span");
+		tagWriter.writeAttribute("class", "glyphicon glyphicon-remove");
+		tagWriter.appendValue("");
+		tagWriter.endTag();
+		tagWriter.endTag();
+		
+		tagWriter.startTag("span");
+		tagWriter.writeAttribute("class", "input-group-addon");
+		tagWriter.startTag("span");
+		tagWriter.writeAttribute("class", "glyphicon glyphicon-calendar");
+		tagWriter.endTag();
+		tagWriter.endTag();
+		
+		tagWriter.endTag();
+		
+		// actual input - contains data
+		InputTag input = new InputTag();
+
+		input.setPath(column.getName());
+		input.setId(column.getHtmlId());
+		input.setOnchange(column.getOnChange());
+		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		input.setDynamicAttribute(null, "type", "hidden");
+		if (column.getValue() != null) {
+			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+		
+		input.setPageContext(pageContext);
+		input.doStartTag();
+		input.doEndTag();
+		
+		writeErrors(tagWriter);
+		
+		tagWriter.endTag();
+	}	
 }

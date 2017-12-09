@@ -52,6 +52,10 @@ public abstract class FormColumn<T> {
 		return value.toString();
 	}
 	
+	public String getFormHtmlId() {
+		return form.getHtmlId();
+	}
+	
 	public String getHtmlId() {
 		return StringUtils.concatNvl("_", form.getFormName(), definition.getName());
 	}

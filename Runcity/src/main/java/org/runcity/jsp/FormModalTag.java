@@ -104,6 +104,9 @@ public class FormModalTag extends FormTag {
 			tagWriter.startTag("h1");
 			tagWriter.appendValue(localize(form.getTitle()));
 			tagWriter.endTag();
+			
+			tagWriter.startTag("div");
+			tagWriter.writeAttribute("id", "form_" + form.getHtmlId());
 		}
 		
 		setMethod("POST");
@@ -141,8 +144,10 @@ public class FormModalTag extends FormTag {
 			tagWriter.endTag();
 			tagWriter.endTag();
 			tagWriter.endTag();
+		} else {
+			tagWriter.endTag();
 		}
-		pageContext.setAttribute("written_" + form.getFormName(), Boolean.TRUE);
+		pageContext.setAttribute("written_" + form.getFormName() + (modal ? "_modal" : ""), Boolean.TRUE);
 		return result;
 	}
 }

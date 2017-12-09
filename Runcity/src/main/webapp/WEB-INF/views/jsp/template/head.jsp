@@ -13,10 +13,11 @@
 <fmt:setBundle basename="i18n.main" var="msg" />
 
 <sec:csrfMetaTags />
-
+<c:set value="${pageContext.response.locale.language}" var="lang"/>
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
+<spring:url value="/resources/css/bootstrap-datetimepicker.min.css" var="bootstrapDateCss" />
 <spring:url value="/resources/css/bootstrap-colorpicker.min.css" var="bootstrapColorCss" />
 <spring:url value="/resources/css/dataTables.bootstrap.min.css" var="dtCss" />
 <spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
@@ -27,6 +28,8 @@
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 <spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
+<spring:url value="/resources/js/bootstrap-datetimepicker.min.js" var="bootstrapDateJs" />
+<spring:url value="/resources/js/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
 <spring:url value="/resources/js/bootstrap-colorpicker.min.js" var="bootstrapColorJs" />
 <spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
 <spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
@@ -39,6 +42,7 @@
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
 <link rel='stylesheet' href='${bootstrapSelectCss}'/>
+<link rel='stylesheet' href='${bootstrapDateCss}'/>
 <link rel='stylesheet' href='${bootstrapColorCss}'/>
 <link rel='stylesheet' href='${dtCss}'/>
 <link rel='stylesheet' href='${dtButtonsCss}'/>
@@ -49,6 +53,8 @@
 <script type="text/javascript" src="${bootstrapJs}"></script>
 <script type="text/javascript" src="${bootboxJs}"></script>
 <script type="text/javascript" src="${bootstrapSelectJs}"></script>
+<script type="text/javascript" src="${bootstrapDateJs}"></script>
+<script type="text/javascript" src="${bootstrapDateJsLoc}" charset="UTF-8"></script>
 <script type="text/javascript" src="${bootstrapColorJs}"></script>
 <script type="text/javascript" src="${dtMainJs}"></script>
 <script type="text/javascript" src="${dtJs}"></script>
@@ -132,6 +138,9 @@
 			format : 'hex6', 
 			useAlpha : false,
 			useHashPrefix : false
+		});
+		$(".datepicker-component").each(function() {
+			initDatePicker($(this));
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {

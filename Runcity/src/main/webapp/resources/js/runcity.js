@@ -350,7 +350,7 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 function getFormData(form) {
 	var res = {};
 
-	form.find("input").not('[type="submit"]').each(function() {
+	form.find("input").not('[type="submit"]').not(".ignore-value").each(function() {
 		var elem = $(this);
 		var format = elem.attr('format');
 		if (format == 'array') {
@@ -731,4 +731,16 @@ function initDatatablesWithButtons(table, buttons) {
 	});
 
 	dataTable.column("id:name").visible(false);
+}
+
+function initDatePicker(elem) {
+	elem.datetimepicker({
+		language : "${lang}",
+		autoclose: true,
+		container: elem.attr('data-date-container'),
+		todayHighlight: true,
+		startView: 'month',
+		minView: 'month',
+		forceParse: true
+	});
 }

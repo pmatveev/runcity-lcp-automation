@@ -1,5 +1,6 @@
 package org.runcity.mvc.web;
 
+import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.util.DynamicLocaleList;
@@ -25,6 +26,8 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
+		GameCreateEditForm form = new GameCreateEditForm();
+		model.addAttribute(form.getFormName(), form);
 		return "/secure/home";
 	}
 	
