@@ -23,7 +23,6 @@ public class SessionFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		try {
-			req.setAttribute("locale", "en");
 			MDC.put("sessionId", ((HttpServletRequest) req).getSession().getId());
 			chain.doFilter(req, res);
 		} finally {
