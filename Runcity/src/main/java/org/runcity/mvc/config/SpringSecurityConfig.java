@@ -3,6 +3,7 @@ package org.runcity.mvc.config;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.runcity.mvc.config.util.CommonAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

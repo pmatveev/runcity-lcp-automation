@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -115,7 +114,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	private SecureUserDetails getCurrentUser() {
-		return (SecureUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return SecureUserDetails.getCurrent();
 	}
 
 	private Long getCurrentUserId() {
@@ -146,6 +145,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 			user.setUsername(c.getUsername());
 			user.setCredentials(c.getCredentials());
 			user.setEmail(c.getEmail());
+			user.setLocale(locale);
 
 			return c;
 		} catch (DBException e) {

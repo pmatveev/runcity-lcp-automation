@@ -8,6 +8,7 @@ import java.util.Set;
 import org.runcity.db.entity.ConsumerRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @SuppressWarnings("serial")
@@ -40,6 +41,11 @@ public class SecureUserDetails implements UserDetails {
 		this.roles = userRoles;
 	}
 
+	public static SecureUserDetails getCurrent() {
+		Object o = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
+	}
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return roles;

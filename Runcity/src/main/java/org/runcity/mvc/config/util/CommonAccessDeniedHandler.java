@@ -1,4 +1,4 @@
-package org.runcity.mvc.config;
+package org.runcity.mvc.config.util;
 
 import java.io.IOException;
 
