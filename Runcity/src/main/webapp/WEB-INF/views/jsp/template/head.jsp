@@ -38,9 +38,6 @@
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
-<spring:url value="/resources/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
-<spring:url value="/resources/i18n/datatables.${lang}.js" var="datatablesLoc" />
-
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
 <link rel='stylesheet' href='${bootstrapSelectCss}'/>
@@ -56,7 +53,6 @@
 <script type="text/javascript" src="${bootboxJs}"></script>
 <script type="text/javascript" src="${bootstrapSelectJs}"></script>
 <script type="text/javascript" src="${bootstrapDateJs}"></script>
-<script type="text/javascript" src="${bootstrapDateJsLoc}" charset="UTF-8"></script>
 <script type="text/javascript" src="${bootstrapColorJs}"></script>
 <script type="text/javascript" src="${dtMainJs}"></script>
 <script type="text/javascript" src="${dtJs}"></script>
@@ -65,6 +61,12 @@
 <script type="text/javascript" src="${dtFinedHeaderJs}"></script>
 <script type="text/javascript" src="${dtSelectJs}"></script>
 <script type="text/javascript" src="${runcityJs}"></script>
+
+<c:if test="${lang != 'en'}">
+	<spring:url value="/resources/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
+	<spring:url value="/resources/i18n/datatables.${lang}.js" var="datatablesLoc" />
+	<script type="text/javascript" src="${bootstrapDateJsLoc}" charset="UTF-8"></script>
+</c:if>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
 <script type="text/javascript">
