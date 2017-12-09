@@ -590,7 +590,7 @@ function dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, selector) {
 	});
 }
 
-function initDatatables(table) {
+function initDatatables(table, loc) {
 	var buttonDiv = $('#' + table.attr('id') + '_buttons');
 	var buttons = [];
 	buttonDiv.find('button').each(function() {
@@ -676,10 +676,10 @@ function initDatatables(table) {
 		});
 	});
 	buttonDiv.remove();
-	initDatatablesWithButtons(table, buttons);
+	initDatatablesWithButtons(table, buttons, loc);
 }
 
-function initDatatablesWithButtons(table, buttons) {
+function initDatatablesWithButtons(table, buttons, loc) {
 	var columnDefs = [];
 	table.find("th").each(function() {
 		var cd = $(this);
@@ -707,28 +707,7 @@ function initDatatablesWithButtons(table, buttons) {
 				+ "<'row'<'col-sm-12'tr>>"
 				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 		language : {
-		    "decimal":        "",
-		    "emptyTable":     translations['datatablesEmptyTable'],
-		    "info":           translations['datatablesInfo'],
-		    "infoEmpty":      translations['datatablesInfoEmpty'],
-		    "infoFiltered":   translations['datatablesInfoFiltered'],
-		    "infoPostFix":    "",
-		    "thousands":      ",",
-		    "lengthMenu":     translations['datatablesLengthMenu'],
-		    "loadingRecords": translations['datatablesLoadingRecords'],
-		    "processing":     translations['datatablesProcessing'],
-		    "search":         translations['datatablesSearch'],
-		    "zeroRecords":    translations['datatablesZeroRecords'],
-		    "paginate": {
-		        "first":      translations['datatablesPFirst'],
-		        "last":       translations['datatablesPLast'],
-		        "next":       translations['datatablesPNext'],
-		        "previous":   translations['datatablesPPrevios']
-		    },
-		    "aria": {
-		        "sortAscending":  translations['datatablesASortA'],
-		        "sortDescending": translations['datatablesASortD']
-		    }
+			url : loc
 		},
 		order : [],
 		select : true

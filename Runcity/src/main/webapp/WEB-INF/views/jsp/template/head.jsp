@@ -29,7 +29,6 @@
 <spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
 <spring:url value="/resources/js/bootstrap-datetimepicker.min.js" var="bootstrapDateJs" />
-<spring:url value="/resources/js/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
 <spring:url value="/resources/js/bootstrap-colorpicker.min.js" var="bootstrapColorJs" />
 <spring:url value="/resources/js/jquery.dataTables.min.js" var="dtMainJs" />
 <spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
@@ -38,6 +37,9 @@
 <spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
+
+<spring:url value="/resources/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
+<spring:url value="/resources/i18n/datatables.${lang}.js" var="datatablesLoc" />
 
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
@@ -97,21 +99,6 @@
 		}));
 
 	var translations = {
-		datatablesEmptyTable     : '<fmt:message key="datatables.emptyTable" bundle="${msg}" />',
-		datatablesInfo           : '<fmt:message key="datatables.info" bundle="${msg}" />',
-		datatablesInfoEmpty      : '<fmt:message key="datatables.infoEmpty" bundle="${msg}" />',
-		datatablesInfoFiltered   : '<fmt:message key="datatables.infoFiltered" bundle="${msg}" />',
-		datatablesLengthMenu     : '<fmt:message key="datatables.lengthMenu" bundle="${msg}" />',
-		datatablesLoadingRecords : '<fmt:message key="datatables.loadingRecords" bundle="${msg}" />',
-		datatablesProcessing     : '<fmt:message key="datatables.processing" bundle="${msg}" />',
-		datatablesSearch         : '<fmt:message key="datatables.search" bundle="${msg}" />',
-		datatablesZeroRecords    : '<fmt:message key="datatables.zeroRecords" bundle="${msg}" />',
-		datatablesPFirst         : '<fmt:message key="datatables.pFirst" bundle="${msg}" />',
-		datatablesPLast          : '<fmt:message key="datatables.pLast" bundle="${msg}" />',
-		datatablesPNext          : '<fmt:message key="datatables.pNext" bundle="${msg}" />',
-		datatablesPPrevios       : '<fmt:message key="datatables.pPrevios" bundle="${msg}" />',
-		datatablesASortA         : '<fmt:message key="datatables.aSortA" bundle="${msg}" />',
-		datatablesASortD         : '<fmt:message key="datatables.aSortD" bundle="${msg}" />',
 		required                 : '<fmt:message key="validation.required" bundle="${msg}" />',
 		allRequired              : '<fmt:message key="validation.allRequired" bundle="${msg}" />',
 		oneRequired              : '<fmt:message key="validation.oneRequired" bundle="${msg}" />',
@@ -144,7 +131,7 @@
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {
-			initDatatables($(this));
+			initDatatables($(this), '${datatablesLoc}');
 		});
 	});
 </script>

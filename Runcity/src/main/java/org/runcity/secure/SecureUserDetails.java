@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.runcity.db.entity.ConsumerRole;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,7 +43,8 @@ public class SecureUserDetails implements UserDetails {
 	}
 
 	public static SecureUserDetails getCurrent() {
-		Object o = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Authentication a = SecurityContextHolder.getContext().getAuthentication();
+		Object o = a == null ? null : a.getPrincipal();
 		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
 	}
 	
