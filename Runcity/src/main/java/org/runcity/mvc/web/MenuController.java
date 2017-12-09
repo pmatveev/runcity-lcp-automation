@@ -41,7 +41,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)
 	public String users(Model model) {
-		ConsumerTable table = new ConsumerTable("/api/v1/consumerTable");
+		ConsumerTable table = new ConsumerTable("/api/v1/consumerTable", messageSource, localeList);
 		table.processModel(model);
 		
 		return "/secure/users";

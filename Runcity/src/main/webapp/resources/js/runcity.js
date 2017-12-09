@@ -132,7 +132,11 @@ function checkElem(elem, rule) {
 }
 
 function checkInput(elem) {
-	var checkList = elem.attr("jschecks").split(";");
+	var checkList = elem.attr("jschecks");
+	if (typeof checkList === 'undefined') {
+		return true;
+	}
+	checkList = checkList.split(";");
 	var result = true;
 
 	removeErrorMessage(elem);

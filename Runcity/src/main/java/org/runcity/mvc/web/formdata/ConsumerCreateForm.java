@@ -8,12 +8,14 @@ import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
+import org.runcity.mvc.web.util.FormListboxLocaleColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
 import org.runcity.mvc.web.util.FormPasswordColumn;
 import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
 import org.runcity.mvc.web.util.FormPasswordPair;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -21,20 +23,19 @@ public class ConsumerCreateForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerCreateForm.class);
 
 	private FormStringColumn username;
-
 	private FormStringColumn credentials;
-
 	private FormStringColumn password;
-
 	private FormStringColumn password2;
-
 	private FormStringColumn email;
-
 	private FormListboxActiveColumn active;
-
 	private FormListboxUserRoleColumn roles;
+	private FormListboxLocaleColumn locale;
 
 	public ConsumerCreateForm() {
+		this(null);
+	}
+	
+	public ConsumerCreateForm(DynamicLocaleList localeList) {
 		super("consumerCreateForm", null, null, "/api/v1/consumerCreate");
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.create");
@@ -52,15 +53,17 @@ public class ConsumerCreateForm extends AbstractForm {
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
 		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"), true);
+		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
 	}
 
-	public ConsumerCreateForm(String username, String credentials, String email, boolean active, List<String> roles) {
-		this();
+	public ConsumerCreateForm(String username, String credentials, String email, boolean active, String locale, List<String> roles, DynamicLocaleList localeList) {
+		this(localeList);
 		setUsername(username);
 		setCredentials(credentials);
 		setEmail(email);
 		setActive(active);
 		setRoles(roles);
+		setLocale(locale);
 	}
 
 	public String getUsername() {
@@ -110,6 +113,14 @@ public class ConsumerCreateForm extends AbstractForm {
 	public void setActive(Boolean active) {
 		this.active.setValue(active);
 	}
+	
+	public String getLocale() {
+		return locale.getValue();
+	}
+	
+	public void setLocale(String locale) {
+		this.locale.setValue(locale);
+	}
 
 	public List<String> getRoles() {
 		return roles.getValue();
@@ -142,6 +153,10 @@ public class ConsumerCreateForm extends AbstractForm {
 	public FormListboxActiveColumn getActiveColumn() {
 		return active;
 	}
+	
+	public FormListboxLocaleColumn getLocaleColumn() {
+		return locale;
+	}
 
 	public FormListboxUserRoleColumn getRolesColumn() {
 		return roles;
@@ -157,6 +172,7 @@ public class ConsumerCreateForm extends AbstractForm {
 		email.validate(errors);
 		active.validate(errors);
 		roles.validate(errors);
+		locale.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 
@@ -173,7 +189,7 @@ public class ConsumerCreateForm extends AbstractForm {
 	}
 
 	public Consumer getConsumer() {
-		Consumer c = new Consumer(null, getUsername(), getActive(), getPassword(), getCredentials(), getEmail(), null);
+		Consumer c = new Consumer(null, getUsername(), getActive(), getPassword(), getCredentials(), getEmail(), getLocale(), null);
 		for (String s : getRoles()) {
 			c.addRole(s);
 		}

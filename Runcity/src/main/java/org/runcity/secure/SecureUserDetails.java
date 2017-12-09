@@ -18,16 +18,18 @@ public class SecureUserDetails implements UserDetails {
 	private String password;
 	private String credentials;
 	private String email;
+	private String locale;
 	private Set<GrantedAuthority> roles;
 
 	public SecureUserDetails(Long id, String username, boolean active, String password, String credentials,
-			String email, List<ConsumerRole> roles) {
+			String email, String locale, List<ConsumerRole> roles) {
 		this.id = id;
 		this.username = username;
 		this.active = active;
 		this.password = password;
 		this.credentials = credentials;
 		this.email = email;
+		this.locale = locale;
 
 		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
 		for (ConsumerRole r : roles) {
@@ -97,4 +99,11 @@ public class SecureUserDetails implements UserDetails {
 		this.email = email;
 	}
 
+	public String getLocale() {
+		return locale;
+	}
+	
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
 }

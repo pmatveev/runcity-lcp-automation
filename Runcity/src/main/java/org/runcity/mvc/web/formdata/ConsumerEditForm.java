@@ -10,9 +10,11 @@ import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
+import org.runcity.mvc.web.util.FormListboxLocaleColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
+import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
@@ -40,7 +42,14 @@ public class ConsumerEditForm extends AbstractForm {
 	@JsonView(Views.Public.class)
 	private FormListboxUserRoleColumn roles;
 
+	@JsonView(Views.Public.class)
+	private FormListboxLocaleColumn locale;
+
 	public ConsumerEditForm() {
+		this(null);
+	}
+	
+	public ConsumerEditForm(DynamicLocaleList localeList) {
 		super("consumerEditForm", "/api/v1/consumerEdit/{0}", null, "/api/v1/consumerEdit");
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
@@ -52,21 +61,23 @@ public class ConsumerEditForm extends AbstractForm {
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
 		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"), true);
+		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
 	}
 
-	public ConsumerEditForm(Long id, String username, String credentials, String email, boolean active,
-			List<String> roles) {
-		this();
+	public ConsumerEditForm(Long id, String username, String credentials, String email, boolean active, String locale,
+			List<String> roles, DynamicLocaleList localeList) {
+		this(localeList);
 		setId(id);
 		setUsername(username);
 		setCredentials(credentials);
 		setEmail(email);
 		setActive(active);
 		setRoles(roles);
+		setLocale(locale);
 	}
 
-	public ConsumerEditForm(Consumer c) {
-		this(c.getId(), c.getUsername(), c.getCredentials(), c.getEmail(), c.isActive(), c.getStringRoles());
+	public ConsumerEditForm(Consumer c, DynamicLocaleList localeList) {
+		this(c.getId(), c.getUsername(), c.getCredentials(), c.getEmail(), c.isActive(), c.getLocale(), c.getStringRoles(), localeList);
 	}
 
 	public Long getId() {
@@ -108,6 +119,14 @@ public class ConsumerEditForm extends AbstractForm {
 	public void setActive(Boolean active) {
 		this.active.setValue(active);
 	}
+	
+	public String getLocale() {
+		return locale.getValue();
+	}
+	
+	public void setLocale(String locale) {
+		this.locale.setValue(locale);
+	}
 
 	public List<String> getRoles() {
 		return roles.getValue();
@@ -136,6 +155,10 @@ public class ConsumerEditForm extends AbstractForm {
 	public FormListboxActiveColumn getActiveColumn() {
 		return active;
 	}
+	
+	public FormListboxLocaleColumn getLocaleColumn() {
+		return locale;
+	}
 
 	public FormListboxUserRoleColumn getRolesColumn() {
 		return roles;
@@ -149,6 +172,7 @@ public class ConsumerEditForm extends AbstractForm {
 		email.validate(errors);
 		active.validate(errors);
 		roles.validate(errors);
+		locale.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 
@@ -181,7 +205,7 @@ public class ConsumerEditForm extends AbstractForm {
 	}
 
 	public Consumer getConsumer() {
-		Consumer c = new Consumer(getId(), getUsername(), getActive(), null, getCredentials(), getEmail(), null);
+		Consumer c = new Consumer(getId(), getUsername(), getActive(), null, getCredentials(), getEmail(), getLocale(), null);
 		for (String s : getRoles()) {
 			c.addRole(s);
 		}

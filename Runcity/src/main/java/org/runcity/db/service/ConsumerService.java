@@ -27,11 +27,11 @@ public interface ConsumerService {
 	
 	public boolean validatePassword(Consumer c, String password);
 	
-	public Consumer register(String username, String password, String credentials, String email) throws DBException;
+	public Consumer register(String username, String password, String credentials, String email, String locale) throws DBException;
 	
 	public Consumer getCurrent();
 	
-	public Consumer updateCurrentData(String username, String credentials, String email);
+	public Consumer updateCurrentData(String username, String credentials, String email, String locale);
 
 	public Consumer updateCurrentPassword(String newPassword) throws DBException;
 	

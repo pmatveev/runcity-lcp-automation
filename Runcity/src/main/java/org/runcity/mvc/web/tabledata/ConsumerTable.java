@@ -16,12 +16,13 @@ import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
+import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class ConsumerTable extends AbstractTable {
+public class ConsumerTable extends AbstractLocalizedTable {
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
 
@@ -84,8 +85,9 @@ public class ConsumerTable extends AbstractTable {
 		}
 	}
 
-	public ConsumerTable(String ajaxData) {
-		super("consumerTable", "user.tableHeader", ajaxData);
+	public ConsumerTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
+		super("consumerTable", "user.tableHeader", ajaxData, messageSource, localeList);
+		
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
 		this.columns.add(new ColumnDefinition("credentials", "user.credentials"));
@@ -98,14 +100,9 @@ public class ConsumerTable extends AbstractTable {
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/consumerDelete/:id", "selected"));
 		this.buttons.add(new ButtonDefinition("changePassword.header", null, "btn", "form:changePasswordByIdForm:id", "selected"));
 
-		this.relatedForms.add(new ConsumerCreateForm());
-		this.relatedForms.add(new ConsumerEditForm());
+		this.relatedForms.add(new ConsumerCreateForm(localeList));
+		this.relatedForms.add(new ConsumerEditForm(localeList));
 		this.relatedForms.add(new ChangePasswordByIdForm());
-	}
-	
-	public ConsumerTable(String ajaxData, MessageSource messageSource) {
-		this(null);
-		super.setMessageSource(messageSource);
 	}
 
 	public void fetchAll(ConsumerService service) {

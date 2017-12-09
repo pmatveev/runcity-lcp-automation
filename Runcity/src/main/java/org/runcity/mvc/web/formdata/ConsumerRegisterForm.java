@@ -3,6 +3,7 @@ package org.runcity.mvc.web.formdata;
 import org.apache.log4j.Logger;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.web.util.*;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -14,8 +15,13 @@ public class ConsumerRegisterForm extends AbstractForm {
 	private FormStringColumn password;
 	private FormStringColumn password2;
 	private FormStringColumn email;
+	private FormListboxLocaleColumn locale;
 
 	public ConsumerRegisterForm() {
+		this(null);
+	}
+	
+	public ConsumerRegisterForm(DynamicLocaleList localeList) {
 		super("consumerRegisterForm", null, "/register", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
@@ -32,15 +38,17 @@ public class ConsumerRegisterForm extends AbstractForm {
 		this.password2 = passwords.getPasswordConfirmation();
 
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
+		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
 	}
 
-	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email) {
-		this();
+	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email, String locale, DynamicLocaleList localeList) {
+		this(localeList);
 		setUsername(username);
 		setCredentials(credentials);
 		setPassword(password);
 		setPassword2(password2);
 		setEmail(email);
+		setLocale(locale);
 	}
 
 	public String getPassword() {
@@ -82,6 +90,14 @@ public class ConsumerRegisterForm extends AbstractForm {
 	public void setEmail(String email) {
 		this.email.setValue(email);
 	}
+	
+	public String getLocale() {
+		return locale.getValue();
+	}
+	
+	public void setLocale(String locale) {
+		this.locale.setValue(locale);
+	}
 
 	public FormStringColumn getUsernameColumn() {
 		return username;
@@ -102,6 +118,10 @@ public class ConsumerRegisterForm extends AbstractForm {
 	public FormStringColumn getEmailColumn() {
 		return email;
 	}
+	
+	public FormListboxLocaleColumn getLocaleColumn() {
+		return locale;
+	}
 
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
@@ -111,6 +131,7 @@ public class ConsumerRegisterForm extends AbstractForm {
 		password.validate(errors);
 		password2.validate(errors);
 		email.validate(errors);
+		locale.validate(errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 		if (consumerService.selectByUsername(username.getValue()) != null) {

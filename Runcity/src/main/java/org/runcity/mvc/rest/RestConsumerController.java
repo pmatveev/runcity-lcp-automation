@@ -12,6 +12,7 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -29,6 +30,9 @@ public class RestConsumerController extends AbstractRestController {
 
 	@Autowired
 	private ConsumerService consumerService;
+	
+	@Autowired
+	private DynamicLocaleList localeList;
 
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/changePasswordByPassword", method = RequestMethod.POST)
@@ -89,7 +93,7 @@ public class RestConsumerController extends AbstractRestController {
 			return result;
 		}
 
-		return new ConsumerSelfEditForm(c);
+		return new ConsumerSelfEditForm(c, localeList);
 	}
 
 	@JsonView(Views.Public.class)
@@ -104,7 +108,7 @@ public class RestConsumerController extends AbstractRestController {
 			return result;
 		}
 		
-		Consumer c = consumerService.updateCurrentData(form.getUsername(), form.getCredentials(), form.getEmail());
+		Consumer c = consumerService.updateCurrentData(form.getUsername(), form.getCredentials(), form.getEmail(), form.getLocale());
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.popupProcessError");
@@ -154,7 +158,7 @@ public class RestConsumerController extends AbstractRestController {
 			return result;
 		}
 
-		return new ConsumerEditForm(c);
+		return new ConsumerEditForm(c, localeList);
 	}
 
 	@JsonView(Views.Public.class)
@@ -209,7 +213,7 @@ public class RestConsumerController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
 	public ConsumerTable getConsumerTable() {
 		logger.info("GET /api/v1/consumerTable");
-		ConsumerTable table = new ConsumerTable(null, messageSource);
+		ConsumerTable table = new ConsumerTable(null, messageSource, localeList);
 		table.fetchAll(consumerService);
 		return table;
 	}

@@ -5,6 +5,7 @@ import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,9 @@ public class ConsumerController {
 
 	@Autowired
 	private ConsumerService consumerService;
+	
+	@Autowired
+	private DynamicLocaleList localeList;
 
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -78,7 +82,7 @@ public class ConsumerController {
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String showRegisterForm(Model model) {
 		logger.info("GET /register");
-		ConsumerRegisterForm form = new ConsumerRegisterForm();
+		ConsumerRegisterForm form = new ConsumerRegisterForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		return "common/register";
 	}
@@ -93,7 +97,7 @@ public class ConsumerController {
 		}
 
 		try {
-			consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail());
+			consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail(), form.getLocale());
 		} catch (DBException e) {
 			result.reject("common.db.fail");
 			logger.error("DB exception", e);

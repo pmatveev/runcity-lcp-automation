@@ -42,7 +42,9 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 		this.value = value;
 	}
 
-	public abstract Map<String, String> getOptions();
+	public Map<String, String> getOptions() {
+		return options;
+	}
 
 	public boolean isMultiple() {
 		return multiple;

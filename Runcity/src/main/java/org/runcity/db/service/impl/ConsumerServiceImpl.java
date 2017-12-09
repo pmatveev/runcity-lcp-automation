@@ -128,7 +128,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	public Consumer updateCurrentData(String username, String credentials, String email) {
+	public Consumer updateCurrentData(String username, String credentials, String email, String locale) {
 		Consumer c = getCurrent();
 
 		if (c == null) {
@@ -138,6 +138,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		c.setUsername(username);
 		c.setCredentials(credentials);
 		c.setEmail(email);
+		c.setLocale(locale);
 		try {
 			c = update(c);
 
@@ -158,8 +159,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	public Consumer register(String username, String password, String credentials, String email) throws DBException {
-		Consumer c = new Consumer(null, username, true, password, credentials, email, null);
+	public Consumer register(String username, String password, String credentials, String email, String locale) throws DBException {
+		Consumer c = new Consumer(null, username, true, password, credentials, email, locale, null);
 		return add(c);
 	}
 

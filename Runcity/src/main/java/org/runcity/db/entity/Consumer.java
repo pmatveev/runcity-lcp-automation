@@ -33,6 +33,9 @@ public class Consumer implements DBEntity {
 
 	@Column(name = "email", length = 255, unique = true, nullable = false)
 	private String email;
+	
+	@Column(name = "locale", length = 16, nullable = true)
+	private String locale;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "consumer", orphanRemoval = true)
 	private List<ConsumerRole> roles;
@@ -41,7 +44,7 @@ public class Consumer implements DBEntity {
 		this.roles = new ArrayList<ConsumerRole>();
 	}
 
-	public Consumer(Long id, String username, Boolean active, String password, String credentials, String email,
+	public Consumer(Long id, String username, Boolean active, String password, String credentials, String email, String locale,
 			List<ConsumerRole> roles) {
 		this();
 		setId(id);
@@ -54,6 +57,7 @@ public class Consumer implements DBEntity {
 		
 		setCredentials(credentials);
 		setEmail(email);
+		setLocale(locale);
 		if (roles != null) {
 			this.roles = roles;
 		}
@@ -67,6 +71,7 @@ public class Consumer implements DBEntity {
 		}
 		this.credentials = c.credentials;
 		this.email = c.email;
+		this.locale = c.locale;
 
 		CollectionUtils.applyChanges(roles, c.roles);
 	}
@@ -117,6 +122,14 @@ public class Consumer implements DBEntity {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 
 	public List<ConsumerRole> getRoles() {

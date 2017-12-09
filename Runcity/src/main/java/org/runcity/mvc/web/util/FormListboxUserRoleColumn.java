@@ -2,7 +2,6 @@ package org.runcity.mvc.web.util;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.secure.SecureUserRole;
@@ -39,10 +38,5 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 		if (!this.value.contains(value)) {
 			this.value.add(value);
 		}
-	}
-
-	@Override
-	public Map<String, String> getOptions() {
-		return options;
 	}
 }
