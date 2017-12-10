@@ -24,7 +24,6 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 	
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<Category> selectAll() {
 		return categoryRepository.findAll();
 	}

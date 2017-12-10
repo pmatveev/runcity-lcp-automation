@@ -1,7 +1,9 @@
 package org.runcity.db.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -93,5 +95,21 @@ public class Game implements DBEntity {
 
 	public Set<Category> getCategories() {
 		return categories;
+	}
+	
+	public List<Long> getCategoryIds() {
+		List<Long> str = new ArrayList<Long>();
+		for (Category c : categories) {
+			str.add(c.getId());
+		}
+		return str;
+	}
+
+	public List<String> getCategoryNames(String locale) {
+		List<String> str = new ArrayList<String>();
+		for (Category c : categories) {
+			str.add(c.getNameDisplay(locale));
+		}
+		return str;
 	}
 }

@@ -107,6 +107,9 @@
 		$("table.datatables").each(function() {
 			initDatatables($(this), '${datatablesLoc}');
 		});
+		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
+			loadAjaxSourced($(this));
+		});
 	});
 </script>
 </head>

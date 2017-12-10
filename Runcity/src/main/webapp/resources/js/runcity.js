@@ -1,20 +1,8 @@
-function findParentWithClass(element, cls) {
-	var parent = element;
-
-	while (!parent.hasClass(cls) && !(parent.prop("tagName") == "BODY")) {
-		parent = parent.parent();
-	}
-	if (parent.prop("tagName") == "BODY") {
-		return null;
-	}
-	return parent;
-}
-
 function removeFormErrorMessage(form) {
 	form.find(".errorHolder").html("");
 }
 
-function removerFormFieldErrorMessage(form) {
+function removeFormFieldErrorMessage(form) {
 	form.find("input").not('[type="submit"]').each(function() {
 		removeErrorMessage($(this));
 	});
@@ -32,7 +20,7 @@ function setFormErrorMessage(form, message) {
 }
 
 function removeErrorMessage(element) {
-	var parent = findParentWithClass(element, "form-group");
+	var parent = element.closest(".form-group");
 
 	if (parent == null) {
 		return;
@@ -42,7 +30,7 @@ function removeErrorMessage(element) {
 }
 
 function setErrorMessage(element, message) {
-	var parent = findParentWithClass(element, "form-group");
+	var parent = element.closest(".form-group");
 
 	if (parent == null) {
 		return;
@@ -76,7 +64,7 @@ function checkElem(elem, rule) {
 	}
 	
 	if (rule == "onerequired" || rule == "allrequired") {
-		var par = findParentWithClass(elem, "form-group");
+		var par = elem.closest(".form-group");
 		var filled = 0;
 		var total = 0;
 		par.find("input").each(function(){
@@ -208,6 +196,74 @@ function setInputValue(elem, val) {
 	}
 }
 
+function loadAjaxSourcedSuccess(form, elem, data) {
+	if (data.responseClass == "INFO") {
+		optionsHtml = "";
+		
+		for (var property in data.options) {
+		    if (data.options.hasOwnProperty(property)) {
+		        optionsHtml += "<option value='" + property + "'>" + data.options[property] + "</option>"; 
+		    }
+		}
+		
+		elem.html(optionsHtml).selectpicker('refresh');
+		elem.addClass("ajax-loaded");
+		return;
+	}
+
+	removeFormErrorMessage(form);
+	removeErrorMessage(elem);
+	if (data.errors) {
+		data.errors.forEach(function(item, i, arr) {
+			setFormErrorMessage(form, item);
+		});
+	}
+}
+
+function loadAjaxSourcedError(form, elem, data) {
+	removeFormErrorMessage(form);
+	removeErrorMessage(elem);
+	if (data.statusText = "error" && data.status != 0) {
+		if (data.status == 403) {
+			setFormErrorMessage(form, translations['forbidden']);
+		} else {
+			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status));
+		}
+	} else {
+		setFormErrorMessage(form, translations['ajaxHangPost']);
+	}
+}
+
+function loadAjaxSourced(elem) {
+	if (elem.hasClass("ajax-loaded")) {
+		return;
+	}
+	
+	var form = elem.closest("form");
+	var jsonUrl = elem.attr('ajax-data');
+	if (typeof elem.attr('ajax-parms') !== 'undefined') {
+		var jsonParms = elem.attr('ajax-parms').split(':');
+		jsonParms.forEach(function(item, i, arr) {
+			jsonUrl.replace("{" + i + "}", form.find("input[name='" + item + "']").val());
+		});
+	}
+
+	$.ajax({
+		type : "GET",
+		contentType : "application/json",
+		url : jsonUrl,
+		dataType : "json",
+		timeout : 10000,
+		success : function(data) {
+			loadAjaxSourcedSuccess(form, elem, data);
+		},
+		error : function(data) {
+			loadAjaxSourcedError(form, elem, data);
+		}
+	});
+}
+
 function beforeOpenModal(form) {
 	removeFormErrorMessage(form);
 	form.find("input").not('[type="submit"]').each(function() {
@@ -279,7 +335,7 @@ function modalFormOpenError(form, data, recId) {
 	changeModalFormState(form, true, false, false);
 
 	removeFormErrorMessage(form);
-	removerFormFieldErrorMessage(form);
+	removeFormFieldErrorMessage(form);
 	if (data.statusText = "error" && data.status != 0) {
 		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
 				data.status));
@@ -436,7 +492,7 @@ function modalFormError(form, data) {
 	changeModalFormState(form, false, false, false);
 
 	removeFormErrorMessage(form);
-	removerFormFieldErrorMessage(form);
+	removeFormFieldErrorMessage(form);
 	if (data.statusText = "error" && data.status != 0) {
 		if (data.status == 403) {
 			setFormErrorMessage(form, translations['forbidden']);
@@ -494,7 +550,7 @@ function initModal(modal) {
 }
 
 function removeTableErrorMessage(dt) {
-	var parent = findParentWithClass($(dt.table().node()), "dataTables_wrapper");
+	var parent = ($(dt.table().node())).closest(".dataTables_wrapper");
 
 	if (parent == null) {
 		return;
@@ -503,7 +559,7 @@ function removeTableErrorMessage(dt) {
 }
 
 function setTableErrorMessage(dt, message) {
-	var parent = findParentWithClass($(dt.table().node()), "dataTables_wrapper");
+	var parent = ($(dt.table().node())).closest(".dataTables_wrapper");
 
 	if (parent == null) {
 		return;

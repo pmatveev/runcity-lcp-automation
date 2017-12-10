@@ -144,7 +144,7 @@ public class Consumer implements DBEntity {
 		addRole(new ConsumerRole(null, code, this));
 	}
 
-	public List<String> getStringRoles() {
+	public List<String> getRolesCodes() {
 		List<String> str = new ArrayList<String>();
 		for (ConsumerRole r : roles) {
 			str.add(r.getCode());

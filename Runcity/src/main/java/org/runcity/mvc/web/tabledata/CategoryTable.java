@@ -19,7 +19,6 @@ import org.springframework.context.MessageSource;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class CategoryTable extends AbstractLocalizedTable {
-	private static final String DEFAULT_POSTFIX = "XX";
 	
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
@@ -32,22 +31,17 @@ public class CategoryTable extends AbstractLocalizedTable {
 		private Map<String, String> name; 
 		
 		@JsonView(Views.Public.class)
-		private String prefix;
+		private String badge;
 
-		private String bgcolor;
-		private String color;
-		
 		public TableRow(Category c, MessageSource messageSource, Locale l) {
 			this.id = c.getId();
-			this.prefix = StringUtils.xss(c.getPrefix()) + DEFAULT_POSTFIX;
-			this.bgcolor = StringUtils.xss(c.getBgcolor());
-			this.color = StringUtils.xss(c.getColor());
+			this.badge = c.getBadge();
 			
 			this.name = localeList.prepareMap();
 			
 			for (Translation t : c.getNames()) {
 				if (localeList.contains(t.getLocale())) {
-					this.name.put(t.getLocale(), t.getContent());
+					this.name.put(t.getLocale(), StringUtils.xss(t.getContent()));
 				}
 			}
 		}
@@ -59,9 +53,9 @@ public class CategoryTable extends AbstractLocalizedTable {
 		public Map<String, String> getNames() {
 			return name;
 		}
-
-		public String getPrefix() {
-			return "<span class='label' style='background-color: #" + bgcolor + "; color: #" + color + "'>" + prefix + "</span>";
+		
+		public String getBadge() {
+			return badge;
 		}
 	}
 
@@ -69,13 +63,13 @@ public class CategoryTable extends AbstractLocalizedTable {
 		super("categoryTable", "category.tableHeader", ajaxData, messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null));
-		this.columns.add(new ColumnDefinition("prefix", "category.prefix"));
+		this.columns.add(new ColumnDefinition("badge", "category.badge"));
 		addLocalizedColumn("name", "category.name");
 
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/categoryDelete/:id", "selected"));
-		
+
 		this.relatedForms.add(new CategoryCreateEditForm(localeList));
 	}
 	

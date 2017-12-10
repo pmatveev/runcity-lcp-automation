@@ -1,5 +1,8 @@
 package org.runcity.db.entity;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.persistence.*;
 
 import org.hibernate.annotations.FilterDef;
@@ -109,5 +112,29 @@ public class Translation implements DBEntity {
 		return StringUtils.isEqual(refTable, t.refTable) && StringUtils.isEqual(refCol, t.refCol)
 				&& ObjectUtils.nullSafeEquals(refRecord, t.refRecord) && StringUtils.isEqual(locale, t.locale)
 				&& StringUtils.isEqual(content, t.content);
+	}
+	
+	public static String getDisplay(Collection<Translation> c, String locale) {
+		String second = null;
+		String any = null;
+		
+		Iterator<Translation> i = c.iterator();
+		while (i.hasNext()) {
+			Translation t = i.next();
+			if (StringUtils.isEmpty(t.content)) {
+				continue;
+			}
+			if (StringUtils.isEqual(locale, t.locale)) {
+				return t.content;
+			}
+			if (second == null && StringUtils.isEqualPrefix(locale, t.locale, 2)) {
+				second = t.content + " [" + t.locale + "]";
+			}
+			if (any == null) {
+				any = t.content + " [" + t.locale + "]";
+			}
+		}
+		
+		return second != null ? second : any;
 	}
 }

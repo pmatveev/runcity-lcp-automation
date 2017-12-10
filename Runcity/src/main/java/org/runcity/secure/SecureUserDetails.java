@@ -47,6 +47,11 @@ public class SecureUserDetails implements UserDetails {
 		Object o = a == null ? null : a.getPrincipal();
 		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
 	}
+
+	public static String getLocaleCurrent() {
+		SecureUserDetails current = getCurrent();
+		return current == null ? null : current.getLocale();
+	}
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -36,22 +36,12 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 		this.required = required;
 	}
 
-	protected FormListboxColumn(AbstractForm form, ColumnDefinition definition, boolean multiple, boolean required,
-			T value) {
-		this(form, definition, multiple, required);
-		this.value = value;
-	}
-
 	public Map<String, String> getOptions() {
 		return options;
 	}
 
 	public boolean isMultiple() {
 		return multiple;
-	}
-
-	public boolean isRequired() {
-		return required;
 	}
 
 	@Override

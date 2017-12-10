@@ -28,8 +28,8 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 
 	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required,
 			List<String> value) {
-		super(form, definition, true, required, value);
-		if (this.value == null) {
+		this(form, definition, required);
+		if (value != null) {
 			this.value = new LinkedList<String>();
 		}
 	}

@@ -19,17 +19,12 @@ public class UserLocaleChangeInterceptor extends HandlerInterceptorAdapter {
 			throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
 		}
 
-		SecureUserDetails user = SecureUserDetails.getCurrent();
-		
-		if (user == null) {
+		String locale = SecureUserDetails.getLocaleCurrent();
+		if (locale != null) {
+			localeResolver.setLocale(request, response, StringUtils.parseLocaleString(SecureUserDetails.getLocaleCurrent()));
+		} else {
 			localeResolver.setLocale(request, response, null);
-			return true;
 		}
-		
-		if (user.getLocale() != null) {
-			localeResolver.setLocale(request, response, StringUtils.parseLocaleString(user.getLocale()));
-		}
-		// Proceed in any case.
 		return true;
 	}
 }

@@ -23,6 +23,18 @@ public class StringUtils {
 		return s1.equals(s2);
 	}
 
+	public static boolean isEqualPrefix(String s1, String s2, int prefix) {
+		if (isEmpty(s1) && isEmpty(s2)) {
+			return true;
+		}
+
+		if (isEmpty(s1) || isEmpty(s2)) {
+			return false;
+		}
+
+		return s1.substring(0, prefix).equals(s2.substring(0, prefix));
+	}
+
 	public static String toNvlString(Object o) {
 		return o == null ? "" : o.toString();
 	}

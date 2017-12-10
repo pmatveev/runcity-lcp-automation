@@ -77,7 +77,7 @@ public class ConsumerEditForm extends AbstractForm {
 	}
 
 	public ConsumerEditForm(Consumer c, DynamicLocaleList localeList) {
-		this(c.getId(), c.getUsername(), c.getCredentials(), c.getEmail(), c.isActive(), c.getLocale(), c.getStringRoles(), localeList);
+		this(c.getId(), c.getUsername(), c.getCredentials(), c.getEmail(), c.isActive(), c.getLocale(), c.getRolesCodes(), localeList);
 	}
 
 	public Long getId() {

@@ -6,12 +6,14 @@ import org.apache.log4j.Logger;
 import org.runcity.db.entity.Category;
 import org.runcity.db.service.CategoryService;
 import org.runcity.exception.DBException;
+import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -103,5 +105,26 @@ public class RestCategoryController extends AbstractRestController {
 		}
 		
 		return result;	
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/categories", method = RequestMethod.GET)
+	public RestGetResponseBody categoriesDddw() {
+		logger.info("GET /api/v1/dddw/categories");
+		
+		try {
+			List<Category> categories = categoryService.selectAll();
+			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+			for (Category c : categories) {
+				result.addOption(c.getId(), c.getNameDisplay(SecureUserDetails.getLocaleCurrent()));
+			}
+			return result;
+		} catch (Exception e) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;
+		}
 	}
 }
