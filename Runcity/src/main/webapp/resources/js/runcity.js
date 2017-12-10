@@ -716,9 +716,9 @@ function initDatatablesWithButtons(table, buttons, loc) {
 	dataTable.column("id:name").visible(false);
 }
 
-function initDatePicker(elem) {
+function initDatePicker(elem, loc) {
 	elem.datetimepicker({
-		language : "${lang}",
+		language : loc,
 		autoclose: true,
 		container: elem.attr('data-date-container'),
 		todayHighlight: true,
