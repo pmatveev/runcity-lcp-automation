@@ -164,7 +164,7 @@ function validateElem(element) {
 	}
 }
 
-function validateForm(form) {
+function validateForm(form, event) {
 	var result = true;
 
 	form.find("input,select").not('[type="submit"]').each(function() {
@@ -505,7 +505,7 @@ function modalFormError(form, data) {
 	}
 }
 
-function submitModalForm(form) {
+function submitModalForm(form, event) {
 	event.preventDefault();
 	if (!validateForm(form)) {
 		return;

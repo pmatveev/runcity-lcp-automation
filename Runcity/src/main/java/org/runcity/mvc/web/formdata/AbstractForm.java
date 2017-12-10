@@ -34,11 +34,11 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 	}
 
 	public String getOnSubmit() {
-		return "return validateForm($('#" + getHtmlId() + "'))";
+		return "return validateForm($('#" + getHtmlId() + "'), event)";
 	}
 
 	public String getOnModalSubmit() {
-		return "submitModalForm($('#" + getHtmlId() + "'))";
+		return "return submitModalForm($('#" + getHtmlId() + "'), event)";
 	}
 
 	public String getUrlOnOpenAjax() {
