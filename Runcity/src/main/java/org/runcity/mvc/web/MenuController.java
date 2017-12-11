@@ -26,7 +26,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
-		GameCreateEditForm form = new GameCreateEditForm();
+		GameCreateEditForm form = new GameCreateEditForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		return "/secure/home";
 	}

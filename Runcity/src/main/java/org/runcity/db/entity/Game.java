@@ -20,6 +20,9 @@ public class Game implements DBEntity {
 	@Column(name = "id", columnDefinition = "int", length = 18, nullable = false)
 	private Long id;
 
+	@Column(name = "locale", length = 32, nullable = false)
+	private String locale;
+	
 	@Column(name = "name", length = 32, unique = true, nullable = false)
 	private String name;
 
@@ -42,8 +45,9 @@ public class Game implements DBEntity {
 		this.categories = new HashSet<Category>();
 	}
 	
-	public Game(Long id, String name, String city, String country, Date date, Set<Category> categories) {
+	public Game(Long id, String locale, String name, String city, String country, Date date, Set<Category> categories) {
 		setId(id);
+		setLocale(locale);
 		setName(name);
 		setCity(city);
 		setCountry(country);
@@ -59,6 +63,14 @@ public class Game implements DBEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 
 	public String getName() {

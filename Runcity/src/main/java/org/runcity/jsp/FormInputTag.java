@@ -318,7 +318,7 @@ public class FormInputTag extends TagSupport {
 			select.setDynamicAttribute(null, "ajax-data", ajax);
 			
 			if (column.getAjaxParms() != null) {
-				select.setDynamicAttribute(null, "ajax-parms", StringUtils.concatNvl(":", (Object[]) column.getAjaxParms()));
+				select.setDynamicAttribute(null, "ajax-parms", StringUtils.toString(column.getAjaxParms(), ":", ""));
 			}
 		}
 

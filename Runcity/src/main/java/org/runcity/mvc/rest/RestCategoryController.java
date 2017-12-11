@@ -13,7 +13,6 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
-import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -109,14 +109,14 @@ public class RestCategoryController extends AbstractRestController {
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/dddw/categories", method = RequestMethod.GET)
-	public RestGetResponseBody categoriesDddw() {
+	public RestGetResponseBody categoriesDddw(@RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categories");
 		
 		try {
 			List<Category> categories = categoryService.selectAll();
 			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 			for (Category c : categories) {
-				result.addOption(c.getId(), c.getNameDisplay(SecureUserDetails.getLocaleCurrent()));
+				result.addOption(c.getId(), c.getNameDisplay(locale));
 			}
 			return result;
 		} catch (Exception e) {

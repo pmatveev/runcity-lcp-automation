@@ -1,10 +1,10 @@
 package org.runcity.mvc.web.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,7 +72,7 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 	}
 
 	public String getOnChange() {
-		return "checkInput($('#" + getHtmlId() + "'))";
+		return "onColChange($('#" + getHtmlId() + "'))";
 	}
 
 	public String getMultipleOptions() {
@@ -98,7 +98,7 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 			locOptions.put(key, getOptionDisplay(key, bundle));
 		}
 
-		List<Map.Entry<String, String>> list = new LinkedList<Map.Entry<String, String>>(locOptions.entrySet());
+		List<Map.Entry<String, String>> list = new ArrayList<Map.Entry<String, String>>(locOptions.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
 			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
 				return (o1.getValue()).compareTo(o2.getValue());

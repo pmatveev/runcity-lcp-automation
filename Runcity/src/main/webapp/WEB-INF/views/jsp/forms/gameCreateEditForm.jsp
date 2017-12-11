@@ -17,9 +17,14 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>
 		</spring:bind>		
 		
-		<c:set value="${formVar.nameColumn}" var="col"/>
+		<c:set value="${formVar.localeColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" autofocus="autofocus" />
+		</spring:bind>	
+		
+		<c:set value="${formVar.nameColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
 		<c:set value="${formVar.cityColumn}" var="col"/>

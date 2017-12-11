@@ -68,6 +68,6 @@ public abstract class FormStringColumn extends FormColumn<String> {
 	}
 
 	public String getOnChange() {
-		return "checkInput($('#" + getHtmlId() + "'))";
+		return "onColChange($('#" + getHtmlId() + "'))";
 	}
 }

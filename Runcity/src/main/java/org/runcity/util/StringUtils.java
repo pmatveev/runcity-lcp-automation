@@ -1,5 +1,6 @@
 package org.runcity.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -60,6 +61,10 @@ public class StringUtils {
 
 	public static String toString(Collection<?> c, String def) {
 		return toString(c, ", ", def);
+	}
+	
+	public static String toString(Object[] o, String separator, String def) {
+		return toString(Arrays.asList(o), separator, def);
 	}
 	
 	public static String toString(Collection<?> c, String separator, String def) {

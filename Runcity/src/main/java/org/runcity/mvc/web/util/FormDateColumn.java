@@ -42,6 +42,6 @@ public class FormDateColumn extends FormColumn<Date> {
 	}
 
 	public String getOnChange() {
-		return "checkInput($('#" + getHtmlId() + "'))";
+		return "onColChange($('#" + getHtmlId() + "'))";
 	}
 }

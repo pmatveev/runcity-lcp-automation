@@ -131,6 +131,6 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 	}
 
 	public String getOnChange(String l) {
-		return "checkInput($('#" + getHtmlId() + l + "'))";
+		return "onColChange($('#" + getHtmlId() + l + "'))";
 	}
 }

@@ -73,7 +73,7 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	}
 
 	public String getOnChange() {
-		return "checkInput($('#" + getHtmlId() + "'))";
+		return "onColChange($('#" + getHtmlId() + "'))";
 	}
 
 	public String getMultipleOptions() {

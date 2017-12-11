@@ -12,7 +12,7 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 		this.value = new ArrayList<Long>();
 	}
 
-	public static FormDddwCategoriesColumn getAll(AbstractForm form, ColumnDefinition definition, boolean required) {
-		return new FormDddwCategoriesColumn(form, definition, "/api/v1/dddw/categories", null, required);
+	public static FormDddwCategoriesColumn getAllByLocale(AbstractForm form, ColumnDefinition definition, String localeCol, boolean required) {
+		return new FormDddwCategoriesColumn(form, definition, "/api/v1/dddw/categories?locale={0}", new String[] {localeCol}, required);
 	}
 }

@@ -137,6 +137,18 @@ function checkInput(elem) {
 	return result;
 }
 
+function onColChange(elem) {
+	checkInput(elem);
+	var form = elem.closest("form");
+	
+	form.find("input,select").not('[type="submit"]').each(function() {
+		var inp = $(this);
+		if ((":" + inp.attr('ajax-parms') + ":").indexOf(":" + elem.attr("id") + ":") > -1) {
+			setInputValue(inp, "");
+		}
+	});
+}
+
 function checkPwdIdent(pwd1, pwd2) {
 	if (pwd1.val() != pwd2.val()) {
 		setErrorMessageStrict(pwd2, translations['passwordMatch']);
@@ -154,21 +166,11 @@ function checkPwdInput(pwd, pwdConf) {
 	return res1 && res2 && res3;
 }
 
-function validateElem(element) {
-	var foo = element.attr("onchange");
-
-	if (typeof foo !== 'undefined') {
-		return eval(foo);
-	} else {
-		return true;
-	}
-}
-
 function validateForm(form, event) {
 	var result = true;
 
 	form.find("input,select").not('[type="submit"]').each(function() {
-		if (!validateElem($(this))) {
+		if (!checkInput($(this))) {
 			result = false;
 		}
 	});
@@ -178,36 +180,45 @@ function validateForm(form, event) {
 
 function setInputValue(elem, val) {
 	if (elem.attr('name') != "_csrf") {
-		var dt = elem.attr('display-type');
-		
-		if (dt === 'colorpicker') {
+		if (elem.prop('tagName') === 'SELECT') {
 			if (typeof val !== 'undefined') {
-				elem.parent().colorpicker('setValue', val);
+				elem.selectpicker('val', val);
 			} else {
-				elem.parent().colorpicker('setValue', "");
+				elem.selectpicker('val', "");
 			}
-		} else {
-			if (typeof val !== 'undefined') {
-				elem.val(val);
+			return;
+		}
+		
+		if (elem.prop('tagName') === 'INPUT') {
+			var dt = elem.attr('display-type');
+			
+			if (dt === 'colorpicker') {
+				if (typeof val !== 'undefined') {
+					elem.parent().colorpicker('setValue', val);
+				} else {
+					elem.parent().colorpicker('setValue', "");
+				}
 			} else {
-				elem.val("");
+				if (typeof val !== 'undefined') {
+					elem.val(val);
+				} else {
+					elem.val("");
+				}
 			}
 		}
 	}
 }
 
-function loadAjaxSourcedSuccess(form, elem, data) {
+function loadAjaxSourcedSuccess(form, elem, jsonUrl, data) {
 	if (data.responseClass == "INFO") {
 		optionsHtml = "";
 		
-		for (var property in data.options) {
-		    if (data.options.hasOwnProperty(property)) {
-		        optionsHtml += "<option value='" + property + "'>" + data.options[property] + "</option>"; 
-		    }
-		}
+		data.options.forEach(function(item, i, arr) {
+			optionsHtml += "<option value='" + item['key'] + "'>" + item['value'] + "</option>";
+		});
 		
-		elem.html(optionsHtml).selectpicker('refresh');
-		elem.addClass("ajax-loaded");
+		elem.html(optionsHtml).selectpicker("refresh");
+		elem.attr("loaded-from", jsonUrl);
 		return;
 	}
 
@@ -236,17 +247,28 @@ function loadAjaxSourcedError(form, elem, data) {
 }
 
 function loadAjaxSourced(elem) {
-	if (elem.hasClass("ajax-loaded")) {
-		return;
-	}
-	
 	var form = elem.closest("form");
 	var jsonUrl = elem.attr('ajax-data');
+	var proceed = true;
 	if (typeof elem.attr('ajax-parms') !== 'undefined') {
 		var jsonParms = elem.attr('ajax-parms').split(':');
 		jsonParms.forEach(function(item, i, arr) {
-			jsonUrl.replace("{" + i + "}", form.find("input[name='" + item + "']").val());
+			var from = $("#" + item);
+			if (!checkInput(from)) {
+				proceed = false;
+			}
+			jsonUrl = jsonUrl.replace("{" + i + "}", getData(from));
 		});
+	}
+	
+	if (jsonUrl === elem.attr("loaded-from")) {
+		return;
+	}
+	
+	elem.html("").selectpicker("refresh");
+	
+	if (!proceed) {
+		return;
 	}
 
 	$.ajax({
@@ -256,7 +278,7 @@ function loadAjaxSourced(elem) {
 		dataType : "json",
 		timeout : 10000,
 		success : function(data) {
-			loadAjaxSourcedSuccess(form, elem, data);
+			loadAjaxSourcedSuccess(form, elem, jsonUrl, data);
 		},
 		error : function(data) {
 			loadAjaxSourcedError(form, elem, data);
@@ -266,23 +288,12 @@ function loadAjaxSourced(elem) {
 
 function beforeOpenModal(form) {
 	removeFormErrorMessage(form);
-	form.find("input").not('[type="submit"]').each(function() {
+	form.find("input,select").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		var val = elem.attr('default');
 		setInputValue(elem, val);
 
 		removeErrorMessage(elem);
-	});
-	form.find("select").each(function() {
-		var elem = $(this);
-		var val = elem.attr('default');
-		if (typeof val !== 'undefined') {
-			$(this).selectpicker('val', val);
-		} else {
-			$(this).selectpicker('val', "");
-		}
-		
-		removeErrorMessage($(this));
 	});
 }
 
@@ -297,25 +308,20 @@ function modalFormOpenSuccess(form, data, recId) {
 	if (data.responseClass == "INFO") {
 		changeModalFormState(form, false, false, false);
 
-		form.find("input").not('[type="submit"]').each(function() {
+		form.find("input,select").not('[type="submit"]').each(function() {
 			var elem = $(this);
 			var name = elem.attr("name");
-			var index = name.indexOf("['"); 
-			if (index == -1) {
-				setInputValue(elem, data[name]);
-			} else {
-				var to = name.substring(index + 2, name.length - 2);
-				setInputValue(elem, data[name.substring(0, index)][to]);
-			}
-		});
-		form.find("select").each(function() {
-			var elem = $(this);
 			var val = data[elem.attr("name")];
 			if (typeof val === 'boolean') {
 				val = val.toString();
 			}
-
-			elem.selectpicker('val', val);
+			var index = name.indexOf("['"); 
+			if (index == -1) {
+				setInputValue(elem, val);
+			} else {
+				var to = name.substring(index + 2, name.length - 2);
+				setInputValue(elem, data[name.substring(0, index)][to]);
+			}
 		});
 
 		return;
@@ -372,7 +378,10 @@ function beforeOpenModalFetch(form, recId) {
 }
 
 function afterOpenModal(form) {
-	form.find('[autofocus="autofocus"]')[0].focus();
+	var focus = form.find('[autofocus="autofocus"]')[0];
+	if (focus) {
+		focus.focus();
+	}
 }
 
 function beforeCloseModal(form) {
@@ -407,15 +416,29 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 	}
 }
 
+function getData(elem) {
+	var tag = elem.prop("tagName");
+	if (tag === 'INPUT') {
+		var format = elem.attr('format');
+		if (format === 'array') {
+			return elem.val().split(',');
+		} else {
+			return elem.val();			
+		}
+	}
+	if (tag === 'SELECT') {
+		return elem.selectpicker('val');
+	}
+}
+
 function getFormData(form) {
 	var res = {};
 
-	form.find("input").not('[type="submit"]').not(".ignore-value").each(function() {
+	form.find("input,select").not('[type="submit"]').not(".ignore-value").each(function() {
 		var elem = $(this);
 		var format = elem.attr('format');
-		if (format == 'array') {
-			res[elem.attr('name')] = elem.val().split(',');
-		} else if (format == 'langObj') {
+		
+		if (format == 'langObj') {
 			var name = elem.attr('name');
 			var index = name.indexOf("['"); 
 			if (index >= 0) {
@@ -431,13 +454,8 @@ function getFormData(form) {
 				res[elem.attr('name')] = elem.val();
 			}
 		} else {
-			res[elem.attr('name')] = elem.val();			
+			res[elem.attr('name')] = getData(elem);
 		}
-	});
-
-	form.find("select").each(function() {
-		var elem = $(this);
-		res[elem.attr('name')] = elem.selectpicker('val');
 	});
 
 	return res;
