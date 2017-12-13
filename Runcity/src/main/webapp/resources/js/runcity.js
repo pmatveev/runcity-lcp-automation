@@ -628,8 +628,13 @@ function modalFormSuccess(form, data) {
 	}
 	form.find("input,select").not('[type="submit"]').each(function() {
 		var elem = $(this);
-		removeErrorMessage(elem);
 		var name = elem.attr("name");
+		
+		if (typeof name === 'undefined' || elem.attr("type") === "hidden") {
+			return;
+		}
+		removeErrorMessage(elem);
+		
 		var index = name.indexOf("['"); 
 		if (index >= 0) {
 			name = name.substring(0, index);
