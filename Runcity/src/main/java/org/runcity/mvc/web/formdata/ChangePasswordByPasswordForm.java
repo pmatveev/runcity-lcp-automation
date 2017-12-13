@@ -34,7 +34,7 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
 		this.currPassword = new FormPasswordValidationColumn(this,
-				new ColumnDefinition("currPassword", "changePassword.currPassword"), formName);
+				new ColumnDefinition("currPassword", "changePassword.currPassword"));
 		FormPasswordPair passwords = new FormPasswordPair(
 				new FormPasswordColumn(this, new ColumnDefinition("password", "changePassword.password"), true),
 				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "changePassword.password2"),
