@@ -2,6 +2,11 @@ function removeFormErrorMessage(form) {
 	form.find(".errorHolder").html("");
 }
 
+function parseDate(datestr) {
+	var dpg = $.fn.datetimepicker.DPGlobal;
+	return dpg.parseDate(datestr, dpg.parseFormat('yyyy mm dd', 'standard'));
+}
+
 function removeFormFieldErrorMessage(form) {
 	form.find("input").not('[type="submit"]').each(function() {
 		removeErrorMessage($(this));
@@ -198,6 +203,13 @@ function setInputValue(elem, val) {
 				} else {
 					elem.parent().colorpicker('setValue', "");
 				}
+			} else if (dt === 'datepicker') {
+				var picker = elem.closest('.form-group').find('.datepicker-component');
+				if (typeof val !== 'undefined') {
+					picker.datetimepicker('update', parseDate(val));
+				} else {
+					picker.datetimepicker('update', "");
+				}
 			} else {
 				if (typeof val !== 'undefined') {
 					elem.val(val);
@@ -209,7 +221,7 @@ function setInputValue(elem, val) {
 	}
 }
 
-function loadAjaxSourcedSuccess(form, elem, jsonUrl, data) {
+function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 	if (data.responseClass == "INFO") {
 		optionsHtml = "";
 		
@@ -217,7 +229,13 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, data) {
 			optionsHtml += "<option value='" + item['key'] + "'>" + item['value'] + "</option>";
 		});
 		
+		if (data.search) {
+			elem.closest(".form-group").find(".bs-searchbox").removeClass("hidden");
+		} else {
+			elem.closest(".form-group").find(".bs-searchbox").addClass("hidden");
+		}
 		elem.html(optionsHtml).selectpicker("refresh");
+		elem.selectpicker('val', val);
 		elem.attr("loaded-from", jsonUrl);
 		return;
 	}
@@ -257,7 +275,7 @@ function loadAjaxSourced(elem) {
 			if (!checkInput(from)) {
 				proceed = false;
 			}
-			jsonUrl = jsonUrl.replace("{" + i + "}", getData(from));
+			jsonUrl = jsonUrl.replace("{" + i + "}", encodeURIComponent(getData(from)));
 		});
 	}
 	
@@ -265,6 +283,7 @@ function loadAjaxSourced(elem) {
 		return;
 	}
 	
+	var val = elem.selectpicker('val');
 	elem.html("").selectpicker("refresh");
 	
 	if (!proceed) {
@@ -278,7 +297,7 @@ function loadAjaxSourced(elem) {
 		dataType : "json",
 		timeout : 10000,
 		success : function(data) {
-			loadAjaxSourcedSuccess(form, elem, jsonUrl, data);
+			loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data);
 		},
 		error : function(data) {
 			loadAjaxSourcedError(form, elem, data);
@@ -286,7 +305,100 @@ function loadAjaxSourced(elem) {
 	});
 }
 
-function beforeOpenModal(form) {
+function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
+	if (data.responseClass == "INFO") {
+		optionsHtml = "";
+		
+		data.options.forEach(function(item, i, arr) {
+			optionsHtml += "<option value='" + item['key'] + "'>" + item['value'] + "</option>";
+		});
+		
+		if (data.search) {
+			elem.closest(".form-group").find(".bs-searchbox").removeClass("hidden");
+		} else {
+			elem.closest(".form-group").find(".bs-searchbox").addClass("hidden");
+		}
+		elem.html(optionsHtml).selectpicker("refresh");
+		elem.attr("loaded-from", jsonUrl);
+
+		elem.selectpicker('val', val);
+		
+		form['loading']--;
+		if (form['loading'] == 0) {
+			changeModalFormState(form, false, false, false);			
+		}
+		return;
+	}
+
+	removeFormErrorMessage(form);
+	removeErrorMessage(elem);
+	if (data.errors) {
+		data.errors.forEach(function(item, i, arr) {
+			setFormErrorMessage(form, item);
+		});
+		form['loading'] = -1;
+		changeModalFormState(form, true, false, false);
+	}
+}
+
+function initAjaxSourcedError(form, elem, data) {
+	removeFormErrorMessage(form);
+	removeErrorMessage(elem);
+	if (data.statusText = "error" && data.status != 0) {
+		if (data.status == 403) {
+			setFormErrorMessage(form, translations['forbidden']);
+		} else {
+			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status));
+		}
+	} else {
+		setFormErrorMessage(form, translations['ajaxHangPost']);
+	}
+	form['loading'] = -1;
+	changeModalFormState(form, true, false, false);
+}
+
+
+function initAjaxSourced(form, elem, dataIn, val) {
+	var jsonUrl = elem.attr('ajax-data-init');
+	
+	var urlVal = val;
+	if (Array.isArray(urlVal)) {
+		urlVal = urlVal.join(',');
+	}
+	jsonUrl = jsonUrl.replace("{0}", encodeURIComponent(urlVal));
+	
+	if (typeof elem.attr('init-parms') !== 'undefined') {
+		var jsonParms = elem.attr('ajax-parms').split(':');
+		jsonParms.forEach(function(item, i, arr) {
+			var name = $('#' + item).attr('name');
+			jsonUrl = jsonUrl.replace("{" + (i + 1) + "}", encodeURIComponent(dataIn[name]));
+		});
+	}
+	
+	if (jsonUrl === elem.attr("loaded-from")) {
+		return;
+	}
+
+	form['loading']++;
+	elem.html("").selectpicker("refresh");
+	
+	$.ajax({
+		type : "GET",
+		contentType : "application/json",
+		url : jsonUrl,
+		dataType : "json",
+		timeout : 10000,
+		success : function(data) {
+			initAjaxSourcedSuccess(form, elem, jsonUrl, val, data);
+		},
+		error : function(data) {
+			initAjaxSourcedError(form, elem, data);
+		}
+	});
+}
+
+function beforeOpenModal(form, fetch) {
 	removeFormErrorMessage(form);
 	form.find("input,select").not('[type="submit"]').each(function() {
 		var elem = $(this);
@@ -295,6 +407,12 @@ function beforeOpenModal(form) {
 
 		removeErrorMessage(elem);
 	});
+	
+	if (fetch) {
+		return;
+	}
+	
+	changeModalFormState(form, false, false, false);
 }
 
 function addReloadLink(form, recId) {
@@ -306,12 +424,23 @@ function addReloadLink(form, recId) {
 
 function modalFormOpenSuccess(form, data, recId) {
 	if (data.responseClass == "INFO") {
-		changeModalFormState(form, false, false, false);
+		form['loading'] = 0;
 
 		form.find("input,select").not('[type="submit"]').each(function() {
 			var elem = $(this);
 			var name = elem.attr("name");
-			var val = data[elem.attr("name")];
+			
+			if (typeof name === 'undefined') {
+				return;
+			}
+			
+			var val = data[name];
+			
+			if (typeof elem.attr("ajax-data-init") !== 'undefined') {
+				initAjaxSourced(form, elem, data, val);
+				return;
+			}
+			
 			if (typeof val === 'boolean') {
 				val = val.toString();
 			}
@@ -324,6 +453,10 @@ function modalFormOpenSuccess(form, data, recId) {
 			}
 		});
 
+		if (form['loading'] == 0) {
+			changeModalFormState(form, false, false, false);
+		}
+		
 		return;
 	}
 
@@ -352,15 +485,16 @@ function modalFormOpenError(form, data, recId) {
 }
 
 function beforeOpenModalFetch(form, recId) {
-	beforeOpenModal(form);
+	beforeOpenModal(form, true);
 
 	if (typeof recId === 'undefined') {
+		changeModalFormState(form, false, false, false);
 		return;
 	}
 	
 	changeModalFormState(form, true, true, false);
 
-	var jsonUrl = form.attr("fetchFrom").replace("{0}", recId);
+	var jsonUrl = form.attr("fetchFrom").replace("{0}", encodeURIComponent(recId));
 
 	$.ajax({
 		type : "GET",
@@ -405,8 +539,12 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 		submit.parent().find(".loader").remove();
 	}
 
-	form.find("input").not('[type="submit"]').each(function() {
-		$(this).prop("disabled", submitDisabled);
+	form.find("input,select").not('[type="submit"]').each(function() {
+		var elem = $(this); 
+		elem.prop("disabled", submitDisabled);
+		if (elem.prop("tagName") === "SELECT") {
+			elem.selectpicker('refresh');
+		}
 	});
 
 	if (keepOnScreen) {
@@ -664,7 +802,7 @@ function dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, selector) {
 	});
 }
 
-function initDatatables(table, loc) {
+function initDatatables(table, loc, lang) {
 	var buttonDiv = $('#' + table.attr('id') + '_buttons');
 	var buttons = [];
 	buttonDiv.find('button').each(function() {
@@ -691,7 +829,7 @@ function initDatatables(table, loc) {
 			} else {
 				func = function(e, dt, node, config) {
 					removeTableErrorMessage(dt);
-					beforeOpenModal(form);
+					beforeOpenModal(form, false);
 					if (typeof refCol !== 'undefined') {
 						var refData = dataTablesSelected(dt, refCol, button.attr("extend"));
 						form.find('input[name="' + refCol + '"]').val(refData);
@@ -750,17 +888,33 @@ function initDatatables(table, loc) {
 		});
 	});
 	buttonDiv.remove();
-	initDatatablesWithButtons(table, buttons, loc);
+	initDatatablesWithButtons(table, buttons, loc, lang);
 }
 
-function initDatatablesWithButtons(table, buttons, loc) {
+function initDatatablesWithButtons(table, buttons, loc, lang) {
 	var columnDefs = [];
 	table.find("th").each(function() {
 		var cd = $(this);
-		columnDefs.push({
-			data : cd.attr("mapping"),
-			name : cd.attr("mapping")
-		});
+		
+		var format = cd.attr("format");
+		if (format === "date") {
+			columnDefs.push({
+				data : cd.attr("mapping"),
+				name : cd.attr("mapping"),
+				render : function ( data, type, row, meta ) {
+					if (type == "sort" || type == 'type') {
+				        return data;
+					}
+					var dpg = $.fn.datetimepicker.DPGlobal;
+					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), lang, 'standard');
+			    }
+			});
+		} else {
+			columnDefs.push({
+				data : cd.attr("mapping"),
+				name : cd.attr("mapping")
+			});
+		}
 	});
 
 	var dataTable = table.DataTable({
@@ -786,8 +940,16 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		order : [],
 		select : true
 	});
-
+	
 	dataTable.column("id:name").visible(false);
+
+	table.find("th").each(function() {
+		var cd = $(this);
+		var idt = cd.attr("mapping") + ":name";
+		if (typeof cd.attr("sort") !== 'undefined') {
+			dataTable.column(idt).order(cd.attr("sort"));
+		}
+	});
 }
 
 function initDatePicker(elem, loc) {

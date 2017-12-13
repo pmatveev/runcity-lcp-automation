@@ -12,11 +12,8 @@ import org.runcity.exception.UnexpectedArgumentException;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +29,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	@Secured("ROLE_ADMIN")
 	public List<Consumer> selectAll() {
-		return consumerRepository.findAll(new Sort(new Order(Direction.ASC, "credentials")));
+		return consumerRepository.findAll();
 	}
 
 	@Override
@@ -86,18 +83,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
-	private void delete(Long id) throws DBException {
-		try {
-			Consumer c = selectById(id);
-			consumerRepository.delete(c);
-			persistedLoginsRepository.deleteConsumer(c.getUsername());
-		} catch (Throwable t) {
-			throw new DBException(t);
-		}
+	private void delete(Long id) {
+		consumerRepository.delete(id);
 	}
 
 	@Secured("ROLE_ADMIN")
-	public void delete(List<Long> id) throws DBException {
+	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
 		}

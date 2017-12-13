@@ -12,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
+import org.runcity.util.ObjectUtils;
 import org.runcity.util.StringUtils;
 
 @Entity
@@ -130,5 +131,20 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 	public String getBadge() {
 		return "<span class='label' style='background-color: #" + StringUtils.xss(bgcolor) + "; color: #"
 				+ StringUtils.xss(color) + "'>" + StringUtils.xss(prefix + DEFAULT_POSTFIX) + "</span>";
+	}
+	
+	@Override
+	public int hashCode() {
+		return (id + "").hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Category)) {
+			return false;
+		}
+		
+		Category c = (Category) o;
+		return ObjectUtils.equals(this, c);
 	}
 }

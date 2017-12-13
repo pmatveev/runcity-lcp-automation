@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
@@ -76,8 +77,8 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 	}
 	
 	@Override
-	public void validate(Errors errors) {
-		super.validate(errors);
+	public void validate(ApplicationContext context, Errors errors) {
+		super.validate(context, errors);
 
 		int filled = 0;
 		for (String s : value.keySet()) {

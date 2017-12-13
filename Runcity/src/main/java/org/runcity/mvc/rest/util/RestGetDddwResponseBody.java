@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestGetDddwResponseBody<T> extends RestGetResponseBody {
 	private boolean sorted = false;
-	
+
 	@JsonView(Views.Public.class)
 	private List<Option> options = new ArrayList<Option>();
 
@@ -57,5 +57,10 @@ public class RestGetDddwResponseBody<T> extends RestGetResponseBody {
 	public void addOption(T key, String value) {
 		this.options.add(new Option(key, value));
 		sorted = false;
+	}
+	
+	@JsonView(Views.Public.class)
+	public boolean getSearch() {
+		return options.size() > 4; 
 	}
 }

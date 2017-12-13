@@ -6,6 +6,10 @@ public class ColumnDefinition {
 	private String groupLabel;
 	private Object[] substitution;
 
+	// options
+	private String format;
+	private String sort;
+	
 	public ColumnDefinition(String name, String label) {
 		this.name = name;
 		this.label = label;
@@ -47,5 +51,23 @@ public class ColumnDefinition {
 	
 	public Object[] getSubstitution() {
 		return substitution;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public ColumnDefinition setDate() {
+		this.format = "date";
+		return this;
+	}
+
+	public String getSort() {
+		return sort;
+	}
+
+	public ColumnDefinition setSort(String sort) {
+		this.sort = sort;
+		return this;
 	}
 }

@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDateColumn;
@@ -303,6 +304,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.endTag();
 
 		processUrl(column.getAjaxSource(), "selectAjax");
+		processUrl(column.getInitSource(), "initAjax");
 
 		SelectTag select = new SelectTag();
 		select.setPath(column.getName());
@@ -312,6 +314,7 @@ public class FormInputTag extends TagSupport {
 		select.setOnchange(column.getOnChange());
 		select.setDynamicAttribute(null, "jschecks", column.getJsChecks());
 		select.setDynamicAttribute(null, "data-width", "100%");
+		select.setDynamicAttribute(null, "data-live-search", "true");
 
 		Object ajax = pageContext.getAttribute("selectAjax");
 		if (ajax != null) {
@@ -319,6 +322,15 @@ public class FormInputTag extends TagSupport {
 			
 			if (column.getAjaxParms() != null) {
 				select.setDynamicAttribute(null, "ajax-parms", StringUtils.toString(column.getAjaxParms(), ":", ""));
+			}
+		}
+
+		Object initAjax = pageContext.getAttribute("initAjax");
+		if (initAjax != null) {
+			select.setDynamicAttribute(null, "ajax-data-init", initAjax);
+			
+			if (column.getInitParms() != null) {
+				select.setDynamicAttribute(null, "init-parms", StringUtils.toString(column.getInitParms(), ":", ""));
 			}
 		}
 
@@ -346,7 +358,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.writeAttribute("class", "input-group date datepicker-component");
 		tagWriter.writeAttribute("data-date-format", localize("common.dateFormat"));
 		tagWriter.writeAttribute("data-link-field", column.getHtmlId());
-		tagWriter.writeAttribute("data-link-format", "ddmmyyyy");
+		tagWriter.writeAttribute("data-link-format", SpringRootConfig.DATE_FORMAT);
 		if (Boolean.TRUE.equals(pageContext.getAttribute("modal"))) {
 			tagWriter.writeAttribute("data-date-container", "#modal_" + column.getFormHtmlId());
 		} else {
@@ -387,6 +399,7 @@ public class FormInputTag extends TagSupport {
 		input.setOnchange(column.getOnChange());
 		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
 		input.setDynamicAttribute(null, "type", "hidden");
+		input.setDynamicAttribute(null, "display-type", "datepicker");
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
 		}

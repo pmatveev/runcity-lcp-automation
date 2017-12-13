@@ -87,8 +87,8 @@ public class ChangePasswordByIdForm extends AbstractForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		id.validate(errors);
-		password.validate(errors);
-		password2.validate(errors);
+		id.validate(context, errors);
+		password.validate(context, errors);
+		password2.validate(context, errors);
 	}
 }

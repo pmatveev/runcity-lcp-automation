@@ -165,14 +165,14 @@ public class ConsumerCreateForm extends AbstractForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		username.validate(errors);
-		credentials.validate(errors);
-		password.validate(errors);
-		password2.validate(errors);
-		email.validate(errors);
-		active.validate(errors);
-		roles.validate(errors);
-		locale.validate(errors);
+		username.validate(context, errors);
+		credentials.validate(context, errors);
+		password.validate(context, errors);
+		password2.validate(context, errors);
+		email.validate(context, errors);
+		active.validate(context, errors);
+		roles.validate(context, errors);
+		locale.validate(context, errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 

@@ -45,8 +45,8 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this, new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, true, false, null, 32);
 		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), true, 1, 3);
-		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true, "000000");
-		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true, "ffffff");
+		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true, "ffffff");
+		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true, "000000");
 	}	
 	
 	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor, DynamicLocaleList localeList) {
@@ -129,9 +129,9 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		id.validate(errors);
-		name.validate(errors);
-		prefix.validate(errors);
+		id.validate(context, errors);
+		name.validate(context, errors);
+		prefix.validate(context, errors);
 	}
 	
 	public Category getCategory() {

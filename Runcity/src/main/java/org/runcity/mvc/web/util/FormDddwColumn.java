@@ -5,20 +5,27 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	private static final Logger logger = Logger.getLogger(FormDddwColumn.class);
 
+	protected ApplicationContext context;
+	
+	protected String initSource;
+	protected String[] initParms;
 	protected String ajaxSource;
 	protected String[] ajaxParms;
 
 	protected boolean multiple;
 	protected boolean required;
 
-	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String ajaxSource, String[] ajaxParms,
+	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, String[] initParms, String ajaxSource, String[] ajaxParms,
 			boolean multiple, boolean required) {
 		super(form, definition);
+		this.initSource = initSource;
+		this.initParms = initParms;
 		this.ajaxSource = ajaxSource;
 		this.ajaxParms = ajaxParms;
 		this.multiple = multiple;
@@ -31,6 +38,22 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 
 	public void setAjaxSource(String ajaxSource) {
 		this.ajaxSource = ajaxSource;
+	}
+
+	public String getInitSource() {
+		return initSource;
+	}
+
+	public void setInitSource(String initSource) {
+		this.initSource = initSource;
+	}
+
+	public String[] getInitParms() {
+		return initParms;
+	}
+
+	public void setInitParms(String[] initParms) {
+		this.initParms = initParms;
 	}
 
 	public String[] getAjaxParms() {
@@ -46,9 +69,11 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	}
 
 	@Override
-	public void validate(Errors errors) {
-		super.validate(errors);
+	public void validate(ApplicationContext context, Errors errors) {
+		super.validate(context, errors);
 
+		this.context = context;
+		
 		if (required) {
 			boolean failed = value == null;
 

@@ -23,7 +23,7 @@ public interface ConsumerService {
 	public Consumer update(Consumer c) throws DBException;
 		
 	@Secured("ROLE_ADMIN")
-	public void delete(List<Long> id) throws DBException;
+	public void delete(List<Long> id);
 	
 	public boolean validatePassword(Consumer c, String password);
 	

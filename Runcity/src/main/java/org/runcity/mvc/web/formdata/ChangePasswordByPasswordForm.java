@@ -90,9 +90,9 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		currPassword.validate(errors);
-		password.validate(errors);
-		password2.validate(errors);
+		currPassword.validate(context, errors);
+		password.validate(context, errors);
+		password2.validate(context, errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 		consumerFor = consumerService.getCurrent();

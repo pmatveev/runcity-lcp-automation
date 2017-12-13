@@ -8,6 +8,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.CollectionUtils;
+import org.runcity.util.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
@@ -150,5 +151,20 @@ public class Consumer implements DBEntity {
 			str.add(r.getCode());
 		}
 		return str;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (id + "").hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Consumer)) {
+			return false;
+		}
+		
+		Consumer c = (Consumer) o;
+		return ObjectUtils.equals(this, c);
 	}
 }

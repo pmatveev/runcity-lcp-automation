@@ -10,11 +10,14 @@ public interface CategoryService {
 	@Secured("ROLE_ADMIN")
 	public Category selectById(Long id);
 	
+	@Secured("ROLE_ADMIN")
+	public Iterable<Category> selectById(Iterable<Long> id);
+	
 	public List<Category> selectAll();
 	
 	@Secured("ROLE_ADMIN")
 	public Category addOrUpdate(Category c) throws DBException;
 	
 	@Secured("ROLE_ADMIN")
-	public void delete(List<Long> id) throws DBException;
+	public void delete(List<Long> id);
 }

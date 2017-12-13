@@ -93,6 +93,8 @@ public class FormTableTag extends TagSupport {
 		for (ColumnDefinition cd : table.getColumns()) {
 			tagWriter.startTag("th");
 			tagWriter.writeAttribute("mapping", cd.getName());
+			tagWriter.writeOptionalAttributeValue("format", cd.getFormat());
+			tagWriter.writeOptionalAttributeValue("sort", cd.getSort());
 			if (cd.getLabel() != null) {
 				tagWriter.appendValue(MessageFormat.format(bundle.getResourceBundle().getString(cd.getLabel()), cd.getSubstitution()));
 			}

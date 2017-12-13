@@ -114,6 +114,11 @@ public class Translation implements DBEntity {
 				&& StringUtils.isEqual(content, t.content);
 	}
 	
+	@Override
+	public String toString() {
+		return locale + ": " + content;
+	}
+	
 	public static String getDisplay(Collection<Translation> c, String locale) {
 		String second = null;
 		String any = null;

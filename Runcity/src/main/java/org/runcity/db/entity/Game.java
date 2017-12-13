@@ -10,6 +10,8 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.util.DBEntity;
+import org.runcity.util.CollectionUtils;
+import org.runcity.util.ObjectUtils;
 
 @Entity
 @Table(name = "game")
@@ -22,7 +24,7 @@ public class Game implements DBEntity {
 
 	@Column(name = "locale", length = 32, nullable = false)
 	private String locale;
-	
+
 	@Column(name = "name", length = 32, unique = true, nullable = false)
 	private String name;
 
@@ -35,16 +37,16 @@ public class Game implements DBEntity {
 	@Column(name = "game_date", columnDefinition = "datetime", nullable = false)
 	private Date date;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "game_category", joinColumns = {
-			@JoinColumn(name = "game__id", nullable = false, updatable = false) }, inverseJoinColumns = {
-					@JoinColumn(name = "category__id", nullable = false, updatable = false) })
+			@JoinColumn(name = "game__id", nullable = false) }, inverseJoinColumns = {
+					@JoinColumn(name = "category__id", nullable = false) })
 	private Set<Category> categories;
-	
+
 	public Game() {
 		this.categories = new HashSet<Category>();
 	}
-	
+
 	public Game(Long id, String locale, String name, String city, String country, Date date, Set<Category> categories) {
 		setId(id);
 		setLocale(locale);
@@ -55,6 +57,15 @@ public class Game implements DBEntity {
 		if (categories != null) {
 			this.categories = categories;
 		}
+	}
+
+	public void update(Game g) {
+		this.locale = g.locale;
+		this.name = g.name;
+		this.city = g.city;
+		this.country = g.country;
+		this.date = g.date;
+		CollectionUtils.applyChanges(categories, g.categories);
 	}
 
 	public Long getId() {
@@ -108,7 +119,7 @@ public class Game implements DBEntity {
 	public Set<Category> getCategories() {
 		return categories;
 	}
-	
+
 	public List<Long> getCategoryIds() {
 		List<Long> str = new ArrayList<Long>();
 		for (Category c : categories) {
@@ -123,5 +134,15 @@ public class Game implements DBEntity {
 			str.add(c.getNameDisplay(locale));
 		}
 		return str;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Game)) {
+			return false;
+		}
+
+		Game g = (Game) o;
+		return ObjectUtils.equals(this, g);
 	}
 }

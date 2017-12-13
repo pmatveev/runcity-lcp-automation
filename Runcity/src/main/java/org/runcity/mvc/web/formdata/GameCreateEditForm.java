@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Game;
+import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDateColumn;
@@ -39,7 +40,7 @@ public class GameCreateEditForm extends AbstractForm {
 	private FormPlainStringColumn country;
 	
 	@JsonView(Views.Public.class)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "ddmmyyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_FORMAT)
 	private FormDateColumn date;
 	
 	@JsonView(Views.Public.class)
@@ -165,12 +166,16 @@ public class GameCreateEditForm extends AbstractForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		id.validate(errors);
-		locale.validate(errors);
-		name.validate(errors);
-		city.validate(errors);
-		country.validate(errors);
-		date.validate(errors);
-		categories.validate(errors);
+		id.validate(context, errors);
+		locale.validate(context, errors);
+		name.validate(context, errors);
+		city.validate(context, errors);
+		country.validate(context, errors);
+		date.validate(context, errors);
+		categories.validate(context, errors);
+	}
+	
+	public Game getGame() {
+		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDate(), categories.getCategories());
 	}
 }

@@ -10,7 +10,6 @@ import org.runcity.db.entity.Translation;
 import org.runcity.db.service.CategoryService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
-import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
@@ -65,14 +64,12 @@ public class CategoryTable extends AbstractLocalizedTable {
 
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("badge", "category.badge"));
-		addLocalizedColumn("name", "category.name");
+		addLocalizedColumn("name", "category.name", true);
 
-		this.buttons.add(new ButtonDefinition("game.header", null, "btn", "form:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/categoryDelete/:id", "selected"));
 
-		this.relatedForms.add(new GameCreateEditForm(localeList));
 		this.relatedForms.add(new CategoryCreateEditForm(localeList));
 	}
 	

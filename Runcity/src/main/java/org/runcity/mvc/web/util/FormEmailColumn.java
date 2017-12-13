@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public class FormEmailColumn extends FormStringColumn {
@@ -22,8 +23,8 @@ public class FormEmailColumn extends FormStringColumn {
 	}
 
 	@Override
-	public void validate(Errors errors) {
-		super.validate(errors);
+	public void validate(ApplicationContext context, Errors errors) {
+		super.validate(context, errors);
 
 		if (value == null || !pattern.matcher(value).matches()) {
 			logger.debug(getName() + " does not match email regexp");

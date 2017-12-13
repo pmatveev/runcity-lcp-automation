@@ -3,6 +3,7 @@ package org.runcity.mvc.web;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,6 +38,14 @@ public class MenuController {
 		table.processModel(model);
 		
 		return "/secure/categories";
+	}
+	
+	@RequestMapping(value = "/secure/games", method = RequestMethod.GET)
+	public String games(Model model) {
+		GameTable table = new GameTable("/api/v1/gameTable", messageSource, localeList);
+		table.processModel(model);
+		
+		return "/secure/games";
 	}
 	
 	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)

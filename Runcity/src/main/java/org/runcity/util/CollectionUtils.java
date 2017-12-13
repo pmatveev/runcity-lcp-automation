@@ -1,21 +1,25 @@
 package org.runcity.util;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class CollectionUtils {
-	public static <T> List<T> applyChanges(List<T> prev, List<T> now) {
-		// remove absent
-		for (int i = 0; i < prev.size(); i++) {
-			if (!now.contains(prev.get(i))) {
-				prev.remove(i);
-				i--;
+	public static <T> Collection<T> applyChanges(Collection<T> prev, Collection<T> now) {
+		Iterator<T> i = prev.iterator();
+		
+		while (i.hasNext()) {
+			T next = i.next();
+			if (!now.contains(next)) {
+				i.remove();
 			}
 		}
-
-		// add new
-		for (int i = 0; i < now.size(); i++) {
-			if (!prev.contains(now.get(i))) {
-				prev.add(now.get(i));
+		
+		i = now.iterator();
+		
+		while (i.hasNext()) {
+			T next = i.next();
+			if (!prev.contains(next)) {
+				prev.add(next);
 			}
 		}
 		

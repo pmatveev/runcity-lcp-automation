@@ -88,7 +88,8 @@
 		forbidden                : '<fmt:message key="common.forbidden" bundle="${msg}" />',
 		confTitle                : '<fmt:message key="confirmation.title" bundle="${msg}" />',
 		modalCancel              : '<fmt:message key="common.closeModal" bundle="${msg}" />',
-		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />'
+		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />',
+		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />'
 	}
 	
 	$(document).ready(function() {
@@ -105,11 +106,14 @@
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {
-			initDatatables($(this), '${datatablesLoc}');
+			initDatatables($(this), '${datatablesLoc}', '${lang}');
 		});
 		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
 			loadAjaxSourced($(this));
 		});
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) { 
+			$('select').selectpicker('mobile'); 
+		}
 	});
 </script>
 </head>
@@ -132,6 +136,7 @@
 						<sec:authorize ifAllGranted="ROLE_ADMIN">
 							<spring:url value="/secure/users" var="goUsers"/>
 							<spring:url value="/secure/categories" var="goCategories"/>
+							<spring:url value="/secure/games" var="goGames"/>
 							<li>
 								<a class="dropdown-toggle" data-toggle="dropdown" role="button">
 									<fmt:message key="menu.games" bundle="${msg}" />
@@ -140,6 +145,7 @@
 								<ul class="dropdown-menu">
 									<li>
 										<a href="${goCategories}" role="button"><fmt:message key="menu.categories" bundle="${msg}" /></a>
+										<a href="${goGames}" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a>
 									</li>
 								</ul>
 							</li>
@@ -167,7 +173,7 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'))" href="#">
+									<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'), false)" href="#">
 										<fmt:message key="changePassword.header" bundle="${msg}" />
 									</a>
 									<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">

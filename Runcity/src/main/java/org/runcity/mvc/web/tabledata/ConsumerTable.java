@@ -90,7 +90,7 @@ public class ConsumerTable extends AbstractLocalizedTable {
 		
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
-		this.columns.add(new ColumnDefinition("credentials", "user.credentials"));
+		this.columns.add(new ColumnDefinition("credentials", "user.credentials").setSort("asc"));
 		this.columns.add(new ColumnDefinition("email", "user.email"));
 		this.columns.add(new ColumnDefinition("active", "user.active"));
 		this.columns.add(new ColumnDefinition("roles", "user.roles"));

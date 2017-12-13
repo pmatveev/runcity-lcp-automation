@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories("org.runcity.db.repository")
 @ComponentScan({ "org.runcity.db.entity" })
 public class SpringRootConfig {
+	public static final String DATE_FORMAT = "yyyy mm dd";
 	private static final String PROP_DATABASE_DRIVER = "db.driver";
 	private static final String PROP_DATABASE_PASSWORD = "db.password";
 	private static final String PROP_DATABASE_URL = "db.url";

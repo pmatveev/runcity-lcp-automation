@@ -196,16 +196,12 @@ public class RestConsumerController extends AbstractRestController {
 	public RestPostResponseBody consumerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/consumerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
-		
 		try {
 			consumerService.delete(id);
-		} catch (DBException e) {
+		} catch (Exception e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
-			logger.error("DB exception", e);
-			return result;
+			result.addCommonError("commom.db.deleteConstraint");
 		}
-		
 		return result;		
 	}
 	

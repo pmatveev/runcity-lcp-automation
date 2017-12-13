@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.ResourceBundle;
 import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.Errors;
 
@@ -45,8 +47,8 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 	}
 
 	@Override
-	public void validate(Errors errors) {
-		super.validate(errors);
+	public void validate(ApplicationContext context, Errors errors) {
+		super.validate(context, errors);
 
 		if (required) {
 			boolean failed = value == null;
@@ -63,6 +65,20 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 				logger.debug(getName() + " is required");
 				errors.rejectValue(getName(), "validation.required");
 			}
+		}
+		
+		if (value instanceof Collection) {
+			Iterator<?> i = ((Collection<?>) value).iterator();
+			while (i.hasNext()) {
+				Object o = i.next();
+				if (!options.containsKey(o.toString())) {
+					errors.rejectValue(getName(), "common.notFoundListbox", new Object[] {o.toString()}, null);
+				}
+			}
+		} else {
+			if (!options.containsKey(value.toString())) {
+				errors.rejectValue(getName(), "common.notFoundListbox", new Object[] {value.toString()}, null);
+			}			
 		}
 	}
 

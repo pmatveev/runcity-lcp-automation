@@ -22,7 +22,13 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category selectById(Long id) {
 		return categoryRepository.findOne(id);
 	}
-	
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public Iterable<Category> selectById(Iterable<Long> id) {
+		return categoryRepository.findAll(id);
+	}
+
 	@Override
 	public List<Category> selectAll() {
 		return categoryRepository.findAll();
@@ -38,27 +44,22 @@ public class CategoryServiceImpl implements CategoryService {
 				return categoryRepository.save(prev);
 			} else {
 				Category n = c.cloneForAdd();
-				n = categoryRepository.save(n); 
+				n = categoryRepository.save(n);
 				n.update(c);
-				return categoryRepository.save(n); 
+				return categoryRepository.save(n);
 			}
 		} catch (Throwable t) {
 			throw new DBException(t);
 		}
 	}
-	
-	private void delete(Long id) throws DBException {
-		try {
-			Category c = selectById(id);
-			categoryRepository.delete(c);
-		} catch (Throwable t) {
-			throw new DBException(t);
-		}
+
+	private void delete(Long id) {
+		categoryRepository.delete(id);
 	}
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public void delete(List<Long> id) throws DBException {
+	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
 		}
