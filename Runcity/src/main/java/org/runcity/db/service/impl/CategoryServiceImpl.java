@@ -2,6 +2,7 @@ package org.runcity.db.service.impl;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.Category;
 import org.runcity.db.repository.CategoryRepository;
 import org.runcity.db.service.CategoryService;
@@ -21,6 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
 	@Secured("ROLE_ADMIN")
 	public Category selectById(Long id) {
 		return categoryRepository.findOne(id);
+	}
+	
+	@Override	
+	@Secured("ROLE_ADMIN")
+	public Category selectWithGames(Long id) {
+		Category c = selectById(id);
+		Hibernate.initialize(c.getGames());
+		return c;
 	}
 
 	@Override

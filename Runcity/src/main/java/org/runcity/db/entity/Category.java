@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -39,6 +40,9 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 	@Column(name = "prefix", length = 6)
 	private String prefix;
+	
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
+	private Set<Game> games;
 
 	public Category() {
 		this.names = new ArrayList<Translation>();
@@ -114,6 +118,10 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+	}
+	
+	public Set<Game> getGames() {
+		return games;
 	}
 
 	public void addName(Translation t) {

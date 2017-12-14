@@ -11,6 +11,9 @@ public interface CategoryService {
 	public Category selectById(Long id);
 	
 	@Secured("ROLE_ADMIN")
+	public Category selectWithGames(Long id);
+	
+	@Secured("ROLE_ADMIN")
 	public Iterable<Category> selectById(Iterable<Long> id);
 	
 	public List<Category> selectAll();
