@@ -111,9 +111,6 @@
 		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
 			loadAjaxSourced($(this));
 		});
-		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) { 
-			$('select').selectpicker('mobile'); 
-		}
 	});
 </script>
 </head>
