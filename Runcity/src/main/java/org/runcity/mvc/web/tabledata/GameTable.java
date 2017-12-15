@@ -59,7 +59,7 @@ public class GameTable extends AbstractLocalizedTable {
 			country = StringUtils.xss(g.getCountry());
 			date = g.getDate();
 			
-			List<String> categories = new ArrayList<>(g.getCategories().size());
+			List<String> categories = new ArrayList<String>(g.getCategories().size());
 			for (Category c : g.getCategories()) {
 				categories.add(c.getNameDisplay(g.getLocale()));
 			}

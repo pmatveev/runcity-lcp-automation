@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.PasswordCipher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +46,20 @@ public class SpringRootConfig {
 		dataSource.setDriverClassName(env.getRequiredProperty(PROP_DATABASE_DRIVER));
 		dataSource.setUrl(env.getRequiredProperty(PROP_DATABASE_URL));
 		dataSource.setUsername(env.getRequiredProperty(PROP_DATABASE_USERNAME));
-		dataSource.setPassword(env.getRequiredProperty(PROP_DATABASE_PASSWORD));
+		
+		String password = env.getRequiredProperty(PROP_DATABASE_PASSWORD);
+		if (password.startsWith("clear:")) {
+			password = password.substring(6);
+		} else {
+			try {
+				password = new PasswordCipher("dbpasswd").decrypt(password);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		System.out.println("PWD: " + password);
+		dataSource.setPassword(password);
 
 		return dataSource;
 	}

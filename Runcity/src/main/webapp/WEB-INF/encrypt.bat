@@ -1,0 +1,1 @@
+java -classpath classes;lib/commons-codec-1.11.jar org.runcity.util.PasswordCipher %*
