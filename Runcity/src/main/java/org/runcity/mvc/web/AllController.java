@@ -3,6 +3,7 @@ package org.runcity.mvc.web;
 import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
 import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class AllController {
 	@Autowired
 	private DynamicLocaleList localeList;
-	
+
 	@ModelAttribute
 	public void addChangePassword(Model model) {
 		if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
@@ -32,6 +33,13 @@ public class AllController {
 			if (!model.containsAttribute(form.getFormName())) {
 				model.addAttribute(form.getFormName(), form);
 			}
+		}
+	}
+
+	@ModelAttribute
+	public void addVersionInfo(Model model) {
+		if (!model.containsAttribute("version")) {
+			model.addAttribute("version", this.getClass().getPackage().getImplementationVersion());
 		}
 	}
 }

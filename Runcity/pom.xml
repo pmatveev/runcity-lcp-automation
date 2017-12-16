@@ -4,7 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.runcity</groupId>
 	<artifactId>Runcity</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2-DEVELOPMENT</version>
+	<developers>
+		<developer>
+			<name>Philipp Matveev</name>
+		</developer>
+	</developers>
 	<packaging>war</packaging>
 	<properties>
 		<jdk.version>1.7</jdk.version>
@@ -153,6 +158,20 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Implementation-Version>${project.version}</Implementation-Version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
 		<finalName>Runcity</finalName>
 	</build>
 </project>

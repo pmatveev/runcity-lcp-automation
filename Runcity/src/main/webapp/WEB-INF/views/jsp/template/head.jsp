@@ -176,6 +176,9 @@
 									<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
 										<fmt:message key="common.edit" bundle="${msg}" />
 									</a>
+									<a data-toggle="modal" data-target="#modal_about" href="#">
+										<fmt:message key="common.about" bundle="${msg}" />
+									</a>
 								</li>
 							</ul>
 						</li>
@@ -188,7 +191,8 @@
 	<div class="nav-buffer"></div>
 	<!-- Modals -->
 	<sec:authorize access="isAuthenticated()">
-			<c:set value="${true}" var="modal"/>
-			<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
-			<%@ include file="../forms/consumerSelfEditForm.jsp"%>
+		<%@ include file="about.jsp"%>
+		<c:set value="${true}" var="modal"/>
+		<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
+		<%@ include file="../forms/consumerSelfEditForm.jsp"%>
 	</sec:authorize>
