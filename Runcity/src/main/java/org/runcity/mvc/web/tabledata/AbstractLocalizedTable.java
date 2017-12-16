@@ -1,5 +1,7 @@
 package org.runcity.mvc.web.tabledata;
 
+import java.util.List;
+
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
@@ -14,7 +16,7 @@ public abstract class AbstractLocalizedTable extends AbstractTable {
 		this.localeList = localeList;
 	}
 	
-	protected void addLocalizedColumn(String name, String label, boolean sort) {
+	protected void addLocalizedColumn(List<ColumnDefinition> list, String name, String label, boolean sort) {
 		String userLocale = SecureUserDetails.getLocaleCurrent();
 		for (String l : localeList.locales()) {
 			ColumnDefinition c = new ColumnDefinition(name + "." + l, null, label, messageSource.getMessage("locale." + l, null, locale)); 
@@ -23,7 +25,7 @@ public abstract class AbstractLocalizedTable extends AbstractTable {
 				c.setSort("asc");
 			}
 			
-			this.columns.add(c);
+			list.add(c);
 		}
 	}
 }

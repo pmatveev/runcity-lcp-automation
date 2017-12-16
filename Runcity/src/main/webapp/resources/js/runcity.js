@@ -8,7 +8,7 @@ function parseDate(datestr) {
 }
 
 function removeFormFieldErrorMessage(form) {
-	form.find("input").not('[type="submit"]').each(function() {
+	form.find("input,textarea").not('[type="submit"]').each(function() {
 		removeErrorMessage($(this));
 	});
 }
@@ -72,7 +72,7 @@ function checkElem(elem, rule) {
 		var par = elem.closest(".form-group");
 		var filled = 0;
 		var total = 0;
-		par.find("input").each(function(){
+		par.find("input,textarea").each(function(){
 			total++;
 			if ($(this).val().length > 0) {
 				filled++;
@@ -146,7 +146,7 @@ function onColChange(elem) {
 	checkInput(elem);
 	var form = elem.closest("form");
 	
-	form.find("input,select").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var inp = $(this);
 		if ((":" + inp.attr('ajax-parms') + ":").indexOf(":" + elem.attr("id") + ":") > -1) {
 			setInputValue(inp, "");
@@ -174,7 +174,7 @@ function checkPwdInput(pwd, pwdConf) {
 function validateForm(form, event) {
 	var result = true;
 
-	form.find("input,select").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		if (!checkInput($(this))) {
 			result = false;
 		}
@@ -194,7 +194,7 @@ function setInputValue(elem, val) {
 			return;
 		}
 		
-		if (elem.prop('tagName') === 'INPUT') {
+		if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'TEXTAREA') {
 			var dt = elem.attr('display-type');
 			
 			if (dt === 'colorpicker') {
@@ -400,7 +400,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 
 function beforeOpenModal(form, fetch) {
 	removeFormErrorMessage(form);
-	form.find("input,select").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		var val = elem.attr('default');
 		setInputValue(elem, val);
@@ -426,7 +426,7 @@ function modalFormOpenSuccess(form, data, recId) {
 	if (data.responseClass == "INFO") {
 		form['loading'] = 0;
 
-		form.find("input,select").not('[type="submit"]').each(function() {
+		form.find("input,select,textarea").not('[type="submit"]').each(function() {
 			var elem = $(this);
 			var name = elem.attr("name");
 			
@@ -539,7 +539,7 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 		submit.parent().find(".loader").remove();
 	}
 
-	form.find("input,select").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this); 
 		elem.prop("disabled", submitDisabled);
 		if (elem.prop("tagName") === "SELECT") {
@@ -556,7 +556,7 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 function getData(elem) {
 	var tag = elem.prop("tagName");
-	if (tag === 'INPUT') {
+	if (tag === 'INPUT' || tag === 'TEXTAREA') {
 		var format = elem.attr('format');
 		if (format === 'array') {
 			return elem.val().split(',');
@@ -572,7 +572,7 @@ function getData(elem) {
 function getFormData(form) {
 	var res = {};
 
-	form.find("input,select").not('[type="submit"]').not(".ignore-value").each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value").each(function() {
 		var elem = $(this);
 		var format = elem.attr('format');
 		
@@ -626,7 +626,7 @@ function modalFormSuccess(form, data) {
 			setFormErrorMessage(form, item);
 		});
 	}
-	form.find("input,select").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		var name = elem.attr("name");
 		
@@ -898,6 +898,7 @@ function initDatatables(table, loc, lang) {
 
 function initDatatablesWithButtons(table, buttons, loc, lang) {
 	var columnDefs = [];
+	var expand = false
 	table.find("th").each(function() {
 		var cd = $(this);
 		
@@ -914,6 +915,18 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), lang, 'standard');
 			    }
 			});
+		} else if (format === "expand") {
+			expand = true;
+			columnDefs.push({
+                className:      'details-control',
+                orderable:      false,
+                data:           null,
+                defaultContent: '',
+                render: function () {
+                	return '<span class="glyphicon glyphicon-chevron-right"></span>';
+                },
+                width:          '16px'
+            });
 		} else {
 			columnDefs.push({
 				data : cd.attr("mapping"),
@@ -937,12 +950,20 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 		dom : "<'row'<'col-sm-12 errorHolder'>>"
 				+ "<'row'<'col-sm-6'l><'col-sm-6'f>>"
 				+ "<'row'<'col-sm-12'B>>"
-				+ "<'row'<'col-sm-12'tr>>"
+				+ "<'row'<'col-sm-12 table-responsive'tr>>"
 				+ "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+		fnDrawCallback: function( oSettings ) {
+			for (var property in dataTable.expanded) {
+			    if (dataTable.expanded.hasOwnProperty(property)) {
+			    	table.find('tr#' + property).find('td.details-control').click();
+			    }
+			}
+		},
 		language : {
 			url : loc
 		},
 		order : [],
+		rowId : 'id',
 		select : true
 	});
 	
@@ -955,6 +976,53 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 			dataTable.column(idt).order(cd.attr("sort"));
 		}
 	});
+	if (expand) {
+		var expandTemplate = $('#' + table.attr("id") + "_extension");
+		dataTable['formatExpand'] = function(data) {
+			expandTemplate.find("td.dynamic").each(function() {
+				var elem = $(this);
+				var mapping = elem.attr("mapping").split(".");
+				var val = data;
+				
+				mapping.forEach(function(item, i, arr) {
+					val = val[item];
+				});
+				
+				elem.html(val);
+			});
+			return expandTemplate.html();
+		};
+		
+		dataTable['expanded'] = {};
+		
+	    $('#' + table.attr("id") + ' tbody').on('click', 'td.details-control', function () {
+	        var tr = $(this).closest('tr');
+	        var tdi = tr.find("span.glyphicon");
+	        var row = dataTable.row(tr);
+	
+	        if (row.child.isShown()) {
+	            // This row is already open - close it
+	            row.child.hide();
+	            tr.removeClass('shown');
+	            tdi.first().removeClass('glyphicon-chevron-down');
+	            tdi.first().addClass('glyphicon-chevron-right');
+	            delete dataTable.expanded[row.id()];
+	        } else {
+	            // Open this row
+	            row.child(dataTable.formatExpand(row.data())).show();
+	            tr.addClass('shown');
+	            tdi.first().removeClass('glyphicon-chevron-right');
+	            tdi.first().addClass('glyphicon-chevron-down');
+	            dataTable.expanded[row.id()] = true;
+	        }
+	    });
+	
+	    dataTable.on("user-select", function (e, dt, type, cell, originalEvent) {
+	        if ($(cell.node()).hasClass("details-control")) {
+	            e.preventDefault();
+	        }
+	    });
+	}
 }
 
 function initDatePicker(elem, loc) {

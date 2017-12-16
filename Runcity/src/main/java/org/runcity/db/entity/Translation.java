@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterDefs;
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.StringUtils;
@@ -14,7 +12,6 @@ import org.springframework.util.ObjectUtils;
 
 @Entity
 @Table(name = "translation")
-@FilterDefs(value = { @FilterDef(name = "category", defaultCondition = "ref_table='category' and ref_column='name'") })
 public class Translation implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
@@ -34,7 +31,7 @@ public class Translation implements DBEntity {
 	@Column(name = "locale", length = 32, nullable = false)
 	private String locale;
 
-	@Column(name = "content", length = 255, nullable = false)
+	@Column(name = "content", length = 4000, nullable = false)
 	private String content;
 
 	public Translation() {
@@ -113,16 +110,16 @@ public class Translation implements DBEntity {
 				&& ObjectUtils.nullSafeEquals(refRecord, t.refRecord) && StringUtils.isEqual(locale, t.locale)
 				&& StringUtils.isEqual(content, t.content);
 	}
-	
+
 	@Override
 	public String toString() {
 		return locale + ": " + content;
 	}
-	
+
 	public static String getDisplay(Collection<Translation> c, String locale) {
 		String second = null;
 		String any = null;
-		
+
 		Iterator<Translation> i = c.iterator();
 		while (i.hasNext()) {
 			Translation t = i.next();
@@ -139,7 +136,7 @@ public class Translation implements DBEntity {
 				any = t.content + " [" + t.locale + "]";
 			}
 		}
-		
+
 		return second != null ? second : any;
 	}
 }

@@ -8,8 +8,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
@@ -29,7 +29,7 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "ref_record", referencedColumnName = "id")
-	@Filter(name = "category")
+	@Where(clause = "ref_table='category' and ref_column='name'")
 	private List<Translation> names;
 
 	@Column(name = "bgcolor", length = 6, nullable = false)
@@ -40,15 +40,21 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 	@Column(name = "prefix", length = 6)
 	private String prefix;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@JoinColumn(name = "ref_record", referencedColumnName = "id")
+	@Where(clause = "ref_table='category' and ref_column='description'")
+	private List<Translation> descriptions;
 	
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
 	private Set<Game> games;
 
 	public Category() {
 		this.names = new ArrayList<Translation>();
+		this.descriptions = new ArrayList<Translation>();
 	}
 
-	public Category(Long id, List<Translation> names, String bgcolor, String color, String prefix) {
+	public Category(Long id, List<Translation> names, String bgcolor, String color, String prefix, List<Translation> descriptions) {
 		this();
 		setId(id);
 		setBgcolor(bgcolor);
@@ -56,6 +62,9 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		setPrefix(prefix);
 		if (names != null) {
 			this.names = names;
+		}
+		if (descriptions != null) {
+			this.descriptions = descriptions;
 		}
 	}
 
@@ -66,11 +75,14 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 		CollectionUtils.applyChanges(names, c.names);
 		updateRef(names, getId());
+
+		CollectionUtils.applyChanges(descriptions, c.descriptions);
+		updateRef(descriptions, getId());
 	}
 
 	@Override
 	public Category cloneForAdd() {
-		return new Category(id, null, bgcolor, color, prefix);
+		return new Category(id, null, bgcolor, color, prefix, null);
 	}
 
 	public Long getId() {
@@ -120,6 +132,18 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		this.prefix = prefix;
 	}
 	
+	public List<Translation> getDescriptions() {
+		return descriptions;
+	}
+
+	public Map<String, String> getStringDescriptions() {
+		Map<String, String> str = new HashMap<String, String>();
+		for (Translation t : descriptions) {
+			str.put(t.getLocale(), t.getContent());
+		}
+		return str;
+	}
+	
 	public Set<Game> getGames() {
 		return games;
 	}
@@ -134,6 +158,18 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 
 	public String getNameDisplay(String locale) {
 		return Translation.getDisplay(getNames(), locale);
+	}
+
+	public void addDescription(Translation t) {
+		descriptions.add(t);
+	}
+
+	public void addDescription(String locale, String name) {
+		addDescription(new Translation(null, "category", "description", getId(), locale, name));
+	}
+
+	public String getDescriptionDisplay(String locale) {
+		return Translation.getDisplay(getDescriptions(), locale);
 	}
 
 	public String getBadge() {

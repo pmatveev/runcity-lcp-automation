@@ -19,12 +19,14 @@ import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.StringUtils;
 import org.springframework.web.servlet.tags.UrlTag;
+import org.springframework.web.servlet.tags.form.AbstractHtmlInputElementTag;
 import org.springframework.web.servlet.tags.form.ErrorsTag;
 import org.springframework.web.servlet.tags.form.InputTag;
 import org.springframework.web.servlet.tags.form.OptionTag;
 import org.springframework.web.servlet.tags.form.PasswordInputTag;
 import org.springframework.web.servlet.tags.form.SelectTag;
 import org.springframework.web.servlet.tags.form.TagWriter;
+import org.springframework.web.servlet.tags.form.TextareaTag;
 
 @SuppressWarnings("serial")
 public class FormInputTag extends TagSupport {
@@ -214,7 +216,12 @@ public class FormInputTag extends TagSupport {
 			tagWriter.appendValue(localeDisplay);
 			tagWriter.endTag();
 
-			InputTag input = new InputTag();
+			AbstractHtmlInputElementTag input = null;
+			if (column.isLongValue()) {
+				input = new TextareaTag();
+			} else {
+				input = new InputTag();
+			}
 			input.setPath(column.getName() + "['" + l + "']");
 			input.setId(column.getHtmlId() + l);
 			input.setCssClass("form-control");

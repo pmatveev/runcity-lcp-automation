@@ -23,16 +23,16 @@ h1, h2 {
 }
 
 .loader {
-  border: 2px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 2px solid #265a88;
-  display: inline-block;
-  vertical-align: middle;
-  width: 24px;
-  height: 24px;
-  margin-right: 20px;
-  -webkit-animation: spin 1.5s linear infinite;
-  animation: spin 1.5s linear infinite;
+	border: 2px solid #f3f3f3;
+	border-radius: 50%;
+	border-top: 2px solid #265a88;
+	display: inline-block;
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+	margin-right: 20px;
+	-webkit-animation: spin 1.5s linear infinite;
+	animation: spin 1.5s linear infinite;
 }
 
 @-webkit-keyframes spin {
@@ -52,4 +52,31 @@ h1, h2 {
 .input-group-locale {
 	width: 100%;
 	margin-bottom: 5px;
+}
+
+td.details-control {
+	text-align: center;
+	cursor: pointer;
+}
+
+.datatables.table-striped>tbody>tr:nth-of-type(odd) {
+	background-color: #ffffff;
+}
+
+.datatables.table-striped>tbody>tr.odd {
+	background-color: #f9f9f9;
+}
+
+.datatables.table-striped>tbody>tr.selected {
+	background-color: #08C;
+}
+
+.expandLabel {
+	padding-right: 20px;
+    white-space: nowrap;
+    width: 1%;
+}
+
+textarea {
+	resize: vertical;
 }

@@ -85,6 +85,6 @@ public class StringUtils {
 	
 	public static String xss(Object o) {
 		String s = o == null ? "" : o.toString();
-		return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#x27").replace("/", "&#x2F");
+		return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#x27").replace("/", "&#x2F").replace("\n", "<br/>");
 	}
 }

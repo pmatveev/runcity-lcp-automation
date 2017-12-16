@@ -14,15 +14,17 @@ import org.springframework.validation.Errors;
 public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 	private static final Logger logger = Logger.getLogger(FormLocalizedStringColumn.class);
 
+	protected boolean longValue;
 	protected boolean oneRequired;
 	protected boolean allRequired;
 	protected Integer minLength;
 	protected Integer maxLength;
 
 	public FormLocalizedStringColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList,
-			boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength) {
+			boolean longValue, boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength) {
 		super(form, definition);
 		
+		this.longValue = longValue;
 		this.oneRequired = oneRequired;
 		this.allRequired = allRequired;
 		this.minLength = minLength;
@@ -35,8 +37,8 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 	}
 	
 	public FormLocalizedStringColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList,
-			boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength, Map<String, String> value) {
-		this(form, definition, localeList, oneRequired, allRequired, minLength, maxLength);
+			boolean longValue, boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength, Map<String, String> value) {
+		this(form, definition, localeList, longValue, oneRequired, allRequired, minLength, maxLength);
 		setValue(value);
 	}
 	
@@ -133,5 +135,9 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 
 	public String getOnChange(String l) {
 		return "onColChange($('#" + getHtmlId() + l + "'))";
+	}
+	
+	public boolean isLongValue() {
+		return longValue;
 	}
 }

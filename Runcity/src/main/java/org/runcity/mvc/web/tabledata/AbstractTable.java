@@ -14,6 +14,7 @@ public abstract class AbstractTable extends RestGetResponseBody {
 	protected String title;
 	protected String id;
 	protected List<ColumnDefinition> columns = new LinkedList<ColumnDefinition>();
+	protected List<ColumnDefinition> extensions = new LinkedList<ColumnDefinition>();
 	protected String ajaxData;
 	protected List<ButtonDefinition> buttons = new LinkedList<ButtonDefinition>();
 	protected List<AbstractForm> relatedForms = new LinkedList<AbstractForm>();
@@ -40,6 +41,10 @@ public abstract class AbstractTable extends RestGetResponseBody {
 
 	public List<ColumnDefinition> getColumns() {
 		return columns;
+	}
+
+	public List<ColumnDefinition> getExtensions() {
+		return extensions;
 	}
 	
 	public List<ButtonDefinition> getButtons() {

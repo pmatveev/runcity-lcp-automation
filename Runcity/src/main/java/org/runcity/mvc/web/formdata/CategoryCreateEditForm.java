@@ -37,6 +37,9 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 	@JsonView(Views.Public.class)
 	private FormColorPickerColumn bgColor;
 
+	@JsonView(Views.Public.class)
+	private FormLocalizedStringColumn description;
+
 	public CategoryCreateEditForm() {
 		this(null);
 	}
@@ -47,15 +50,19 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		setTitle("category.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, true, false, null, 32);
+				new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, false, true, false,
+				null, 32);
 		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), true, 1, 3);
 		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true,
 				"ffffff");
 		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true,
 				"000000");
+		this.description = new FormLocalizedStringColumn(this,
+				new ColumnDefinition("description", "category.descriptiongroup", "category.description"), localeList,
+				true, false, false, null, 4000);
 	}
 
-	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor,
+	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor, Map<String, String> description,
 			DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
@@ -63,10 +70,11 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		setPrefix(prefix);
 		setFontColor(fontColor);
 		setBgColor(bgColor);
+		setDescription(description);
 	}
 
 	public CategoryCreateEditForm(Category c, DynamicLocaleList localeList) {
-		this(c.getId(), c.getStringNames(), c.getPrefix(), c.getColor(), c.getBgcolor(), localeList);
+		this(c.getId(), c.getStringNames(), c.getPrefix(), c.getColor(), c.getBgcolor(), c.getStringDescriptions(), localeList);
 	}
 
 	public Long getId() {
@@ -113,6 +121,18 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.bgColor.setValue(color);
 	}
 
+	public Map<String, String> getDescription() {
+		return description.getValue();
+	}
+
+	public void setDescription(Map<String, String> description) {
+		this.description.setValue(description);
+	}
+
+	public void setDescription(String locale, String content) {
+		this.description.put(locale, content);
+	}
+
 	public FormIdColumn getIdColumn() {
 		return id;
 	}
@@ -133,12 +153,17 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		return bgColor;
 	}
 
+	public FormLocalizedStringColumn getDescriptionColumn() {
+		return description;
+	}
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
 		id.validate(context, errors);
 		name.validate(context, errors);
 		prefix.validate(context, errors);
+		description.validate(context, errors);
 
 		if (getId() != null) {
 			CategoryService categoryService = context.getBean(CategoryService.class);
@@ -148,7 +173,7 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 				errors.reject("common.notFoundId", new Object[] { getId() }, null);
 				return;
 			}
-			
+
 			if (!StringUtils.isEqual(prefix.getValue(), c.getPrefix())) {
 				c = categoryService.selectWithGames(getId());
 				if (c.getGames().size() > 0) {
@@ -159,9 +184,14 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 	}
 
 	public Category getCategory() {
-		Category c = new Category(getId(), null, getBgColor(), getFontColor(), getPrefix());
+		Category c = new Category(getId(), null, getBgColor(), getFontColor(), getPrefix(), null);
+		
 		for (String s : getName().keySet()) {
 			c.addName(s, getName().get(s));
+		}
+		
+		for (String s : getDescription().keySet()) {
+			c.addDescription(s, getDescription().get(s));
 		}
 		return c;
 	}

@@ -33,6 +33,9 @@ public class CategoryTable extends AbstractLocalizedTable {
 		@JsonView(Views.Public.class)
 		private String badge;
 
+		@JsonView(Views.Public.class)
+		private Map<String, String> description; 
+
 		public TableRow(Category c, MessageSource messageSource, Locale l) {
 			this.id = c.getId();
 			this.badge = c.getBadge();
@@ -42,6 +45,14 @@ public class CategoryTable extends AbstractLocalizedTable {
 			for (Translation t : c.getNames()) {
 				if (localeList.contains(t.getLocale())) {
 					this.name.put(t.getLocale(), StringUtils.xss(t.getContent()));
+				}
+			}
+			
+			this.description = localeList.prepareMap();
+			
+			for (Translation t : c.getDescriptions()) {
+				if (localeList.contains(t.getLocale())) {
+					this.description.put(t.getLocale(), StringUtils.xss(t.getContent()));
 				}
 			}
 		}
@@ -57,6 +68,10 @@ public class CategoryTable extends AbstractLocalizedTable {
 		public String getBadge() {
 			return badge;
 		}
+
+		public Map<String, String> getDescription() {
+			return description;
+		}
 	}
 
 	public CategoryTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
@@ -64,8 +79,10 @@ public class CategoryTable extends AbstractLocalizedTable {
 
 		this.columns.add(new ColumnDefinition("id", null));
 		this.columns.add(new ColumnDefinition("badge", "category.badge"));
-		addLocalizedColumn("name", "category.name", true);
+		addLocalizedColumn(this.columns, "name", "category.name", true);
 
+		addLocalizedColumn(this.extensions, "description", "category.description", true);
+		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/categoryDelete/:id", "selected"));

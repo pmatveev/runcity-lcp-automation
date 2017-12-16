@@ -58,7 +58,6 @@ public class SpringRootConfig {
 			}
 		}
 		
-		System.out.println("PWD: " + password);
 		dataSource.setPassword(password);
 
 		return dataSource;
