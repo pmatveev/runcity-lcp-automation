@@ -3,7 +3,6 @@ package org.runcity.mvc.web;
 import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
 import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
 import org.runcity.util.DynamicLocaleList;
-import org.runcity.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
