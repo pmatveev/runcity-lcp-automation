@@ -14,7 +14,7 @@
          	<table width="100%" class="info-table">
          		<tr>
          			<td><b><fmt:message key="common.version" bundle="${msg}" /></b></td>
-         			<td>${version}</td>
+         			<td>${version.version}</td>
          		</tr>
          		<tr>
          			<td><b><fmt:message key="common.credits" bundle="${msg}" /></b></td>

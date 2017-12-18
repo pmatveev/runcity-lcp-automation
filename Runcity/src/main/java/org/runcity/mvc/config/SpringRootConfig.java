@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.hibernate.ejb.HibernatePersistence;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.PasswordCipher;
+import org.runcity.util.Version;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -94,6 +95,10 @@ public class SpringRootConfig {
 		}
 		
 		return localeList;
+	}
+	
+	@Bean Version getVersion() {
+		return new Version(this.getClass().getPackage().getImplementationVersion());
 	}
 
 	private Properties getHibernateProperties() {
