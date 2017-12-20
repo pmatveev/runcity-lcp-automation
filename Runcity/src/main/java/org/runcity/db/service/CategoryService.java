@@ -8,15 +8,12 @@ import org.springframework.security.access.annotation.Secured;
 
 public interface CategoryService {
 	@Secured("ROLE_ADMIN")
-	public Category selectById(Long id);
+	public Category selectById(Long id, boolean games);
 	
 	@Secured("ROLE_ADMIN")
-	public Category selectWithGames(Long id);
+	public Iterable<Category> selectById(Iterable<Long> id, boolean games);
 	
-	@Secured("ROLE_ADMIN")
-	public Iterable<Category> selectById(Iterable<Long> id);
-	
-	public List<Category> selectAll();
+	public List<Category> selectAll(boolean games);
 	
 	@Secured("ROLE_ADMIN")
 	public Category addOrUpdate(Category c) throws DBException;

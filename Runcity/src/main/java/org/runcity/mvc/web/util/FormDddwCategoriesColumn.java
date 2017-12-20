@@ -31,7 +31,7 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 		categories = new HashSet<Category>();
 		
 		for (Long id : value) {
-			Category c = categoryService.selectById(id);
+			Category c = categoryService.selectById(id, false);
 			if (c == null) {
 				errors.rejectValue(getName(), "common.notFoundId", new Object[] {id}, null);
 			} else {

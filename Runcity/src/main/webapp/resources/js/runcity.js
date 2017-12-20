@@ -1036,3 +1036,42 @@ function initDatePicker(elem, loc) {
 		forceParse: true
 	});
 }
+
+function initFileInput(elem, loc) {
+	var csrfToken = $("meta[name='_csrf']").attr("content");
+	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	var headers = {};
+	headers[csrfHeader] = csrfToken;
+	elem.fileinput({
+		ajaxSettings : {
+			headers : headers
+		},
+		container : elem.closest('.form-group'),
+		elErrorContainer : '#err_' + elem.attr('id'),
+		errorCloseButton : '',
+		language : loc,
+		layoutTemplates : {
+			main1 : '<label class="control-label" for="' + elem.attr('id') + '">' + elem.attr('placeholder') + '</label>' + 
+				'{preview}\n' +
+		        '<div class="input-group {class}">\n' +
+		        '  {caption}\n' +
+		        '  <div class="input-group-btn">\n' +
+		        '    {remove}\n' +
+		        '    {cancel}\n' +
+		        '    {upload}\n' +
+		        '    {browse}\n' +
+		        '  </div>\n' +
+		        '</div>' +
+		        '<div id="err_' + elem.attr('id') + '"></div>\n'
+		},
+		msgErrorClass : "help-block",
+		showClose : false,
+		uploadUrl: elem.attr("upload-to")
+	});
+	
+	elem.on('fileuploaded', function(event, data, previewId, index) {
+	    var ref = data.response.idt;
+	    alert(ref);
+	    elem['fileref'] = ref;
+	});
+}

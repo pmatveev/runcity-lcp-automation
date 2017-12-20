@@ -15,11 +15,11 @@ public class FormEmailColumn extends FormStringColumn {
 	private Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 	public FormEmailColumn(AbstractForm form, ColumnDefinition definition, boolean required, Integer maxLength) {
-		super(form, definition, required, null, maxLength);
+		super(form, definition, false, required, null, maxLength);
 	}
 
 	public FormEmailColumn(AbstractForm form, ColumnDefinition definition, boolean required, Integer maxLength, String value) {
-		super(form, definition, required, null, maxLength, value);
+		super(form, definition, false, required, null, maxLength, value);
 	}
 
 	@Override

@@ -9,21 +9,23 @@ import org.springframework.validation.Errors;
 public abstract class FormStringColumn extends FormColumn<String> {
 	private static final Logger logger = Logger.getLogger(FormStringColumn.class);
 
+	protected boolean longValue;
 	protected boolean required;
 	protected Integer minLength;
 	protected Integer maxLength;
 
-	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean required, Integer minLength,
+	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
 			Integer maxLength) {
 		super(form, definition);
+		this.longValue = longValue;
 		this.required = required;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 	}
 
-	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean required, Integer minLength,
+	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
 			Integer maxLength, String value) {
-		this(form, definition, required, minLength, maxLength);
+		this(form, definition, longValue, required, minLength, maxLength);
 		this.value = value;
 	}
 
@@ -70,5 +72,9 @@ public abstract class FormStringColumn extends FormColumn<String> {
 
 	public String getOnChange() {
 		return "onColChange($('#" + getHtmlId() + "'))";
+	}
+	
+	public boolean isLongValue() {
+		return longValue;
 	}
 }

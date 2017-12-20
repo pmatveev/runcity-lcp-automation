@@ -49,7 +49,7 @@ public class RestCategoryController extends AbstractRestController {
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/categoryCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initCategoryCreateEditForm(@PathVariable Long id) {		
-		Category c = categoryService.selectById(id);
+		Category c = categoryService.selectById(id, false);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
@@ -110,7 +110,7 @@ public class RestCategoryController extends AbstractRestController {
 		logger.info("GET /api/v1/dddw/categoriesId");
 		
 		try {
-			Iterable<Category> categories = categoryService.selectById(id);
+			Iterable<Category> categories = categoryService.selectById(id, false);
 			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 			for (Category c : categories) {
 				result.addOption(c.getId(), c.getNameDisplay(locale));
@@ -131,7 +131,7 @@ public class RestCategoryController extends AbstractRestController {
 		logger.info("GET /api/v1/dddw/categories");
 		
 		try {
-			List<Category> categories = categoryService.selectAll();
+			List<Category> categories = categoryService.selectAll(false);
 			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 			for (Category c : categories) {
 				result.addOption(c.getId(), c.getNameDisplay(locale));

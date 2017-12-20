@@ -91,7 +91,7 @@ public class CategoryTable extends AbstractLocalizedTable {
 	}
 	
 	public void fetchAll(CategoryService service) {
-		List<Category> categories = service.selectAll();
+		List<Category> categories = service.selectAll(false);
 		for (Category c : categories) {
 			data.add(new TableRow(c, messageSource, locale));
 		}

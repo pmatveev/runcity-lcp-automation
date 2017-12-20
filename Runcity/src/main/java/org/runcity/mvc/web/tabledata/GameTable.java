@@ -115,7 +115,7 @@ public class GameTable extends AbstractLocalizedTable {
 	}
 	
 	public void fetchAll(GameService service, DynamicLocaleList localeList) {
-		List<Game> games = service.selectAll();
+		List<Game> games = service.selectAll(true);
 		for (Game g : games) {
 			data.add(new TableRow(g, messageSource, locale, localeList));
 		}

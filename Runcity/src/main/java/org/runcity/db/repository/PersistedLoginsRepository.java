@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = false)
+@Transactional
 public interface PersistedLoginsRepository extends JpaRepository<PersistentLogins, Long> {
     @Modifying
     @Transactional

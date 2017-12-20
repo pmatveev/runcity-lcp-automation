@@ -3,6 +3,7 @@ package org.runcity.db.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.repository.ConsumerRepository;
 import org.runcity.db.repository.PersistedLoginsRepository;
@@ -28,23 +29,41 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public List<Consumer> selectAll() {
-		return consumerRepository.findAll();
+	public List<Consumer> selectAll(boolean roles) {
+		List<Consumer> consumers = consumerRepository.findAll();
+		if (roles) {
+			for (Consumer c : consumers) {
+				Hibernate.initialize(c.getRoles());
+			}
+		}
+		return consumers;
 	}
 
 	@Override
-	public Consumer selectByUsername(String username) {
-		return consumerRepository.findByUsername(username);
+	public Consumer selectByUsername(String username, boolean roles) {
+		Consumer c = consumerRepository.findByUsername(username);
+		if (roles) {
+			Hibernate.initialize(c.getRoles());
+		}
+		return c;
 	}
 
 	@Override
-	public Consumer selectByEmail(String email) {
-		return consumerRepository.findByEmail(email);
+	public Consumer selectByEmail(String email, boolean roles) {
+		Consumer c = consumerRepository.findByEmail(email);
+		if (roles) {
+			Hibernate.initialize(c.getRoles());
+		}
+		return c;
 	}
 
 	@Override
-	public Consumer selectById(Long id) {
-		return consumerRepository.findOne(id);
+	public Consumer selectById(Long id, boolean roles) {
+		Consumer c = consumerRepository.findOne(id);
+		if (roles) {
+			Hibernate.initialize(c.getRoles());
+		}
+		return c;
 	}
 
 	@Override
@@ -69,7 +88,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 
 		try {
-			Consumer prev = selectById(c.getId());
+			Consumer prev = selectById(c.getId(), true);
 
 			if (!StringUtils.isEqual(c.getUsername(), prev.getUsername())) {
 				persistedLoginsRepository.updateUsername(prev.getUsername(), c.getUsername());
@@ -114,7 +133,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public Consumer getCurrent() {
-		return selectById(getCurrentUserId());
+		return selectById(getCurrentUserId(), false);
 	}
 
 	@Override
@@ -161,7 +180,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		List<Consumer> result = new ArrayList<Consumer>(id.size());
 		
 		for (Long i : id) {
-			Consumer c = selectById(i);
+			Consumer c = selectById(i, false);
 			c = updateConsumerPassword(c, newPassword);
 			result.add(c);
 		}

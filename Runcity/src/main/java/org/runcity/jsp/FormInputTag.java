@@ -12,6 +12,7 @@ import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormDddwColumn;
+import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdListColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
@@ -80,6 +81,11 @@ public class FormInputTag extends TagSupport {
 
 		if (column instanceof FormDateColumn) {
 			writeDateColumn((FormDateColumn) column);
+			return SKIP_BODY;
+		}
+
+		if (column instanceof FormFileColumn) {
+			writeFileColumn((FormFileColumn) column);
 			return SKIP_BODY;
 		}
 
@@ -409,6 +415,39 @@ public class FormInputTag extends TagSupport {
 		input.setDynamicAttribute(null, "display-type", "datepicker");
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+
+		input.setPageContext(pageContext);
+		input.doStartTag();
+		input.doEndTag();
+
+		writeErrors(tagWriter);
+
+		tagWriter.endTag();
+	}	
+	
+	private void writeFileColumn(FormFileColumn column) throws JspException {
+		String label = localize(column.getLabel());
+		TagWriter tagWriter = new TagWriter(pageContext);
+
+		tagWriter.startTag("div");
+		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
+		tagWriter.appendValue("");
+
+		processUrl("/api/v1/uploadImage", "upload"); // TODO
+		InputTag input = new InputTag();
+		input.setPath(column.getName());
+		input.setId(column.getHtmlId());
+		input.setCssClass("form-control fileinput");
+		input.setDynamicAttribute(null, "type", "file");
+		input.setDynamicAttribute(null, "extensions", column.getFileExtn());
+		input.setDynamicAttribute(null, "placeholder", label);
+		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		input.setDynamicAttribute(null, "upload-to", pageContext.getAttribute("upload"));
+		// TODO default value
+
+		if (!StringUtils.isEmpty(autofocus)) {
+			input.setDynamicAttribute(null, "autofocus", autofocus);
 		}
 
 		input.setPageContext(pageContext);

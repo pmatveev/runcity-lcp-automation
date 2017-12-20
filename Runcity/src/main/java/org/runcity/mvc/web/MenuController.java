@@ -1,5 +1,10 @@
 package org.runcity.mvc.web;
 
+import java.util.List;
+
+import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.service.ControlPointService;
+import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
@@ -20,6 +25,9 @@ public class MenuController {
 	@Autowired
 	private DynamicLocaleList localeList;
 	
+	@Autowired 
+	private ControlPointService controlPointService;
+	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
 		return "redirect:/secure/home";
@@ -27,7 +35,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
-		GameCreateEditForm form = new GameCreateEditForm(localeList);
+		ControlPointCreateEditByGameForm form = new ControlPointCreateEditByGameForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		return "/secure/home";
 	}

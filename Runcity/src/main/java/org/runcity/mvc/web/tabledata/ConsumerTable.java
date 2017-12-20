@@ -106,7 +106,7 @@ public class ConsumerTable extends AbstractLocalizedTable {
 	}
 
 	public void fetchAll(ConsumerService service) {
-		List<Consumer> consumers = service.selectAll();
+		List<Consumer> consumers = service.selectAll(true);
 		for (Consumer c : consumers) {
 			data.add(new TableRow(c, messageSource, locale));
 		}
