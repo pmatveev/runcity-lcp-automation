@@ -76,7 +76,7 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 				}
 			}
 		} else {
-			if (!options.containsKey(value.toString())) {
+			if (!StringUtils.isEmpty(value.toString()) && !options.containsKey(value.toString())) {
 				errors.rejectValue(getName(), "common.notFoundListbox", new Object[] {value.toString()}, null);
 			}			
 		}

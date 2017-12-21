@@ -935,7 +935,8 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 		}
 	});
 
-	var dataTable = table.DataTable({
+	var dataTable = {};
+	dataTable = table.DataTable({
 		ajaxSource : table.attr("ajaxSource"),
 		buttons : {
 			dom : {
