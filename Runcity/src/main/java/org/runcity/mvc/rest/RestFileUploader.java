@@ -73,7 +73,7 @@ public class RestFileUploader {
 		try {
 			CachedFile file = new CachedFile(image.getBytes());
 			
-			int tries = 10; // TODO
+			int tries = 10;
 			boolean ok = false;
 			
 			while (tries > 0 && !ok) {

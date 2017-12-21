@@ -23,6 +23,18 @@ public class StringUtils {
 
 		return s1.equals(s2);
 	}
+	
+	public static boolean startsWith(String s1, String s2) {
+		if (isEmpty(s2)) {
+			return true;
+		}
+		
+		if (isEmpty(s1)) {
+			return false;
+		}
+		
+		return s1.startsWith(s2);
+	}
 
 	public static boolean isEqualPrefix(String s1, String s2, int prefix) {
 		if (isEmpty(s1) && isEmpty(s2)) {

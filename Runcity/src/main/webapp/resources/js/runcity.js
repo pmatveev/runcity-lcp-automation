@@ -1038,7 +1038,7 @@ function initDatePicker(elem, loc) {
 }
 
 function initFileInput(elem, loc) {
-	var csrfToken = $("meta[name='_csrf']").attr("content");
+	var csrfToken = $("meta[name='_csrf']").attr("content") + "1";
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 	var headers = {};
 	headers[csrfHeader] = csrfToken;
@@ -1047,22 +1047,28 @@ function initFileInput(elem, loc) {
 			headers : headers
 		},
 		container : elem.closest('.form-group'),
+		deleteUrl : '', // TODO
 		elErrorContainer : '#err_' + elem.attr('id'),
 		errorCloseButton : '',
+		initialPreview : "<img class='kv-preview-data file-preview-image' src='http://lorempixel.com/800/460/nature/1'>",
+		initialPreviewShowDelete : true,
 		language : loc,
 		layoutTemplates : {
-			main1 : '<label class="control-label" for="' + elem.attr('id') + '">' + elem.attr('placeholder') + '</label>' + 
-				'{preview}\n' +
-		        '<div class="input-group {class}">\n' +
-		        '  {caption}\n' +
-		        '  <div class="input-group-btn">\n' +
-		        '    {remove}\n' +
-		        '    {cancel}\n' +
-		        '    {upload}\n' +
-		        '    {browse}\n' +
-		        '  </div>\n' +
-		        '</div>' +
-		        '<div id="err_' + elem.attr('id') + '"></div>\n'
+			main1 : '<label class="control-label" for="'
+					+ elem.attr('id') + '">' + elem.attr('placeholder')
+					+ '</label>' + '{preview}\n'
+					+ '<div class="input-group {class}">\n'
+					+ '  {caption}\n'
+					+ '  <div class="input-group-btn">\n'
+					+ '    {remove}\n' + '    {cancel}\n'
+					+ '    {upload}\n' + '    {browse}\n'
+					+ '  </div>\n' + '</div>' + '<div id="err_'
+					+ elem.attr('id') + '"></div>\n',
+			actions : '<div class="file-actions">\n'
+					+ '    <div class="file-footer-buttons">\n'
+					+ '        {upload} {download} {delete} {zoom} {other}'
+					+ '    </div>\n'
+					+ '    <div class="clearfix"></div>\n' + '</div>',
 		},
 		msgErrorClass : "help-block",
 		showClose : false,
@@ -1070,8 +1076,10 @@ function initFileInput(elem, loc) {
 	});
 	
 	elem.on('fileuploaded', function(event, data, previewId, index) {
-	    var ref = data.response.idt;
-	    alert(ref);
-	    elem['fileref'] = ref;
+	    elem['fileref'] = data.response.idt;
+	});
+	
+	elem.on('fileremoved', function(event, data, previewId, index) {
+	    elem['fileref'] = 'clear';
 	});
 }

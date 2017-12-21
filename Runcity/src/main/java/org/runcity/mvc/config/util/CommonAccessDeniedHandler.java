@@ -23,9 +23,9 @@ public class CommonAccessDeniedHandler implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e)
 			throws IOException, ServletException {
-		logger.info("AccessDeniedHandler");
-
-		if (StringUtils.isEqual(request.getContentType(), "application/json")) {
+		logger.info("AccessDeniedHandler"); 
+		
+		if (StringUtils.isEqual(request.getContentType(), "application/json") || StringUtils.startsWith(request.getContentType(), "multipart/form-data")) {
 			// REST
 	        response.sendError(403);
 		} else {
