@@ -25,13 +25,14 @@ public class CommonAccessDeniedHandler implements AccessDeniedHandler {
 			throws IOException, ServletException {
 		logger.info("AccessDeniedHandler"); 
 		
-		if (StringUtils.isEqual(request.getContentType(), "application/json") || StringUtils.startsWith(request.getContentType(), "multipart/form-data")) {
-			// REST
-	        response.sendError(403);
-		} else {
+		if (StringUtils.isEqual(request.getContentType(), "application/x-www-form-urlencoded")) {
+			// form
 	        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 	        RequestDispatcher dispatcher = request.getRequestDispatcher(page403);
 	        dispatcher.forward(request, response);
+		} else {
+			// REST
+	        response.sendError(403);
 		}
 	}
 

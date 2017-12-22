@@ -3,6 +3,7 @@ package org.runcity.db.service.impl;
 import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.Game;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.service.ControlPointService;
@@ -23,8 +24,8 @@ public class ControlPointServiceImpl implements ControlPointService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public List<ControlPoint> selectAll() {
-		return controlPointRepository.findAll();
+	public List<ControlPoint> selectByGame(Game game) {
+		return controlPointRepository.findByGame(game);
 	}
 
 	@Override

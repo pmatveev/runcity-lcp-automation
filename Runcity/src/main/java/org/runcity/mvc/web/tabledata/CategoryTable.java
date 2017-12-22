@@ -18,7 +18,7 @@ import org.springframework.context.MessageSource;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class CategoryTable extends AbstractLocalizedTable {
+public class CategoryTable extends AbstractTable {
 	
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
@@ -77,11 +77,11 @@ public class CategoryTable extends AbstractLocalizedTable {
 	public CategoryTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("categoryTable", "category.tableHeader", ajaxData, messageSource, localeList);
 
-		this.columns.add(new ColumnDefinition("id", null));
+		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("badge", "category.badge"));
-		addLocalizedColumn(this.columns, "name", "category.name", true);
+		addLocalizedColumn(this.columns, "name", "category.name", "asc", 1);
 
-		addLocalizedColumn(this.extensions, "description", "category.description", true);
+		addLocalizedColumn(this.extensions, "description", "category.description");
 		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));

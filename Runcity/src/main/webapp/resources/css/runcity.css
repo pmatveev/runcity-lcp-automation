@@ -87,6 +87,10 @@ table.info-table>tbody>tr>td {
 }
 
 .help-block>ul {
-    list-style:none;
-    padding-left:0;
+	list-style: none;
+	padding-left: 0;
+}
+
+.file-input-ajax-new .fileinput-remove-button {
+	display: inline-block;
 }

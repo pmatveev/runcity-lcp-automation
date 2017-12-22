@@ -23,7 +23,7 @@ import org.springframework.context.MessageSource;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class GameTable extends AbstractLocalizedTable {
+public class GameTable extends AbstractTable {
 	
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
@@ -99,17 +99,18 @@ public class GameTable extends AbstractLocalizedTable {
 	public GameTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("gameTable", "game.tableHeader", ajaxData, messageSource, localeList);
 
-		this.columns.add(new ColumnDefinition("id", null));
+		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("locale", "game.locale"));
 		this.columns.add(new ColumnDefinition("name", "game.name"));
 		this.columns.add(new ColumnDefinition("city", "game.city"));
 		this.columns.add(new ColumnDefinition("country", "game.country"));
-		this.columns.add(new ColumnDefinition("date", "game.date").setDate().setSort("desc"));
+		this.columns.add(new ColumnDefinition("date", "game.date").setDateFormat().setSort("desc", 1));
 		this.columns.add(new ColumnDefinition("categories", "game.categories"));
 
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:gameCreateEditForm:id", "selectedSingle"));
-		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/gameDelete/:id", "selected"));
+		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/gameDelete/:id", "selected")); 
+		this.buttons.add(new ButtonDefinition("controlPoint.link", null, "btn", "link:/secure/games/{0}/controlPoints:id", "selectedSingle"));
 
 		this.relatedForms.add(new GameCreateEditForm(localeList));
 	}

@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.cache2k.Cache;
 import org.runcity.mvc.rest.util.Views;
-import org.runcity.util.CachedFile;
+import org.runcity.util.FileCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,7 +23,7 @@ public class RestFileUploader {
 	protected MessageSource messageSource;
 	
 	@Autowired
-	protected Cache<String, CachedFile> fileCache;
+	protected FileCache fileCache;
 
 	protected class FileUploadResponse {
 		private MessageSource messageSource;
@@ -60,7 +59,7 @@ public class RestFileUploader {
 			this.error = messageSource.getMessage(error, arguments, locale);
 		}
 	}
-
+	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/uploadImage", method = RequestMethod.POST)
 	public FileUploadResponse handleImage(@RequestParam MultipartFile image) {
@@ -71,14 +70,13 @@ public class RestFileUploader {
 		}
 
 		try {
-			CachedFile file = new CachedFile(image.getBytes());
-			
+			byte[] imageBytes = image.getBytes();
 			int tries = 10;
 			boolean ok = false;
 			
 			while (tries > 0 && !ok) {
 				String idt = UUID.randomUUID().toString();
-				ok = fileCache.putIfAbsent(idt, file);
+				ok = fileCache.put(idt, imageBytes);
 				
 				if (ok) {
 					result.setIdt(idt);

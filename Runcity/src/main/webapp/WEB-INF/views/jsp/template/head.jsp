@@ -98,6 +98,8 @@
 		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />'
 	}
 	
+	var locale = '${lang}';
+	
 	$(document).ready(function() {
 		$(".modal").each(function() {
 			initModal($(this));
@@ -108,17 +110,17 @@
 			useHashPrefix : false
 		});
 		$(".datepicker-component").each(function() {
-			initDatePicker($(this), '${lang}');
+			initDatePicker($(this));
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {
-			initDatatables($(this), '${datatablesLoc}', '${lang}');
+			initDatatables($(this), '${datatablesLoc}');
 		});
 		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
 			loadAjaxSourced($(this));
 		});
 		$('.fileinput').each(function() {
-			initFileInput($(this), '$lang');
+			initFileInput($(this), '', false);
 		});
 	});
 </script>

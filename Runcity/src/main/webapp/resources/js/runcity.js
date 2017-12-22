@@ -31,7 +31,10 @@ function removeErrorMessage(element) {
 		return;
 	}
 	parent.removeClass("has-error");
-	parent.find(".help-block").remove();
+	var err = parent.find(".help-block");
+	if (!err.hasClass("file-help-block")) {
+		err.remove();
+	}
 }
 
 function setErrorMessage(element, message) {
@@ -210,6 +213,8 @@ function setInputValue(elem, val) {
 				} else {
 					picker.datetimepicker('update', "");
 				}
+			} else if (dt === 'filepicker') { 
+				initFileInput(elem, val, true);
 			} else {
 				if (typeof val !== 'undefined') {
 					elem.val(val);
@@ -323,8 +328,8 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 
 		elem.selectpicker('val', val);
 		
-		form['loading']--;
-		if (form['loading'] == 0) {
+		form.data('loading', form.data('loading') - 1);
+		if (form.data('loading') == 0) {
 			changeModalFormState(form, false, false, false);			
 		}
 		return;
@@ -336,7 +341,7 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		data.errors.forEach(function(item, i, arr) {
 			setFormErrorMessage(form, item);
 		});
-		form['loading'] = -1;
+		form.data('loading', -1);
 		changeModalFormState(form, true, false, false);
 	}
 }
@@ -354,7 +359,7 @@ function initAjaxSourcedError(form, elem, data) {
 	} else {
 		setFormErrorMessage(form, translations['ajaxHangPost']);
 	}
-	form['loading'] = -1;
+	form.data('loading', -1);
 	changeModalFormState(form, true, false, false);
 }
 
@@ -380,7 +385,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 		return;
 	}
 
-	form['loading']++;
+	form.data('loading', form.data('loading') + 1);
 	elem.html("").selectpicker("refresh");
 	
 	$.ajax({
@@ -424,7 +429,7 @@ function addReloadLink(form, recId) {
 
 function modalFormOpenSuccess(form, data, recId) {
 	if (data.responseClass == "INFO") {
-		form['loading'] = 0;
+		form.data('loading', 0);
 
 		form.find("input,select,textarea").not('[type="submit"]').each(function() {
 			var elem = $(this);
@@ -453,7 +458,7 @@ function modalFormOpenSuccess(form, data, recId) {
 			}
 		});
 
-		if (form['loading'] == 0) {
+		if (form.data('loading') == 0) {
 			changeModalFormState(form, false, false, false);
 		}
 		
@@ -560,6 +565,8 @@ function getData(elem) {
 		var format = elem.attr('format');
 		if (format === 'array') {
 			return elem.val().split(',');
+		} else if (format === 'file') {
+			return elem.data('fileref');
 		} else {
 			return elem.val();			
 		}
@@ -572,7 +579,7 @@ function getData(elem) {
 function getFormData(form) {
 	var res = {};
 
-	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value").each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value,.file-caption-name").each(function() {
 		var elem = $(this);
 		var format = elem.attr('format');
 		
@@ -667,11 +674,31 @@ function modalFormError(form, data) {
 }
 
 function submitModalForm(form, event) {
-	event.preventDefault();
+	if (typeof event !== 'undefined') {
+		event.preventDefault();		
+	}
+	
 	if (!validateForm(form)) {
 		return;
 	}
 
+	if (typeof form.data('uploading') === 'undefined') {
+		form.data('uploading', 0);
+	}
+	
+	form.find("input[type='file']").each(function() {
+		var elem = $(this);
+		if (elem.fileinput('getFileStack').length > 0) {
+			form.data('uploading', form.data('uploading') + elem.fileinput('getFileStack').length);
+			elem.fileinput('upload');
+		}
+	});
+
+	if (form.data('uploading') > 0) {
+		// wait for upload
+		return;
+	}
+	
 	var jsonString = JSON.stringify(getFormData(form));
 
 	changeModalFormState(form, true, true, true);
@@ -807,7 +834,7 @@ function dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, selector) {
 	});
 }
 
-function initDatatables(table, loc, lang) {
+function initDatatables(table, loc) {
 	var buttonDiv = $('#' + table.attr('id') + '_buttons');
 	var buttons = [];
 	buttonDiv.find('button').each(function() {
@@ -877,11 +904,23 @@ function initDatatables(table, loc, lang) {
 						}
 					});
 				}
-			} else {
-				func = function(e, dt, node, config) {
-					removeTableErrorMessage(dt);
-					dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
-				}
+			} 
+		} else if (action.length > 1 && action[0] == "link") {
+			var link = action[1];
+			var ref = action.slice(2);
+
+			func = function(e, dt, node, config) {
+				var processedLink = link;
+				ref.forEach(function(currentValue, index, array) {
+					processedLink = processedLink.replace("{" + index + "}", dataTablesSelected(dt, currentValue, button.attr("extend")));
+				});
+				
+				window.location = processedLink;
+			}
+		} else {
+			func = function(e, dt, node, config) {
+				removeTableErrorMessage(dt);
+				dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
 			}
 		}
 
@@ -893,27 +932,28 @@ function initDatatables(table, loc, lang) {
 		});
 	});
 	buttonDiv.remove();
-	initDatatablesWithButtons(table, buttons, loc, lang);
+	initDatatablesWithButtons(table, buttons, loc);
 }
 
-function initDatatablesWithButtons(table, buttons, loc, lang) {
+function initDatatablesWithButtons(table, buttons, loc) {
 	var columnDefs = [];
 	var expand = false
 	table.find("th").each(function() {
 		var cd = $(this);
 		
 		var format = cd.attr("format");
-		if (format === "date") {
+		if (format === "DATE") {
 			columnDefs.push({
 				data : cd.attr("mapping"),
 				name : cd.attr("mapping"),
 				render : function ( data, type, row, meta ) {
-					if (type == "sort" || type == 'type') {
+					if (type == "sort" || type == "type") {
 				        return data;
 					}
 					var dpg = $.fn.datetimepicker.DPGlobal;
-					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), lang, 'standard');
-			    }
+					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+			    },
+				visible : cd.attr("td-visible") == 'true'
 			});
 		} else if (format === "expand") {
 			expand = true;
@@ -925,15 +965,35 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
                 render: function () {
                 	return '<span class="glyphicon glyphicon-chevron-right"></span>';
                 },
+				visible :       true,
                 width:          '16px'
             });
 		} else {
 			columnDefs.push({
 				data : cd.attr("mapping"),
-				name : cd.attr("mapping")
+				name : cd.attr("mapping"),
+				visible : cd.attr("td-visible") == 'true'
 			});
 		}
 	});
+
+	var index = 0;
+	var sort = {};
+	table.find("th").each(function() {
+		var cd = $(this);
+		var idt = cd.attr("mapping") + ":name";
+		if (typeof cd.attr("sort") !== 'undefined' && typeof cd.attr("sort-index") !== 'undefined') {
+			sort[cd.attr("sort-index")] = [index, cd.attr("sort")];
+		}
+		index++;
+	});
+	
+	var order = [];
+	for (var property in sort) {
+	    if (sort.hasOwnProperty(property)) {
+	        order.push(sort[property]);
+	    }
+	}
 
 	var dataTable = {};
 	dataTable = table.DataTable({
@@ -963,20 +1023,11 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 		language : {
 			url : loc
 		},
-		order : [],
+		order : order,
 		rowId : 'id',
 		select : true
 	});
 	
-	dataTable.column("id:name").visible(false);
-
-	table.find("th").each(function() {
-		var cd = $(this);
-		var idt = cd.attr("mapping") + ":name";
-		if (typeof cd.attr("sort") !== 'undefined') {
-			dataTable.column(idt).order(cd.attr("sort"));
-		}
-	});
 	if (expand) {
 		var expandTemplate = $('#' + table.attr("id") + "_extension");
 		dataTable['formatExpand'] = function(data) {
@@ -1026,9 +1077,9 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 	}
 }
 
-function initDatePicker(elem, loc) {
+function initDatePicker(elem) {
 	elem.datetimepicker({
-		language : loc,
+		language : locale,
 		autoclose: true,
 		container: elem.attr('data-date-container'),
 		todayHighlight: true,
@@ -1038,22 +1089,27 @@ function initDatePicker(elem, loc) {
 	});
 }
 
-function initFileInput(elem, loc) {
-	var csrfToken = $("meta[name='_csrf']").attr("content") + "1";
+function initFileInput(elem, initial, destroy) {
+	var csrfToken = $("meta[name='_csrf']").attr("content");
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 	var headers = {};
 	headers[csrfHeader] = csrfToken;
+	
+	if (destroy) {
+		elem.fileinput('destroy');
+	}
 	elem.fileinput({
 		ajaxSettings : {
 			headers : headers
 		},
+		ajaxDeleteSettings : {
+			headers : headers
+		},
 		container : elem.closest('.form-group'),
-		deleteUrl : '', // TODO
 		elErrorContainer : '#err_' + elem.attr('id'),
 		errorCloseButton : '',
-		initialPreview : "<img class='kv-preview-data file-preview-image' src='http://lorempixel.com/800/460/nature/1'>",
-		initialPreviewShowDelete : true,
-		language : loc,
+		initialPreview : initial,
+		language : locale,
 		layoutTemplates : {
 			main1 : '<label class="control-label" for="'
 					+ elem.attr('id') + '">' + elem.attr('placeholder')
@@ -1061,26 +1117,41 @@ function initFileInput(elem, loc) {
 					+ '<div class="input-group {class}">\n'
 					+ '  {caption}\n'
 					+ '  <div class="input-group-btn">\n'
-					+ '    {remove}\n' + '    {cancel}\n'
-					+ '    {upload}\n' + '    {browse}\n'
-					+ '  </div>\n' + '</div>' + '<div id="err_'
+					+ '    {remove}\n' + '    {browse}\n'
+					+ '  </div>\n' + '</div>\n' + '<div id="err_'
 					+ elem.attr('id') + '"></div>\n',
 			actions : '<div class="file-actions">\n'
 					+ '    <div class="file-footer-buttons">\n'
-					+ '        {upload} {download} {delete} {zoom} {other}'
+					+ '        {download} {zoom} {other}'
 					+ '    </div>\n'
 					+ '    <div class="clearfix"></div>\n' + '</div>',
 		},
-		msgErrorClass : "help-block",
+		msgErrorClass : "help-block file-help-block",
 		showClose : false,
 		uploadUrl: elem.attr("upload-to")
 	});
 	
-	elem.on('fileuploaded', function(event, data, previewId, index) {
-	    elem['fileref'] = data.response.idt;
-	});
+	elem.data('fileref', '');
 	
-	elem.on('fileremoved', function(event, data, previewId, index) {
-	    elem['fileref'] = 'clear';
+	elem.on('fileuploaded', function(event, data, previewId, index) {
+		elem.data('fileref', data.response.idt);
+		elem.fileinput('updateStack', index, undefined);
+		var form = elem.closest("form");
+		if (typeof form.data('uploading') !== 'undefined') {
+			form.data('uploading', form.data('uploading') - 1);
+			if (form.data('uploading') == 0) {
+				submitModalForm(form);
+			}
+		}
+	});
+
+	elem.on('filecleared', function(event, id, index) {
+		elem.data('fileref', 'clear');
+	}); 
+	
+	elem.on('fileloaded', function(event, file, previewId, index, reader) {
+	    elem.closest('.file-input').find('.file-preview-thumbnails').find('.file-preview-frame').not('[id=' + previewId + ']').each(function() {
+	    	$(this).remove();
+	    });
 	});
 }

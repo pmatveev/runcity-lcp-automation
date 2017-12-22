@@ -116,6 +116,10 @@ public class FormInputTag extends TagSupport {
 		input.setId(column.getHtmlId());
 		input.setDynamicAttribute(null, "hidden", "hidden");
 
+		if (column.getValue() != null) {
+			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+		
 		if (column instanceof FormIdListColumn) {
 			input.setDynamicAttribute(null, "format", "array");
 		}
@@ -158,9 +162,11 @@ public class FormInputTag extends TagSupport {
 			tagWriter.appendValue("");
 		}
 
-		InputTag input;
+		AbstractHtmlInputElementTag input;
 		if (column.isPasswordValue()) {
 			input = new PasswordInputTag();
+		} else if (column.isLongValue()) {
+			input = new TextareaTag();
 		} else {
 			input = new InputTag();
 		}
@@ -434,7 +440,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 		tagWriter.appendValue("");
 
-		processUrl("/api/v1/uploadImage", "upload"); // TODO
+		processUrl(column.getUploadUrl(), "upload"); 
 		InputTag input = new InputTag();
 		input.setPath(column.getName());
 		input.setId(column.getHtmlId());
@@ -442,8 +448,9 @@ public class FormInputTag extends TagSupport {
 		input.setDynamicAttribute(null, "type", "file");
 		input.setDynamicAttribute(null, "extensions", column.getFileExtn());
 		input.setDynamicAttribute(null, "placeholder", label);
-		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
 		input.setDynamicAttribute(null, "upload-to", pageContext.getAttribute("upload"));
+		input.setDynamicAttribute(null, "format", "file");
+		input.setDynamicAttribute(null, "display-type", "filepicker");
 		// TODO default value
 
 		if (!StringUtils.isEmpty(autofocus)) {

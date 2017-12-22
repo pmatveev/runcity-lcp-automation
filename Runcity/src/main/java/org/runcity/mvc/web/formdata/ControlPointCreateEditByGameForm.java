@@ -46,7 +46,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	}
 	
 	public ControlPointCreateEditByGameForm(DynamicLocaleList localeList) {
-		super("controlPointCreateEditByGameForm", "/api/v1/cpCreateEdit/{0}", null, "/api/v1/cpCreateEdit",
+		super("controlPointCreateEditByGameForm", "/api/v1/controlPointCreateEdit/{0}", null, "/api/v1/controlPointCreateEdit",
 				localeList);
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
@@ -112,11 +112,11 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		this.description.setValue(description);
 	}
 
-	public Byte[] getImage() {
+	public String getImage() {
 		return image.getValue();
 	}
 
-	public void setImage(Byte[] image) {
+	public void setImage(String image) {
 		this.image.setValue(image);
 	}
 

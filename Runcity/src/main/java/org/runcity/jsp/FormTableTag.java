@@ -59,16 +59,20 @@ public class FormTableTag extends TagSupport {
 				tagWriter.startTag("button");
 				tagWriter.writeOptionalAttributeValue("class", b.getClassName());
 				tagWriter.writeOptionalAttributeValue("extend", b.getExtend());
-				if (b.getAction() == null || !b.getAction().startsWith("ajax")) {
+				if (b.getAction() == null || (!b.getAction().startsWith("ajax:") && !b.getAction().startsWith("link:"))) {
 					tagWriter.writeOptionalAttributeValue("action", b.getAction());
 				} else {
 					// need to correct URL
 					String[] action = b.getAction().split(":");
-					if (action.length > 2) {
-						processUrl(action[2], "ajaxButton");
-						action[2] = (String) pageContext.getAttribute("ajaxButton");
-						tagWriter.writeOptionalAttributeValue("action", StringUtils.toString(Arrays.asList(action), ":", null));
+					if (b.getAction().startsWith("ajax:") && action.length > 2) {
+						processUrl(action[2], "ajax");
+						action[2] = (String) pageContext.getAttribute("ajax");
 					}
+					if (b.getAction().startsWith("link:") && action.length > 1) {
+						processUrl(action[1], "link");
+						action[1] = (String) pageContext.getAttribute("link");
+					}
+					tagWriter.writeOptionalAttributeValue("action", StringUtils.toString(Arrays.asList(action), ":", null));
 				}			
 				if (b.getConfirmation() != null) {
 					tagWriter.writeOptionalAttributeValue("confirmation", localize(b.getConfirmation()));
@@ -117,7 +121,7 @@ public class FormTableTag extends TagSupport {
 		}
 
 		tagWriter.startTag("h1");
-		tagWriter.appendValue(localize(table.getTitle()));
+		tagWriter.appendValue(MessageFormat.format(localize(table.getTitle()), table.getTitleArgs()));
 		tagWriter.endTag();
 		
 		processUrl(table.getAjaxData(), table.getId() + "_ajaxSource");
@@ -140,8 +144,14 @@ public class FormTableTag extends TagSupport {
 		for (ColumnDefinition cd : table.getColumns()) {
 			tagWriter.startTag("th");
 			tagWriter.writeAttribute("mapping", cd.getName());
-			tagWriter.writeOptionalAttributeValue("format", cd.getFormat());
-			tagWriter.writeOptionalAttributeValue("sort", cd.getSort());
+			if (cd.getFormat() != null) {
+				tagWriter.writeAttribute("format", cd.getFormat().name());
+			}
+			if (cd.getSortIndex() != null) {
+				tagWriter.writeOptionalAttributeValue("sort", cd.getSort());
+				tagWriter.writeAttribute("sort-index", cd.getSortIndex().toString());
+			}
+			tagWriter.writeAttribute("td-visible", cd.isVisible().toString());
 			if (cd.getLabel() != null) {
 				tagWriter.appendValue(MessageFormat.format(localize(cd.getLabel()), cd.getSubstitution()));
 			}

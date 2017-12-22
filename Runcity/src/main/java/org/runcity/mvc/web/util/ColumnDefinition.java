@@ -1,14 +1,19 @@
 package org.runcity.mvc.web.util;
 
 public class ColumnDefinition {
+	public enum ColumnFormat {DATE, IMAGE}
+	
 	private String name;
 	private String label;
 	private String groupLabel;
 	private Object[] substitution;
 
 	// options
-	private String format;
+	private boolean hidden = false;
+	private ColumnFormat format;
 	private String sort;
+	private Integer sortIndex;
+	private String imageUrl;
 	
 	public ColumnDefinition(String name, String label) {
 		this.name = name;
@@ -53,12 +58,27 @@ public class ColumnDefinition {
 		return substitution;
 	}
 
-	public String getFormat() {
+	public Boolean isVisible() {
+		return !hidden;
+	}
+
+	public ColumnDefinition setHidden(boolean hidden) {
+		this.hidden = hidden;
+		return this;
+	}
+
+	public ColumnFormat getFormat() {
 		return format;
 	}
 
-	public ColumnDefinition setDate() {
-		this.format = "date";
+	public ColumnDefinition setDateFormat() {
+		this.format = ColumnFormat.DATE;
+		return this;
+	}
+
+	public ColumnDefinition setImageFormat(String url) {
+		this.format = ColumnFormat.IMAGE;
+		this.imageUrl = url;
 		return this;
 	}
 
@@ -66,8 +86,17 @@ public class ColumnDefinition {
 		return sort;
 	}
 
-	public ColumnDefinition setSort(String sort) {
+	public Integer getSortIndex() {
+		return sortIndex;
+	}
+
+	public ColumnDefinition setSort(String sort, int index) {
 		this.sort = sort;
+		this.sortIndex = index;
 		return this;
+	}
+	
+	public String getImageUrl() {
+		return imageUrl;
 	}
 }

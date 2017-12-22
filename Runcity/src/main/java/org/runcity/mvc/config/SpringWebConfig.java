@@ -1,13 +1,9 @@
 package org.runcity.mvc.config;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Resource;
 
-import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
 import org.runcity.mvc.config.util.UserLocaleChangeInterceptor;
-import org.runcity.util.CachedFile;
+import org.runcity.util.FileCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -72,12 +68,8 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	public Cache<String, CachedFile> fileCache() {
-		return new Cache2kBuilder<String, CachedFile>() {}
-			.name("fileCache")
-			.entryCapacity(100)
-			.expireAfterWrite(5, TimeUnit.MINUTES)
-			.build();
+	public FileCache fileCache() {
+		return new FileCache("fileInputCache"); 
 	}
 
 	@Override
