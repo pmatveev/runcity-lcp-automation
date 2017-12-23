@@ -171,6 +171,6 @@ public class Translation implements DBEntity {
 			}
 		}
 
-		return second != null ? second : any;
+		return StringUtils.xss(second != null ? second : any);
 	}
 }

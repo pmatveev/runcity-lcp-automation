@@ -57,7 +57,9 @@ public class FileCache {
 	}
 	
 	public byte[] get(String idt) {
-		if (idt == null || CLEAR.equals(idt)) {
+		if (CLEAR.equals(idt)) {
+			return new byte[] {};
+		} else if (StringUtils.isEmpty(idt)) {
 			return null;
 		} else {
 			return cache.get(idt).getValue();

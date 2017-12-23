@@ -1,9 +1,13 @@
 package org.runcity.mvc.rest;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
@@ -46,4 +50,28 @@ public class RestControlPointController extends AbstractRestController {
 		table.fetchByGame(controlPointService, g);
 		return table;
 	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/controlPointId", method = RequestMethod.GET)
+	public RestGetResponseBody controlPointDddwInit(@RequestParam(required = true) Long id) {
+		logger.info("GET /api/v1/dddw/controlPointId");
+		
+		ControlPoint c = controlPointService.selectById(id, false);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		result.addOption(c.getId(), c.getNameDisplay());
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/controlPointMainByGame", method = RequestMethod.GET)
+	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = true) Long game) {
+		logger.info("GET /api/v1/dddw/controlPointMainByGame");
+		
+		List<ControlPoint> controlPoints = controlPointService.selectMainByGame(game);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (ControlPoint c : controlPoints) {
+			result.addOption(c.getId(), c.getNameDisplay());
+		}
+		return result;
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
+import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
@@ -24,7 +25,8 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	@JsonView(Views.Public.class)
 	private FormIdColumn gameId;
 
-	// TODO parent
+	@JsonView(Views.Public.class)
+	private FormDddwControlPointColumn parent;
 
 	@JsonView(Views.Public.class)
 	private FormPlainStringColumn idt;
@@ -51,6 +53,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.gameId = new FormIdColumn(this, new ColumnDefinition("gameId", "gameid"));
+		this.parent = FormDddwControlPointColumn.getMainByGame(this, new ColumnDefinition("parent", "controlPoint.parent"), gameId.getHtmlId(), false);
 		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"), false, true, 0, 16);
 		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0, 32);
 		this.address = new FormLocalizedStringColumn(this,
@@ -74,6 +77,14 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 
 	public void setGameId(Long gameId) {
 		this.gameId.setValue(gameId);
+	}
+	
+	public Long getParent() {
+		return parent.getValue();
+	}
+	
+	public void setParent(Long parent) {
+		this.parent.setValue(parent);
 	}
 
 	public String getIdt() {
@@ -127,6 +138,10 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	public FormIdColumn getGameIdColumn() {
 		return gameId;
 	}
+	
+	public FormDddwControlPointColumn getParentColumn() {
+		return parent;
+	}
 
 	public FormPlainStringColumn getIdtColumn() {
 		return idt;
@@ -151,6 +166,13 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		// TODO Auto-generated method stub
+		id.validate(context, errors);
+		gameId.validate(context, errors);
+		parent.validate(context, errors);
+		idt.validate(context, errors);
+		name.validate(context, errors);
+		address.validate(context, errors);
+		description.validate(context, errors);
+		image.validate(context, errors);
 	}
 }

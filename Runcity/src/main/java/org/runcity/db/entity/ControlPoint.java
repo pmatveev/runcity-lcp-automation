@@ -10,6 +10,7 @@ import org.hibernate.annotations.Where;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
+import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "control_point")
@@ -159,5 +160,9 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 
 	public void setImageData(BlobContent imageData) {
 		this.imageData = imageData;
+	}
+	
+	public String getNameDisplay() {
+		return StringUtils.xss(idt + " " + name);
 	}
 }

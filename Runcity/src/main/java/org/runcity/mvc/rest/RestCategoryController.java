@@ -3,7 +3,6 @@ package org.runcity.mvc.rest;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
 import org.runcity.db.entity.Category;
 import org.runcity.db.service.CategoryService;
 import org.runcity.exception.DBException;
@@ -109,20 +108,12 @@ public class RestCategoryController extends AbstractRestController {
 	public RestGetResponseBody categoriesDddwInit(@RequestParam(required = true) List<Long> id, @RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categoriesId");
 		
-		try {
-			Iterable<Category> categories = categoryService.selectById(id, false);
-			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-			for (Category c : categories) {
-				result.addOption(c.getId(), c.getNameDisplay(locale));
-			}
-			return result;
-		} catch (ConstraintViolationException e) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
-			logger.error("DB exception", e);
-			return result;
+		Iterable<Category> categories = categoryService.selectById(id, false);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (Category c : categories) {
+			result.addOption(c.getId(), c.getNameDisplay(locale));
 		}
+		return result;
 	}
 	
 	@JsonView(Views.Public.class)
@@ -130,19 +121,11 @@ public class RestCategoryController extends AbstractRestController {
 	public RestGetResponseBody categoriesDddw(@RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categories");
 		
-		try {
-			List<Category> categories = categoryService.selectAll(false);
-			RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-			for (Category c : categories) {
-				result.addOption(c.getId(), c.getNameDisplay(locale));
-			}
-			return result;
-		} catch (ConstraintViolationException e) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
-			logger.error("DB exception", e);
-			return result;
+		List<Category> categories = categoryService.selectAll(false);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (Category c : categories) {
+			result.addOption(c.getId(), c.getNameDisplay(locale));
 		}
+		return result;
 	}
 }
