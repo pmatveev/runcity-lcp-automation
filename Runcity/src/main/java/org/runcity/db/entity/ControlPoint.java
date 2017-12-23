@@ -47,7 +47,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 	private Long image;
 	
 	@Transient
-	private BlobContent imageData;
+	private byte[] imageData;
 	
 	public ControlPoint() {
 		this.addresses = new ArrayList<Translation>();
@@ -77,8 +77,6 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 				
 		CollectionUtils.applyChanges(addresses, c.addresses);
 		updateRef(addresses, getId());
-		
-		this.image = c.image;
 	}
 
 	@Override
@@ -154,11 +152,11 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 		this.image = image;
 	}
 
-	public BlobContent getImageData() {
+	public byte[] getImageData() {
 		return imageData;
 	}
 
-	public void setImageData(BlobContent imageData) {
+	public void setImageData(byte[] imageData) {
 		this.imageData = imageData;
 	}
 	

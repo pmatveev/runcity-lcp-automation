@@ -7,12 +7,19 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
+import org.runcity.mvc.rest.util.RestPostResponseBody;
+import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,6 +78,35 @@ public class RestControlPointController extends AbstractRestController {
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			result.addOption(c.getId(), c.getNameDisplay());
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/controlPointCreateEdit", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody controlPointCreateEdit(@RequestBody ControlPointCreateEditByGameForm form) {
+		logger.info("POST /api/v1/controlPointCreateEdit");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		ControlPoint c = null;
+		try {
+			c = controlPointService.addOrUpdate(form.getControlPoint());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (c == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
 		}
 		return result;
 	}

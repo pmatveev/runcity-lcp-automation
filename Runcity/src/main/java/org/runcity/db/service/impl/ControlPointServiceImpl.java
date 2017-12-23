@@ -7,6 +7,7 @@ import org.runcity.db.entity.Game;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.GameRepository;
+import org.runcity.db.service.BlobContentService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ControlPointServiceImpl implements ControlPointService {
 	
 	@Autowired
 	private BlobContentRepository blobContentRepository;
+	
+	@Autowired 
+	private BlobContentService blobContentService;
 
 	@Override
 	@Secured("ROLE_ADMIN")
@@ -56,9 +60,32 @@ public class ControlPointServiceImpl implements ControlPointService {
 		ControlPoint c = controlPointRepository.findOne(id);
 		
 		if (image && c.getImage() != null) {
-			c.setImageData(blobContentRepository.findOne(c.getImage()));
+			c.setImageData(blobContentRepository.findOne(c.getImage()).getContent());
 		}
 		
 		return c;
+	}
+	
+	@Override
+	@Secured("ROLE_ADMIN")
+	public ControlPoint addOrUpdate(ControlPoint c) throws DBException {
+		try {
+			if (c.getId() != null) {
+				ControlPoint prev = selectById(c.getId(), false);
+				
+				prev.update(c);
+				prev.setImage(blobContentService.handleBlobContent(prev.getImage(), c.getImageData()));
+				
+				return controlPointRepository.save(prev);
+			} else {
+				ControlPoint n = c.cloneForAdd();
+				n.setImage(blobContentService.handleBlobContent(null, c.getImageData()));
+				n = controlPointRepository.save(n);
+				n.update(c);
+				return controlPointRepository.save(n);
+			}
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
 	}
 }

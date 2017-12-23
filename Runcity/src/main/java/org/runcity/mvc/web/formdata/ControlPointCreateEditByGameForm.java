@@ -3,10 +3,12 @@ package org.runcity.mvc.web.formdata;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.ControlPoint;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
+import org.runcity.mvc.web.util.FormGameIdColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
@@ -23,7 +25,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	private FormIdColumn id;
 
 	@JsonView(Views.Public.class)
-	private FormIdColumn gameId;
+	private FormGameIdColumn gameId;
 
 	@JsonView(Views.Public.class)
 	private FormDddwControlPointColumn parent;
@@ -52,8 +54,8 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 				localeList);
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.gameId = new FormIdColumn(this, new ColumnDefinition("gameId", "gameid"));
-		this.parent = FormDddwControlPointColumn.getMainByGame(this, new ColumnDefinition("parent", "controlPoint.parent"), gameId.getHtmlId(), false);
+		this.gameId = new FormGameIdColumn(this, new ColumnDefinition("gameId", "gameid"));
+		this.parent = FormDddwControlPointColumn.getMainByGame(this, new ColumnDefinition("parent", "controlPoint.parent"), gameId, false);
 		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"), false, true, 0, 16);
 		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0, 32);
 		this.address = new FormLocalizedStringColumn(this,
@@ -174,5 +176,16 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		address.validate(context, errors);
 		description.validate(context, errors);
 		image.validate(context, errors);
+	}
+	
+	public ControlPoint getControlPoint() {
+		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), parent.getControlPoint(), getIdt(), getName(), null, getDescription(), null);
+		c.setImageData(image.getByteValue());
+		
+		for (String s : getAddress().keySet()) {
+			c.addAddress(s, getAddress().get(s));
+		}
+		
+		return c;
 	}
 }
