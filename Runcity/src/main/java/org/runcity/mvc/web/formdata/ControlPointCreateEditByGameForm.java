@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
+import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormGameIdColumn;
@@ -13,6 +14,7 @@ import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -48,21 +50,44 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	public ControlPointCreateEditByGameForm() {
 		this(null);
 	}
-	
+
 	public ControlPointCreateEditByGameForm(DynamicLocaleList localeList) {
-		super("controlPointCreateEditByGameForm", "/api/v1/controlPointCreateEdit/{0}", null, "/api/v1/controlPointCreateEdit",
-				localeList);
+		super("controlPointCreateEditByGameForm", "/api/v1/controlPointCreateEdit/{0}", null,
+				"/api/v1/controlPointCreateEdit", localeList);
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.gameId = new FormGameIdColumn(this, new ColumnDefinition("gameId", "gameid"));
-		this.parent = FormDddwControlPointColumn.getMainByGame(this, new ColumnDefinition("parent", "controlPoint.parent"), gameId, false);
+		this.parent = FormDddwControlPointColumn.getMainByGame(this,
+				new ColumnDefinition("parent", "controlPoint.parent"), gameId, false);
 		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"), false, true, 0, 16);
-		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0, 32);
+		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0,
+				32);
 		this.address = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("address", "controlPoint.addressgroup", "controlPoint.address"), localeList, true, true, false,
-				null, 4000);
-		this.description = new FormPlainStringColumn(this, new ColumnDefinition("description", "controlPoint.description"), true, true, 0, 4000);
-		this.image = new FormFileColumn(this, new ColumnDefinition("image", "controlPoint.image"), null);
+				new ColumnDefinition("address", "controlPoint.addressgroup", "controlPoint.address"), localeList, true,
+				true, false, null, 4000);
+		this.description = new FormPlainStringColumn(this,
+				new ColumnDefinition("description", "controlPoint.description"), true, true, 0, 4000);
+		this.image = new FormFileColumn(this, new ColumnDefinition("image", "controlPoint.image"),
+				"/api/v1/uploadImage", "/secure/controlPointImage?id={0}", new FormColumn<?>[] { this.id }, null);
+	}
+
+	public ControlPointCreateEditByGameForm(Long id, Long gameId, Long parent, String idt, String name,
+			Map<String, String> address, String description, String image, DynamicLocaleList localeList) {
+		this(localeList);
+		setId(id);
+		setGameId(gameId);
+		setParent(parent);
+		setIdt(idt);
+		setName(name);
+		setAddress(address);
+		setDescription(description);
+		setImage(image);
+	}
+
+	public ControlPointCreateEditByGameForm(ControlPoint c, DynamicLocaleList localeList) {
+		this(c.getId(), c.getGame().getId(), c.getParent() == null ? null : c.getParent().getId(), c.getIdt(),
+				c.getName(), c.getStringAddresses(), c.getDescription(), StringUtils.toNvlString(c.getImage()),
+				localeList);
 	}
 
 	public Long getId() {
@@ -80,11 +105,11 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	public void setGameId(Long gameId) {
 		this.gameId.setValue(gameId);
 	}
-	
+
 	public Long getParent() {
 		return parent.getValue();
 	}
-	
+
 	public void setParent(Long parent) {
 		this.parent.setValue(parent);
 	}
@@ -140,7 +165,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	public FormIdColumn getGameIdColumn() {
 		return gameId;
 	}
-	
+
 	public FormDddwControlPointColumn getParentColumn() {
 		return parent;
 	}
@@ -177,15 +202,16 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		description.validate(context, errors);
 		image.validate(context, errors);
 	}
-	
+
 	public ControlPoint getControlPoint() {
-		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), parent.getControlPoint(), getIdt(), getName(), null, getDescription(), null);
+		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), parent.getControlPoint(), getIdt(), getName(),
+				null, getDescription(), null);
 		c.setImageData(image.getByteValue());
-		
+
 		for (String s : getAddress().keySet()) {
 			c.addAddress(s, getAddress().get(s));
 		}
-		
+
 		return c;
 	}
 }

@@ -88,4 +88,20 @@ public class ControlPointServiceImpl implements ControlPointService {
 			throw new DBException(t);
 		}
 	}
+
+	private void delete(Long id) {
+		ControlPoint c = selectById(id, false);
+		controlPointRepository.delete(id);
+		if (c.getImage() != null) {
+			blobContentRepository.delete(c.getImage());
+		}
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public void delete(List<Long> id) {
+		for (Long i : id) {
+			delete(i);
+		}
+	}
 }

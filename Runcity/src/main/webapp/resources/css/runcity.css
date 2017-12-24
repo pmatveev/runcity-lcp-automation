@@ -94,3 +94,11 @@ table.info-table>tbody>tr>td {
 .file-input-ajax-new .fileinput-remove-button {
 	display: inline-block;
 }
+
+.file-preview-initial .kv-file-zoom {
+	display : block;
+}
+
+.kv-file-zoom {
+	display : none;
+}

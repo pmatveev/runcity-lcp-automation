@@ -1,7 +1,9 @@
 package org.runcity.db.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 
@@ -134,6 +136,14 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 
 	public List<Translation> getAddresses() {
 		return addresses;
+	}
+	
+	public Map<String, String> getStringAddresses() {
+		Map<String, String> str = new HashMap<String, String>();
+		for (Translation t : addresses) {
+			str.put(t.getLocale(), t.getContent());
+		}
+		return str;
 	}
 	
 	public void addAddress(Translation t) {

@@ -214,7 +214,19 @@ function setInputValue(elem, val) {
 					picker.datetimepicker('update', "");
 				}
 			} else if (dt === 'filepicker') { 
-				initFileInput(elem, val, true);
+				var initial;
+				if (val) {
+					initial = elem.attr('initial');
+					var parms = elem.attr('initial-parms');
+					if (typeof parms !== 'undefined') {
+						parms = parms.split(":");
+						parms.forEach(function(item, i, arr) {
+							var from = $("#" + item);
+							initial = initial.replace("{" + i + "}", encodeURIComponent(getData(from)));
+						});
+					}
+				}
+				initFileInput(elem, initial, true);
 			} else {
 				if (typeof val !== 'undefined') {
 					elem.val(val);
@@ -365,12 +377,16 @@ function initAjaxSourcedError(form, elem, data) {
 
 
 function initAjaxSourced(form, elem, dataIn, val) {
+	if (!val) {
+		return;
+	}
 	var jsonUrl = elem.attr('ajax-data-init');
 	
 	var urlVal = val;
 	if (Array.isArray(urlVal)) {
 		urlVal = urlVal.join(',');
 	}
+	
 	jsonUrl = jsonUrl.replace("{0}", encodeURIComponent(urlVal));
 	
 	if (typeof elem.attr('init-parms') !== 'undefined') {
@@ -405,6 +421,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 
 function beforeOpenModal(form, fetch) {
 	removeFormErrorMessage(form);
+	form.data('uploading', 0);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		var val = elem.attr('default');
@@ -546,8 +563,15 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this); 
+
 		elem.prop("disabled", submitDisabled);
-		if (elem.prop("tagName") === "SELECT") {
+		if (elem.prop("tagName") === "INPUT" && elem.attr("type") == "file") {
+			if (submitDisabled) {
+				elem.fileinput('disable');
+			} else {
+				elem.fileinput('enable').fileinput('refresh').fileinput('reset');
+			}
+		} else if (elem.prop("tagName") === "SELECT") {
 			elem.selectpicker('refresh');
 		}
 	});
@@ -935,6 +959,23 @@ function initDatatables(table, loc) {
 	initDatatablesWithButtons(table, buttons, loc);
 }
 
+function displayDtImage(flag, url, row) {
+	if (flag) {
+		var val = url;
+		
+		var attr = val.split(":");
+		val = attr[0];
+		attr = attr.slice(1);
+		attr.forEach(function(currentValue, index, array) {
+			val = val.replace("{" + index + "}", row[currentValue]);
+		});
+		
+		return "<img src='" + val + "' class='img-thumbnail'>"
+	} else {
+		return "";
+	}
+}
+
 function initDatatablesWithButtons(table, buttons, loc) {
 	var columnDefs = [];
 	var expand = false
@@ -964,20 +1005,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					if (type == "sort" || type == "type") {
 				        return data;
 					}
-					if (data) {
-						var val = cd.attr("image-url");
-						
-						var attr = val.split(":");
-						val = attr[0];
-						attr = attr.slice(1);
-						attr.forEach(function(currentValue, index, array) {
-							val = val.replace("{" + index + "}", row[currentValue]);
-						});
-						
-						return "<img src='" + val + "'>"
-					} else {
-						return "";
-					}
+					return displayDtImage(data, cd.attr("image-url"), row);
 			    },
 				visible : cd.attr("td-visible") == 'true'
 			});
@@ -1071,20 +1099,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					var dpg = $.fn.datetimepicker.DPGlobal;
 					val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
 				} else if (format === "IMAGE") {
-					if (val) {
-						val = elem.attr("image-url");
-						
-						var attr = val.split(":");
-						val = attr[0];
-						attr = attr.slice(1);
-						attr.forEach(function(currentValue, index, array) {
-							val = val.replace("{" + index + "}", data[currentValue]);
-						});
-						
-						val = "<img src='" + val + "'>"
-					} else {
-						val = "";
-					}
+					val = displayDtImage(val, elem.attr("image-url"), data);
 				}
 				elem.html(val);
 			});
@@ -1140,7 +1155,7 @@ function initFileInput(elem, initial, destroy) {
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 	var headers = {};
 	headers[csrfHeader] = csrfToken;
-	
+		
 	if (destroy) {
 		elem.fileinput('destroy');
 	}
@@ -1155,6 +1170,7 @@ function initFileInput(elem, initial, destroy) {
 		elErrorContainer : '#err_' + elem.attr('id'),
 		errorCloseButton : '',
 		initialPreview : initial,
+		initialPreviewAsData : true,
 		language : locale,
 		layoutTemplates : {
 			main1 : '<label class="control-label" for="'
@@ -1168,9 +1184,8 @@ function initFileInput(elem, initial, destroy) {
 					+ elem.attr('id') + '"></div>\n',
 			actions : '<div class="file-actions">\n'
 					+ '    <div class="file-footer-buttons">\n'
-					+ '        {download} {zoom} {other}'
-					+ '    </div>\n'
-					+ '    <div class="clearfix"></div>\n' + '</div>',
+					+ '        {download} {zoom} {other}' + '    </div>\n'
+					+ '    <div class="clearfix"></div>\n' + '</div>'
 		},
 		msgErrorClass : "help-block file-help-block",
 		showClose : false,
@@ -1192,6 +1207,9 @@ function initFileInput(elem, initial, destroy) {
 	});
 
 	elem.on('filecleared', function(event, id, index) {
+	    elem.closest('.file-input').find('.file-preview-thumbnails').find('.file-preview-frame').each(function() {
+	    	$(this).remove();
+	    });
 		elem.data('fileref', 'clear');
 	}); 
 	

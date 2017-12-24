@@ -26,7 +26,9 @@ public class BlobContentServiceImpl implements BlobContentService {
 		} else if (blobData != null) {
 			if (blobData.length == 0) {
 				// blob deleted
-				blobContentRepository.delete(prevId);
+				if (prevId != null) {
+					blobContentRepository.delete(prevId);
+				}
 				return null;
 			} else {
 				BlobContent bc = blobContentRepository.save(new BlobContent(prevId, blobData));

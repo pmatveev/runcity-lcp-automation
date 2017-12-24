@@ -441,6 +441,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.appendValue("");
 
 		processUrl(column.getUploadUrl(), "upload"); 
+		processUrl(column.getPreviewUrl(), "preview"); 
 		InputTag input = new InputTag();
 		input.setPath(column.getName());
 		input.setId(column.getHtmlId());
@@ -449,9 +450,10 @@ public class FormInputTag extends TagSupport {
 		input.setDynamicAttribute(null, "extensions", column.getFileExtn());
 		input.setDynamicAttribute(null, "placeholder", label);
 		input.setDynamicAttribute(null, "upload-to", pageContext.getAttribute("upload"));
+		input.setDynamicAttribute(null, "initial", pageContext.getAttribute("preview"));
+		input.setDynamicAttribute(null, "initial-parms", StringUtils.toString(column.getPreviewParms(), ":", null));
 		input.setDynamicAttribute(null, "format", "file");
 		input.setDynamicAttribute(null, "display-type", "filepicker");
-		// TODO default value
 
 		if (!StringUtils.isEmpty(autofocus)) {
 			input.setDynamicAttribute(null, "autofocus", autofocus);

@@ -25,4 +25,7 @@ public interface ControlPointService {
 	
 	@Secured("ROLE_ADMIN")
 	public ControlPoint addOrUpdate(ControlPoint c) throws DBException;
+
+	@Secured("ROLE_ADMIN")
+	public void delete(List<Long> id);
 }

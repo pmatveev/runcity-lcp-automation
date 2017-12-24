@@ -19,6 +19,7 @@ import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,6 +58,20 @@ public class RestControlPointController extends AbstractRestController {
 		table.fetchByGame(controlPointService, g);
 		return table;
 	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/controlPointCreateEdit/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initControlPointCreateEditForm(@PathVariable Long id) {		
+		ControlPoint c = controlPointService.selectById(id, false);
+		if (c == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new ControlPointCreateEditByGameForm(c, localeList);
+	}
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/dddw/controlPointId", method = RequestMethod.GET)
@@ -109,5 +124,20 @@ public class RestControlPointController extends AbstractRestController {
 			result.addCommonError("common.popupProcessError");
 		}
 		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/controlPointDelete", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody categoryDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/controlPointDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			controlPointService.delete(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("commom.db.deleteConstraint");
+		}
+		return result;	
 	}
 }

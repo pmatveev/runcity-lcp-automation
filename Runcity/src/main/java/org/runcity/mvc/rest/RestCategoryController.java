@@ -92,7 +92,7 @@ public class RestCategoryController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/categoryDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
 	public RestPostResponseBody categoryDelete(@RequestBody List<Long> id) {
-		logger.info("DELETE /api/v1/consumerDelete");
+		logger.info("DELETE /api/v1/categoryDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		try {
 			categoryService.delete(id);

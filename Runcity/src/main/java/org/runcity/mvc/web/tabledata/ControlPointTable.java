@@ -43,7 +43,7 @@ public class ControlPointTable extends AbstractTable {
 		private Map<String, String> address; 
 
 		@JsonView(Views.Public.class)
-		private boolean image;
+		private Long image;
 
 		@JsonView(Views.Public.class)
 		private String description;
@@ -62,7 +62,7 @@ public class ControlPointTable extends AbstractTable {
 				}
 			}
 			
-			this.image = c.getImage() != null;
+			this.image = c.getImage();
 			this.description = StringUtils.xss(c.getDescription());
 		}
 
@@ -103,13 +103,14 @@ public class ControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("mainIdt", "controlPoint.main").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 2));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
-		this.columns.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 
 		addLocalizedColumn(this.extensions, "address", "controlPoint.address");
 		this.extensions.add(new ColumnDefinition("description", "controlPoint.description"));
 		this.extensions.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:controlPointCreateEditByGameForm", null));
+		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:controlPointCreateEditByGameForm:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/controlPointDelete/:id", "selected")); 
 
 		ControlPointCreateEditByGameForm createEditForm = new ControlPointCreateEditByGameForm(localeList);
 		createEditForm.setGameId(g.getId());
