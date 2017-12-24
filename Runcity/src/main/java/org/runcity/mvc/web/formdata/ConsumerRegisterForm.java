@@ -22,12 +22,12 @@ public class ConsumerRegisterForm extends AbstractForm {
 	}
 	
 	public ConsumerRegisterForm(DynamicLocaleList localeList) {
-		super("consumerRegisterForm", null, "/register", null);
+		super("consumerRegisterForm", null, "/register", null, localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), false, true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				true, 4, 32);
+				false, true, 4, 32);
 
 		FormPasswordPair passwords = new FormPasswordPair(
 				new FormPasswordColumn(this, new ColumnDefinition("password", "user.password"), true),
@@ -134,12 +134,12 @@ public class ConsumerRegisterForm extends AbstractForm {
 		locale.validate(context, errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		if (consumerService.selectByUsername(username.getValue()) != null) {
+		if (consumerService.selectByUsername(username.getValue(), false) != null) {
 			logger.debug(username.getName() + " is not unique");
 			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
-		if (consumerService.selectByEmail(email.getValue()) != null) {
+		if (consumerService.selectByEmail(email.getValue(), false) != null) {
 			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "validation.emailExists");
 		}

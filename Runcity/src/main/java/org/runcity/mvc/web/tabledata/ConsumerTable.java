@@ -22,7 +22,7 @@ import org.springframework.context.MessageSource;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class ConsumerTable extends AbstractLocalizedTable {
+public class ConsumerTable extends AbstractTable {
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
 
@@ -88,9 +88,9 @@ public class ConsumerTable extends AbstractLocalizedTable {
 	public ConsumerTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("consumerTable", "user.tableHeader", ajaxData, messageSource, localeList);
 		
-		this.columns.add(new ColumnDefinition("id", null));
+		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
-		this.columns.add(new ColumnDefinition("credentials", "user.credentials").setSort("asc"));
+		this.columns.add(new ColumnDefinition("credentials", "user.credentials").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("email", "user.email"));
 		this.columns.add(new ColumnDefinition("active", "user.active"));
 		this.columns.add(new ColumnDefinition("roles", "user.roles"));
@@ -106,7 +106,7 @@ public class ConsumerTable extends AbstractLocalizedTable {
 	}
 
 	public void fetchAll(ConsumerService service) {
-		List<Consumer> consumers = service.selectAll();
+		List<Consumer> consumers = service.selectAll(true);
 		for (Consumer c : consumers) {
 			data.add(new TableRow(c, messageSource, locale));
 		}

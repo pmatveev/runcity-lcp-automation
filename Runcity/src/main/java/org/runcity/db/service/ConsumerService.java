@@ -8,13 +8,13 @@ import org.springframework.security.access.annotation.Secured;
 
 public interface ConsumerService {
 	@Secured("ROLE_ADMIN")
-	public List<Consumer> selectAll();
+	public List<Consumer> selectAll(boolean roles);
 
-	public Consumer selectByUsername(String username);
+	public Consumer selectByUsername(String username, boolean roles);
 
-	public Consumer selectByEmail(String email);
+	public Consumer selectByEmail(String email, boolean roles);
 	
-	public Consumer selectById(Long id);
+	public Consumer selectById(Long id, boolean roles);
 	
 	@Secured("ROLE_ADMIN")
 	public Consumer add(Consumer c) throws DBException;

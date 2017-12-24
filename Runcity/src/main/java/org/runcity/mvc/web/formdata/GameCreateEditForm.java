@@ -54,16 +54,16 @@ public class GameCreateEditForm extends AbstractForm {
 	}
 
 	public GameCreateEditForm(DynamicLocaleList localeList) {
-		super("gameCreateEditForm", "/api/v1/gameCreateEdit/{0}", null, "/api/v1/gameCreateEdit");
+		super("gameCreateEditForm", "/api/v1/gameCreateEdit/{0}", null, "/api/v1/gameCreateEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("game.header");
 
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "game.locale"), localeList,
 				true);
-		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "game.name"), true, 0, 32);
-		this.city = new FormPlainStringColumn(this, new ColumnDefinition("city", "game.city"), true, 0, 32);
-		this.country = new FormPlainStringColumn(this, new ColumnDefinition("country", "game.country"), true, 0, 32);
+		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "game.name"), false, true, 0, 32);
+		this.city = new FormPlainStringColumn(this, new ColumnDefinition("city", "game.city"), false, true, 0, 32);
+		this.country = new FormPlainStringColumn(this, new ColumnDefinition("country", "game.country"), false, true, 0, 32);
 		this.date = new FormDateColumn(this, new ColumnDefinition("date", "game.date"), true);
 		this.categories = FormDddwCategoriesColumn.getAllByLocale(this,
 				new ColumnDefinition("categories", "game.categories"), locale.getHtmlId(), true);

@@ -16,12 +16,12 @@ public class FormPasswordColumn extends FormStringColumn {
 	private Pattern pattern = Pattern.compile(PWD_PATTERN);
 
 	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, required, null, null);
+		super(form, definition, false, required, null, null);
 		this.passwordValue = true;
 	}
 
 	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required, String value) {
-		super(form, definition, required, null, null, value);
+		super(form, definition, false, required, null, null, value);
 		this.passwordValue = true;
 	}
 

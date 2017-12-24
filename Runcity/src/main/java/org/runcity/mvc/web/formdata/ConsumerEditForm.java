@@ -50,13 +50,13 @@ public class ConsumerEditForm extends AbstractForm {
 	}
 	
 	public ConsumerEditForm(DynamicLocaleList localeList) {
-		super("consumerEditForm", "/api/v1/consumerEdit/{0}", null, "/api/v1/consumerEdit");
+		super("consumerEditForm", "/api/v1/consumerEdit/{0}", null, "/api/v1/consumerEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), false, true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				true, 4, 32);
+				false, true, 4, 32);
 
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
@@ -183,7 +183,7 @@ public class ConsumerEditForm extends AbstractForm {
 			return;
 		} else {
 			// editing existing record
-			Consumer current = consumerService.selectById(getId());
+			Consumer current = consumerService.selectById(getId(), false);
 			if (current == null) {
 				logger.warn("unexpected id: " + id.getSafeValue());
 				errors.reject("common.popupProcessError");
@@ -191,13 +191,13 @@ public class ConsumerEditForm extends AbstractForm {
 			}
 
 			if (!StringUtils.isEqual(current.getUsername(), username.getValue())
-					&& consumerService.selectByUsername(username.getValue()) != null) {
+					&& consumerService.selectByUsername(username.getValue(), false) != null) {
 				logger.debug(username.getName() + " changed but not unique");
 				errors.rejectValue(username.getName(), "validation.userExists");
 			}
 
 			if (!StringUtils.isEqual(current.getEmail(), email.getValue())
-					&& consumerService.selectByEmail(email.getValue()) != null) {
+					&& consumerService.selectByEmail(email.getValue(), false) != null) {
 				logger.debug(email.getName() + " changed but not unique");
 				errors.rejectValue(email.getName(), "validation.emailExists");
 			}

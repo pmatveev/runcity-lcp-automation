@@ -36,12 +36,12 @@ public class ConsumerSelfEditForm extends AbstractForm {
 	}
 	
 	public ConsumerSelfEditForm(DynamicLocaleList localeList) {
-		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", null, "/api/v1/consumerSelfEdit");
+		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", null, "/api/v1/consumerSelfEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), false, true, 4, 32);
 		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				true, 4, 32);
+				false, true, 4, 32);
 
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
 		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
@@ -119,13 +119,13 @@ public class ConsumerSelfEditForm extends AbstractForm {
 		Consumer current = consumerService.getCurrent();
 
 		if (!StringUtils.isEqual(current.getUsername(), username.getValue())
-				&& consumerService.selectByUsername(username.getValue()) != null) {
+				&& consumerService.selectByUsername(username.getValue(), false) != null) {
 			logger.debug(username.getName() + " changed but not unique");
 			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
 		if (!StringUtils.isEqual(current.getEmail(), email.getValue())
-				&& consumerService.selectByEmail(email.getValue()) != null) {
+				&& consumerService.selectByEmail(email.getValue(), false) != null) {
 			logger.debug(email.getName() + " changed but not unique");
 			errors.rejectValue(email.getName(), "validation.emailExists");
 		}

@@ -28,7 +28,7 @@ public class ChangePasswordByIdForm extends AbstractForm {
 	private FormStringColumn password2;
 
 	public ChangePasswordByIdForm() {
-		super("changePasswordByIdForm", null, null, "/api/v1/changePasswordById");
+		super("changePasswordByIdForm", null, null, "/api/v1/changePasswordById", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
 		this.id = new FormIdListColumn(this, new ColumnDefinition("id", "id"));

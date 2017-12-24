@@ -12,6 +12,7 @@ import org.runcity.mvc.web.util.FormColorPickerColumn;
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormDddwColumn;
+import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdListColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
@@ -83,6 +84,11 @@ public class FormInputTag extends TagSupport {
 			return SKIP_BODY;
 		}
 
+		if (column instanceof FormFileColumn) {
+			writeFileColumn((FormFileColumn) column);
+			return SKIP_BODY;
+		}
+
 		throw new JspException("Field type is not supported: " + column.getClass());
 	}
 
@@ -110,6 +116,10 @@ public class FormInputTag extends TagSupport {
 		input.setId(column.getHtmlId());
 		input.setDynamicAttribute(null, "hidden", "hidden");
 
+		if (column.getValue() != null) {
+			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+		
 		if (column instanceof FormIdListColumn) {
 			input.setDynamicAttribute(null, "format", "array");
 		}
@@ -152,9 +162,11 @@ public class FormInputTag extends TagSupport {
 			tagWriter.appendValue("");
 		}
 
-		InputTag input;
+		AbstractHtmlInputElementTag input;
 		if (column.isPasswordValue()) {
 			input = new PasswordInputTag();
+		} else if (column.isLongValue()) {
+			input = new TextareaTag();
 		} else {
 			input = new InputTag();
 		}
@@ -409,6 +421,42 @@ public class FormInputTag extends TagSupport {
 		input.setDynamicAttribute(null, "display-type", "datepicker");
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+
+		input.setPageContext(pageContext);
+		input.doStartTag();
+		input.doEndTag();
+
+		writeErrors(tagWriter);
+
+		tagWriter.endTag();
+	}	
+	
+	private void writeFileColumn(FormFileColumn column) throws JspException {
+		String label = localize(column.getLabel());
+		TagWriter tagWriter = new TagWriter(pageContext);
+
+		tagWriter.startTag("div");
+		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
+		tagWriter.appendValue("");
+
+		processUrl(column.getUploadUrl(), "upload"); 
+		processUrl(column.getPreviewUrl(), "preview"); 
+		InputTag input = new InputTag();
+		input.setPath(column.getName());
+		input.setId(column.getHtmlId());
+		input.setCssClass("form-control fileinput");
+		input.setDynamicAttribute(null, "type", "file");
+		input.setDynamicAttribute(null, "extensions", column.getFileExtn());
+		input.setDynamicAttribute(null, "placeholder", label);
+		input.setDynamicAttribute(null, "upload-to", pageContext.getAttribute("upload"));
+		input.setDynamicAttribute(null, "initial", pageContext.getAttribute("preview"));
+		input.setDynamicAttribute(null, "initial-parms", StringUtils.toString(column.getPreviewParms(), ":", null));
+		input.setDynamicAttribute(null, "format", "file");
+		input.setDynamicAttribute(null, "display-type", "filepicker");
+
+		if (!StringUtils.isEmpty(autofocus)) {
+			input.setDynamicAttribute(null, "autofocus", autofocus);
 		}
 
 		input.setPageContext(pageContext);

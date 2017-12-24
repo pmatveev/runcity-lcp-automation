@@ -150,7 +150,7 @@ public class RestConsumerController extends AbstractRestController {
 	public RestGetResponseBody initConsumerEditForm(@PathVariable Long id) {
 		logger.info("GET /api/v1/consumerSelfEdit/" + id);
 
-		Consumer c = consumerService.selectById(id);
+		Consumer c = consumerService.selectById(id, true);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);

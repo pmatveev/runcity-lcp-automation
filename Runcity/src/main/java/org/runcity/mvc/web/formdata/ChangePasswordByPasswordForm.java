@@ -30,7 +30,7 @@ public class ChangePasswordByPasswordForm extends AbstractForm {
 	private Consumer consumerFor;
 
 	public ChangePasswordByPasswordForm() {
-		super("changePasswordByPasswordForm", null, null, "/api/v1/changePasswordByPassword");
+		super("changePasswordByPasswordForm", null, null, "/api/v1/changePasswordByPassword", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
 		this.currPassword = new FormPasswordValidationColumn(this,

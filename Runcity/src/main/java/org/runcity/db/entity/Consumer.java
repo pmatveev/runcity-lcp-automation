@@ -38,7 +38,7 @@ public class Consumer implements DBEntity {
 	@Column(name = "locale", length = 16, nullable = true)
 	private String locale;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "consumer", orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = true)
 	private List<ConsumerRole> roles;
 
 	public Consumer() {

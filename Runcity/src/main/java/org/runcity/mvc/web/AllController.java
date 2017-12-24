@@ -16,7 +16,8 @@ public class AllController {
 	@Autowired
 	private DynamicLocaleList localeList;
 
-	@Autowired Version version;
+	@Autowired 
+	private Version version;
 	
 	@ModelAttribute
 	public void addChangePassword(Model model) {

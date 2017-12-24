@@ -20,27 +20,40 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public Category selectById(Long id) {
-		return categoryRepository.findOne(id);
-	}
-	
-	@Override	
-	@Secured("ROLE_ADMIN")
-	public Category selectWithGames(Long id) {
-		Category c = selectById(id);
-		Hibernate.initialize(c.getGames());
+	public Category selectById(Long id, boolean games) {
+		Category c = categoryRepository.findOne(id);
+		if (games) {
+			Hibernate.initialize(c.getGames());
+		}
 		return c;
 	}
+	
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public Iterable<Category> selectById(Iterable<Long> id) {
-		return categoryRepository.findAll(id);
+	public Iterable<Category> selectById(Iterable<Long> id, boolean games) {
+		Iterable<Category> categories = categoryRepository.findAll(id);
+		
+		if (games) {
+			for (Category c : categories) {
+				Hibernate.initialize(c.getGames());				
+			}
+		}
+		
+		return categories;
 	}
 
 	@Override
-	public List<Category> selectAll() {
-		return categoryRepository.findAll();
+	public List<Category> selectAll(boolean games) {
+		List<Category> categories = categoryRepository.findAll();
+		
+		if (games) {
+			for (Category c : categories) {
+				Hibernate.initialize(c.getGames());				
+			}
+		}
+		
+		return categories;
 	}
 
 	@Override
@@ -48,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category addOrUpdate(Category c) throws DBException {
 		try {
 			if (c.getId() != null) {
-				Category prev = selectById(c.getId());
+				Category prev = selectById(c.getId(), false);
 				prev.update(c);
 				return categoryRepository.save(prev);
 			} else {

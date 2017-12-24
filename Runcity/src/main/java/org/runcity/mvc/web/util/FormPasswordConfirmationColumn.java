@@ -11,13 +11,13 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 	private FormStringColumn password;
 
 	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, required, null, null);
+		super(form, definition, false, required, null, null);
 		this.passwordValue = true;
 	}
 
 	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, boolean required,
 			String value) {
-		super(form, definition, required, null, null, value);
+		super(form, definition, false, required, null, null, value);
 		this.passwordValue = true;
 	}
 

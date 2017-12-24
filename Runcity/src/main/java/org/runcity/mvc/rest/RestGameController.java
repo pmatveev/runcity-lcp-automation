@@ -46,7 +46,7 @@ public class RestGameController extends AbstractRestController {
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/gameCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initGameCreateEditForm(@PathVariable Long id) {		
-		Game g = gameService.selectById(id);
+		Game g = gameService.selectById(id, true);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);

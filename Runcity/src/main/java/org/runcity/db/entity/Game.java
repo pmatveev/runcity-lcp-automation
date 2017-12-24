@@ -37,7 +37,7 @@ public class Game implements DBEntity {
 	@Column(name = "game_date", columnDefinition = "datetime", nullable = false)
 	private Date date;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "game_category", joinColumns = {
 			@JoinColumn(name = "game__id", nullable = false) }, inverseJoinColumns = {
 					@JoinColumn(name = "category__id", nullable = false) })

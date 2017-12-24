@@ -85,3 +85,20 @@ table.info-table>tbody>tr>td {
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
+
+.help-block>ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+.file-input-ajax-new .fileinput-remove-button {
+	display: inline-block;
+}
+
+.file-preview-initial .kv-file-zoom {
+	display : block;
+}
+
+.kv-file-zoom {
+	display : none;
+}

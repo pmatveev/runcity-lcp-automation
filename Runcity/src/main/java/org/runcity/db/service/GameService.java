@@ -7,9 +7,9 @@ import org.runcity.exception.DBException;
 import org.springframework.security.access.annotation.Secured;
 
 public interface GameService {
-	public Game selectById(Long id);
+	public Game selectById(Long id, boolean categories);
 
-	public List<Game> selectAll();
+	public List<Game> selectAll(boolean categories);
 	
 	@Secured("ROLE_ADMIN")
 	public Game addOrUpdate(Game g) throws DBException;

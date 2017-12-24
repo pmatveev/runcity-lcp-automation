@@ -9,4 +9,8 @@ public class DBException extends Exception {
 	public DBException(Throwable t) {
 		super(t);
 	}
+	
+	public DBException(String s) {
+		super(s);
+	}
 }

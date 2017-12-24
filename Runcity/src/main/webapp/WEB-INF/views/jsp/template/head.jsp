@@ -16,6 +16,7 @@
 <c:set value="${pageContext.response.locale.language}" var="lang"/>
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
+<spring:url value="/resources/css/fileinput.min.css" var="bootstrapFileCss" />
 <spring:url value="/resources/css/bootstrap-select.min.css" var="bootstrapSelectCss" />
 <spring:url value="/resources/css/bootstrap-datetimepicker.min.css" var="bootstrapDateCss" />
 <spring:url value="/resources/css/bootstrap-colorpicker.min.css" var="bootstrapColorCss" />
@@ -27,6 +28,7 @@
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 <spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
+<spring:url value="/resources/js/fileinput.min.js" var="bootstrapFileJs" />
 <spring:url value="/resources/js/bootstrap-select.min.js" var="bootstrapSelectJs" />
 <spring:url value="/resources/js/bootstrap-datetimepicker.min.js" var="bootstrapDateJs" />
 <spring:url value="/resources/js/bootstrap-colorpicker.min.js" var="bootstrapColorJs" />
@@ -41,6 +43,7 @@
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
 <link rel='stylesheet' href='${bootstrapSelectCss}'/>
+<link rel='stylesheet' href='${bootstrapFileCss}'/>
 <link rel='stylesheet' href='${bootstrapDateCss}'/>
 <link rel='stylesheet' href='${bootstrapColorCss}'/>
 <link rel='stylesheet' href='${dtCss}'/>
@@ -51,6 +54,7 @@
 <script type="text/javascript" src="${jqueryJs}"></script>
 <script type="text/javascript" src="${bootstrapJs}"></script>
 <script type="text/javascript" src="${bootboxJs}"></script>
+<script type="text/javascript" src="${bootstrapFileJs}"></script>
 <script type="text/javascript" src="${bootstrapSelectJs}"></script>
 <script type="text/javascript" src="${bootstrapDateJs}"></script>
 <script type="text/javascript" src="${bootstrapColorJs}"></script>
@@ -65,8 +69,10 @@
 <c:if test="${lang != 'en'}">
 	<spring:url value="/resources/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />
 	<spring:url value="/resources/i18n/datatables.${lang}.js" var="datatablesLoc" />
+	<spring:url value="/resources/i18n/fileinput.${lang}.js" var="fileLoc" />
 	<spring:url value="/resources/i18n/bootstrap-select.${lang}.js" var="selectLoc" />
 	<script type="text/javascript" src="${bootstrapDateJsLoc}" charset="UTF-8"></script>
+	<script type="text/javascript" src="${fileLoc}" charset="UTF-8"></script>
 	<script type="text/javascript" src="${selectLoc}" charset="UTF-8"></script>
 </c:if>
 
@@ -92,6 +98,8 @@
 		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />'
 	}
 	
+	var locale = '${lang}';
+	
 	$(document).ready(function() {
 		$(".modal").each(function() {
 			initModal($(this));
@@ -102,14 +110,17 @@
 			useHashPrefix : false
 		});
 		$(".datepicker-component").each(function() {
-			initDatePicker($(this), '${lang}');
+			initDatePicker($(this));
 		});
 		$.fn.dataTable.ext.errMode = 'throw';
 		$("table.datatables").each(function() {
-			initDatatables($(this), '${datatablesLoc}', '${lang}');
+			initDatatables($(this), '${datatablesLoc}');
 		});
 		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
 			loadAjaxSourced($(this));
+		});
+		$('.fileinput').each(function() {
+			initFileInput($(this), '', false);
 		});
 	});
 </script>

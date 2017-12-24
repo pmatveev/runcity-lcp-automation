@@ -19,7 +19,7 @@ import org.springframework.validation.Errors;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class CategoryCreateEditForm extends AbstractLocalizedForm {
+public class CategoryCreateEditForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(CategoryCreateEditForm.class);
 
 	@JsonView(Views.Public.class)
@@ -52,7 +52,7 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 		this.name = new FormLocalizedStringColumn(this,
 				new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, false, true, false,
 				null, 32);
-		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), true, 1, 3);
+		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), false, true, 1, 3);
 		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true,
 				"ffffff");
 		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true,
@@ -167,7 +167,7 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 
 		if (getId() != null) {
 			CategoryService categoryService = context.getBean(CategoryService.class);
-			Category c = categoryService.selectById(getId());
+			Category c = categoryService.selectById(getId(), true);
 
 			if (c == null) {
 				errors.reject("common.notFoundId", new Object[] { getId() }, null);
@@ -175,7 +175,6 @@ public class CategoryCreateEditForm extends AbstractLocalizedForm {
 			}
 
 			if (!StringUtils.isEqual(prefix.getValue(), c.getPrefix())) {
-				c = categoryService.selectWithGames(getId());
 				if (c.getGames().size() > 0) {
 					errors.rejectValue(prefix.getName(), "category.prefixChangeError");
 				}

@@ -6,12 +6,14 @@ import java.util.Iterator;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Index;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.StringUtils;
-import org.springframework.util.ObjectUtils;
 
 @Entity
 @Table(name = "translation")
+@org.hibernate.annotations.Table(appliesTo = "translation", indexes = {
+		@Index(name = "translation_ref", columnNames = { "ref_record", "ref_column", "ref_table" }) })
 public class Translation implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
@@ -96,19 +98,51 @@ public class Translation implements DBEntity {
 
 	@Override
 	public int hashCode() {
-		return StringUtils.concatNvl(".", refTable, refCol, refRecord, locale, content).hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((content == null) ? 0 : content.hashCode());
+		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
+		result = prime * result + ((refCol == null) ? 0 : refCol.hashCode());
+		result = prime * result + ((refRecord == null) ? 0 : refRecord.hashCode());
+		result = prime * result + ((refTable == null) ? 0 : refTable.hashCode());
+		return result;
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Translation)) {
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-
-		Translation t = (Translation) o;
-		return StringUtils.isEqual(refTable, t.refTable) && StringUtils.isEqual(refCol, t.refCol)
-				&& ObjectUtils.nullSafeEquals(refRecord, t.refRecord) && StringUtils.isEqual(locale, t.locale)
-				&& StringUtils.isEqual(content, t.content);
+		if (getClass() != obj.getClass())
+			return false;
+		Translation other = (Translation) obj;
+		if (content == null) {
+			if (other.content != null)
+				return false;
+		} else if (!content.equals(other.content))
+			return false;
+		if (locale == null) {
+			if (other.locale != null)
+				return false;
+		} else if (!locale.equals(other.locale))
+			return false;
+		if (refCol == null) {
+			if (other.refCol != null)
+				return false;
+		} else if (!refCol.equals(other.refCol))
+			return false;
+		if (refRecord == null) {
+			if (other.refRecord != null)
+				return false;
+		} else if (!refRecord.equals(other.refRecord))
+			return false;
+		if (refTable == null) {
+			if (other.refTable != null)
+				return false;
+		} else if (!refTable.equals(other.refTable))
+			return false;
+		return true;
 	}
 
 	@Override
@@ -137,6 +171,6 @@ public class Translation implements DBEntity {
 			}
 		}
 
-		return second != null ? second : any;
+		return StringUtils.xss(second != null ? second : any);
 	}
 }

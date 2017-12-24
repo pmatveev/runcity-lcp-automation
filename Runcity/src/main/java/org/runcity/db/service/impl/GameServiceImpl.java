@@ -2,6 +2,7 @@ package org.runcity.db.service.impl;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.Game;
 import org.runcity.db.repository.GameRepository;
 import org.runcity.db.service.GameService;
@@ -18,13 +19,23 @@ public class GameServiceImpl implements GameService {
 	private GameRepository gameRepository;
 	
 	@Override
-	public Game selectById(Long id) {
-		return gameRepository.findOne(id);
+	public Game selectById(Long id, boolean categories) {
+		Game g = gameRepository.findOne(id);
+		if (categories) {
+			Hibernate.initialize(g.getCategories());
+		}
+		return g;
 	}
 
 	@Override
-	public List<Game> selectAll() {
-		return gameRepository.findAll();
+	public List<Game> selectAll(boolean categories) {
+		List<Game> games = gameRepository.findAll();
+		if (categories) {
+			for (Game g : games) {
+				Hibernate.initialize(g.getCategories());
+			}
+		}
+		return games;
 	}
 
 	@Override
@@ -32,7 +43,7 @@ public class GameServiceImpl implements GameService {
 	public Game addOrUpdate(Game g) throws DBException {
 		try {
 			if (g.getId() != null) {
-				Game prev = selectById(g.getId());
+				Game prev = selectById(g.getId(), true);
 				prev.update(g);
 				return gameRepository.save(prev);
 			} else {

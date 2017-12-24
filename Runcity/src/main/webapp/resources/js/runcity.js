@@ -31,7 +31,10 @@ function removeErrorMessage(element) {
 		return;
 	}
 	parent.removeClass("has-error");
-	parent.find(".help-block").remove();
+	var err = parent.find(".help-block");
+	if (!err.hasClass("file-help-block")) {
+		err.remove();
+	}
 }
 
 function setErrorMessage(element, message) {
@@ -210,6 +213,20 @@ function setInputValue(elem, val) {
 				} else {
 					picker.datetimepicker('update', "");
 				}
+			} else if (dt === 'filepicker') { 
+				var initial;
+				if (val) {
+					initial = elem.attr('initial');
+					var parms = elem.attr('initial-parms');
+					if (typeof parms !== 'undefined') {
+						parms = parms.split(":");
+						parms.forEach(function(item, i, arr) {
+							var from = $("#" + item);
+							initial = initial.replace("{" + i + "}", encodeURIComponent(getData(from)));
+						});
+					}
+				}
+				initFileInput(elem, initial, true);
 			} else {
 				if (typeof val !== 'undefined') {
 					elem.val(val);
@@ -323,8 +340,8 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 
 		elem.selectpicker('val', val);
 		
-		form['loading']--;
-		if (form['loading'] == 0) {
+		form.data('loading', form.data('loading') - 1);
+		if (form.data('loading') == 0) {
 			changeModalFormState(form, false, false, false);			
 		}
 		return;
@@ -336,7 +353,7 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		data.errors.forEach(function(item, i, arr) {
 			setFormErrorMessage(form, item);
 		});
-		form['loading'] = -1;
+		form.data('loading', -1);
 		changeModalFormState(form, true, false, false);
 	}
 }
@@ -354,18 +371,22 @@ function initAjaxSourcedError(form, elem, data) {
 	} else {
 		setFormErrorMessage(form, translations['ajaxHangPost']);
 	}
-	form['loading'] = -1;
+	form.data('loading', -1);
 	changeModalFormState(form, true, false, false);
 }
 
 
 function initAjaxSourced(form, elem, dataIn, val) {
+	if (!val) {
+		return;
+	}
 	var jsonUrl = elem.attr('ajax-data-init');
 	
 	var urlVal = val;
 	if (Array.isArray(urlVal)) {
 		urlVal = urlVal.join(',');
 	}
+	
 	jsonUrl = jsonUrl.replace("{0}", encodeURIComponent(urlVal));
 	
 	if (typeof elem.attr('init-parms') !== 'undefined') {
@@ -380,7 +401,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 		return;
 	}
 
-	form['loading']++;
+	form.data('loading', form.data('loading') + 1);
 	elem.html("").selectpicker("refresh");
 	
 	$.ajax({
@@ -400,6 +421,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 
 function beforeOpenModal(form, fetch) {
 	removeFormErrorMessage(form);
+	form.data('uploading', 0);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		var val = elem.attr('default');
@@ -424,7 +446,7 @@ function addReloadLink(form, recId) {
 
 function modalFormOpenSuccess(form, data, recId) {
 	if (data.responseClass == "INFO") {
-		form['loading'] = 0;
+		form.data('loading', 0);
 
 		form.find("input,select,textarea").not('[type="submit"]').each(function() {
 			var elem = $(this);
@@ -453,7 +475,7 @@ function modalFormOpenSuccess(form, data, recId) {
 			}
 		});
 
-		if (form['loading'] == 0) {
+		if (form.data('loading') == 0) {
 			changeModalFormState(form, false, false, false);
 		}
 		
@@ -541,8 +563,15 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this); 
+
 		elem.prop("disabled", submitDisabled);
-		if (elem.prop("tagName") === "SELECT") {
+		if (elem.prop("tagName") === "INPUT" && elem.attr("type") == "file") {
+			if (submitDisabled) {
+				elem.fileinput('disable');
+			} else {
+				elem.fileinput('enable').fileinput('refresh').fileinput('reset');
+			}
+		} else if (elem.prop("tagName") === "SELECT") {
 			elem.selectpicker('refresh');
 		}
 	});
@@ -560,6 +589,8 @@ function getData(elem) {
 		var format = elem.attr('format');
 		if (format === 'array') {
 			return elem.val().split(',');
+		} else if (format === 'file') {
+			return elem.data('fileref');
 		} else {
 			return elem.val();			
 		}
@@ -572,7 +603,7 @@ function getData(elem) {
 function getFormData(form) {
 	var res = {};
 
-	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value").each(function() {
+	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value,.file-caption-name").each(function() {
 		var elem = $(this);
 		var format = elem.attr('format');
 		
@@ -667,11 +698,31 @@ function modalFormError(form, data) {
 }
 
 function submitModalForm(form, event) {
-	event.preventDefault();
+	if (typeof event !== 'undefined') {
+		event.preventDefault();		
+	}
+	
 	if (!validateForm(form)) {
 		return;
 	}
 
+	if (typeof form.data('uploading') === 'undefined') {
+		form.data('uploading', 0);
+	}
+	
+	form.find("input[type='file']").each(function() {
+		var elem = $(this);
+		if (elem.fileinput('getFileStack').length > 0) {
+			form.data('uploading', form.data('uploading') + elem.fileinput('getFileStack').length);
+			elem.fileinput('upload');
+		}
+	});
+
+	if (form.data('uploading') > 0) {
+		// wait for upload
+		return;
+	}
+	
 	var jsonString = JSON.stringify(getFormData(form));
 
 	changeModalFormState(form, true, true, true);
@@ -807,7 +858,7 @@ function dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, selector) {
 	});
 }
 
-function initDatatables(table, loc, lang) {
+function initDatatables(table, loc) {
 	var buttonDiv = $('#' + table.attr('id') + '_buttons');
 	var buttons = [];
 	buttonDiv.find('button').each(function() {
@@ -877,11 +928,23 @@ function initDatatables(table, loc, lang) {
 						}
 					});
 				}
-			} else {
-				func = function(e, dt, node, config) {
-					removeTableErrorMessage(dt);
-					dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
-				}
+			} 
+		} else if (action.length > 1 && action[0] == "link") {
+			var link = action[1];
+			var ref = action.slice(2);
+
+			func = function(e, dt, node, config) {
+				var processedLink = link;
+				ref.forEach(function(currentValue, index, array) {
+					processedLink = processedLink.replace("{" + index + "}", dataTablesSelected(dt, currentValue, button.attr("extend")));
+				});
+				
+				window.location = processedLink;
+			}
+		} else {
+			func = function(e, dt, node, config) {
+				removeTableErrorMessage(dt);
+				dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
 			}
 		}
 
@@ -893,27 +956,58 @@ function initDatatables(table, loc, lang) {
 		});
 	});
 	buttonDiv.remove();
-	initDatatablesWithButtons(table, buttons, loc, lang);
+	initDatatablesWithButtons(table, buttons, loc);
 }
 
-function initDatatablesWithButtons(table, buttons, loc, lang) {
+function displayDtImage(flag, url, row) {
+	if (flag) {
+		var val = url;
+		
+		var attr = val.split(":");
+		val = attr[0];
+		attr = attr.slice(1);
+		attr.forEach(function(currentValue, index, array) {
+			val = val.replace("{" + index + "}", row[currentValue]);
+		});
+		
+		return "<img src='" + val + "' class='img-thumbnail'>"
+	} else {
+		return "";
+	}
+}
+
+function initDatatablesWithButtons(table, buttons, loc) {
 	var columnDefs = [];
 	var expand = false
 	table.find("th").each(function() {
 		var cd = $(this);
 		
 		var format = cd.attr("format");
-		if (format === "date") {
+		if (format === "DATE") {
 			columnDefs.push({
 				data : cd.attr("mapping"),
 				name : cd.attr("mapping"),
 				render : function ( data, type, row, meta ) {
-					if (type == "sort" || type == 'type') {
+					if (type == "sort" || type == "type") {
 				        return data;
 					}
 					var dpg = $.fn.datetimepicker.DPGlobal;
-					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), lang, 'standard');
-			    }
+					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+			    },
+				visible : cd.attr("td-visible") == 'true'
+			});
+		} else if (format === "IMAGE") {
+			columnDefs.push({
+				data : cd.attr("mapping"),
+				name : cd.attr("mapping"),
+				orderable : false,
+				render : function ( data, type, row, meta ) {
+					if (type == "sort" || type == "type") {
+				        return data;
+					}
+					return displayDtImage(data, cd.attr("image-url"), row);
+			    },
+				visible : cd.attr("td-visible") == 'true'
 			});
 		} else if (format === "expand") {
 			expand = true;
@@ -925,15 +1019,35 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
                 render: function () {
                 	return '<span class="glyphicon glyphicon-chevron-right"></span>';
                 },
+				visible :       true,
                 width:          '16px'
             });
 		} else {
 			columnDefs.push({
 				data : cd.attr("mapping"),
-				name : cd.attr("mapping")
+				name : cd.attr("mapping"),
+				visible : cd.attr("td-visible") == 'true'
 			});
 		}
 	});
+
+	var index = 0;
+	var sort = {};
+	table.find("th").each(function() {
+		var cd = $(this);
+		var idt = cd.attr("mapping") + ":name";
+		if (typeof cd.attr("sort") !== 'undefined' && typeof cd.attr("sort-index") !== 'undefined') {
+			sort[cd.attr("sort-index")] = [index, cd.attr("sort")];
+		}
+		index++;
+	});
+	
+	var order = [];
+	for (var property in sort) {
+	    if (sort.hasOwnProperty(property)) {
+	        order.push(sort[property]);
+	    }
+	}
 
 	var dataTable = {};
 	dataTable = table.DataTable({
@@ -963,20 +1077,11 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 		language : {
 			url : loc
 		},
-		order : [],
+		order : order,
 		rowId : 'id',
 		select : true
 	});
 	
-	dataTable.column("id:name").visible(false);
-
-	table.find("th").each(function() {
-		var cd = $(this);
-		var idt = cd.attr("mapping") + ":name";
-		if (typeof cd.attr("sort") !== 'undefined') {
-			dataTable.column(idt).order(cd.attr("sort"));
-		}
-	});
 	if (expand) {
 		var expandTemplate = $('#' + table.attr("id") + "_extension");
 		dataTable['formatExpand'] = function(data) {
@@ -989,6 +1094,13 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 					val = val[item];
 				});
 				
+				var format = elem.attr("format");
+				if (format === "DATE") {
+					var dpg = $.fn.datetimepicker.DPGlobal;
+					val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+				} else if (format === "IMAGE") {
+					val = displayDtImage(val, elem.attr("image-url"), data);
+				}
 				elem.html(val);
 			});
 			return expandTemplate.html();
@@ -1026,14 +1138,84 @@ function initDatatablesWithButtons(table, buttons, loc, lang) {
 	}
 }
 
-function initDatePicker(elem, loc) {
+function initDatePicker(elem) {
 	elem.datetimepicker({
-		language : loc,
+		language : locale,
 		autoclose: true,
 		container: elem.attr('data-date-container'),
 		todayHighlight: true,
 		startView: 'month',
 		minView: 'month',
 		forceParse: true
+	});
+}
+
+function initFileInput(elem, initial, destroy) {
+	var csrfToken = $("meta[name='_csrf']").attr("content");
+	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	var headers = {};
+	headers[csrfHeader] = csrfToken;
+		
+	if (destroy) {
+		elem.fileinput('destroy');
+	}
+	elem.fileinput({
+		ajaxSettings : {
+			headers : headers
+		},
+		ajaxDeleteSettings : {
+			headers : headers
+		},
+		container : elem.closest('.form-group'),
+		elErrorContainer : '#err_' + elem.attr('id'),
+		errorCloseButton : '',
+		initialPreview : initial,
+		initialPreviewAsData : true,
+		language : locale,
+		layoutTemplates : {
+			main1 : '<label class="control-label" for="'
+					+ elem.attr('id') + '">' + elem.attr('placeholder')
+					+ '</label>' + '{preview}\n'
+					+ '<div class="input-group {class}">\n'
+					+ '  {caption}\n'
+					+ '  <div class="input-group-btn">\n'
+					+ '    {remove}\n' + '    {browse}\n'
+					+ '  </div>\n' + '</div>\n' + '<div id="err_'
+					+ elem.attr('id') + '"></div>\n',
+			actions : '<div class="file-actions">\n'
+					+ '    <div class="file-footer-buttons">\n'
+					+ '        {download} {zoom} {other}' + '    </div>\n'
+					+ '    <div class="clearfix"></div>\n' + '</div>'
+		},
+		msgErrorClass : "help-block file-help-block",
+		showClose : false,
+		uploadUrl: elem.attr("upload-to")
+	});
+	
+	elem.data('fileref', '');
+	
+	elem.on('fileuploaded', function(event, data, previewId, index) {
+		elem.data('fileref', data.response.idt);
+		elem.fileinput('updateStack', index, undefined);
+		var form = elem.closest("form");
+		if (typeof form.data('uploading') !== 'undefined') {
+			form.data('uploading', form.data('uploading') - 1);
+			if (form.data('uploading') == 0) {
+				submitModalForm(form);
+			}
+		}
+	});
+
+	elem.on('filecleared', function(event, id, index) {
+	    elem.closest('.file-input').find('.file-preview-thumbnails').find('.file-preview-frame').each(function() {
+	    	$(this).remove();
+	    });
+		elem.data('fileref', 'clear');
+	}); 
+	
+	elem.on('fileloaded', function(event, file, previewId, index, reader) {
+	    elem.closest('.file-input').find('.file-preview-thumbnails').find('.file-preview-frame').not('[id=' + previewId + ']').each(function() {
+	    	$(this).remove();
+	    });
 	});
 }
