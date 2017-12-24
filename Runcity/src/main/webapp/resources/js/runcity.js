@@ -955,6 +955,32 @@ function initDatatablesWithButtons(table, buttons, loc) {
 			    },
 				visible : cd.attr("td-visible") == 'true'
 			});
+		} else if (format === "IMAGE") {
+			columnDefs.push({
+				data : cd.attr("mapping"),
+				name : cd.attr("mapping"),
+				orderable : false,
+				render : function ( data, type, row, meta ) {
+					if (type == "sort" || type == "type") {
+				        return data;
+					}
+					if (data) {
+						var val = cd.attr("image-url");
+						
+						var attr = val.split(":");
+						val = attr[0];
+						attr = attr.slice(1);
+						attr.forEach(function(currentValue, index, array) {
+							val = val.replace("{" + index + "}", row[currentValue]);
+						});
+						
+						return "<img src='" + val + "'>"
+					} else {
+						return "";
+					}
+			    },
+				visible : cd.attr("td-visible") == 'true'
+			});
 		} else if (format === "expand") {
 			expand = true;
 			columnDefs.push({
@@ -1040,6 +1066,26 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					val = val[item];
 				});
 				
+				var format = elem.attr("format");
+				if (format === "DATE") {
+					var dpg = $.fn.datetimepicker.DPGlobal;
+					val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+				} else if (format === "IMAGE") {
+					if (val) {
+						val = elem.attr("image-url");
+						
+						var attr = val.split(":");
+						val = attr[0];
+						attr = attr.slice(1);
+						attr.forEach(function(currentValue, index, array) {
+							val = val.replace("{" + index + "}", data[currentValue]);
+						});
+						
+						val = "<img src='" + val + "'>"
+					} else {
+						val = "";
+					}
+				}
 				elem.html(val);
 			});
 			return expandTemplate.html();

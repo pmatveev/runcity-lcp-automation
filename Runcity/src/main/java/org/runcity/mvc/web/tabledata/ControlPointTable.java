@@ -103,10 +103,11 @@ public class ControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("mainIdt", "controlPoint.main").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 2));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
+		this.columns.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 
 		addLocalizedColumn(this.extensions, "address", "controlPoint.address");
 		this.extensions.add(new ColumnDefinition("description", "controlPoint.description"));
-		this.extensions.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/api/v1/controlPointImage/{0}:id"));
+		this.extensions.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:controlPointCreateEditByGameForm", null));
 

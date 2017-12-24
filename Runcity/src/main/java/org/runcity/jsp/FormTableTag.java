@@ -111,6 +111,13 @@ public class FormTableTag extends TagSupport {
 				tagWriter.startTag("td");
 				tagWriter.writeAttribute("class", "dynamic");
 				tagWriter.writeAttribute("mapping", e.getName());
+				if (e.getFormat() != null) {
+					tagWriter.writeAttribute("format", e.getFormat().name());
+				}
+				if (e.getImageUrl() != null) {
+					processUrl(e.getImageUrl(), "image");
+					tagWriter.writeOptionalAttributeValue("image-url", pageContext.getAttribute("image").toString());
+				}
 				tagWriter.endTag();
 				
 				tagWriter.endTag();
@@ -146,6 +153,10 @@ public class FormTableTag extends TagSupport {
 			tagWriter.writeAttribute("mapping", cd.getName());
 			if (cd.getFormat() != null) {
 				tagWriter.writeAttribute("format", cd.getFormat().name());
+			}
+			if (cd.getImageUrl() != null) {
+				processUrl(cd.getImageUrl(), "image");
+				tagWriter.writeOptionalAttributeValue("image-url", pageContext.getAttribute("image").toString());
 			}
 			if (cd.getSortIndex() != null) {
 				tagWriter.writeOptionalAttributeValue("sort", cd.getSort());

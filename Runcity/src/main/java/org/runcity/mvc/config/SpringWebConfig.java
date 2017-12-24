@@ -1,5 +1,8 @@
 package org.runcity.mvc.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.runcity.mvc.config.util.UserLocaleChangeInterceptor;
@@ -10,6 +13,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -63,8 +71,43 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	public CommonsMultipartResolver multipartResolver() {
 		CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
 		commonsMultipartResolver.setDefaultEncoding("utf-8");
-		commonsMultipartResolver.setMaxUploadSize(50000000);
+		commonsMultipartResolver.setMaxUploadSize(5242880); // 5MB
 		return commonsMultipartResolver;
+	}
+	
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+	    converters.add(byteArrayHttpMessageConverter());
+	    converters.add(jacksonConverter());
+	}
+	 
+	@Bean
+	public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
+	    ByteArrayHttpMessageConverter arrayHttpMessageConverter = new ByteArrayHttpMessageConverter();
+	    arrayHttpMessageConverter.setSupportedMediaTypes(getByteSupportedMediaTypes());
+	    return arrayHttpMessageConverter;
+	}
+	 
+	private List<MediaType> getByteSupportedMediaTypes() {
+	    List<MediaType> list = new ArrayList<MediaType>();
+	    list.add(MediaType.IMAGE_JPEG);
+	    list.add(MediaType.IMAGE_PNG);
+	    list.add(MediaType.IMAGE_GIF);
+	    list.add(MediaType.APPLICATION_OCTET_STREAM);
+	    return list;
+	}
+	
+	@Bean 
+	public MappingJackson2HttpMessageConverter jacksonConverter() {
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(new Jackson2ObjectMapperBuilder().build());
+		converter.setSupportedMediaTypes(getJsonSupportedMediaTypes());
+		return converter;
+	}
+	 
+	private List<MediaType> getJsonSupportedMediaTypes() {
+	    List<MediaType> list = new ArrayList<MediaType>();
+	    list.add(MediaType.APPLICATION_JSON);
+	    return list;
 	}
 
 	@Bean
