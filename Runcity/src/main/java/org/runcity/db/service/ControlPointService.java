@@ -19,6 +19,12 @@ public interface ControlPointService {
 	
 	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectMainByGame(Game game);
+	
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByParent(Long parent);
+	
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByParent(ControlPoint parent);
 
 	@Secured("ROLE_ADMIN")
 	public ControlPoint selectById(Long id, boolean image);

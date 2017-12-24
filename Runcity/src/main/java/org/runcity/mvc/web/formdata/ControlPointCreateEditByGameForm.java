@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.service.ControlPointService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormColumn;
@@ -57,8 +58,8 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.gameId = new FormGameIdColumn(this, new ColumnDefinition("gameId", "gameid"));
-		this.parent = FormDddwControlPointColumn.getMainByGame(this,
-				new ColumnDefinition("parent", "controlPoint.parent"), gameId, false);
+		this.parent = (FormDddwControlPointColumn) FormDddwControlPointColumn.getMainByGameNotSelf(this,
+				new ColumnDefinition("parent", "controlPoint.parent"), id, gameId, false).setForceRefresh(true);
 		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"), false, true, 0, 16);
 		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0,
 				32);
@@ -201,6 +202,11 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		address.validate(context, errors);
 		description.validate(context, errors);
 		image.validate(context, errors);
+		
+		ControlPointService controlPointService = context.getBean(ControlPointService.class);
+		if (getParent() != null && getId() != null && !controlPointService.selectByParent(getId()).isEmpty()) {
+			errors.rejectValue(parent.getName(), "controlPoint.errorParentChain");
+		}
 	}
 
 	public ControlPoint getControlPoint() {

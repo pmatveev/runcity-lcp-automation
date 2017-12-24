@@ -9,13 +9,14 @@ import org.springframework.validation.Errors;
 
 public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 	private enum FetchType {
-		BY_GAME;
+		BY_GAME_NOT_SELF;
 	}
 
 	private ControlPoint controlPoint;
 	private FetchType fetchType;
 
 	// reference
+	private FormIdColumn self;
 	private FormIdColumn gameCol;
 
 	private FormDddwControlPointColumn(AbstractForm form, ColumnDefinition definition, String[] initParms,
@@ -25,11 +26,12 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 		this.fetchType = fetchType;
 	}
 
-	public static FormDddwControlPointColumn getMainByGame(AbstractForm form, ColumnDefinition definition,
-			FormIdColumn gameCol, boolean required) {
+	public static FormDddwControlPointColumn getMainByGameNotSelf(AbstractForm form, ColumnDefinition definition,
+			FormIdColumn self, FormIdColumn gameCol, boolean required) {
 		FormDddwControlPointColumn result = new FormDddwControlPointColumn(form, definition, null,
-				"/api/v1/dddw/controlPointMainByGame?game={0}", new String[] { gameCol.getHtmlId() }, required,
-				FetchType.BY_GAME);
+				"/api/v1/dddw/controlPointMainByGame?self={0}&game={1}",
+				new String[] { self.getHtmlId(), gameCol.getHtmlId() }, required, FetchType.BY_GAME_NOT_SELF);
+		result.self = self;
 		result.gameCol = gameCol;
 		return result;
 	}
@@ -50,11 +52,12 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 		}
 
 		switch (fetchType) {
-		case BY_GAME:
-			if (!ObjectUtils.nullSafeEquals(controlPoint.getGame().getId(), gameCol.getValue())) {
+		case BY_GAME_NOT_SELF:
+			if (ObjectUtils.nullSafeEquals(self.getValue(), controlPoint.getId())
+					|| !ObjectUtils.nullSafeEquals(controlPoint.getGame().getId(), gameCol.getValue())) {
 				errors.rejectValue(getName(), "common.notFoundId", new Object[] { value }, null);
-				break;
 			}
+			break;
 		}
 	}
 

@@ -20,6 +20,7 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 
 	protected boolean multiple;
 	protected boolean required;
+	protected boolean forceRefresh = false;
 
 	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, String[] initParms, String ajaxSource, String[] ajaxParms,
 			boolean multiple, boolean required) {
@@ -66,6 +67,15 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 
 	public boolean isMultiple() {
 		return multiple;
+	}
+
+	public boolean isForceRefresh() {
+		return forceRefresh;
+	}
+
+	public FormDddwColumn<?> setForceRefresh(boolean forceRefresh) {
+		this.forceRefresh = forceRefresh;
+		return this;
 	}
 
 	@Override

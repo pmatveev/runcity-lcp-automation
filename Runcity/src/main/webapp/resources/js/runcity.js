@@ -241,6 +241,10 @@ function setInputValue(elem, val) {
 function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 	if (data.responseClass == "INFO") {
 		optionsHtml = "";
+
+		if (!elem.prop('multiple')) {
+			optionsHtml += "<option value=''></option>"
+		}
 		
 		data.options.forEach(function(item, i, arr) {
 			optionsHtml += "<option value='" + item['key'] + "'>" + item['value'] + "</option>";
@@ -325,6 +329,10 @@ function loadAjaxSourced(elem) {
 function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 	if (data.responseClass == "INFO") {
 		optionsHtml = "";
+		
+		if (!elem.prop('multiple')) {
+			optionsHtml += "<option value=''></option>"
+		}
 		
 		data.options.forEach(function(item, i, arr) {
 			optionsHtml += "<option value='" + item['key'] + "'>" + item['value'] + "</option>";
@@ -424,9 +432,12 @@ function beforeOpenModal(form, fetch) {
 	form.data('uploading', 0);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
+		if (elem.prop("tagName") === 'SELECT' && elem.attr('force-refresh') == 'true') {
+			elem.attr('loaded-from', '');
+		}
 		var val = elem.attr('default');
 		setInputValue(elem, val);
-
+		
 		removeErrorMessage(elem);
 	});
 	

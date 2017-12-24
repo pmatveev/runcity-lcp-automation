@@ -334,6 +334,9 @@ public class FormInputTag extends TagSupport {
 		select.setDynamicAttribute(null, "jschecks", column.getJsChecks());
 		select.setDynamicAttribute(null, "data-width", "100%");
 		select.setDynamicAttribute(null, "data-live-search", "true");
+		if (column.isForceRefresh()) {
+			select.setDynamicAttribute(null, "force-refresh", "true");
+		}
 
 		Object ajax = pageContext.getAttribute("selectAjax");
 		if (ajax != null) {

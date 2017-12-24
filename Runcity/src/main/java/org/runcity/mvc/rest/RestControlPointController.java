@@ -16,6 +16,7 @@ import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -86,13 +87,15 @@ public class RestControlPointController extends AbstractRestController {
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/dddw/controlPointMainByGame", method = RequestMethod.GET)
-	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = true) Long game) {
+	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = true) Long self, @RequestParam(required = true) Long game) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
 		
 		List<ControlPoint> controlPoints = controlPointService.selectMainByGame(game);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
-			result.addOption(c.getId(), c.getNameDisplay());
+			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
+				result.addOption(c.getId(), c.getNameDisplay());
+			}
 		}
 		return result;
 	}

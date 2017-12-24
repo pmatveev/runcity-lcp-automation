@@ -56,6 +56,18 @@ public class ControlPointServiceImpl implements ControlPointService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByParent(Long parent) {
+		return selectByParent(controlPointRepository.findOne(parent));
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByParent(ControlPoint parent) {
+		return controlPointRepository.findByParent(parent);
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
 	public ControlPoint selectById(Long id, boolean image) {
 		ControlPoint c = controlPointRepository.findOne(id);
 		

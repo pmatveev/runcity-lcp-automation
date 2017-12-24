@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ControlPointRepository extends JpaRepository<ControlPoint, Long> {
 	public List<ControlPoint> findByGame(Game game);
 	
+	public List<ControlPoint> findByParent(ControlPoint parent);
+	
 	@Query("select c from ControlPoint c where c.game = :game and c.parent = null")
 	public List<ControlPoint> findMainByGame(@Param("game") Game game);
 }
