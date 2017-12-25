@@ -91,7 +91,7 @@ public class FormTableTag extends TagSupport {
 			tagWriter.writeAttribute("id", table.getId() + "_extension");
 			
 			tagWriter.startTag("table");
-			tagWriter.writeAttribute("class", "table-striped");
+			tagWriter.writeAttribute("class", "dt-expand");
 			tagWriter.writeAttribute("cellpadding", "5");
 			tagWriter.writeAttribute("cellspacing", "0");
 			tagWriter.writeAttribute("border", "0");

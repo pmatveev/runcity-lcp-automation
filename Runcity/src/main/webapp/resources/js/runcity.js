@@ -950,7 +950,7 @@ function initDatatables(table, loc) {
 					processedLink = processedLink.replace("{" + index + "}", dataTablesSelected(dt, currentValue, button.attr("extend")));
 				});
 				
-				window.location = processedLink;
+				node.attr('href', processedLink);
 			}
 		} else {
 			func = function(e, dt, node, config) {
@@ -960,10 +960,11 @@ function initDatatables(table, loc) {
 		}
 
 		buttons.push({
-			text : button.text(),
+			action : func,
 			className : button.attr("class"),
 			extend : button.attr("extend"),
-			action : func
+			name : "testPM",
+			text : button.text()
 		});
 	});
 	buttonDiv.remove();
@@ -1091,6 +1092,19 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		order : order,
 		rowId : 'id',
 		select : true
+	});
+	
+	dataTable.buttons().each(function(button, index) {
+		var elem = $(button.node);
+		if (elem.hasClass('dt-link')) {
+			var action = dataTable.button(index).action();
+			dataTable.button(index).action(function(e, dt, node, config) {
+				window.location = node.attr('href');
+			});
+			elem.on('mousedown', function(e) {
+				action(e, dataTable, elem, button.c);
+			});
+		}
 	});
 	
 	if (expand) {

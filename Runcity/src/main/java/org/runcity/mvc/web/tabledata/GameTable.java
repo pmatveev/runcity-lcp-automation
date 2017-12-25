@@ -110,7 +110,7 @@ public class GameTable extends AbstractTable {
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:gameCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/gameDelete/:id", "selected")); 
-		this.buttons.add(new ButtonDefinition("controlPoint.link", null, "btn", "link:/secure/games/{0}/controlPoints:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("controlPoint.link", null, "btn dt-link", "link:/secure/games/{0}/controlPoints:id", "selectedSingle"));
 
 		this.relatedForms.add(new GameCreateEditForm(localeList));
 	}
