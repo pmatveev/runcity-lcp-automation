@@ -43,6 +43,9 @@ public class Game implements DBEntity {
 					@JoinColumn(name = "category__id", nullable = false) })
 	private Set<Category> categories;
 
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "game")
+	private Set<ControlPoint> controlPoints;
+	
 	public Game() {
 		this.categories = new HashSet<Category>();
 	}

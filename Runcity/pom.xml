@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.runcity</groupId>
 	<artifactId>Runcity</artifactId>
-	<version>0.2.2-DEVELOPMENT</version>
+	<version>0.2.3-DEVELOPMENT</version>
 	<developers>
 		<developer>
 			<name>Philipp Matveev</name>

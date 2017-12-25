@@ -102,11 +102,11 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	private void delete(Long id) {
-		ControlPoint c = selectById(id, false);
+//		ControlPoint c = selectById(id, false);
 		controlPointRepository.delete(id);
-		if (c.getImage() != null) {
+/*		if (c.getImage() != null) {
 			blobContentRepository.delete(c.getImage());
-		}
+		}*/
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
@@ -16,6 +17,7 @@ import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "control_point")
+@SQLDelete(sql = "delete cp, bc from control_point cp left outer join blob_content bc on bc.id = cp.image where cp.id = ?")
 public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEntity {
 	@Id
 	@GeneratedValue(generator = "increment")
