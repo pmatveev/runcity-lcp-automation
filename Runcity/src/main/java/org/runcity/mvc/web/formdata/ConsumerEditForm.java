@@ -54,14 +54,23 @@ public class ConsumerEditForm extends AbstractForm {
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), false, true, 4, 32);
-		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				false, true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));
+		this.username.setRequired(true);
+		this.username.setMinLength(4);
+		this.username.setMaxLength(32);
+		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"));
+		this.credentials.setRequired(true);
+		this.credentials.setMinLength(4);
+		this.credentials.setMaxLength(32);
 
-		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
-		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
-		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"), true);
-		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
+		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"));
+		this.email.setRequired(true);
+		this.email.setMaxLength(255);
+		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"));
+		this.active.setRequired(true);
+		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"));
+		this.roles.setRequired(true);
+		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList);
 	}
 
 	public ConsumerEditForm(Long id, String username, String credentials, String email, boolean active, String locale,

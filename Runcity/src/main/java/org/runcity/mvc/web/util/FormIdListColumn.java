@@ -6,17 +6,8 @@ import java.util.List;
 import org.runcity.mvc.web.formdata.AbstractForm;
 
 public class FormIdListColumn extends FormColumn<List<Long>> {
-
 	public FormIdListColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
 		this.value = new ArrayList<Long>();
 	}
-
-	public FormIdListColumn(AbstractForm form, ColumnDefinition definition, List<Long> value) {
-		super(form, definition);
-		if (value != null) {
-			this.value = value;
-		}
-	}
-
 }

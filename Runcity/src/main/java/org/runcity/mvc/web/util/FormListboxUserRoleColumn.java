@@ -16,22 +16,9 @@ public class FormListboxUserRoleColumn extends FormListboxColumn<List<String>> {
 	public FormListboxUserRoleColumn() {
 	}
 
-	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, true, required);
+	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition, true);
 		this.value = new LinkedList<String>();
-	}
-
-	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required, String value) {
-		this(form, definition, required);
-		this.value.add(value);
-	}
-
-	public FormListboxUserRoleColumn(AbstractForm form, ColumnDefinition definition, boolean required,
-			List<String> value) {
-		this(form, definition, required);
-		if (value != null) {
-			this.value = new LinkedList<String>();
-		}
 	}
 
 	public void addValue(String value) {

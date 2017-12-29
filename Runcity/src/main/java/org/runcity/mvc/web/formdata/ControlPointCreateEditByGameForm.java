@@ -58,16 +58,23 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.gameId = new FormGameIdColumn(this, new ColumnDefinition("gameId", "gameid"));
-		this.parent = (FormDddwControlPointColumn) FormDddwControlPointColumn.getMainByGameNotSelf(this,
-				new ColumnDefinition("parent", "controlPoint.parent"), id, gameId, false).setForceRefresh(true);
-		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"), false, true, 0, 16);
-		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"), false, true, 0,
-				32);
+		this.parent = FormDddwControlPointColumn.getMainByGameNotSelf(this,
+				new ColumnDefinition("parent", "controlPoint.parent"), id, gameId);
+		this.parent.setForceRefresh(true);
+		this.idt = new FormPlainStringColumn(this, new ColumnDefinition("idt", "controlPoint.idt"));
+		this.idt.setRequired(true);
+		this.idt.setMaxLength(16);
+		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"));
+		this.name.setRequired(true);
+		this.name.setMaxLength(32);
 		this.address = new FormLocalizedStringColumn(this,
 				new ColumnDefinition("address", "controlPoint.addressgroup", "controlPoint.address"), localeList, true,
 				true, false, null, 4000);
 		this.description = new FormPlainStringColumn(this,
-				new ColumnDefinition("description", "controlPoint.description"), true, true, 0, 4000);
+				new ColumnDefinition("description", "controlPoint.description"));
+		this.description.setRequired(true);
+		this.description.setLongValue(true);
+		this.description.setMaxLength(4000);
 		this.image = new FormFileColumn(this, new ColumnDefinition("image", "controlPoint.image"),
 				"/api/v1/uploadImage", "/secure/controlPointImage?id={0}", new FormColumn<?>[] { this.id }, null);
 	}
@@ -202,7 +209,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		address.validate(context, errors);
 		description.validate(context, errors);
 		image.validate(context, errors);
-		
+
 		ControlPointService controlPointService = context.getBean(ControlPointService.class);
 		if (getParent() != null && getId() != null && !controlPointService.selectByParent(getId()).isEmpty()) {
 			errors.rejectValue(parent.getName(), "controlPoint.errorParentChain");

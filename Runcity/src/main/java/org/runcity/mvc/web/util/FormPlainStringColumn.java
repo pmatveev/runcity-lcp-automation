@@ -5,14 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
 public class FormPlainStringColumn extends FormStringColumn {
-	public FormPlainStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
-			Integer maxLength) {
-		super(form, definition, longValue, required, minLength, maxLength);
-	}
-
-	public FormPlainStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
-			Integer maxLength, String value) {
-		super(form, definition, longValue, required, minLength, maxLength, value);
+	public FormPlainStringColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition);
 	}
 
 	@Override

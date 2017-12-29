@@ -39,21 +39,30 @@ public class ConsumerCreateForm extends AbstractForm {
 		super("consumerCreateForm", null, null, "/api/v1/consumerCreate", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.create");
-		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"), false, true, 4, 32);
-		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"),
-				false, true, 4, 32);
+		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));
+		this.username.setRequired(true);
+		this.username.setMinLength(4);
+		this.username.setMaxLength(32);
+		this.credentials = new FormPlainStringColumn(this, new ColumnDefinition("credentials", "user.credentials"));
+		this.credentials.setRequired(true);
+		this.credentials.setMinLength(4);
+		this.credentials.setMaxLength(32);
 
 		FormPasswordPair passwords = new FormPasswordPair(
-				new FormPasswordColumn(this, new ColumnDefinition("password", "user.password"), true),
-				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "user.password2"), true));
+				new FormPasswordColumn(this, new ColumnDefinition("password", "user.password")),
+				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "user.password2")));
 
 		this.password = passwords.getPassword();
 		this.password2 = passwords.getPasswordConfirmation();
 
-		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"), true, 255);
-		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"), true);
-		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"), true);
-		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList, false);
+		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"));
+		this.email.setRequired(true);
+		this.email.setMaxLength(255);
+		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"));
+		this.active.setRequired(true);
+		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"));
+		this.roles.setRequired(true);
+		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList);
 	}
 
 	public ConsumerCreateForm(String username, String credentials, String email, boolean active, String locale, List<String> roles, DynamicLocaleList localeList) {

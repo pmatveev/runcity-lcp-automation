@@ -20,17 +20,16 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 	private FormIdColumn gameCol;
 
 	private FormDddwControlPointColumn(AbstractForm form, ColumnDefinition definition, String[] initParms,
-			String ajaxSource, String[] ajaxParms, boolean required, FetchType fetchType) {
-		super(form, definition, "/api/v1/dddw/controlPointId?id={0}", initParms, ajaxSource, ajaxParms, false,
-				required);
+			String ajaxSource, String[] ajaxParms, FetchType fetchType) {
+		super(form, definition, "/api/v1/dddw/controlPointId?id={0}", initParms, ajaxSource, ajaxParms, false);
 		this.fetchType = fetchType;
 	}
 
 	public static FormDddwControlPointColumn getMainByGameNotSelf(AbstractForm form, ColumnDefinition definition,
-			FormIdColumn self, FormIdColumn gameCol, boolean required) {
+			FormIdColumn self, FormIdColumn gameCol) {
 		FormDddwControlPointColumn result = new FormDddwControlPointColumn(form, definition, null,
 				"/api/v1/dddw/controlPointMainByGame?self={0}&game={1}",
-				new String[] { self.getHtmlId(), gameCol.getHtmlId() }, required, FetchType.BY_GAME_NOT_SELF);
+				new String[] { self.getHtmlId(), gameCol.getHtmlId() }, FetchType.BY_GAME_NOT_SELF);
 		result.self = self;
 		result.gameCol = gameCol;
 		return result;

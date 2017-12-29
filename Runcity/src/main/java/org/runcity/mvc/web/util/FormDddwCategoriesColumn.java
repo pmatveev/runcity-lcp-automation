@@ -20,17 +20,17 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 	private FetchType fetchType;
 
 	private FormDddwCategoriesColumn(AbstractForm form, ColumnDefinition definition, String[] initParms,
-			String ajaxSource, String[] ajaxParms, boolean required, FetchType fetchType) {
-		super(form, definition, "/api/v1/dddw/categoriesId?id={0}&locale={1}", initParms, ajaxSource, ajaxParms, true,
-				required);
+			String ajaxSource, String[] ajaxParms, FetchType fetchType) {
+		super(form, definition, "/api/v1/dddw/categoriesId?id={0}&locale={1}", initParms, ajaxSource, ajaxParms, true);
+		
 		this.value = new ArrayList<Long>();
 		this.fetchType = fetchType;
 	}
 
 	public static FormDddwCategoriesColumn getAllByLocale(AbstractForm form, ColumnDefinition definition,
-			String localeCol, boolean required) {
-		return new FormDddwCategoriesColumn(form, definition, new String[] { localeCol },
-				"/api/v1/dddw/categories?locale={0}", new String[] { localeCol }, required, FetchType.ALL);
+			FormColumn<?> localeCol) {
+		return new FormDddwCategoriesColumn(form, definition, new String[] { localeCol.getHtmlId() },
+				"/api/v1/dddw/categories?locale={0}", new String[] { localeCol.getHtmlId() }, FetchType.ALL);
 	}
 
 	public void validate(ApplicationContext context, Errors errors) {

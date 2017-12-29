@@ -17,11 +17,6 @@ public class FormDateColumn extends FormColumn<Date> {
 		this.required = required;
 	}
 	
-	public FormDateColumn(AbstractForm form, ColumnDefinition definition, boolean required, Date value) {
-		this(form, definition, required);
-		this.value = value;
-	}
-	
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		super.validate(context, errors);

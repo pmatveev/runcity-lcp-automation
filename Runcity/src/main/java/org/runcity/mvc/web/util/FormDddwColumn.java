@@ -23,14 +23,13 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	protected boolean forceRefresh = false;
 
 	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, String[] initParms, String ajaxSource, String[] ajaxParms,
-			boolean multiple, boolean required) {
+			boolean multiple) {
 		super(form, definition);
 		this.initSource = initSource;
 		this.initParms = initParms;
 		this.ajaxSource = ajaxSource;
 		this.ajaxParms = ajaxParms;
 		this.multiple = multiple;
-		this.required = required;
 	}
 
 	public String getAjaxSource() {
@@ -73,9 +72,8 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 		return forceRefresh;
 	}
 
-	public FormDddwColumn<?> setForceRefresh(boolean forceRefresh) {
+	public void setForceRefresh(boolean forceRefresh) {
 		this.forceRefresh = forceRefresh;
-		return this;
 	}
 
 	@Override
@@ -113,5 +111,9 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 
 	public String getMultipleOptions() {
 		return multiple ? "multiple" : "";
+	}
+	
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 }

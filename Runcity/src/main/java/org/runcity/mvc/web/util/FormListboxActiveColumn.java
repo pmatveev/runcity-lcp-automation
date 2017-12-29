@@ -12,11 +12,7 @@ public class FormListboxActiveColumn extends FormListboxColumn<Boolean> {
 	public FormListboxActiveColumn() {
 	}
 	
-	public FormListboxActiveColumn(AbstractForm form, ColumnDefinition definition, Boolean required) {
-		super(form, definition, false, required);
-	}
-
-	public FormListboxActiveColumn(AbstractForm form, ColumnDefinition definition, Boolean required, Boolean value) {
-		super(form, definition, required, value);
+	public FormListboxActiveColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition, false);
 	}
 }

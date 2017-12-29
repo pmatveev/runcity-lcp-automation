@@ -36,12 +36,6 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 		}
 	}
 	
-	public FormLocalizedStringColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList,
-			boolean longValue, boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength, Map<String, String> value) {
-		this(form, definition, localeList, longValue, oneRequired, allRequired, minLength, maxLength);
-		setValue(value);
-	}
-	
 	public String getGroupLabel() {
 		return definition.getGroupLabel();
 	}

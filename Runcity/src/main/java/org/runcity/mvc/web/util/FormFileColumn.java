@@ -26,11 +26,6 @@ public class FormFileColumn extends FormColumn<String> {
 		this.fileExtn = fileExtn;
 	}
 	
-	public FormFileColumn(AbstractForm form, ColumnDefinition definition, String uploadUrl, String previewUrl, FormColumn<?>[] previewParms, String fileExtn, String value) {
-		this(form, definition, uploadUrl, previewUrl, previewParms, fileExtn);
-		this.value = value;
-	}
-	
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		super.validate(context, errors);

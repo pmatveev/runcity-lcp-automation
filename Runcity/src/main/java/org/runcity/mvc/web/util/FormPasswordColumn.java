@@ -15,14 +15,10 @@ public class FormPasswordColumn extends FormStringColumn {
 	private static final String PWD_PATTERN = "^(?=.*[A-Za-z])(?=.*\\d).{8,}$";
 	private Pattern pattern = Pattern.compile(PWD_PATTERN);
 
-	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, false, required, null, null);
+	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition);
 		this.passwordValue = true;
-	}
-
-	public FormPasswordColumn(AbstractForm form, ColumnDefinition definition, boolean required, String value) {
-		super(form, definition, false, required, null, null, value);
-		this.passwordValue = true;
+		setRequired(true);
 	}
 
 	@Override

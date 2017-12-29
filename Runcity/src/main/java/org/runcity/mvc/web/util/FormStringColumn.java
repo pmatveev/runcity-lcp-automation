@@ -9,24 +9,14 @@ import org.springframework.validation.Errors;
 public abstract class FormStringColumn extends FormColumn<String> {
 	private static final Logger logger = Logger.getLogger(FormStringColumn.class);
 
-	protected boolean longValue;
-	protected boolean required;
-	protected Integer minLength;
-	protected Integer maxLength;
+	protected boolean longValue = false;
+	protected boolean required = false;
+	protected Integer minLength = null;
+	protected Integer maxLength = null;
 
-	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
-			Integer maxLength) {
+	//, boolean longValue, boolean required, Integer minLength,	Integer maxLength
+	protected FormStringColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
-		this.longValue = longValue;
-		this.required = required;
-		this.minLength = minLength;
-		this.maxLength = maxLength;
-	}
-
-	protected FormStringColumn(AbstractForm form, ColumnDefinition definition, boolean longValue, boolean required, Integer minLength,
-			Integer maxLength, String value) {
-		this(form, definition, longValue, required, minLength, maxLength);
-		this.value = value;
 	}
 
 	@Override
@@ -76,5 +66,21 @@ public abstract class FormStringColumn extends FormColumn<String> {
 	
 	public boolean isLongValue() {
 		return longValue;
+	}
+
+	public void setLongValue(boolean longValue) {
+		this.longValue = longValue;
+	}
+
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	public void setMinLength(Integer minLength) {
+		this.minLength = minLength;
+	}
+
+	public void setMaxLength(Integer maxLength) {
+		this.maxLength = maxLength;
 	}
 }

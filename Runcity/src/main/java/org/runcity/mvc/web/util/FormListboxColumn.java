@@ -21,8 +21,8 @@ import org.springframework.validation.Errors;
 public abstract class FormListboxColumn<T> extends FormColumn<T> {
 	private static final Logger logger = Logger.getLogger(FormListboxColumn.class);
 	protected final Map<String, String> options = new HashMap<String, String>();
-	protected boolean multiple;
-	protected boolean required;
+	protected boolean multiple = false;
+	protected boolean required = false;
 
 	protected abstract void initDictionary();
 
@@ -31,11 +31,10 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 		initDictionary();
 	}
 
-	protected FormListboxColumn(AbstractForm form, ColumnDefinition definition, boolean multiple, boolean required) {
+	protected FormListboxColumn(AbstractForm form, ColumnDefinition definition, boolean multiple) {
 		super(form, definition);
 		initDictionary();
 		this.multiple = multiple;
-		this.required = required;
 	}
 
 	public Map<String, String> getOptions() {
@@ -122,5 +121,9 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 		});
 
 		return list;
+	}
+	
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 }

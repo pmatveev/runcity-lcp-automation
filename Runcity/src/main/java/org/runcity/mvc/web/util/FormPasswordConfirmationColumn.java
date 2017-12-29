@@ -10,14 +10,8 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 	private static final Logger logger = Logger.getLogger(FormPasswordConfirmationColumn.class);
 	private FormStringColumn password;
 
-	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
-		super(form, definition, false, required, null, null);
-		this.passwordValue = true;
-	}
-
-	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition, boolean required,
-			String value) {
-		super(form, definition, false, required, null, null, value);
+	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition) {
+		super(form, definition);
 		this.passwordValue = true;
 	}
 

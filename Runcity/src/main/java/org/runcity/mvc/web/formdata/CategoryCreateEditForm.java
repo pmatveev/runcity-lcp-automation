@@ -52,11 +52,16 @@ public class CategoryCreateEditForm extends AbstractForm {
 		this.name = new FormLocalizedStringColumn(this,
 				new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, false, true, false,
 				null, 32);
-		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"), false, true, 1, 3);
-		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"), true,
-				"ffffff");
-		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"), true,
-				"000000");
+		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"));
+		this.prefix.setRequired(true);
+		this.prefix.setMinLength(1);
+		this.prefix.setMaxLength(3);
+		this.fontColor = new FormColorPickerColumn(this, new ColumnDefinition("fontColor", "category.fontColor"));
+		this.fontColor.setRequired(true);
+		this.fontColor.setValue("ffffff");
+		this.bgColor = new FormColorPickerColumn(this, new ColumnDefinition("bgColor", "category.bgColor"));
+		this.bgColor.setRequired(true);
+		this.bgColor.setValue("000000");
 		this.description = new FormLocalizedStringColumn(this,
 				new ColumnDefinition("description", "category.descriptiongroup", "category.description"), localeList,
 				true, false, false, null, 4000);

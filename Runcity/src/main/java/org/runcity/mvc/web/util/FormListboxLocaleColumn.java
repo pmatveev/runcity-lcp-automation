@@ -25,15 +25,10 @@ public class FormListboxLocaleColumn extends FormListboxColumn<String> {
 		initDictionary();
 	}
 	
-	public FormListboxLocaleColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList, Boolean required) {
-		super(form, definition, false, required);
+	public FormListboxLocaleColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList) {
+		super(form, definition, false);
 		this.localeList = localeList;
 		initDictionary();
-	}
-	
-	public FormListboxLocaleColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList, Boolean required, String value) {
-		this(form, definition, localeList, required);
-		this.value = value;
 	}
 	
 	@Override
