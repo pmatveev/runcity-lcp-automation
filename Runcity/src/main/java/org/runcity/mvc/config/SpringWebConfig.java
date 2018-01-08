@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.runcity.mvc.config.util.UserLocaleChangeInterceptor;
+import org.runcity.util.CommonProperties;
 import org.runcity.util.FileCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,9 +43,16 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/")
-				.setCachePeriod(new Integer(env.getRequiredProperty("runcity.resource_cache_time")));
+				.setCachePeriod(getProperties().getCacheTime());
 	}
 
+	@Bean
+	public CommonProperties getProperties() {
+		CommonProperties properties = new CommonProperties();
+		properties.setCacheTime(new Integer(env.getRequiredProperty("runcity.resource_cache_time")));
+		return properties;
+	}
+	
 	@Bean
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();

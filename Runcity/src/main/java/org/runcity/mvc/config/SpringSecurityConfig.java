@@ -74,9 +74,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 					.tokenRepository(persistentTokenRepository())
 					.tokenValiditySeconds(new Integer(env.getRequiredProperty("runcity.rememberme_time")))
 			.and()
-				.exceptionHandling().accessDeniedHandler(new CommonAccessDeniedHandler("/403"));
+				.exceptionHandling().accessDeniedHandler(new CommonAccessDeniedHandler("/403"))
+			.and()
+				.headers().cacheControl().disable();
 	}
-
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
