@@ -4,12 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.runcity</groupId>
 	<artifactId>Runcity</artifactId>
-	<version>0.2.4-DEVELOPMENT</version>
-	<developers>
-		<developer>
-			<name>Philipp Matveev</name>
-		</developer>
-	</developers>
+	<version>0.2.5-DEVELOPMENT</version>
 	<packaging>war</packaging>
 	<properties>
 		<jdk.version>1.7</jdk.version>
