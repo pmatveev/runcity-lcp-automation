@@ -20,6 +20,7 @@
          			<td><b><fmt:message key="common.credits" bundle="${msg}" /></b></td>
          			<td>
          				<fmt:message key="common.credits.arch.PM" bundle="${msg}" /><br/>
+         				<fmt:message key="common.credits.ba.OK" bundle="${msg}" /><br/>
          				<fmt:message key="common.credits.dev.PM" bundle="${msg}" />
          			</td>
          		</tr>
