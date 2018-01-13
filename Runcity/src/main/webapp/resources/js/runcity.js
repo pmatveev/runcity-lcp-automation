@@ -203,7 +203,7 @@ function checkPwdInput(pwd, pwdConf) {
 function validateForm(form, event) {
 	var result = true;
 
-	form.find("input,select,textarea").not('[type="submit"]').each(function() {
+	form.find("input,select,textarea").not(".ignore-value").not('[type="submit"]').each(function() {
 		if (!checkInput($(this))) {
 			result = false;
 		}
