@@ -1,3 +1,7 @@
+function emptyValue(val) {
+	return typeof val == 'undefined' || val == null || val == '';
+}
+
 function removeFormErrorMessage(form) {
 	form.find(".errorHolder").html("");
 }
@@ -61,6 +65,27 @@ function setErrorMessageStrict(element, message) {
 	} else {
 		help.html(message);
 	}
+}
+
+function showConditional(elem) {
+	var cond = elem.attr("show-if");
+	if (typeof cond == 'undefined') {
+		return;
+	}
+	var show = eval(cond);
+	if (show) {
+		elem.removeClass("ignore-value");
+		elem.closest(".form-group").removeClass("hidden");
+	} else {
+		elem.addClass("ignore-value");
+		elem.closest(".form-group").addClass("hidden");
+	}
+}
+
+function showConditionalForm(form) {
+	form.find("input,select,textarea").not('[type="submit"]').each(function() {
+		showConditional($(this));
+	});
 }
 
 function checkElem(elem, rule) {
@@ -148,9 +173,10 @@ function checkInput(elem) {
 function onColChange(elem) {
 	checkInput(elem);
 	var form = elem.closest("form");
-	
+	showConditionalForm(form);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var inp = $(this);
+				
 		if ((":" + inp.attr('ajax-parms') + ":").indexOf(":" + elem.attr("id") + ":") > -1) {
 			setInputValue(inp, "");
 		}
@@ -350,6 +376,7 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		
 		form.data('loading', form.data('loading') - 1);
 		if (form.data('loading') == 0) {
+			showConditionalForm(form);
 			changeModalFormState(form, false, false, false);			
 		}
 		return;
@@ -487,8 +514,10 @@ function modalFormOpenSuccess(form, data, recId) {
 		});
 
 		if (form.data('loading') == 0) {
+			showConditionalForm(form);
 			changeModalFormState(form, false, false, false);
 		}
+		
 		
 		return;
 	}
@@ -545,6 +574,8 @@ function beforeOpenModalFetch(form, recId) {
 }
 
 function afterOpenModal(form) {
+	showConditionalForm(form);
+	
 	var focus = form.find('[autofocus="autofocus"]')[0];
 	if (focus) {
 		focus.focus();

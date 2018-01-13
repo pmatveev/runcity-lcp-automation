@@ -16,6 +16,9 @@ public abstract class FormColumn<T> {
 	protected T value;
 	protected boolean passwordValue = false;
 	
+	// conditional fields
+	protected String showCondition;
+	
 	protected FormColumn(AbstractForm form, ColumnDefinition definition) {
 		this.form = form;
 		this.definition = definition;
@@ -68,4 +71,15 @@ public abstract class FormColumn<T> {
 	public String getJsChecks() {
 		return "";
 	}
-}
+	
+	public void setShowCondition(String js, FormColumn<?> ... args) {
+		showCondition = js;
+		for (int i = 0; i < args.length; i++) {
+			showCondition = showCondition.replace("{" + i + "}", "getData($('#" + args[i].getHtmlId() + "'))");
+		}
+	}
+	
+	public String getShowCondition() {
+		return showCondition;
+	}
+}	

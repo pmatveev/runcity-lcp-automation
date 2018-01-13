@@ -179,7 +179,7 @@ public class FormInputTag extends TagSupport {
 		input.setOnchange(column.getOnChange());
 		input.setDynamicAttribute(null, "placeholder", label);
 		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
-
+		input.setDynamicAttribute(null, "show-if", column.getShowCondition());
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
 		}
@@ -239,6 +239,7 @@ public class FormInputTag extends TagSupport {
 			input.setCssClass("form-control");
 			input.setDynamicAttribute(null, "format", "langObj");
 			input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+			input.setDynamicAttribute(null, "show-if", column.getShowCondition());
 			input.setOnchange(column.getOnChange(l));
 
 			String placeholder = MessageFormat.format(label, localeDisplay);
@@ -291,6 +292,7 @@ public class FormInputTag extends TagSupport {
 		select.setMultiple(column.getMultipleOptions());
 		select.setOnchange(column.getOnChange());
 		select.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		select.setDynamicAttribute(null, "show-if", column.getShowCondition());
 		select.setDynamicAttribute(null, "data-live-search", column.getLiveSearch());
 		select.setDynamicAttribute(null, "data-width", "100%");
 
@@ -332,6 +334,7 @@ public class FormInputTag extends TagSupport {
 		select.setMultiple(column.getMultipleOptions());
 		select.setOnchange(column.getOnChange());
 		select.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		select.setDynamicAttribute(null, "show-if", column.getShowCondition());
 		select.setDynamicAttribute(null, "data-width", "100%");
 		select.setDynamicAttribute(null, "data-live-search", "true");
 		if (column.isForceRefresh()) {
@@ -420,6 +423,7 @@ public class FormInputTag extends TagSupport {
 		input.setId(column.getHtmlId());
 		input.setOnchange(column.getOnChange());
 		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		input.setDynamicAttribute(null, "show-if", column.getShowCondition());
 		input.setDynamicAttribute(null, "type", "hidden");
 		input.setDynamicAttribute(null, "display-type", "datepicker");
 		if (column.getValue() != null) {

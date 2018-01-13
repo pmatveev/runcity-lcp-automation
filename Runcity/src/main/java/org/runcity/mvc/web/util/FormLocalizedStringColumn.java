@@ -52,7 +52,7 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 		value.put(k, v);
 	}
 	
-	private void clearValue() {
+	public void clearValue() {
 		for (String s : value.keySet()) {
 			value.put(s, "");
 		}

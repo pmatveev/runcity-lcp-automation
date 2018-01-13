@@ -56,7 +56,7 @@ public class ControlPointTable extends AbstractTable {
 			this.name = StringUtils.xss(c.getName());
 			
 			this.address = localeList.prepareMap();
-			for (Translation t : c.getAddresses()) {
+			for (Translation t : c.getParent() == null ? c.getAddresses() : c.getParent().getAddresses()) {
 				if (localeList.contains(t.getLocale())) {
 					this.address.put(t.getLocale(), StringUtils.xss(t.getContent()));
 				}
