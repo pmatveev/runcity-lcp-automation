@@ -1,5 +1,6 @@
 function emptyValue(val) {
-	return typeof val == 'undefined' || val == null || val == '';
+	var a = val.length;
+	return typeof val == 'undefined' || val == null || val == '' || val.length == 0;
 }
 
 function removeFormErrorMessage(form) {
@@ -90,7 +91,7 @@ function showConditionalForm(form) {
 
 function checkElem(elem, rule) {
 	if (rule == "required") {
-		if (elem.val().length == 0) {
+		if (emptyValue(getData(elem))) {
 			setErrorMessage(elem, translations['required']);
 			return false;
 		}
@@ -102,7 +103,7 @@ function checkElem(elem, rule) {
 		var total = 0;
 		par.find("input,textarea").each(function(){
 			total++;
-			if ($(this).val().length > 0) {
+			if (getData($(this)).length > 0) {
 				filled++;
 			}
 		});
@@ -120,7 +121,7 @@ function checkElem(elem, rule) {
 
 	if (rule.indexOf("min=") == 0) {
 		var len = Number(rule.substring(4));
-		if (elem.val().length > 0 && elem.val().length < len) {
+		if (getData(elem).length > 0 && getData(elem).length < len) {
 			setErrorMessage(elem, translations['minLen'].replace("{0}", len));
 			return false;
 		}
@@ -128,14 +129,14 @@ function checkElem(elem, rule) {
 
 	if (rule.indexOf("max=") == 0) {
 		var len = Number(rule.substring(4));
-		if (elem.val().length > len) {
+		if (getData(elem).length > len) {
 			setErrorMessage(elem, translations['maxLen'].replace("{0}", len));
 			return false;
 		}
 	}
 
 	if (rule == "pwd") {
-		if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(elem.val())) {
+		if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(getData(elem))) {
 			setErrorMessage(elem, translations['passwordStrength']);
 			return false;
 		}
@@ -143,7 +144,7 @@ function checkElem(elem, rule) {
 
 	if (rule == "email") { // 
 		if (!/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/
-				.test(elem.val())) {
+				.test(getData(elem))) {
 			setErrorMessage(elem, translations['invalidEmail']);
 			return false;
 		}
@@ -153,6 +154,7 @@ function checkElem(elem, rule) {
 }
 
 function checkInput(elem) {
+	removeErrorMessage(elem);
 	var checkList = elem.attr("jschecks");
 	if (typeof checkList === 'undefined') {
 		return true;
@@ -160,7 +162,6 @@ function checkInput(elem) {
 	checkList = checkList.split(";");
 	var result = true;
 
-	removeErrorMessage(elem);
 	checkList.forEach(function(item, i, arr) {
 		if (!checkElem(elem, item)) {
 			result = false;
@@ -203,9 +204,16 @@ function checkPwdInput(pwd, pwdConf) {
 function validateForm(form, event) {
 	var result = true;
 
-	form.find("input,select,textarea").not(".ignore-value").not('[type="submit"]').each(function() {
-		if (!checkInput($(this))) {
-			result = false;
+	form.find("input,select,textarea").not(".ignore-value").not('[type="submit"]').not('[type="hidden"]').each(function() {
+		var elem = $(this);
+		if (elem.attr('type') != 'password') {
+			if (!checkInput(elem)) {
+				result = false;
+			}
+		} else {
+			if (!eval(elem.attr("onchange"))) {
+				result = false;
+			}
 		}
 	});
 
