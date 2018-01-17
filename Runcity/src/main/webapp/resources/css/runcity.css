@@ -114,3 +114,7 @@ table.dt-expand tr td {
 .kv-file-zoom {
 	display : none;
 }
+
+.login-container {
+	max-width : 300px;
+}
