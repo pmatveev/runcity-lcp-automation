@@ -12,7 +12,9 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -196,6 +198,16 @@ public class RestConsumerController extends AbstractRestController {
 	public RestPostResponseBody consumerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/consumerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		
+		Long myId = SecureUserDetails.getCurrent().getId();
+		for (Long i : id) {
+			if (ObjectUtils.nullSafeEquals(myId, i)) {
+				result.setResponseClass(RestResponseClass.ERROR);
+				result.addCommonError("user.selfDelete");
+				return result;
+			}
+		}
+		
 		try {
 			consumerService.delete(id);
 		} catch (Exception e) {
