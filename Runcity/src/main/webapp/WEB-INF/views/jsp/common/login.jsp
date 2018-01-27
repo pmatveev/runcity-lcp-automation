@@ -16,6 +16,12 @@
 					${errorMsg}
 				</div>
 			</c:if>
+			<c:if test="${!empty info}">
+				<fmt:message key="${info}" bundle="${msg}" var="errorMsg"/>
+				<div class="alert alert-success">
+					${errorMsg}
+				</div>
+			</c:if>
 		</div>
 		<div class="form-group">
 			<label class="control-label" for="username">
@@ -43,8 +49,8 @@
 		<button type="submit" class="btn btn-primary btn-block">
 			<fmt:message key="login.dologin" bundle="${msg}" />
 		</button>
-
-		<a class="btn btn-link btn-block" href="#"><fmt:message key="login.reissuePassword" bundle="${msg}" /></a>
+		<spring:url value="/passwordRecovery" var="goPasswordRecovery"/>
+		<a class="btn btn-link btn-block" href="${goPasswordRecovery}"><fmt:message key="login.recoverPassword" bundle="${msg}" /></a>
 	</form>			
 </div>
 <%@ include file="../template/foot.jsp"%>

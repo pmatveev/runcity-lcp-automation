@@ -5,6 +5,7 @@ import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
+import org.runcity.mvc.web.formdata.PasswordRecoveryForm;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -48,14 +49,17 @@ public class ConsumerController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String showLoginForm(Model model, @RequestParam(required = false) String error) {
+	public String showLoginForm(Model model, @RequestParam(required = false) String state) {
 		logger.info("GET /login");
 		if (isAlreadyAuthenticated()) {
 			return "redirect:/home";
 		}
 
-		if (error != null) {
+		if ("error".equals(state)) {
 			model.addAttribute("error", "login.invalidPwd");
+		}
+		if ("recovery".equals(state)) {
+			model.addAttribute("info", "login.recoverySent");
 		}
 		return "common/login";
 	}
@@ -99,5 +103,33 @@ public class ConsumerController {
 			return "common/register";
 		}
 		return "redirect:/login";
+	}
+	
+	@RequestMapping(value = "/passwordRecovery", method = RequestMethod.GET)
+	public String showPasswordRecoveryForm(Model model) {
+		logger.info("GET /passwordRecovery");
+		PasswordRecoveryForm form = new PasswordRecoveryForm(localeList);
+		model.addAttribute(form.getFormName(), form);
+		return "common/passwordRecovery";
+	}
+	
+	@RequestMapping(value = "/passwordRecovery", method = RequestMethod.POST)
+	public String doPasswordRecovery(@ModelAttribute("passwordRecoveryForm") @Validated PasswordRecoveryForm form, BindingResult result,
+			Model model, final RedirectAttributes redirectAttributes) {
+		logger.info("POST /passwordRecovery");
+		if (result.hasErrors()) {
+			logger.info("\tvalidation error");
+			return "common/passwordRecovery";
+		}
+		
+//		try {
+//			consumerService.sendEmail
+//			
+//		} catch (DBException e) {
+//			result.reject("common.db.fail");
+//			logger.error("DB exception", e);
+//			return "common/passwordRecovery";
+//		}
+		return "redirect:/login?state=recovery";
 	}
 }
