@@ -594,6 +594,7 @@ function beforeCloseModal(form) {
 	if (form.attr("loading") == "true") {
 		return false;
 	}
+	
 	return true;
 }
 

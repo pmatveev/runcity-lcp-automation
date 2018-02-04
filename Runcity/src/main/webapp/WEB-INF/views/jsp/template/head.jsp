@@ -165,13 +165,7 @@
 					</ul>
 				</sec:authorize>
 				<ul class="nav navbar-nav navbar-right">
-					<spring:url value="/register" var="goRegister"/>
-					<spring:url value="/login" var="goLogin"/>
 					<spring:url value="/logout" var="goLogout"/>
-					<sec:authorize access="!isAuthenticated()">
-						<li><a href="${goRegister}" role="button"><span class="glyphicon glyphicon-user"></span> <fmt:message key="register.header" bundle="${msg}" /></a></li>
-						<li><a href="${goLogin}" role="button"><span class="glyphicon glyphicon-log-in"></span> <fmt:message key="login.header" bundle="${msg}" /></a></li>
-					</sec:authorize>
 					<sec:authorize access="isAuthenticated()">
 						<li>
 							<a class="dropdown-toggle" data-toggle="dropdown" href="#">

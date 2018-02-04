@@ -1,51 +1,69 @@
 package org.runcity.mvc.web.formdata;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.*;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class PasswordRecoveryForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(PasswordRecoveryForm.class);
-
-	private FormStringColumn email;
+	
+	@JsonView(Views.Public.class)
+	private FormStringColumn input;
+	
+	private Consumer consumer;
 
 	public PasswordRecoveryForm() {
 		this(null);
 	}
 	
 	public PasswordRecoveryForm(DynamicLocaleList localeList) {
-		super("passwordRecoveryForm", null, "/passwordRecovery", null, localeList);
+		super("passwordRecoveryForm", null, null, "/common/api/v1/passwordRecovery", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("passwordRecovery.header");
 
-		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"));
-		this.email.setRequired(true);
-		this.email.setMaxLength(255);
+		this.input = new FormPlainStringColumn(this, new ColumnDefinition("input", "passwordRecovery.input"));
+		this.input.setRequired(true);
+		this.input.setMaxLength(255);
 	}
 
-	public String getEmail() {
-		return email.getValue();
+	public String getInput() {
+		return input.getValue();
 	}
 
-	public void setEmail(String email) {
-		this.email.setValue(email);
+	public void setInput(String input) {
+		this.input.setValue(input);
 	}
 
-	public FormStringColumn getEmailColumn() {
-		return email;
+	public FormStringColumn getInputColumn() {
+		return input;
 	}
 	
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
-		email.validate(context, errors);
+		input.validate(context, errors);
+		
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		if (consumerService.selectByEmail(email.getValue(), false) == null) {
-			logger.debug(email.getName() + " doesn't exist");
-			errors.rejectValue(email.getName(), "passwordRecovery.unknownEmail");
+		consumer = consumerService.selectByUsername(input.getValue(), false);
+		
+		if (consumer == null) {
+			consumer = consumerService.selectByEmail(input.getValue(), false);
 		}
+		
+		if (consumer == null) {
+			logger.debug(input.getName() + " doesn't exist");
+			errors.rejectValue(input.getName(), "passwordRecovery.unknownInput");
+		}
+	}
+	
+	public Consumer getConsumer() {
+		return consumer;
 	}
 }

@@ -50,6 +50,8 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	public CommonProperties getProperties() {
 		CommonProperties properties = new CommonProperties();
 		properties.setCacheTime(new Integer(env.getRequiredProperty("runcity.resource_cache_time")));
+		properties.setPasswordTokenLifetime(new Integer(env.getRequiredProperty("runcity.reset_password_lifetime")));
+		properties.setUrl(env.getRequiredProperty("runcity.url"));
 		return properties;
 	}
 	

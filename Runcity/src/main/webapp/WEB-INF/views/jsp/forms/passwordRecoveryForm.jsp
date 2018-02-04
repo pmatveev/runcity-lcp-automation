@@ -12,7 +12,7 @@
 			<form:errors cssClass="alert alert-danger" element="div"/>
 		</div>
 		
-		<c:set value="${formVar.emailColumn}" var="col"/>
+		<c:set value="${formVar.inputColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" autofocus="autofocus"/>
 		</spring:bind>		

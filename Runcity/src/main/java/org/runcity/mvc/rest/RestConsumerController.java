@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
+import org.runcity.exception.EMailException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
@@ -13,9 +14,11 @@ import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.secure.SecureUserDetails;
+import org.runcity.util.CommonProperties;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +38,9 @@ public class RestConsumerController extends AbstractRestController {
 	
 	@Autowired
 	private DynamicLocaleList localeList;
+	
+	@Autowired
+	private CommonProperties commonProperties;
 
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/changePasswordByPassword", method = RequestMethod.POST)
@@ -224,5 +230,57 @@ public class RestConsumerController extends AbstractRestController {
 		ConsumerTable table = new ConsumerTable(null, messageSource, localeList);
 		table.fetchAll(consumerService);
 		return table;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/common/api/v1/passwordRecovery", method = RequestMethod.POST)
+	public RestPostResponseBody initPasswordRecovery(@RequestBody PasswordRecoveryForm form) {
+		logger.info("POST /common/api/v1/passwordRecovery");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+
+		try {
+			consumerService.recoverPassword(form.getConsumer(), commonProperties, messageSource,  LocaleContextHolder.getLocale());
+		} catch (DBException | EMailException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+		}
+		
+		result.setResponseClass(RestResponseClass.INFO);
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/common/api/v1/register", method = RequestMethod.POST)
+	public RestPostResponseBody register(@RequestBody ConsumerRegisterForm form) {
+		logger.info("POST /common/api/v1/register");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+
+		Consumer c = null;
+		try {
+			c = consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail(), form.getLocale());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+		}
+
+		if (c == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		
+		result.setResponseClass(RestResponseClass.INFO);
+		return result;
 	}
 }

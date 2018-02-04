@@ -1,9 +1,13 @@
 package org.runcity.db.service;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.exception.DBException;
+import org.runcity.exception.EMailException;
+import org.runcity.util.CommonProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.annotation.Secured;
 
 public interface ConsumerService {
@@ -37,4 +41,8 @@ public interface ConsumerService {
 	
 	@Secured("ROLE_ADMIN")
 	public List<Consumer> updatePassword(List<Long> id, String newPassword) throws DBException;
+
+	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource, Locale locale) throws DBException, EMailException;
+	
+	public void resetPasswordByToken(String token, String password) throws DBException;
 }

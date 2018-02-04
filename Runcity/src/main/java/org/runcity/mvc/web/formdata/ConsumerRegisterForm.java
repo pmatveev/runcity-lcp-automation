@@ -22,7 +22,7 @@ public class ConsumerRegisterForm extends AbstractForm {
 	}
 	
 	public ConsumerRegisterForm(DynamicLocaleList localeList) {
-		super("consumerRegisterForm", null, "/register", null, localeList);
+		super("consumerRegisterForm", null, null, "/common/api/v1/register", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
 		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));
