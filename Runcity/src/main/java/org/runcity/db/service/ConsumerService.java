@@ -44,5 +44,7 @@ public interface ConsumerService {
 
 	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource, Locale locale) throws DBException, EMailException;
 	
+	public void invalidateRecoveryTokens(Consumer c) throws DBException;
+	
 	public void resetPasswordByToken(String token, String password) throws DBException;
 }

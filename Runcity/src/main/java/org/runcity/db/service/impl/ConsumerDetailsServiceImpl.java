@@ -2,6 +2,7 @@ package org.runcity.db.service.impl;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.exception.DBException;
 import org.runcity.secure.SecureUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,12 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException(username);
 		}
 
+		// user can login - delete recovery tokens
+		try {
+			consumerService.invalidateRecoveryTokens(c);
+		} catch (DBException e) {
+		}
+		
 		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.isActive(), c.getPassHash(),
 				c.getCredentials(), c.getEmail(), c.getLocale(), c.getRoles());
 		return details;

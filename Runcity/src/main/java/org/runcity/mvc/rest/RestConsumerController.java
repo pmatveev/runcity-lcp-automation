@@ -249,6 +249,7 @@ public class RestConsumerController extends AbstractRestController {
 		} catch (DBException | EMailException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.db.fail");
+			return result;
 		}
 		
 		result.setResponseClass(RestResponseClass.INFO);

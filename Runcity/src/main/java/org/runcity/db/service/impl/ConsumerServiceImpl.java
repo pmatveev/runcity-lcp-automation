@@ -216,7 +216,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		dateToCal.add(Calendar.SECOND, commonProperties.getPasswordTokenLifetime());
 		Date dateTo = dateToCal.getTime();
 
-		tokenRepository.invalidateToken(c, dateFrom);
+		invalidateRecoveryTokens(c, dateFrom);
 
 		int counter = 3;
 		Token token = null;
@@ -252,11 +252,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 		MimeMessageHelper helper;
 		try {
 			helper = new MimeMessageHelper(message, false, "utf-8");
+			helper.setFrom(commonProperties.getEmailFrom(), messageSource.getMessage("passwordRecovery.emailSource", null, locale));
 			helper.setTo(c.getEmail());
 			helper.setSubject(messageSource.getMessage("passwordRecovery.emailSubject", null, locale));
 			message.setContent(messageSource.getMessage("passwordRecovery.emailText",
 					new Object[] { c.getCredentials(),
-							commonProperties.getUrl() + "recoverPassword?token=" + token.getToken() },
+							commonProperties.getUrl() + "recoverPassword?token=" + token.getToken() + "&check=" + token.getDateFrom().hashCode()},
 					messageLocale), "text/html");
 			mailSender.send(message);
 		} catch (Throwable t) {
@@ -264,6 +265,18 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
+	private void invalidateRecoveryTokens(Consumer c, Date d) {
+		tokenRepository.invalidateToken(c, d);		
+	}
+
+	public void invalidateRecoveryTokens(Consumer c) throws DBException {
+		try {
+			invalidateRecoveryTokens(c, new Date());
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
+	}
+	
 	@Override
 	public void resetPasswordByToken(String token, String password) throws DBException {
 		// Date dateFrom = new Date();

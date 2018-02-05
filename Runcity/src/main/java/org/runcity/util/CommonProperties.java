@@ -3,6 +3,7 @@ package org.runcity.util;
 public class CommonProperties {
 	private int cacheTime;
 	private int passwordTokenLifetime;
+	private String emailFrom;
 	private String url;
 	
 	public int getCacheTime() {
@@ -27,5 +28,13 @@ public class CommonProperties {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getEmailFrom() {
+		return emailFrom;
+	}
+
+	public void setEmailFrom(String emailFrom) {
+		this.emailFrom = emailFrom;
 	}
 }
