@@ -2,19 +2,33 @@ package org.runcity.mvc.web.formdata;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.*;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class ConsumerRegisterForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerRegisterForm.class);
 
+	@JsonView(Views.Public.class)
 	private FormStringColumn username;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn password;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn password2;
+	
+	@JsonView(Views.Public.class)
 	private FormStringColumn email;
+	
+	@JsonView(Views.Public.class)
 	private FormListboxLocaleColumn locale;
 
 	public ConsumerRegisterForm() {

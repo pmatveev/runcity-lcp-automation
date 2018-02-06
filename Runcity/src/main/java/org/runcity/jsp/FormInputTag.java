@@ -148,17 +148,20 @@ public class FormInputTag extends TagSupport {
 	}
 
 	private void writeStringColumn(FormStringColumn column) throws JspException {
-		String label = localize(column.getLabel());
+		String label = column.isHidden() ? null : localize(column.getLabel());
 		TagWriter tagWriter = new TagWriter(pageContext);
 
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
-
-		writeLabel(tagWriter, label);
-
-		if (column instanceof FormColorPickerColumn) {
-			tagWriter.startTag("div");
-			tagWriter.writeAttribute("class", "input-group colorpicker-component");
+		if (!column.isHidden()) {	
+			writeLabel(tagWriter, label);
+	
+			if (column instanceof FormColorPickerColumn) {
+				tagWriter.startTag("div");
+				tagWriter.writeAttribute("class", "input-group colorpicker-component");
+				tagWriter.appendValue("");
+			}
+		} else {
 			tagWriter.appendValue("");
 		}
 
@@ -175,24 +178,29 @@ public class FormInputTag extends TagSupport {
 		}
 		input.setPath(column.getName());
 		input.setId(column.getHtmlId());
-		input.setCssClass("form-control");
-		input.setOnchange(column.getOnChange());
-		input.setDynamicAttribute(null, "placeholder", label);
-		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
-		input.setDynamicAttribute(null, "show-if", column.getShowCondition());
+
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
 		}
-
-		if (!StringUtils.isEmpty(autofocus)) {
-			input.setDynamicAttribute(null, "autofocus", autofocus);
+		
+		if (column.isHidden()) {
+			input.setDynamicAttribute(null, "hidden", "hidden");
+		} else {
+			input.setCssClass("form-control");
+			input.setOnchange(column.getOnChange());
+			input.setDynamicAttribute(null, "placeholder", label);
+			input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+			input.setDynamicAttribute(null, "show-if", column.getShowCondition());
+	
+			if (!StringUtils.isEmpty(autofocus)) {
+				input.setDynamicAttribute(null, "autofocus", autofocus);
+			}
 		}
-
 		input.setPageContext(pageContext);
 		input.doStartTag();
 		input.doEndTag();
 
-		if (column instanceof FormColorPickerColumn) {
+		if (column instanceof FormColorPickerColumn && !column.isHidden()) {
 			tagWriter.startTag("span");
 			tagWriter.writeAttribute("class", "input-group-addon");
 			tagWriter.startTag("i");

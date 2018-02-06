@@ -104,4 +104,8 @@ public class Token implements DBEntity {
 			return false;
 		return true;
 	}
+	
+	public String check() {
+		return id == null ? null : id.toString().hashCode() + "";
+	}
 }

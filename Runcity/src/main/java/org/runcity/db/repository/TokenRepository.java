@@ -14,6 +14,8 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 	@Query("update Token set dateTo = :currDate where consumer = :consumer and dateTo > :currDate")
 	public void invalidateToken(@Param("consumer") Consumer consumer, @Param("currDate") Date currDate);
 
-	@Query("select t from Token t where consumer = :consumer and dateTo > :currDate")
-	public Token selectToken(@Param("consumer") Consumer consumer, @Param("currDate") Date currDate);
+	@Query("select t from Token t where token = :token and dateTo > :currDate")
+	public Token selectToken(@Param("token") String token, @Param("currDate") Date currDate);
+	
+	
 }

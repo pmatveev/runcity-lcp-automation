@@ -207,7 +207,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 		return result;
 	}
-
+	
 	@Override
 	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource,
 			Locale locale) throws DBException, EMailException {
@@ -257,7 +257,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 			helper.setSubject(messageSource.getMessage("passwordRecovery.emailSubject", null, locale));
 			message.setContent(messageSource.getMessage("passwordRecovery.emailText",
 					new Object[] { c.getCredentials(),
-							commonProperties.getUrl() + "recoverPassword?token=" + token.getToken() + "&check=" + token.getDateFrom().hashCode()},
+							commonProperties.getUrl() + "recoverPassword?token=" + token.getToken() + "&check=" + token.check()},
 					messageLocale), "text/html");
 			mailSender.send(message);
 		} catch (Throwable t) {
@@ -269,6 +269,11 @@ public class ConsumerServiceImpl implements ConsumerService {
 		tokenRepository.invalidateToken(c, d);		
 	}
 
+	public Token getPasswordResetToken(String token, String check) {
+		Token t = tokenRepository.selectToken(token, new Date());
+		return t == null ? null : StringUtils.isEqual(check, t.check()) ? t : null;
+	}
+	
 	public void invalidateRecoveryTokens(Consumer c) throws DBException {
 		try {
 			invalidateRecoveryTokens(c, new Date());

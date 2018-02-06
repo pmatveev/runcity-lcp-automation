@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
+import org.runcity.db.entity.Token;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
 import org.runcity.util.CommonProperties;
@@ -43,6 +44,8 @@ public interface ConsumerService {
 	public List<Consumer> updatePassword(List<Long> id, String newPassword) throws DBException;
 
 	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource, Locale locale) throws DBException, EMailException;
+	
+	public Token getPasswordResetToken(String token, String check);
 	
 	public void invalidateRecoveryTokens(Consumer c) throws DBException;
 	

@@ -1,7 +1,10 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Token;
+import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.validator.FormValidator;
+import org.runcity.mvc.web.formdata.ChangePasswordByTokenForm;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
 import org.runcity.mvc.web.formdata.PasswordRecoveryForm;
 import org.runcity.util.DynamicLocaleList;
@@ -24,6 +27,9 @@ public class ConsumerController {
 
 	@Autowired
 	private FormValidator validator;
+
+	@Autowired
+	private ConsumerService consumerService;
 
 	@Autowired
 	private DynamicLocaleList localeList;
@@ -50,6 +56,10 @@ public class ConsumerController {
 			model.addAttribute("error", "login.invalidPwd");
 		}
 
+		if ("errToken".equals(state)) {
+			model.addAttribute("error", "login.invalidPwdResetToken");			
+		}
+		
 		PasswordRecoveryForm form = new PasswordRecoveryForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		ConsumerRegisterForm form2 = new ConsumerRegisterForm(localeList);
@@ -71,32 +81,22 @@ public class ConsumerController {
 		return authentication instanceof RememberMeAuthenticationToken
 				|| authentication instanceof UsernamePasswordAuthenticationToken;
 	}
-/*
-	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public String showRegisterForm(Model model) {
-		logger.info("GET /register");
-		ConsumerRegisterForm form = new ConsumerRegisterForm(localeList);
+
+	@RequestMapping(value = "/recoverPassword", method = RequestMethod.GET)
+	public String showRecoveryForm(Model model, @RequestParam(required = false) String token, @RequestParam(required = false) String check) {
+		logger.info("GET /recoverPassword");
+		logger.debug("\ttoken=" + token);
+		logger.debug("\tcheck=" + check);
+
+		Token t = consumerService.getPasswordResetToken(token, check);
+		if (t == null) {
+			return "redirect:/login?state=errToken";
+		}
+		
+		ChangePasswordByTokenForm form = new ChangePasswordByTokenForm(localeList);
+		form.setToken(token);
+		form.setCheck(check);
 		model.addAttribute(form.getFormName(), form);
-		return "common/register";
+		return "common/recoverPassword";
 	}
-
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String doRegister(@ModelAttribute("consumerRegisterForm") @Validated ConsumerRegisterForm form, BindingResult result,
-			Model model, final RedirectAttributes redirectAttributes) {
-		logger.info("POST /register");
-		if (result.hasErrors()) {
-			logger.info("\tvalidation error");
-			return "common/register";
-		}
-
-		try {
-			consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail(), form.getLocale());
-		} catch (DBException e) {
-			result.reject("common.db.fail");
-			logger.error("DB exception", e);
-			return "common/register";
-		}
-		return "redirect:/login";
-	}
-	*/
 }
