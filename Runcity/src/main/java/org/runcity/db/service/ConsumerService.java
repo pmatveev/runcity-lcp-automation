@@ -49,5 +49,5 @@ public interface ConsumerService {
 	
 	public void invalidateRecoveryTokens(Consumer c) throws DBException;
 	
-	public void resetPasswordByToken(String token, String password) throws DBException;
+	public Consumer resetPasswordByToken(Token token, String password) throws DBException;
 }

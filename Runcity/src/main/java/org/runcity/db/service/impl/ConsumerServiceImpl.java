@@ -138,8 +138,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	private Consumer updateConsumerPassword(Consumer c, String newPassword) throws DBException {
-		c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
-		return update(c);
+		try {
+			c.setPassHash(new BCryptPasswordEncoder(10).encode(newPassword));
+			return update(c);
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
 	}
 
 	private SecureUserDetails getCurrentUser() {
@@ -271,6 +275,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	public Token getPasswordResetToken(String token, String check) {
 		Token t = tokenRepository.selectToken(token, new Date());
+		
 		return t == null ? null : StringUtils.isEqual(check, t.check()) ? t : null;
 	}
 	
@@ -283,9 +288,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 	
 	@Override
-	public void resetPasswordByToken(String token, String password) throws DBException {
-		// Date dateFrom = new Date();
-		// return tokenRepository.selectToken(c, dateFrom) != null;
-		// TODO
+	public Consumer resetPasswordByToken(Token token, String password) throws DBException {
+		if (token != null) {
+			Consumer c = updateConsumerPassword(selectById(token.getConsumer().getId(), false), password);
+			invalidateRecoveryTokens(c);
+			return c;
+		}
+		return null;
 	}
 }

@@ -1,8 +1,10 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.ChangePasswordByTokenForm;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
@@ -15,11 +17,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ConsumerController {
@@ -60,6 +66,14 @@ public class ConsumerController {
 			model.addAttribute("error", "login.invalidPwdResetToken");			
 		}
 		
+		if ("fail".equals(state)) {
+			model.addAttribute("error", "common.db.fail");
+		}
+		
+		if ("passChanged".equals(state)) {
+			model.addAttribute("info", "login.pwdChanged");
+		}
+		
 		PasswordRecoveryForm form = new PasswordRecoveryForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		ConsumerRegisterForm form2 = new ConsumerRegisterForm(localeList);
@@ -98,5 +112,21 @@ public class ConsumerController {
 		form.setCheck(check);
 		model.addAttribute(form.getFormName(), form);
 		return "common/recoverPassword";
+	}
+
+	@RequestMapping(value = "/recoverPassword", method = RequestMethod.POST)
+	public String processRecoveryForm(@ModelAttribute("consumerRegisterForm") @Validated ChangePasswordByTokenForm form, BindingResult result,
+			Model model, final RedirectAttributes redirectAttributes) {
+		logger.info("POST /recoverPassword");
+
+		Consumer c = null;
+		
+		try {
+			c = consumerService.resetPasswordByToken(form.getPasswordToken(), form.getPassword());
+		} catch (DBException e) {
+			return "redirect:/login?state=fail";
+		}
+		
+		return "redirect:/login?state=" + (c == null ? "errToken" : "passChanged");
 	}
 }

@@ -1,9 +1,12 @@
 package org.runcity.db.entity;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import javax.persistence.*;
 
+import org.apache.commons.codec.binary.Hex;
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.util.DBEntity;
 
@@ -16,7 +19,7 @@ public class Token implements DBEntity {
 	@Column(name = "id", columnDefinition = "int", length = 18, nullable = false)
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "consumer__id", nullable = false)
 	private Consumer consumer;
 
@@ -106,6 +109,17 @@ public class Token implements DBEntity {
 	}
 	
 	public String check() {
-		return id == null ? null : id.toString().hashCode() + "";
+		if (id == null) {
+			return null;
+		}
+		
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		    md.update(id.toString().getBytes());
+		    return Hex.encodeHexString(md.digest());
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
