@@ -16,6 +16,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -47,7 +49,7 @@ public class SpringRootConfig {
 		dataSource.setDriverClassName(env.getRequiredProperty(PROP_DATABASE_DRIVER));
 		dataSource.setUrl(env.getRequiredProperty(PROP_DATABASE_URL));
 		dataSource.setUsername(env.getRequiredProperty(PROP_DATABASE_USERNAME));
-		
+
 		String password = env.getRequiredProperty(PROP_DATABASE_PASSWORD);
 		if (password.startsWith("clear:")) {
 			password = password.substring(6);
@@ -58,7 +60,7 @@ public class SpringRootConfig {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		dataSource.setPassword(password);
 
 		return dataSource;
@@ -83,21 +85,22 @@ public class SpringRootConfig {
 
 		return transactionManager;
 	}
-	
+
 	@Bean
 	public DynamicLocaleList getLocaleList() {
 		DynamicLocaleList localeList = new DynamicLocaleList();
-		
+
 		String[] locales = env.getRequiredProperty(PROP_LANGLIST).split(",");
-		
-		for (int i = 0; i < locales.length; i ++) {
+
+		for (int i = 0; i < locales.length; i++) {
 			localeList.add(locales[i]);
 		}
-		
+
 		return localeList;
 	}
-	
-	@Bean Version getVersion() {
+
+	@Bean
+	public Version getVersion() {
 		return new Version(this.getClass().getPackage().getImplementationVersion());
 	}
 
@@ -110,4 +113,32 @@ public class SpringRootConfig {
 		return properties;
 	}
 
+	@Bean
+	public JavaMailSender getMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+		mailSender.setHost(env.getRequiredProperty("runcity.mail.host"));
+		mailSender.setPort(new Integer(env.getRequiredProperty("runcity.mail.port")));
+		mailSender.setUsername(env.getRequiredProperty("runcity.mail.username"));
+		
+		String password = env.getRequiredProperty("runcity.mail.password");
+		if (password.startsWith("clear:")) {
+			password = password.substring(6);
+		} else {
+			try {
+				password = new PasswordCipher("mailpass").decrypt(password);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		mailSender.setPassword(password);
+
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", env.getRequiredProperty("runcity.mail.tlsEnabled"));
+
+		return mailSender;
+	}
 }

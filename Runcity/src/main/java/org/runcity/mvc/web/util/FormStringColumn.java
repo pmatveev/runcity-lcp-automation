@@ -11,10 +11,10 @@ public abstract class FormStringColumn extends FormColumn<String> {
 
 	protected boolean longValue = false;
 	protected boolean required = false;
+	protected boolean hidden = false;
 	protected Integer minLength = null;
 	protected Integer maxLength = null;
 
-	//, boolean longValue, boolean required, Integer minLength,	Integer maxLength
 	protected FormStringColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
 	}
@@ -82,5 +82,13 @@ public abstract class FormStringColumn extends FormColumn<String> {
 
 	public void setMaxLength(Integer maxLength) {
 		this.maxLength = maxLength;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 }

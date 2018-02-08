@@ -1,0 +1,4 @@
+<configuration>
+  <include resource="base.xml" />
+  <property name="root.level.console" value="OFF" />
+</configuration>

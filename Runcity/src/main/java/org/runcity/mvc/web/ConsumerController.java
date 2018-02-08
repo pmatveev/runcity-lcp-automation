@@ -1,10 +1,14 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
+import org.runcity.db.entity.Token;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.validator.FormValidator;
+import org.runcity.mvc.web.formdata.ChangePasswordByTokenForm;
 import org.runcity.mvc.web.formdata.ConsumerRegisterForm;
+import org.runcity.mvc.web.formdata.PasswordRecoveryForm;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -32,7 +36,7 @@ public class ConsumerController {
 
 	@Autowired
 	private ConsumerService consumerService;
-	
+
 	@Autowired
 	private DynamicLocaleList localeList;
 
@@ -48,15 +52,33 @@ public class ConsumerController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String showLoginForm(Model model, @RequestParam(required = false) String error) {
+	public String showLoginForm(Model model, @RequestParam(required = false) String state) {
 		logger.info("GET /login");
 		if (isAlreadyAuthenticated()) {
 			return "redirect:/home";
 		}
 
-		if (error != null) {
+		if ("error".equals(state)) {
 			model.addAttribute("error", "login.invalidPwd");
 		}
+
+		if ("errToken".equals(state)) {
+			model.addAttribute("error", "login.invalidPwdResetToken");			
+		}
+		
+		if ("fail".equals(state)) {
+			model.addAttribute("error", "common.db.fail");
+		}
+		
+		if ("passChanged".equals(state)) {
+			model.addAttribute("info", "login.pwdChanged");
+		}
+		
+		PasswordRecoveryForm form = new PasswordRecoveryForm(localeList);
+		model.addAttribute(form.getFormName(), form);
+		ConsumerRegisterForm form2 = new ConsumerRegisterForm(localeList);
+		model.addAttribute(form2.getFormName(), form2);
+		
 		return "common/login";
 	}
 
@@ -74,30 +96,37 @@ public class ConsumerController {
 				|| authentication instanceof UsernamePasswordAuthenticationToken;
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public String showRegisterForm(Model model) {
-		logger.info("GET /register");
-		ConsumerRegisterForm form = new ConsumerRegisterForm(localeList);
+	@RequestMapping(value = "/recoverPassword", method = RequestMethod.GET)
+	public String showRecoveryForm(Model model, @RequestParam(required = false) String token, @RequestParam(required = false) String check) {
+		logger.info("GET /recoverPassword");
+		logger.debug("\ttoken=" + token);
+		logger.debug("\tcheck=" + check);
+
+		Token t = consumerService.getPasswordResetToken(token, check);
+		if (t == null) {
+			return "redirect:/login?state=errToken";
+		}
+		
+		ChangePasswordByTokenForm form = new ChangePasswordByTokenForm(localeList);
+		form.setToken(token);
+		form.setCheck(check);
 		model.addAttribute(form.getFormName(), form);
-		return "common/register";
+		return "common/recoverPassword";
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String doRegister(@ModelAttribute("consumerRegisterForm") @Validated ConsumerRegisterForm form, BindingResult result,
+	@RequestMapping(value = "/recoverPassword", method = RequestMethod.POST)
+	public String processRecoveryForm(@ModelAttribute("consumerRegisterForm") @Validated ChangePasswordByTokenForm form, BindingResult result,
 			Model model, final RedirectAttributes redirectAttributes) {
-		logger.info("POST /register");
-		if (result.hasErrors()) {
-			logger.info("\tvalidation error");
-			return "common/register";
-		}
+		logger.info("POST /recoverPassword");
 
+		Consumer c = null;
+		
 		try {
-			consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail(), form.getLocale());
+			c = consumerService.resetPasswordByToken(form.getPasswordToken(), form.getPassword());
 		} catch (DBException e) {
-			result.reject("common.db.fail");
-			logger.error("DB exception", e);
-			return "common/register";
+			return "redirect:/login?state=fail";
 		}
-		return "redirect:/login";
+		
+		return "redirect:/login?state=" + (c == null ? "errToken" : "passChanged");
 	}
 }

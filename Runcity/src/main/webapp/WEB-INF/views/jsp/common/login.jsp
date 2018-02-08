@@ -16,12 +16,18 @@
 					${errorMsg}
 				</div>
 			</c:if>
+			<c:if test="${!empty info}">
+				<fmt:message key="${info}" bundle="${msg}" var="errorMsg"/>
+				<div class="alert alert-success">
+					${errorMsg}
+				</div>
+			</c:if>
 		</div>
 		<div class="form-group">
 			<label class="control-label" for="username">
 				<c:out value="${msgUsername}"/>
 			</label> 
-			<input type="text" id="j_username" name="j_username"  class="form-control" 
+			<input type="text" id="j_username" name="j_username"  class="form-control" autofocus="autofocus"
 				placeholder="${msgUsername}" jschecks="required;" onchange="checkInput($('#j_username'))"/>
 		</div>			
 
@@ -43,8 +49,20 @@
 		<button type="submit" class="btn btn-primary btn-block">
 			<fmt:message key="login.dologin" bundle="${msg}" />
 		</button>
-
-		<a class="btn btn-link btn-block" href="#"><fmt:message key="login.reissuePassword" bundle="${msg}" /></a>
+		
+		<a class="btn btn-link btn-block" data-toggle="modal" data-target="#modal_${consumerRegisterForm.htmlId}" href="#"
+			onclick="beforeOpenModal($('#${consumerRegisterForm.htmlId}'), false)">
+			<fmt:message key="login.register" bundle="${msg}" />
+		</a>
+		
+		<a class="btn btn-link btn-block" data-toggle="modal" data-target="#modal_${passwordRecoveryForm.htmlId}" href="#"
+			onclick="beforeOpenModal($('#${passwordRecoveryForm.htmlId}'), false)">
+			<fmt:message key="login.recoverPassword" bundle="${msg}" />
+		</a>
 	</form>			
 </div>
+<c:set value="${true}" var="modal"/>
+<%@ include file="../forms/passwordRecoveryForm.jsp"%>
+<%@ include file="../forms/consumerRegisterForm.jsp"%>
+	
 <%@ include file="../template/foot.jsp"%>
