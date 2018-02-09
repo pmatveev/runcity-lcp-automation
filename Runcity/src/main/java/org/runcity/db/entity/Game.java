@@ -25,13 +25,13 @@ public class Game implements DBEntity {
 	@Column(name = "locale", length = 32, nullable = false)
 	private String locale;
 
-	@Column(name = "name", length = 32, unique = true, nullable = false)
+	@Column(name = "name", length = 32, nullable = false)
 	private String name;
 
-	@Column(name = "city", length = 32, unique = true, nullable = false)
+	@Column(name = "city", length = 32, nullable = false)
 	private String city;
 
-	@Column(name = "country", length = 32, unique = true, nullable = false)
+	@Column(name = "country", length = 32, nullable = false)
 	private String country;
 
 	@Column(name = "game_date", columnDefinition = "datetime", nullable = false)
