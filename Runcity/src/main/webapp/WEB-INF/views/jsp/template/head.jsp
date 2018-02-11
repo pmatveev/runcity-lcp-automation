@@ -38,6 +38,7 @@
 <spring:url value="/resources/js/buttons.bootstrap.min.js" var="dtButtonsJs" />
 <spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
+<spring:url value="/resources/js/bootstrap-notify.min.js" var="bootstrapNotifyJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'/>
@@ -64,6 +65,7 @@
 <script type="text/javascript" src="${dtButtonsJs}"></script>
 <script type="text/javascript" src="${dtFinedHeaderJs}"></script>
 <script type="text/javascript" src="${dtSelectJs}"></script>
+<script type="text/javascript" src="${bootstrapNotifyJs}"></script>
 <script type="text/javascript" src="${runcityJs}"></script>
 
 <c:if test="${lang != 'en'}">
@@ -99,6 +101,31 @@
 	}
 	
 	var locale = '${lang}';
+	
+	var notificationTemplate = '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' + 
+		'<span data-notify="icon"></span>' +
+		'<span data-notify="title">{1}</span>' +
+		'<span data-notify="message">{2}</span>' +
+		'<div class="progress" data-notify="progressbar">' +
+		'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+		'</div>' +
+		'<a href="{3}" target="{4}" data-notify="url"></a>' +
+		'</div>';
+	
+	var notifySettings = {
+		success : {
+			type: "success",
+			allow_dismiss: true,
+			newest_on_top: true,
+			placement: {
+				from: "bottom",
+				align: "right"
+			},
+			delay: 3000,
+			mouse_over: "pause",
+			template: notificationTemplate
+		}
+	};
 	
 	$(document).ready(function() {
 		$(".modal").each(function() {

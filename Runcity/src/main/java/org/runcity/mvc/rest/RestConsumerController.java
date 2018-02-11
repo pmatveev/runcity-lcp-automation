@@ -252,7 +252,10 @@ public class RestConsumerController extends AbstractRestController {
 			return result;
 		}
 		
-		result.setResponseClass(RestResponseClass.INFO);
+		if (result.getResponseClass() == RestResponseClass.INFO) {
+			result.addCommonError("passwordRecovery.sent");
+		}
+		
 		return result;
 	}
 	
@@ -281,7 +284,6 @@ public class RestConsumerController extends AbstractRestController {
 			result.addCommonError("common.popupProcessError");
 		}
 		
-		result.setResponseClass(RestResponseClass.INFO);
 		return result;
 	}
 }

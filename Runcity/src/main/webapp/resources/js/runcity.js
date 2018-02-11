@@ -695,6 +695,14 @@ function modalFormSuccess(form, data) {
 	if (data.responseClass == "INFO") {
 		closeModalForm(form);
 
+		if (data.errors) {
+			data.errors.forEach(function(item, i, arr) {
+				$.notify({
+					message: item
+				}, notifySettings['success']);
+			});
+		}
+		
 		var refresh = form.attr("related-table");
 		if (typeof refresh !== 'undefined') {
 			$('#' + refresh).DataTable().ajax.reload(null, false);
