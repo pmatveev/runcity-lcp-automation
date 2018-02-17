@@ -6,6 +6,7 @@ import org.runcity.util.DynamicLocaleList;
 public abstract class AbstractForm extends RestGetResponseBody implements ValidatedForm {
 	protected DynamicLocaleList localeList;
 	
+	protected String id;
 	protected String formName;
 	protected String formTitle;
 	protected String urlOnOpenAjax;
@@ -14,6 +15,7 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 
 	protected AbstractForm(String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax, DynamicLocaleList localeList) {
 		super();
+		this.id = formName;
 		this.formName = formName;
 		this.urlOnOpenAjax = urlOnOpenAjax;
 		this.urlOnSubmit = urlOnSubmit;
@@ -34,7 +36,7 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 	}
 
 	public String getHtmlId() {
-		return formName;
+		return id;
 	}
 
 	public String getOnSubmit() {
@@ -67,5 +69,9 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 
 	public void setUrlOnSubmitAjax(String urlOnSubmitAjax) {
 		this.urlOnSubmitAjax = urlOnSubmitAjax;
+	}
+	
+	public void prefix(String referrer) {
+		this.id = referrer + this.id;
 	}
 }

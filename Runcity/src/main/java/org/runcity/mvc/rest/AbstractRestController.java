@@ -4,6 +4,7 @@ import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.AbstractForm;
+import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindException;
@@ -15,6 +16,9 @@ public abstract class AbstractRestController {
 
 	@Autowired
 	protected MessageSource messageSource;
+	
+	@Autowired
+	protected DynamicLocaleList localeList;
 	
 	protected Errors validateForm(AbstractForm form, RestPostResponseBody result) {
 		Errors errors = new BindException(form, form.getFormName());

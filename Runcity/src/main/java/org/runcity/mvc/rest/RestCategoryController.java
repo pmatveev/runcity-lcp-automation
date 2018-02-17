@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Category;
+import org.runcity.db.entity.Game;
 import org.runcity.db.service.CategoryService;
+import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
@@ -13,7 +15,6 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
-import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -33,8 +34,8 @@ public class RestCategoryController extends AbstractRestController {
 	@Autowired 
 	private CategoryService categoryService;
 	
-	@Autowired
-	private DynamicLocaleList localeList;
+	@Autowired 
+	private GameService gameService;
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/categoryTable", method = RequestMethod.GET)
@@ -111,7 +112,7 @@ public class RestCategoryController extends AbstractRestController {
 		Iterable<Category> categories = categoryService.selectById(id, false);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
-			result.addOption(c.getId(), c.getNameDisplay(locale));
+			result.addOption(c.getId(), c.getLocalizedName(locale));
 		}
 		return result;
 	}
@@ -124,7 +125,22 @@ public class RestCategoryController extends AbstractRestController {
 		List<Category> categories = categoryService.selectAll(false);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
-			result.addOption(c.getId(), c.getNameDisplay(locale));
+			result.addOption(c.getId(), c.getLocalizedName(locale));
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/unusedCategories", method = RequestMethod.GET)
+	public RestGetResponseBody unusedCategoriesDddw(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/dddw/unusedCategories");
+		
+		Game game = gameService.selectById(gameId, false);
+		List<Category> categories = categoryService.selectUnused(game, false);
+		
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (Category c : categories) {
+			result.addOption(c.getId(), c.getLocalizedName(game.getLocale()));
 		}
 		return result;
 	}

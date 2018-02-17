@@ -10,7 +10,7 @@ import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
-import org.runcity.mvc.web.util.FormGameIdColumn;
+import org.runcity.mvc.web.util.FormIdGameColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
@@ -28,7 +28,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	private FormIdColumn id;
 
 	@JsonView(Views.Public.class)
-	private FormGameIdColumn gameId;
+	private FormIdGameColumn gameId;
 
 	@JsonView(Views.Public.class)
 	private FormDddwControlPointColumn parent;
@@ -57,7 +57,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 				"/api/v1/controlPointCreateEdit", localeList);
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.gameId = new FormGameIdColumn(this, new ColumnDefinition("gameId", "gameid"));
+		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameid"));
 		this.parent = FormDddwControlPointColumn.getMainByGameNotSelf(this,
 				new ColumnDefinition("parent", "controlPoint.parent"), id, gameId);
 		this.parent.setForceRefresh(true);
@@ -68,7 +68,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		this.name.setRequired(true);
 		this.name.setMaxLength(32);
 		this.address = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("address", "controlPoint.addressgroup", "controlPoint.address"), localeList, true,
+				new ColumnDefinition("address", "controlPoint.address", "controlPoint.addressLoc"), localeList, true,
 				true, false, null, 4000);
 		this.address.setShowCondition("emptyValue({0})", this.parent);
 		this.description = new FormPlainStringColumn(this,

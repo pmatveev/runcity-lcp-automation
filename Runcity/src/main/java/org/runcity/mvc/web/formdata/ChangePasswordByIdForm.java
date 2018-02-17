@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
-import org.runcity.mvc.web.util.FormIdListColumn;
+import org.runcity.mvc.web.util.FormListIdColumn;
 import org.runcity.mvc.web.util.FormPasswordColumn;
 import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
 import org.runcity.mvc.web.util.FormPasswordPair;
@@ -19,7 +19,7 @@ public class ChangePasswordByIdForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ChangePasswordByIdForm.class);
 
 	@JsonView(Views.Public.class) 
-	private FormIdListColumn id;
+	private FormListIdColumn id;
 	
 	@JsonView(Views.Public.class)
 	private FormStringColumn password;
@@ -31,7 +31,7 @@ public class ChangePasswordByIdForm extends AbstractForm {
 		super("changePasswordByIdForm", null, null, "/api/v1/changePasswordById", null);
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
-		this.id = new FormIdListColumn(this, new ColumnDefinition("id", "id"));
+		this.id = new FormListIdColumn(this, new ColumnDefinition("id", "id"));
 		FormPasswordPair passwords = new FormPasswordPair(
 				new FormPasswordColumn(this, new ColumnDefinition("password", "changePassword.password")),
 				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "changePassword.password2")));
@@ -71,7 +71,7 @@ public class ChangePasswordByIdForm extends AbstractForm {
 		this.password2.setValue(password2);
 	}
 
-	public FormIdListColumn getIdColumn() {
+	public FormListIdColumn getIdColumn() {
 		return id;
 	}
 

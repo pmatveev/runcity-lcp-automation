@@ -21,15 +21,18 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	protected boolean multiple;
 	protected boolean required;
 	protected boolean forceRefresh = false;
+	
+	protected Object[] validation;
 
 	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, String[] initParms, String ajaxSource, String[] ajaxParms,
-			boolean multiple) {
+			boolean multiple, Object ... validation) {
 		super(form, definition);
 		this.initSource = initSource;
 		this.initParms = initParms;
 		this.ajaxSource = ajaxSource;
 		this.ajaxParms = ajaxParms;
 		this.multiple = multiple;
+		this.validation = validation;
 	}
 
 	public String getAjaxSource() {

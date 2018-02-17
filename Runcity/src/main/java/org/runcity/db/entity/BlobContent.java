@@ -5,11 +5,10 @@ import java.util.Arrays;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.db.entity.util.DBEntity;
 
 @Entity
 @Table(name = "blob_content")
-public class BlobContent implements DBEntity {
+public class BlobContent {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")

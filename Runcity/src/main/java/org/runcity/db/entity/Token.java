@@ -8,11 +8,10 @@ import javax.persistence.*;
 
 import org.apache.commons.codec.binary.Hex;
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.db.entity.util.DBEntity;
 
 @Entity
 @Table(name = "token")
-public class Token implements DBEntity {
+public class Token {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")

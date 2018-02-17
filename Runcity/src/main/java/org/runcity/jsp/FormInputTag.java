@@ -14,9 +14,10 @@ import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormDddwColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
-import org.runcity.mvc.web.util.FormIdListColumn;
+import org.runcity.mvc.web.util.FormListIdColumn;
 import org.runcity.mvc.web.util.FormListboxColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
+import org.runcity.mvc.web.util.FormNumberColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.StringUtils;
 import org.springframework.web.servlet.tags.UrlTag;
@@ -54,8 +55,13 @@ public class FormInputTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
-		if (column instanceof FormIdColumn || column instanceof FormIdListColumn) {
+		if (column instanceof FormIdColumn || column instanceof FormListIdColumn) {
 			writeIdColumn(column);
+			return SKIP_BODY;
+		}
+
+		if (column instanceof FormNumberColumn) {
+			writeNumberColumn((FormNumberColumn) column);
 			return SKIP_BODY;
 		}
 
@@ -120,7 +126,7 @@ public class FormInputTag extends TagSupport {
 			input.setDynamicAttribute(null, "default", column.getValue());
 		}
 		
-		if (column instanceof FormIdListColumn) {
+		if (column instanceof FormListIdColumn) {
 			input.setDynamicAttribute(null, "format", "array");
 		}
 
@@ -147,6 +153,43 @@ public class FormInputTag extends TagSupport {
 		errors.doEndTag();
 	}
 
+	private void writeNumberColumn(FormNumberColumn column) throws JspException {
+		String label = localize(column.getLabel());
+		TagWriter tagWriter = new TagWriter(pageContext);
+
+		tagWriter.startTag("div");
+		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
+		writeLabel(tagWriter, label);
+
+		InputTag input = new InputTag();
+
+		input.setPath(column.getName());
+		input.setId(column.getHtmlId());
+
+		if (column.getValue() != null) {
+			input.setDynamicAttribute(null, "default", column.getValue());
+		}
+		
+		input.setCssClass("form-control");
+		input.setOnchange(column.getOnChange());
+		input.setDynamicAttribute(null, "placeholder", label);
+		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
+		input.setDynamicAttribute(null, "show-if", column.getShowCondition());
+		input.setDynamicAttribute(null, "type", "number");
+
+		if (!StringUtils.isEmpty(autofocus)) {
+			input.setDynamicAttribute(null, "autofocus", autofocus);
+		}
+
+		input.setPageContext(pageContext);
+		input.doStartTag();
+		input.doEndTag();
+
+		writeErrors(tagWriter);
+
+		tagWriter.endTag();
+	}	
+	
 	private void writeStringColumn(FormStringColumn column) throws JspException {
 		String label = column.isHidden() ? null : localize(column.getLabel());
 		TagWriter tagWriter = new TagWriter(pageContext);

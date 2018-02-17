@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
+import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.repository.GameRepository;
 import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameServiceImpl implements GameService {
 	@Autowired
 	private GameRepository gameRepository;
+	
+	@Autowired
+	private RouteRepository routeRepository;
 	
 	@Override
 	public Game selectById(Long id, boolean categories) {
@@ -64,5 +69,27 @@ public class GameServiceImpl implements GameService {
 		for (Long i : id) {
 			delete(i);
 		}
+	}
+
+	private void deleteCategory(Long id) {
+		routeRepository.delete(id);
+	}
+	
+	@Override
+	@Secured("ROLE_ADMIN")
+	public void deleteCategories(List<Long> id) {
+		for (Long i : id) {
+			deleteCategory(i);
+		}
+	}
+	
+	public Route selectRouteById(Long id, boolean routeItem) {
+		Route gc = routeRepository.findOne(id);
+		
+		if (routeItem) {
+			Hibernate.initialize(gc.getRouteItems());
+		}
+		
+		return gc;
 	}
 }

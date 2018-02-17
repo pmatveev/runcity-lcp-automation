@@ -15,10 +15,9 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
-import org.runcity.util.DynamicLocaleList;
-import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,9 +38,6 @@ public class RestControlPointController extends AbstractRestController {
 	@Autowired 
 	private ControlPointService controlPointService;
 	
-	@Autowired
-	private DynamicLocaleList localeList;
-	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/controlPointsTable", method = RequestMethod.GET)
 	public RestGetResponseBody getConsumerTable(@RequestParam(required = true) Long gameId) {
@@ -55,7 +51,7 @@ public class RestControlPointController extends AbstractRestController {
 			return result;
 		}
 		
-		ControlPointTable table = new ControlPointTable(g, null, messageSource, localeList);
+		ControlPointTable table = new ControlPointTable(null, messageSource, localeList, g);
 		table.fetchByGame(controlPointService, g);
 		return table;
 	}	

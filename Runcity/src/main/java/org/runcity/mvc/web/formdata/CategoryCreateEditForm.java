@@ -50,7 +50,7 @@ public class CategoryCreateEditForm extends AbstractForm {
 		setTitle("category.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("name", "category.namegroup", "category.name"), localeList, false, true, false,
+				new ColumnDefinition("name", "category.name", "category.nameLoc"), localeList, false, true, false,
 				null, 32);
 		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"));
 		this.prefix.setRequired(true);
@@ -63,7 +63,7 @@ public class CategoryCreateEditForm extends AbstractForm {
 		this.bgColor.setRequired(true);
 		this.bgColor.setValue("000000");
 		this.description = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("description", "category.descriptiongroup", "category.description"), localeList,
+				new ColumnDefinition("description", "category.description", "category.descriptionLoc"), localeList,
 				true, false, false, null, 4000);
 	}
 

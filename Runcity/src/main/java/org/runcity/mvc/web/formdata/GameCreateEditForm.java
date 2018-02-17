@@ -1,23 +1,18 @@
 package org.runcity.mvc.web.formdata;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDateColumn;
-import org.runcity.mvc.web.util.FormDddwCategoriesColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.DynamicLocaleList;
-import org.runcity.util.ObjectUtils;
-import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -46,9 +41,6 @@ public class GameCreateEditForm extends AbstractForm {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_FORMAT)
 	private FormDateColumn date;
 
-	@JsonView(Views.Public.class)
-	private FormDddwCategoriesColumn categories;
-
 	public GameCreateEditForm() {
 		this(null);
 	}
@@ -71,13 +63,9 @@ public class GameCreateEditForm extends AbstractForm {
 		this.country.setRequired(true);
 		this.country.setMaxLength(32);
 		this.date = new FormDateColumn(this, new ColumnDefinition("date", "game.date"), true);
-		this.categories = FormDddwCategoriesColumn.getAllByLocale(this,
-				new ColumnDefinition("categories", "game.categories"), locale);
-		this.categories.setRequired(true);
 	}
 
-	public GameCreateEditForm(Long id, String locale, String name, String city, String country, Date date,
-			List<Long> categories, DynamicLocaleList localeList) {
+	public GameCreateEditForm(Long id, String locale, String name, String city, String country, Date date, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setLocale(locale);
@@ -85,11 +73,10 @@ public class GameCreateEditForm extends AbstractForm {
 		setCity(city);
 		setCountry(country);
 		setDate(date);
-		setCategories(categories);
 	}
 
 	public GameCreateEditForm(Game g, DynamicLocaleList localeList) {
-		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getDate(), g.getCategoryIds(),
+		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getDate(),
 				localeList);
 	}
 
@@ -141,14 +128,6 @@ public class GameCreateEditForm extends AbstractForm {
 		this.date.setValue(date);
 	}
 
-	public List<Long> getCategories() {
-		return categories.getValue();
-	}
-
-	public void setCategories(List<Long> categories) {
-		this.categories.setValue(categories);
-	}
-
 	public FormIdColumn getIdColumn() {
 		return id;
 	}
@@ -173,10 +152,6 @@ public class GameCreateEditForm extends AbstractForm {
 		return date;
 	}
 
-	public FormDddwCategoriesColumn getCategoriesColumn() {
-		return categories;
-	}
-
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
@@ -186,31 +161,9 @@ public class GameCreateEditForm extends AbstractForm {
 		city.validate(context, errors);
 		country.validate(context, errors);
 		date.validate(context, errors);
-		categories.validate(context, errors);
-
-		for (Category c1 : categories.getCategories()) {
-			for (Category c2 : categories.getCategories()) {
-				if (ObjectUtils.nullSafeEquals(c1.getId(), c2.getId())) {
-					continue;
-				}
-				if (StringUtils.isEmpty(c1.getPrefix())) {
-					// should never be executed but still better to check
-					errors.rejectValue(categories.getName(), "game.noPrefixCategory",
-							new Object[] { c1.getNameDisplay(locale.getValue()) }, null);
-					continue;
-				}
-				if (c1.getPrefix().startsWith(c2.getPrefix())) {
-					errors.rejectValue(categories.getName(), "game.prefixConflict",
-							new Object[] { c1.getNameDisplay(locale.getValue()), c2.getNameDisplay(locale.getValue()),
-									c1.getPrefix(), c2.getPrefix() },
-							null);
-				}
-			}
-		}
 	}
 
 	public Game getGame() {
-		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDate(),
-				categories.getCategories());
+		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDate(), null);
 	}
 }

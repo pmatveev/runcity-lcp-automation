@@ -10,15 +10,13 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
-import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
-import org.runcity.util.ObjectUtils;
 import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "category")
-public class Category extends TranslatedEntity<Category> implements DBEntity {
+public class Category extends TranslatedEntity<Category> {
 	private static final String DEFAULT_POSTFIX = "XX";
 	
 	@Id
@@ -46,8 +44,8 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 	@Where(clause = "ref_table='category' and ref_column='description'")
 	private List<Translation> descriptions;
 	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
-	private Set<Game> games;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "category", orphanRemoval = false)
+	private Set<Route> games;
 
 	public Category() {
 		this.names = new ArrayList<Translation>();
@@ -144,7 +142,7 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		return str;
 	}
 	
-	public Set<Game> getGames() {
+	public Set<Route> getGames() {
 		return games;
 	}
 
@@ -156,7 +154,7 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		addName(new Translation(null, "category", "name", getId(), locale, name));
 	}
 
-	public String getNameDisplay(String locale) {
+	public String getLocalizedName(String locale) {
 		return Translation.getDisplay(getNames(), locale);
 	}
 
@@ -168,7 +166,7 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		addDescription(new Translation(null, "category", "description", getId(), locale, name));
 	}
 
-	public String getDescriptionDisplay(String locale) {
+	public String getLocalizedDescription(String locale) {
 		return Translation.getDisplay(getDescriptions(), locale);
 	}
 
@@ -176,19 +174,29 @@ public class Category extends TranslatedEntity<Category> implements DBEntity {
 		return "<span class='label' style='background-color: #" + StringUtils.xss(bgcolor) + "; color: #"
 				+ StringUtils.xss(color) + "'>" + StringUtils.xss(prefix + DEFAULT_POSTFIX) + "</span>";
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return (id + "").hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Category)) {
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		
-		Category c = (Category) o;
-		return ObjectUtils.equals(this, c);
+		if (getClass() != obj.getClass())
+			return false;
+		Category other = (Category) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 }

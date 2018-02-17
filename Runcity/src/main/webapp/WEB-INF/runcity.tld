@@ -111,5 +111,12 @@
 			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
 			<fragment>false</fragment>
 		</attribute>
+		<attribute>
+			<name>caption</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+			<fragment>false</fragment>
+		</attribute>
 	</tag>
 </taglib>

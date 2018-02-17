@@ -9,13 +9,11 @@ import java.util.Set;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.CollectionUtils;
-import org.runcity.util.ObjectUtils;
 
 @Entity
 @Table(name = "game")
-public class Game implements DBEntity {
+public class Game {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -37,20 +35,17 @@ public class Game implements DBEntity {
 	@Column(name = "game_date", columnDefinition = "datetime", nullable = false)
 	private Date date;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "game_category", joinColumns = {
-			@JoinColumn(name = "game__id", nullable = false) }, inverseJoinColumns = {
-					@JoinColumn(name = "category__id", nullable = false) })
-	private Set<Category> categories;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "game", orphanRemoval = true)
+	private Set<Route> categories;
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "game")
 	private Set<ControlPoint> controlPoints;
 	
 	public Game() {
-		this.categories = new HashSet<Category>();
+		this.categories = new HashSet<Route>();
 	}
 
-	public Game(Long id, String locale, String name, String city, String country, Date date, Set<Category> categories) {
+	public Game(Long id, String locale, String name, String city, String country, Date date, Set<Route> categories) {
 		setId(id);
 		setLocale(locale);
 		setName(name);
@@ -119,33 +114,44 @@ public class Game implements DBEntity {
 		this.date = date;
 	}
 
-	public Set<Category> getCategories() {
+	public Set<Route> getCategories() {
 		return categories;
-	}
-
-	public List<Long> getCategoryIds() {
-		List<Long> str = new ArrayList<Long>();
-		for (Category c : categories) {
-			str.add(c.getId());
-		}
-		return str;
 	}
 
 	public List<String> getCategoryNames(String locale) {
 		List<String> str = new ArrayList<String>();
-		for (Category c : categories) {
-			str.add(c.getNameDisplay(locale));
+		for (Route c : categories) {
+			str.add(c.getCategory().getLocalizedName(locale));
 		}
 		return str;
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Game)) {
-			return false;
-		}
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
 
-		Game g = (Game) o;
-		return ObjectUtils.equals(this, g);
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Game other = (Game) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+	
+	public void addCategory(Category category) {
+		this.categories.add(new Route(null, this, category));
 	}
 }

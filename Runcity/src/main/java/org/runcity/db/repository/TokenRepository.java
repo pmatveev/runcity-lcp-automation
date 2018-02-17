@@ -16,6 +16,4 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
 	@Query("select t from Token t where token = :token and dateTo > :currDate")
 	public Token selectToken(@Param("token") String token, @Param("currDate") Date currDate);
-	
-	
 }

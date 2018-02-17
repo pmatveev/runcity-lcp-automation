@@ -1,19 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ include file="init.jsp"%>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<fmt:setBundle basename="i18n.main" var="msg" />
-
 <sec:csrfMetaTags />
-<c:set value="${pageContext.response.locale.language}" var="lang"/>
 <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/css/bootstrap-theme.min.css" var="bootstrapThemeCss" />
 <spring:url value="/resources/css/fileinput.min.css" var="bootstrapFileCss" />
@@ -89,6 +81,8 @@
 		invalidEmail             : '<fmt:message key="validation.invalidEmail" bundle="${msg}" />',
 		minLen                   : '<fmt:message key="validation.minLength" bundle="${msg}" />',
 		maxLen                   : '<fmt:message key="validation.maxLength" bundle="${msg}" />',
+		min                      : '<fmt:message key="validation.min" bundle="${msg}" />',
+		max                      : '<fmt:message key="validation.max" bundle="${msg}" />',
 		ajaxErr                  : '<fmt:message key="ajax.error" bundle="${msg}" />',
 		ajaxHangGet              : '<fmt:message key="ajax.hangingGet" bundle="${msg}" />',
 		ajaxHangPost             : '<fmt:message key="ajax.hangingPost" bundle="${msg}" />',
@@ -128,27 +122,8 @@
 	};
 	
 	$(document).ready(function() {
-		$(".modal").each(function() {
-			initModal($(this));
-		});
-		$(".colorpicker-component").colorpicker({
-			format : 'hex6', 
-			useAlpha : false,
-			useHashPrefix : false
-		});
-		$(".datepicker-component").each(function() {
-			initDatePicker($(this));
-		});
 		$.fn.dataTable.ext.errMode = 'throw';
-		$("table.datatables").each(function() {
-			initDatatables($(this), '${datatablesLoc}');
-		});
-		$('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
-			loadAjaxSourced($(this));
-		});
-		$('.fileinput').each(function() {
-			initFileInput($(this), '', false);
-		});
+		initHtml($("body"), '${datatablesLoc}');
 	});
 </script>
 </head>

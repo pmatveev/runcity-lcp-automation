@@ -5,6 +5,10 @@ import java.util.Iterator;
 
 public class CollectionUtils {
 	public static <T> Collection<T> applyChanges(Collection<T> prev, Collection<T> now) {
+		if (prev == null || now == null) {
+			return now;
+		}
+		
 		Iterator<T> i = prev.iterator();
 		
 		while (i.hasNext()) {

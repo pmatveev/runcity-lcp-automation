@@ -56,7 +56,7 @@ public class ControlPointTable extends AbstractTable {
 			this.name = StringUtils.xss(c.getName());
 			
 			this.address = localeList.prepareMap();
-			for (Translation t : c.getParent() == null ? c.getAddresses() : c.getParent().getAddresses()) {
+			for (Translation t : c.getAddresses()) {
 				if (localeList.contains(t.getLocale())) {
 					this.address.put(t.getLocale(), StringUtils.xss(t.getContent()));
 				}
@@ -95,8 +95,8 @@ public class ControlPointTable extends AbstractTable {
 		}
 	}
 	
-	public ControlPointTable(Game g, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		super("controlPointTable", "controlPoint.tableHeader", ajaxData + "?gameId=" + g.getId(), messageSource, localeList, g.getName());
+	public ControlPointTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Game g) {
+		super("controlPointTable", "controlPoint.tableHeader", "controlPoint.simpleTableHeader", ajaxData, messageSource, localeList, g.getName());
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("gameId", null).setHidden(true));
@@ -104,7 +104,7 @@ public class ControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 2));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 
-		addLocalizedColumn(this.extensions, "address", "controlPoint.address");
+		addLocalizedColumn(this.extensions, "address", "controlPoint.addressLoc");
 		this.extensions.add(new ColumnDefinition("description", "controlPoint.description"));
 		this.extensions.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 

@@ -4,15 +4,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
 import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
+import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.mvc.web.tabledata.GameTable;
-import org.runcity.util.DynamicLocaleList;
+import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -31,9 +35,6 @@ public class RestGameController extends AbstractRestController {
 	@Autowired
 	private GameService gameService;
 	
-	@Autowired
-	private DynamicLocaleList localeList;
-
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
 	public GameTable getGameTable() {
@@ -100,4 +101,77 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;		
 	}
+
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/routeTable", method = RequestMethod.GET)
+	public RouteTable getRouteTable(@RequestParam(required = false) Long gameId, @RequestParam(required = false) Long categoryId) {
+		logger.info("GET /api/v1/routeTable");
+		logger.debug("\tgameId=" + gameId);
+		logger.debug("\tcategoryId=" + categoryId);
+		
+		if (gameId != null) {
+			Game game = gameService.selectById(gameId, true);
+			RouteTable table = new RouteTable(null, messageSource, localeList, game);
+			table.fill(game);
+			return table;
+		}
+
+		return null;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/routeCreate", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody routeCreate(@RequestBody RouteCreateForm form) {
+		logger.info("POST /api/v1/routeEdit");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Game g = null;
+		try {
+			g = gameService.addOrUpdate(form.getGame());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (g == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/routeDelete/", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody routeDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/routeDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			gameService.deleteCategories(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("commom.db.deleteConstraint");
+		}
+		return result;		
+	}
+
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/routeItemTable", method = RequestMethod.GET)
+	public RouteItemTable getRouteItemTable(@RequestParam(required = true) Long routeId) {
+		logger.info("GET /api/v1/routeTable");
+		logger.debug("\trouteId=" + routeId);
+		
+		Route r = gameService.selectRouteById(routeId, true);
+		RouteItemTable table = new RouteItemTable(null, messageSource, localeList, r);
+		table.fill(r);
+		return table;
+	}	
 }
