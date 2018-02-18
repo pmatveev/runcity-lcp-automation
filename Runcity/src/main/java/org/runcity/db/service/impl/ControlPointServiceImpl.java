@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.GameRepository;
+import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.service.BlobContentService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.exception.DBException;
@@ -23,6 +25,9 @@ public class ControlPointServiceImpl implements ControlPointService {
 	
 	@Autowired
 	private ControlPointRepository controlPointRepository;
+	
+	@Autowired
+	private RouteRepository routeRepository;
 	
 	@Autowired
 	private BlobContentRepository blobContentRepository;
@@ -52,6 +57,18 @@ public class ControlPointServiceImpl implements ControlPointService {
 	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectMainByGame(Long game) {
 		return selectMainByGame(gameRepository.findOne(game));
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByRouteNotUsed(Route route) {
+		return controlPointRepository.findByRouteNotUsed(route.getGame(), route);
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByRouteNotUsed(Long route) {
+		return selectByRouteNotUsed(routeRepository.findOne(route));
 	}
 
 	@Override

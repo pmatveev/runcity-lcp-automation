@@ -14,9 +14,9 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	protected ApplicationContext context;
 	
 	protected String initSource;
-	protected String[] initParms;
+	protected FormColumn<?>[] initParms;
 	protected String ajaxSource;
-	protected String[] ajaxParms;
+	protected FormColumn<?>[] ajaxParms;
 
 	protected boolean multiple;
 	protected boolean required;
@@ -24,7 +24,7 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 	
 	protected Object[] validation;
 
-	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, String[] initParms, String ajaxSource, String[] ajaxParms,
+	protected FormDddwColumn(AbstractForm form, ColumnDefinition definition, String initSource, FormColumn<?>[] initParms, String ajaxSource, FormColumn<?>[] ajaxParms,
 			boolean multiple, Object ... validation) {
 		super(form, definition);
 		this.initSource = initSource;
@@ -51,19 +51,19 @@ public abstract class FormDddwColumn<T> extends FormColumn<T> {
 		this.initSource = initSource;
 	}
 
-	public String[] getInitParms() {
+	public FormColumn<?>[] getInitParms() {
 		return initParms;
 	}
 
-	public void setInitParms(String[] initParms) {
+	public void setInitParms(FormColumn<?>[] initParms) {
 		this.initParms = initParms;
 	}
 
-	public String[] getAjaxParms() {
+	public FormColumn<?>[] getAjaxParms() {
 		return ajaxParms;
 	}
 
-	public void setAjaxParms(String[] ajaxParms) {
+	public void setAjaxParms(FormColumn<?>[] ajaxParms) {
 		this.ajaxParms = ajaxParms;
 	}
 

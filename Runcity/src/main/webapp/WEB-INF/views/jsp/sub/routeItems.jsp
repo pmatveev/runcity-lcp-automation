@@ -6,7 +6,7 @@
 
 <div id="${prefix}modalForms" class="div-modal">
 	<c:set value="${true}" var="modal"/>
-	<c:set value="${gameTable}" var="currTable"/>
+	<c:set value="${routeItemTable}" var="currTable"/>
 	<%@ include file="../forms/routeItemCreateEditForm.jsp"%>
 </div>
 

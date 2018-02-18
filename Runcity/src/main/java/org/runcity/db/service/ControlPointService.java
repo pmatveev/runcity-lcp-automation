@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
 import org.runcity.exception.DBException;
 import org.springframework.security.access.annotation.Secured;
 
@@ -19,6 +20,12 @@ public interface ControlPointService {
 	
 	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectMainByGame(Game game);
+	
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByRouteNotUsed(Long route);
+	
+	@Secured("ROLE_ADMIN")
+	public List<ControlPoint> selectByRouteNotUsed(Route route);
 	
 	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByParent(Long parent);

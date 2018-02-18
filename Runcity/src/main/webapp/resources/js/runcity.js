@@ -339,6 +339,7 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		return;
 	}
 
+	elem.attr("loaded-from", null);
 	removeFormErrorMessage(form);
 	removeErrorMessage(elem);
 	if (data.errors) {
@@ -349,6 +350,7 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 }
 
 function loadAjaxSourcedError(form, elem, data) {
+	elem.attr("loaded-from", null);
 	removeFormErrorMessage(form);
 	removeErrorMessage(elem);
 	if (data.statusText = "error" && data.status != 0) {
@@ -379,14 +381,14 @@ function loadAjaxSourced(elem) {
 	}
 	
 	if (jsonUrl === elem.attr("loaded-from")) {
-		return;
+		return false;
 	}
 	
 	var val = elem.selectpicker('val');
 	elem.html("").selectpicker("refresh");
 	
 	if (!proceed) {
-		return;
+		return false;
 	}
 
 	$.ajax({
@@ -402,6 +404,8 @@ function loadAjaxSourced(elem) {
 			loadAjaxSourcedError(form, elem, data);
 		}
 	});
+	
+	return true;
 }
 
 function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
@@ -549,8 +553,9 @@ function modalFormOpenSuccess(form, data, recId) {
 			var val = data[name];
 			
 			if (typeof elem.attr("ajax-data-init") !== 'undefined') {
-				initAjaxSourced(form, elem, data, val);
-				return;
+				if (initAjaxSourced(form, elem, data, val)) {
+					return;
+				}
 			}
 			
 			if (typeof val === 'boolean') {
@@ -1244,10 +1249,9 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					success : function(data) {
 						var div = $('#' + divId);
 						div.html(data);
-						div.attr('id', null);						
+						div.attr('id', null);	
+						initHtml(div);					
 						div.find(".div-modal").detach().appendTo("div#modalContainer");
-						
-						initHtml(div);
 					},
 					error : function(data) {
 						var err;

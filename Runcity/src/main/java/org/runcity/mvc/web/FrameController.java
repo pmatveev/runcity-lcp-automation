@@ -1,7 +1,7 @@
 package org.runcity.mvc.web;
 
 import org.runcity.db.entity.Route;
-import org.runcity.db.service.GameService;
+import org.runcity.db.service.RouteService;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +22,11 @@ public class FrameController {
 	private DynamicLocaleList localeList;
 	
 	@Autowired
-	private GameService gameService;
+	private RouteService routeService;
 	
 	@RequestMapping(value = "secure/iframe/route/{routeId}", method = RequestMethod.GET)
 	public String controlPointsByGame(Model model, @PathVariable Long routeId, @RequestParam(required = true) String referrer) {
-		Route r = gameService.selectRouteById(routeId, true);
+		Route r = routeService.selectById(routeId, true);
 		RouteItemTable table = new RouteItemTable("/api/v1/routeItemTable?routeId=" + routeId, messageSource, localeList, r);
 		table.processModel(model);
 		table.prefix(referrer);

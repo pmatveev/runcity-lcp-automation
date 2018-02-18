@@ -21,8 +21,8 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 	private Set<Category> categories;
 	private FetchType fetchType;
 
-	private FormDddwCategoriesColumn(AbstractForm form, ColumnDefinition definition, String[] initParms,
-			String ajaxSource, String[] ajaxParms, FetchType fetchType, Object... validation) {
+	private FormDddwCategoriesColumn(AbstractForm form, ColumnDefinition definition, FormColumn<?>[] initParms,
+			String ajaxSource, FormColumn<?>[] ajaxParms, FetchType fetchType, Object... validation) {
 		super(form, definition, "/api/v1/dddw/categoriesId?id={0}&locale={1}", initParms, ajaxSource, ajaxParms, true,
 				validation);
 
@@ -32,14 +32,14 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 
 	public static FormDddwCategoriesColumn getAllByLocale(AbstractForm form, ColumnDefinition definition,
 			FormColumn<?> localeCol) {
-		return new FormDddwCategoriesColumn(form, definition, new String[] { localeCol.getHtmlId() },
-				"/api/v1/dddw/categories?locale={0}", new String[] { localeCol.getHtmlId() }, FetchType.ALL);
+		return new FormDddwCategoriesColumn(form, definition, new FormColumn<?>[] { localeCol },
+				"/api/v1/dddw/categories?locale={0}", new FormColumn<?>[] { localeCol }, FetchType.ALL);
 	}
 
 	public static FormDddwCategoriesColumn getUnusedByGame(AbstractForm form, ColumnDefinition definition,
 			FormColumn<?> gameCol) {
-		return new FormDddwCategoriesColumn(form, definition, new String[] { gameCol.getHtmlId() },
-				"/api/v1/dddw/unusedCategories?gameId={0}", new String[] { gameCol.getHtmlId() }, FetchType.UNUSED,
+		return new FormDddwCategoriesColumn(form, definition, new FormColumn<?>[] { gameCol },
+				"/api/v1/dddw/unusedCategories?gameId={0}", new FormColumn<?>[] { gameCol }, FetchType.UNUSED,
 				gameCol);
 	}
 

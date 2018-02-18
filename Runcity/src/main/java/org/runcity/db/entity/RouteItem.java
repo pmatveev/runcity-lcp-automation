@@ -17,7 +17,7 @@ public class RouteItem {
 	@Column(name = "leg_num", columnDefinition = "int", nullable = true)
 	private Integer legNumber;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name = "route__id", nullable = false)
 	private Route route;
 	
@@ -28,10 +28,10 @@ public class RouteItem {
 	public RouteItem() {
 	}
 	
-	public RouteItem(Long id, Integer number, Route gameCategory, ControlPoint controlPoint) {
+	public RouteItem(Long id, Integer legNumber, Route route, ControlPoint controlPoint) {
 		setId(id);
-		setLegNumber(number);
-		setRoute(gameCategory);
+		setLegNumber(legNumber);
+		setRoute(route);
 		setControlPoint(controlPoint);
 	}
 

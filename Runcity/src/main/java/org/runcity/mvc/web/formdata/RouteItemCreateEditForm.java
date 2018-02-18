@@ -115,4 +115,8 @@ public class RouteItemCreateEditForm extends AbstractForm {
 		leg.validate(context, errors);
 		controlPoint.validate(context, errors);
 	}
+	
+	public RouteItem getRouteItem() {
+		return new RouteItem(getId(), getLeg(), routeId.getRoute(), controlPoint.getControlPoint());
+	}
 }

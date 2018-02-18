@@ -82,4 +82,9 @@ public abstract class FormColumn<T> {
 	public String getShowCondition() {
 		return showCondition;
 	}
+	
+	@Override
+	public String toString() {
+		return getHtmlId();
+	}
 }	
