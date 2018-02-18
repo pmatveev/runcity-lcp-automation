@@ -61,7 +61,7 @@ public abstract class FormColumn<T> {
 	}
 	
 	public String getHtmlId() {
-		return StringUtils.concatNvl("_", form.getFormName(), definition.getName());
+		return StringUtils.concatNvl("_", form.getHtmlId(), definition.getName());
 	}
 	
 	public void validate(ApplicationContext context, Errors errors) {
@@ -81,5 +81,10 @@ public abstract class FormColumn<T> {
 	
 	public String getShowCondition() {
 		return showCondition;
+	}
+	
+	@Override
+	public String toString() {
+		return getHtmlId();
 	}
 }	

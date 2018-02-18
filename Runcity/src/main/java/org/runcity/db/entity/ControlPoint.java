@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.runcity.db.entity.util.DBEntity;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
 import org.runcity.util.StringUtils;
@@ -18,7 +18,7 @@ import org.runcity.util.StringUtils;
 @Entity
 @Table(name = "control_point")
 @SQLDelete(sql = "delete cp, bc from control_point cp left outer join blob_content bc on bc.id = cp.image where cp.id = ?")
-public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEntity {
+public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -52,6 +52,9 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 	
 	@Transient
 	private byte[] imageData;
+	
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "controlPoint")
+	private Set<RouteItem> routeItems;
 	
 	public ControlPoint() {
 		this.addresses = new ArrayList<Translation>();
@@ -137,7 +140,11 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 	}
 
 	public List<Translation> getAddresses() {
-		return addresses;
+		return parent == null ? addresses : parent.addresses;
+	}
+	
+	public String getLocalizedAddress(String locale) {
+		return Translation.getDisplay(getAddresses(), locale);
 	}
 	
 	public Map<String, String> getStringAddresses() {
@@ -174,5 +181,30 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> implements DBEn
 	
 	public String getNameDisplay() {
 		return StringUtils.xss(idt + " " + name);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ControlPoint other = (ControlPoint) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 }

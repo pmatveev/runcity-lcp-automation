@@ -1,5 +1,33 @@
+var dtLocalizationLinkConst;
+
+function initHtml(container, dtLocalizationLink) {
+	if (typeof dtLocalizationLink != 'undefined') {
+		dtLocalizationLinkConst = dtLocalizationLink;
+	}
+	
+	container.find(".modal").each(function() {
+		initModal($(this));
+	});
+	container.find(".colorpicker-component").colorpicker({
+		format : 'hex6', 
+		useAlpha : false,
+		useHashPrefix : false
+	});
+	container.find(".datepicker-component").each(function() {
+		initDatePicker($(this));
+	});
+	container.find("table.datatables").each(function() {
+		initDatatables($(this), dtLocalizationLinkConst);
+	});
+	container.find('.selectpicker.ajax-sourced').on('show.bs.select', function(e) {
+		loadAjaxSourced($(this));
+	});
+	container.find('.fileinput').each(function() {
+		initFileInput($(this), '', false);
+	});
+}
+
 function emptyValue(val) {
-	var a = val.length;
 	return typeof val == 'undefined' || val == null || val == '' || val.length == 0;
 }
 
@@ -131,6 +159,22 @@ function checkElem(elem, rule) {
 		var len = Number(rule.substring(4));
 		if (getData(elem).length > len) {
 			setErrorMessage(elem, translations['maxLen'].replace("{0}", len));
+			return false;
+		}
+	}
+
+	if (rule.indexOf("minval=") == 0) {
+		var val = Number(rule.substring(4));
+		if (getData(elem).length > 0 && Number(getData(elem)) < val) {
+			setErrorMessage(elem, translations['min'].replace("{0}", len));
+			return false;
+		}
+	}
+
+	if (rule.indexOf("maxval=") == 0) {
+		var val = Number(rule.substring(4));
+		if (getData(elem).length > 0 && Number(getData(elem)) > val) {
+			setErrorMessage(elem, translations['max'].replace("{0}", len));
 			return false;
 		}
 	}
@@ -295,6 +339,7 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		return;
 	}
 
+	elem.attr("loaded-from", null);
 	removeFormErrorMessage(form);
 	removeErrorMessage(elem);
 	if (data.errors) {
@@ -305,6 +350,7 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 }
 
 function loadAjaxSourcedError(form, elem, data) {
+	elem.attr("loaded-from", null);
 	removeFormErrorMessage(form);
 	removeErrorMessage(elem);
 	if (data.statusText = "error" && data.status != 0) {
@@ -335,14 +381,14 @@ function loadAjaxSourced(elem) {
 	}
 	
 	if (jsonUrl === elem.attr("loaded-from")) {
-		return;
+		return false;
 	}
 	
 	var val = elem.selectpicker('val');
 	elem.html("").selectpicker("refresh");
 	
 	if (!proceed) {
-		return;
+		return false;
 	}
 
 	$.ajax({
@@ -358,6 +404,8 @@ function loadAjaxSourced(elem) {
 			loadAjaxSourcedError(form, elem, data);
 		}
 	});
+	
+	return true;
 }
 
 function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
@@ -505,8 +553,9 @@ function modalFormOpenSuccess(form, data, recId) {
 			var val = data[name];
 			
 			if (typeof elem.attr("ajax-data-init") !== 'undefined') {
-				initAjaxSourced(form, elem, data, val);
-				return;
+				if (initAjaxSourced(form, elem, data, val)) {
+					return;
+				}
 			}
 			
 			if (typeof val === 'boolean') {
@@ -928,7 +977,14 @@ function initDatatables(table, loc) {
 		}
 		var action = button.attr("action").split(":");
 		if (action.length > 1 && action[0] == "form") {
-			var form = $('#' + action[1]);
+			var prefix = table.attr("prefix");
+			var formId = action[1];
+			
+			if (typeof prefix !== 'undefined') {
+				formId = prefix + formId;
+			}
+			
+			var form = $('#' + formId);
 			var refCol = action[2];
 
 			if (typeof form.attr("id") == 'undefined') {
@@ -999,6 +1055,9 @@ function initDatatables(table, loc) {
 				});
 				
 				node.attr('href', processedLink);
+				if (e.which == 2) {
+					window.open(processedLink, '_blank')
+				}
 			}
 		} else {
 			func = function(e, dt, node, config) {
@@ -1011,7 +1070,6 @@ function initDatatables(table, loc) {
 			action : func,
 			className : button.attr("class"),
 			extend : button.attr("extend"),
-			name : "testPM",
 			text : button.text()
 		});
 	});
@@ -1134,6 +1192,21 @@ function initDatatablesWithButtons(table, buttons, loc) {
 			    }
 			}
 		},
+		initComplete: function(settings, json) {
+			var api = new $.fn.dataTable.Api( settings );
+			api.buttons(".dt-link").each(function(button, index) {
+				var elem = $(button.node);
+				var btn = api.button(button.node);
+				var action = btn.action();
+				btn.action(function(e, dt, node, config) {
+					window.location = node.attr('href');
+				});
+				
+				elem.on('mousedown', function(e) {
+					action(e, api, elem, button.c);
+				});
+			});
+		},
 		language : {
 			url : loc
 		},
@@ -1142,42 +1215,87 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		select : true
 	});
 	
-	dataTable.buttons().each(function(button, index) {
-		var elem = $(button.node);
-		if (elem.hasClass('dt-link')) {
-			var action = dataTable.button(index).action();
-			dataTable.button(index).action(function(e, dt, node, config) {
-				window.location = node.attr('href');
-			});
-			elem.on('mousedown', function(e) {
-				action(e, dataTable, elem, button.c);
-			});
-		}
-	});
-	
 	if (expand) {
-		var expandTemplate = $('#' + table.attr("id") + "_extension");
-		dataTable['formatExpand'] = function(data) {
-			expandTemplate.find("td.dynamic").each(function() {
-				var elem = $(this);
-				var mapping = elem.attr("mapping").split(".");
-				var val = data;
+		var frame = table.attr("expand-frame");
+		
+		if (typeof frame !== 'undefined') {
+			dataTable['formatExpand'] = function(data) {
+				var frameAction = frame.split(":");
+				var link = frameAction[0];
+				var ref = frameAction.slice(1);
+				var reference = "";
 				
-				mapping.forEach(function(item, i, arr) {
-					val = val[item];
+				ref.forEach(function(currentValue, index, array) {
+					link = link.replace("{" + index + "}", data[currentValue]);
+					reference += "_" + data[currentValue];
 				});
 				
-				var format = elem.attr("format");
-				if (format === "DATE") {
-					var dpg = $.fn.datetimepicker.DPGlobal;
-					val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
-				} else if (format === "IMAGE") {
-					val = displayDtImage(val, elem.attr("image-url"), data);
+				var prefix = reference.replace("_", table.attr('id'));
+				reference = "referrer=" + prefix;
+				
+				if (link.indexOf('?') == -1) {
+					link += "?" + reference;
+				} else {
+					link += "&" + reference;
 				}
-				elem.html(val);
-			});
-			return expandTemplate.html();
-		};
+				
+				var divId = "expand" + link.replace(/[\/\?\=]/g, '_');
+				
+				$.ajax({
+					type : "GET",
+					contentType : "text/html",
+					url : link,
+					timeout : 10000,
+					success : function(data) {
+						var div = $('#' + divId);
+						div.html(data);
+						div.attr('id', null);	
+						initHtml(div);					
+						div.find(".div-modal").detach().appendTo("div#modalContainer");
+					},
+					error : function(data) {
+						var err;
+						if (data.statusText = "error" && data.status != 0) {
+							if (data.status == 403) {
+								err = translations['forbidden'];
+							} else {
+								err = translations['ajaxErr'].replace("{0}", data.status);
+							}
+						} else {
+							err = translations['ajaxHangPost'];
+						}
+						var div = $('#' + divId);
+						div.html('<div class="alert alert-danger">' + err + '</div>');
+						div.attr('id', null);						
+					}
+				});
+				
+				return "<div class='container container-full container-main' id='" + divId + "' prefix='" + prefix + "'></div>";
+			};
+		} else {
+			var expandTemplate = $('#' + table.attr("id") + "_extension");
+			dataTable['formatExpand'] = function(data) {
+				expandTemplate.find("td.dynamic").each(function() {
+					var elem = $(this);
+					var mapping = elem.attr("mapping").split(".");
+					var val = data;
+					
+					mapping.forEach(function(item, i, arr) {
+						val = val[item];
+					});
+					
+					var format = elem.attr("format");
+					if (format === "DATE") {
+						var dpg = $.fn.datetimepicker.DPGlobal;
+						val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+					} else if (format === "IMAGE") {
+						val = displayDtImage(val, elem.attr("image-url"), data);
+					}
+					elem.html(val);
+				});
+				return expandTemplate.html();
+			};
+		}
 		
 		dataTable['expanded'] = {};
 		
@@ -1188,6 +1306,10 @@ function initDatatablesWithButtons(table, buttons, loc) {
 	
 	        if (row.child.isShown()) {
 	            // This row is already open - close it
+	        	var prefix = row.child().find("div.container-main").attr("prefix");
+	        	if (typeof prefix !== 'undefined') {
+	        		$("div#modalContainer").find("#" + prefix + "modalForms").remove();
+	        	}
 	            row.child.hide();
 	            tr.removeClass('shown');
 	            tdi.first().removeClass('glyphicon-chevron-down');

@@ -5,8 +5,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.RouteItem;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.db.service.RouteService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
@@ -15,10 +17,9 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
-import org.runcity.util.DynamicLocaleList;
-import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,8 +40,8 @@ public class RestControlPointController extends AbstractRestController {
 	@Autowired 
 	private ControlPointService controlPointService;
 	
-	@Autowired
-	private DynamicLocaleList localeList;
+	@Autowired 
+	private RouteService routeService;
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/controlPointsTable", method = RequestMethod.GET)
@@ -55,7 +56,7 @@ public class RestControlPointController extends AbstractRestController {
 			return result;
 		}
 		
-		ControlPointTable table = new ControlPointTable(g, null, messageSource, localeList);
+		ControlPointTable table = new ControlPointTable(null, messageSource, localeList, g);
 		table.fetchByGame(controlPointService, g);
 		return table;
 	}	
@@ -96,6 +97,24 @@ public class RestControlPointController extends AbstractRestController {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
 				result.addOption(c.getId(), c.getNameDisplay());
 			}
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/controlPointByRoute", method = RequestMethod.GET)
+	public RestGetResponseBody controlPointDddwByRoute(@RequestParam(required = false) Long self, @RequestParam(required = true) Long route) {
+		logger.info("GET /api/v1/dddw/controlPointMainByGame");
+		
+		List<ControlPoint> controlPoints = controlPointService.selectByRouteNotUsed(route);
+		if (self != null) {
+			RouteItem ri = routeService.selectItemById(self);
+			controlPoints.add(ri.getControlPoint());
+		}
+		
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (ControlPoint c : controlPoints) {
+			result.addOption(c.getId(), c.getNameDisplay());
 		}
 		return result;
 	}

@@ -3,13 +3,10 @@ package org.runcity.db.entity;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.db.entity.util.DBEntity;
-import org.runcity.util.ObjectUtils;
-import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "consumer_role")
-public class ConsumerRole implements DBEntity {
+public class ConsumerRole {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -55,19 +52,35 @@ public class ConsumerRole implements DBEntity {
 	public void setConsumer(Consumer consumer) {
 		this.consumer = consumer;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return (code + consumer.getId()).hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		result = prime * result + ((consumer == null) ? 0 : consumer.hashCode());
+		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof ConsumerRole)) {
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		
-		ConsumerRole r = (ConsumerRole) o;
-		return StringUtils.isEqual(code, r.code) && ObjectUtils.equals(consumer, r.consumer);
+		if (getClass() != obj.getClass())
+			return false;
+		ConsumerRole other = (ConsumerRole) obj;
+		if (code == null) {
+			if (other.code != null)
+				return false;
+		} else if (!code.equals(other.code))
+			return false;
+		if (consumer == null) {
+			if (other.consumer != null)
+				return false;
+		} else if (!consumer.equals(other.consumer))
+			return false;
+		return true;
 	}
 }

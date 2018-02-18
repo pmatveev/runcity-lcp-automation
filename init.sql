@@ -1,13 +1,13 @@
-CREATE SCHEMA IF NOT EXISTS runcity DEFAULT CHARACTER SET utf8;
+CREATE SCHEMA runcity DEFAULT CHARACTER SET utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.blob_content (
+CREATE TABLE runcity.blob_content (
   id INT(11) NOT NULL,
   content LONGBLOB NOT NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.category (
+CREATE TABLE runcity.category (
   id INT(11) NOT NULL,
   bgcolor VARCHAR(6) NOT NULL,
   color VARCHAR(6) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS runcity.category (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.consumer (
+CREATE TABLE runcity.consumer (
   id INT(11) NOT NULL,
   is_active BIT(1) NOT NULL,
   credentials VARCHAR(32) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS runcity.consumer (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.consumer_role (
+CREATE TABLE runcity.consumer_role (
   id INT(11) NOT NULL,
   code VARCHAR(32) NOT NULL,
   consumer__id INT(11) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS runcity.consumer_role (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.game (
+CREATE TABLE runcity.game (
   id INT(11) NOT NULL,
   city VARCHAR(32) NOT NULL,
   country VARCHAR(32) NOT NULL,
@@ -50,11 +50,11 @@ CREATE TABLE IF NOT EXISTS runcity.game (
   locale VARCHAR(32) NOT NULL,
   name VARCHAR(32) NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE INDEX game_game_date (game_date ASC))
+  INDEX game_game_date (game_date ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.control_point (
+CREATE TABLE runcity.control_point (
   id INT(11) NOT NULL,
   description LONGTEXT NOT NULL,
   idt VARCHAR(16) NOT NULL,
@@ -74,22 +74,35 @@ CREATE TABLE IF NOT EXISTS runcity.control_point (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.game_category (
+CREATE TABLE runcity.route (
+  id INT(11) NOT NULL,
   game__id INT(11) NOT NULL,
   category__id INT(11) NOT NULL,
-  PRIMARY KEY (game__id, category__id),
-  INDEX game_category_category (category__id ASC),
-  INDEX game_category_game (game__id ASC),
-  CONSTRAINT FK_game_category_category
+  PRIMARY KEY (id),
+  UNIQUE INDEX route_game (game__id ASC, category__id ASC),
+  UNIQUE INDEX route_category (category__id ASC, game__id ASC),
+  CONSTRAINT FK_route_category
     FOREIGN KEY (category__id)
     REFERENCES runcity.category (id),
-  CONSTRAINT FK_game_category_game
+  CONSTRAINT FK_route_game
     FOREIGN KEY (game__id)
     REFERENCES runcity.game (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.persistent_logins (
+CREATE TABLE runcity.route_item (
+  id int(11) NOT NULL,
+  control_point__id int(11) NOT NULL,
+  route__id int(11) NOT NULL,
+  leg_num int(11) DEFAULT NULL,
+  PRIMARY KEY (id),
+  INDEX route_item_route (route__id ASC),
+  INDEX route_item_control_point (control_point__id ASC),
+  CONSTRAINT FK_route_item_route FOREIGN KEY (route__id) REFERENCES route (id),
+  CONSTRAINT FK_route_item_control_point FOREIGN KEY (control_point__id) REFERENCES control_point (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE runcity.persistent_logins (
   token VARCHAR(64) NOT NULL,
   last_used DATETIME NOT NULL,
   series VARCHAR(64) NOT NULL,
@@ -98,7 +111,7 @@ CREATE TABLE IF NOT EXISTS runcity.persistent_logins (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.token (
+CREATE TABLE runcity.token (
   id INT(11) NOT NULL,
   date_from DATETIME NOT NULL,
   date_to DATETIME NOT NULL,
@@ -113,7 +126,7 @@ CREATE TABLE IF NOT EXISTS runcity.token (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE TABLE IF NOT EXISTS runcity.translation (
+CREATE TABLE runcity.translation (
   id INT(11) NOT NULL,
   content VARCHAR(4000) NULL DEFAULT NULL,
   locale VARCHAR(32) NOT NULL,
@@ -127,5 +140,3 @@ DEFAULT CHARACTER SET = utf8;
 
 insert into runcity.consumer(id, username, credentials, email, is_active, passhash) values (1, 'admin', 'Administrator', 'admin@runcity.org', 1, '$2a$10$mVfrrJmajq8eud2fKg4UrupgG/FoPMin1Vk067IHqKaSxyvQWzpiG');
 insert into runcity.consumer_role(id, code, consumer__id) values (1, 'ADMIN', 1);
-
-select * from runcity.consumer;

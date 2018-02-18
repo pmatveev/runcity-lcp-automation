@@ -15,11 +15,10 @@ import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.CommonProperties;
-import org.runcity.util.DynamicLocaleList;
-import org.runcity.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,9 +34,6 @@ public class RestConsumerController extends AbstractRestController {
 
 	@Autowired
 	private ConsumerService consumerService;
-	
-	@Autowired
-	private DynamicLocaleList localeList;
 	
 	@Autowired
 	private CommonProperties commonProperties;

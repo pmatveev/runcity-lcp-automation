@@ -16,5 +16,4 @@ public interface GameService {
 	
 	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id);
-
 }

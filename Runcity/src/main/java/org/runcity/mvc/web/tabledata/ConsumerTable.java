@@ -86,7 +86,7 @@ public class ConsumerTable extends AbstractTable {
 	}
 
 	public ConsumerTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		super("consumerTable", "user.tableHeader", ajaxData, messageSource, localeList);
+		super("consumerTable", "user.tableHeader", "user.tableHeader", ajaxData, messageSource, localeList);
 		
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("username", "user.username"));

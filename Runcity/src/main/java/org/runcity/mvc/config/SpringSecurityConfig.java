@@ -78,7 +78,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.exceptionHandling().accessDeniedHandler(new CommonAccessDeniedHandler("/403"))
 			.and()
-				.headers().xssProtection().frameOptions().contentTypeOptions();
+				.headers().xssProtection().contentTypeOptions().frameOptions();
 	}
 	
 	@Bean

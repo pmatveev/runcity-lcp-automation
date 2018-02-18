@@ -6,14 +6,12 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.CollectionUtils;
-import org.runcity.util.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "consumer")
-public class Consumer implements DBEntity {
+public class Consumer {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -152,19 +150,29 @@ public class Consumer implements DBEntity {
 		}
 		return str;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return (id + "").hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Consumer)) {
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		
-		Consumer c = (Consumer) o;
-		return ObjectUtils.equals(this, c);
+		if (getClass() != obj.getClass())
+			return false;
+		Consumer other = (Consumer) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 }

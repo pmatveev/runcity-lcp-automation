@@ -16,26 +16,26 @@ import org.springframework.ui.Model;
 public abstract class AbstractTable extends RestGetResponseBody {
 	protected DynamicLocaleList localeList;
 	protected String title;
+	protected String simpleTitle;
 	protected Object[] titleArgs;
 	protected String id;
+	protected String prefix;
 	protected List<ColumnDefinition> columns = new LinkedList<ColumnDefinition>();
 	protected List<ColumnDefinition> extensions = new LinkedList<ColumnDefinition>();
+	protected String expandFrame;
 	protected String ajaxData;
 	protected List<ButtonDefinition> buttons = new LinkedList<ButtonDefinition>();
 	protected List<AbstractForm> relatedForms = new LinkedList<AbstractForm>();
 	
-	protected AbstractTable(String id, String title, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
+	protected AbstractTable(String id, String title, String simpleTitle, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Object ... titleArgs) {
 		super();
 		this.id = id;
 		this.title = title;
+		this.simpleTitle = simpleTitle;
 		this.ajaxData = ajaxData;
 		this.localeList = localeList;
-		super.setMessageSource(messageSource);
-	}
-	
-	protected AbstractTable(String id, String title, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Object ... titleArgs) {
-		this(id, title, ajaxData, messageSource, localeList);
 		this.titleArgs = titleArgs;
+		super.setMessageSource(messageSource);
 	}
 	
 	protected void addLocalizedColumn(List<ColumnDefinition> list, String name, String label) {
@@ -58,6 +58,10 @@ public abstract class AbstractTable extends RestGetResponseBody {
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public String getSimpleTitle() {
+		return simpleTitle;
 	}
 
 	public void setTitle(String title) {
@@ -95,11 +99,31 @@ public abstract class AbstractTable extends RestGetResponseBody {
 	public String getId() {
 		return id;
 	}
+
+	public String getHtmlId() {
+		return prefix == null ? id : prefix + id;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+	
+	public String getExpandFrame() {
+		return expandFrame;
+	}
 	
 	public void processModel(Model model) {
 		model.addAttribute(id, this);
 		for (AbstractForm f : relatedForms) {
 			model.addAttribute(f.getFormName(), f);
+		}
+	}
+	
+	public void prefix(String referrer) {
+		this.prefix = referrer;
+		
+		for (AbstractForm form : relatedForms) {
+			form.prefix(referrer);
 		}
 	}
 }

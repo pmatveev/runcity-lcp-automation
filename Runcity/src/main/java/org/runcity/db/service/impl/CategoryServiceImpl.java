@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Category;
+import org.runcity.db.entity.Game;
 import org.runcity.db.repository.CategoryRepository;
 import org.runcity.db.service.CategoryService;
 import org.runcity.exception.DBException;
@@ -54,6 +55,19 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		
 		return categories;
+	}
+	
+	@Override
+	public List<Category> selectUnused(Game g, boolean games) {
+		List<Category> categories = categoryRepository.selectUnused(g);
+		
+		if (games) {
+			for (Category c : categories) {
+				Hibernate.initialize(c.getGames());				
+			}
+		}
+		
+		return categories;		
 	}
 
 	@Override

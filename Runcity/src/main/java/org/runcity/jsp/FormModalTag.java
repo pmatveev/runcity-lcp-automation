@@ -127,7 +127,7 @@ public class FormModalTag extends FormTag {
 			}
 			
 			if (relatedTable != null) {
-				setDynamicAttribute(null, "related-table", relatedTable.getId());
+				setDynamicAttribute(null, "related-table", relatedTable.getHtmlId());
 			}
 		}
 

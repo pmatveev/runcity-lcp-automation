@@ -1,10 +1,13 @@
 package org.runcity.mvc.web;
 
+import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
+import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
+import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class MenuController {
 	
 	@Autowired 
 	private GameService gameService;
+	
+	@Autowired 
+	private CategoryService categoryService;
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
@@ -58,10 +64,37 @@ public class MenuController {
 		if (g == null) {
 			throw new RuntimeException();
 		}
-		ControlPointTable table = new ControlPointTable(g, "/api/v1/controlPointsTable", messageSource, localeList);
+		ControlPointTable table = new ControlPointTable("/api/v1/controlPointsTable?gameId=" + g.getId(), messageSource, localeList, g);
 		table.processModel(model);
 		
-		return "/secure/controlPointsByGame";
+		return "/secure/controlPoints";
+	}
+	
+	@RequestMapping(value = "/secure/games/{gameId}/categories", method = RequestMethod.GET)
+	public String categoriesByGame(Model model, @PathVariable Long gameId) {
+		Game g = gameService.selectById(gameId, false);
+		if (g == null) {
+			throw new RuntimeException();
+		}
+		
+		RouteTable table = new RouteTable("/api/v1/routeTableByGame?gameId=" + g.getId(), messageSource, localeList, g);
+		table.processModel(model);
+		
+		return "/secure/routes";
+	}
+	
+	// /secure/categories/{0}/games
+	@RequestMapping(value = "/secure/categories/{categoryId}/games", method = RequestMethod.GET)
+	public String gamesByCategory(Model model, @PathVariable Long categoryId) {
+		Category c = categoryService.selectById(categoryId, false);
+		if (c == null) {
+			throw new RuntimeException();
+		}
+		
+		RouteTable table = new RouteTable("/api/v1/routeTableByCategory?categoryId=" + c.getId(), messageSource, localeList, c);
+		table.processModel(model);
+		
+		return "/secure/routes";
 	}
 	
 	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)

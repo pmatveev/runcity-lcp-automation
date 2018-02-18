@@ -7,14 +7,13 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Index;
-import org.runcity.db.entity.util.DBEntity;
 import org.runcity.util.StringUtils;
 
 @Entity
 @Table(name = "translation")
 @org.hibernate.annotations.Table(appliesTo = "translation", indexes = {
 		@Index(name = "translation_ref", columnNames = { "ref_record", "ref_column", "ref_table" }) })
-public class Translation implements DBEntity {
+public class Translation {
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")

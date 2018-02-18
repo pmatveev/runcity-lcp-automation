@@ -18,6 +18,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 public class FormTableTag extends TagSupport {
 	private AbstractTable table;
 	private LocalizationContext bundle;
+	private Boolean caption = true;
 
 	public void setTable(AbstractTable table) {
 		this.table = table;
@@ -25,6 +26,10 @@ public class FormTableTag extends TagSupport {
 
 	public void setBundle(LocalizationContext bundle) {
 		this.bundle = bundle;
+	}
+	
+	public void setCaption(Boolean caption) {
+		this.caption = caption;
 	}
 	
 	private String localize(String message) {
@@ -53,7 +58,7 @@ public class FormTableTag extends TagSupport {
 		if (table.getButtons().size() > 0) {
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("style", "display: none;");
-			tagWriter.writeAttribute("id", table.getId() + "_buttons");
+			tagWriter.writeAttribute("id", table.getHtmlId() + "_buttons");
 	
 			for (ButtonDefinition b : table.getButtons()) {
 				tagWriter.startTag("button");
@@ -88,7 +93,7 @@ public class FormTableTag extends TagSupport {
 		if (table.getExtensions().size() > 0) {
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("style", "display: none;");
-			tagWriter.writeAttribute("id", table.getId() + "_extension");
+			tagWriter.writeAttribute("id", table.getHtmlId() + "_extension");
 			
 			tagWriter.startTag("table");
 			tagWriter.writeAttribute("class", "dt-expand");
@@ -127,22 +132,29 @@ public class FormTableTag extends TagSupport {
 			tagWriter.endTag();
 		}
 
-		tagWriter.startTag("h1");
-		tagWriter.appendValue(MessageFormat.format(localize(table.getTitle()), table.getTitleArgs()));
-		tagWriter.endTag();
+		if (caption) {
+			tagWriter.startTag("h1");
+			tagWriter.appendValue(MessageFormat.format(localize(table.getTitle()), table.getTitleArgs()));
+			tagWriter.endTag();
+		}
 		
 		processUrl(table.getAjaxData(), table.getId() + "_ajaxSource");
+		processUrl(table.getExpandFrame(), table.getId() + "_frame");
 
 		tagWriter.startTag("table");
-		tagWriter.writeAttribute("id", table.getId());
+		tagWriter.writeAttribute("id", table.getHtmlId());
 		tagWriter.writeAttribute("class", "datatables table table-striped table-bordered");
 		tagWriter.writeAttribute("ajaxSource", pageContext.getAttribute(table.getId() + "_ajaxSource").toString());
 		tagWriter.writeAttribute("width", "100%");
+		tagWriter.writeOptionalAttributeValue("prefix", table.getPrefix());
+		if (pageContext.getAttribute(table.getId() + "_frame") != null) {
+			tagWriter.writeAttribute("expand-frame", pageContext.getAttribute(table.getId() + "_frame").toString());
+		}
 
 		tagWriter.startTag("thead");
 		tagWriter.startTag("tr");
 
-		if (table.getExtensions().size() > 0) {
+		if (table.getExtensions().size() > 0 || table.getExpandFrame() != null) {
 			tagWriter.startTag("th");
 			tagWriter.writeOptionalAttributeValue("format", "expand");
 			tagWriter.endTag();
