@@ -104,7 +104,7 @@ public class GameTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("name", "game.name"));
 		this.columns.add(new ColumnDefinition("city", "game.city"));
 		this.columns.add(new ColumnDefinition("country", "game.country"));
-		this.columns.add(new ColumnDefinition("date", "game.date").setDateFormat().setSort("desc", 1));
+		this.columns.add(new ColumnDefinition("date", "game.date").setDateFormat().setSort("desc", 0));
 		this.columns.add(new ColumnDefinition("categories", "game.categories"));
 		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:gameCreateEditForm", null));

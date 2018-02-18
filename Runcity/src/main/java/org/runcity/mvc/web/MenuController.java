@@ -1,6 +1,8 @@
 package org.runcity.mvc.web;
 
+import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
+import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
@@ -26,6 +28,9 @@ public class MenuController {
 	
 	@Autowired 
 	private GameService gameService;
+	
+	@Autowired 
+	private CategoryService categoryService;
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
@@ -72,7 +77,21 @@ public class MenuController {
 			throw new RuntimeException();
 		}
 		
-		RouteTable table = new RouteTable("/api/v1/routeTable?gameId=" + g.getId(), messageSource, localeList, g);
+		RouteTable table = new RouteTable("/api/v1/routeTableByGame?gameId=" + g.getId(), messageSource, localeList, g);
+		table.processModel(model);
+		
+		return "/secure/routes";
+	}
+	
+	// /secure/categories/{0}/games
+	@RequestMapping(value = "/secure/categories/{categoryId}/games", method = RequestMethod.GET)
+	public String gamesByCategory(Model model, @PathVariable Long categoryId) {
+		Category c = categoryService.selectById(categoryId, false);
+		if (c == null) {
+			throw new RuntimeException();
+		}
+		
+		RouteTable table = new RouteTable("/api/v1/routeTableByCategory?categoryId=" + c.getId(), messageSource, localeList, c);
 		table.processModel(model);
 		
 		return "/secure/routes";

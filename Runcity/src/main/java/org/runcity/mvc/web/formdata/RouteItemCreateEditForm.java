@@ -44,6 +44,7 @@ public class RouteItemCreateEditForm extends AbstractForm {
 		this.leg.setRequired(true);
 		this.leg.setMin(1);
 		this.controlPoint = FormDddwControlPointColumn.getByRouteUnused(this, new ColumnDefinition("controlPoint", "routeItem.controlPoint"), id, routeId);
+		this.controlPoint.setForceRefresh(true);
 		this.controlPoint.setRequired(true);
 	}
 	

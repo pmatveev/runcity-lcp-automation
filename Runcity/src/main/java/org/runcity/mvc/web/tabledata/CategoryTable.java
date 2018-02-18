@@ -85,6 +85,7 @@ public class CategoryTable extends AbstractTable {
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:categoryCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:categoryCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/categoryDelete/:id", "selected"));
+		this.buttons.add(new ButtonDefinition("routes.categoryLink", null, "btn dt-link", "link:/secure/categories/{0}/games:id", "selectedSingle"));
 
 		this.relatedForms.add(new CategoryCreateEditForm(localeList));
 	}

@@ -3,9 +3,11 @@ package org.runcity.mvc.rest;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
 import org.runcity.exception.DBException;
@@ -39,12 +41,15 @@ public class RestGameController extends AbstractRestController {
 	private GameService gameService;
 	
 	@Autowired
+	private CategoryService categoryService;
+	
+	@Autowired
 	private RouteService routeService;
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
 	public GameTable getGameTable() {
-		logger.info("GET /api/v1/categoryTable");
+		logger.info("GET /api/v1/gameTable");
 		GameTable table = new GameTable(null, messageSource, localeList);
 		table.fetchAll(gameService, localeList);
 		return table;
@@ -108,21 +113,28 @@ public class RestGameController extends AbstractRestController {
 		return result;		
 	}
 
-	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/routeTable", method = RequestMethod.GET)
-	public RouteTable getRouteTable(@RequestParam(required = false) Long gameId, @RequestParam(required = false) Long categoryId) {
-		logger.info("GET /api/v1/routeTable");
+	@JsonView(RouteTable.ByGame.class)
+	@RequestMapping(value = "/api/v1/routeTableByGame", method = RequestMethod.GET)
+	public RouteTable getRouteTableByGame(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/routeTableByGame");
 		logger.debug("\tgameId=" + gameId);
+		
+		Game game = gameService.selectById(gameId, true);
+		RouteTable table = new RouteTable(null, messageSource, localeList, game);
+		table.fill(game);
+		return table;
+	}
+
+	@JsonView(RouteTable.ByCategory.class)
+	@RequestMapping(value = "/api/v1/routeTableByCategory", method = RequestMethod.GET)
+	public RouteTable getRouteTableByCategory(@RequestParam(required = true) Long categoryId) {
+		logger.info("GET /api/v1/routeTableByCategory");
 		logger.debug("\tcategoryId=" + categoryId);
 		
-		if (gameId != null) {
-			Game game = gameService.selectById(gameId, true);
-			RouteTable table = new RouteTable(null, messageSource, localeList, game);
-			table.fill(game);
-			return table;
-		}
-
-		return null;
+		Category category = categoryService.selectById(categoryId, true);
+		RouteTable table = new RouteTable(null, messageSource, localeList, category);
+		table.fill(category);
+		return table;
 	}	
 	
 	@JsonView(Views.Public.class)
