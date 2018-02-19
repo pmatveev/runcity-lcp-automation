@@ -144,21 +144,11 @@
 				<sec:authorize access="isAuthenticated()">
 					<ul class="nav navbar-nav">
 						<sec:authorize ifAllGranted="ROLE_ADMIN">
-							<spring:url value="/secure/users" var="goUsers"/>
-							<spring:url value="/secure/categories" var="goCategories"/>
-							<spring:url value="/secure/games" var="goGames"/>
-							<li>
-								<a class="dropdown-toggle" data-toggle="dropdown" role="button">
-									<fmt:message key="menu.games" bundle="${msg}" />
-									<span class="caret"></span>
-								</a>
-								<ul class="dropdown-menu">
-									<li>
-										<a href="${goCategories}" role="button"><fmt:message key="menu.categories" bundle="${msg}" /></a>
-										<a href="${goGames}" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a>
-									</li>
-								</ul>
-							</li>
+							<spring:url value="/secure/users" var="goUsers" />
+							<spring:url value="/secure/categories" var="goCategories" />
+							<spring:url value="/secure/games" var="goGames" />
+							<li><a href="${goGames}" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a></li>
+							<li><a href="${goCategories}" role="button"><fmt:message key="menu.categories" bundle="${msg}" /></a></li>
 							<li><a href="${goUsers}" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
 						</sec:authorize>
 						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">

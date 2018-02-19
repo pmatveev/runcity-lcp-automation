@@ -8,10 +8,13 @@ import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.secure.SecureUserDetails;
+import org.runcity.secure.SecureUserRole;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +42,12 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
+		SecureUserDetails user = SecureUserDetails.getCurrent();
+		
+		if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.ADMIN.toString()))) {
+			return "redirect:/secure/games";
+		}
+		
 		return "/secure/home";
 	}
 	
