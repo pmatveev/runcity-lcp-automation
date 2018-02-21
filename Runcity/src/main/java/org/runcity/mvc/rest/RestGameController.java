@@ -19,6 +19,7 @@ import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.formdata.RouteItemCreateEditForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,4 +251,30 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;		
 	}
+	
+	@JsonView(VolunteerTable.ByGame.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
+	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/volunteerTableByGame");
+		logger.debug("\tgameId=" + gameId);
+		
+		Game g = gameService.selectById(gameId, false);
+		
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGame.class);
+		table.add(gameService.selectCoordinators(g));
+		return table;
+	}	
+	
+	@JsonView(VolunteerTable.ByGameControlPoint.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByGameCP", method = RequestMethod.GET)
+	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/volunteerTableByGameCP");
+		logger.debug("\tgameId=" + gameId);
+		
+		Game g = gameService.selectById(gameId, false);
+		
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGame.class);
+		table.add(gameService.selectVolunteers(g));
+		return table;
+	}	
 }

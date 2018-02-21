@@ -19,6 +19,12 @@ public interface GameService {
 	public void delete(List<Long> id);
 
 	@Secured("ROLE_ADMIN")
+	public List<Volunteer> selectCoordinators(Long game);
+
+	@Secured("ROLE_ADMIN")
+	public List<Volunteer> selectCoordinators(Game game);
+
+	@Secured("ROLE_ADMIN")
 	public List<Volunteer> selectVolunteers(Long game);
 
 	@Secured("ROLE_ADMIN")

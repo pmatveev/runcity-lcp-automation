@@ -104,9 +104,9 @@ public class VolunteerTable extends AbstractTable {
 		if (ByConsumer.class.equals(type)) {
 			this.columns.add(new ColumnDefinition("game", "volunteer.game"));
 			this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
-			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("DESC", 0));
+			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("desc", 0));
 		} else {
-			this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("ASC", 0));
+			this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
 			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		}
 

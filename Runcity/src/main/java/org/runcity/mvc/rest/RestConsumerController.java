@@ -13,6 +13,7 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.CommonProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -282,4 +284,17 @@ public class RestConsumerController extends AbstractRestController {
 		
 		return result;
 	}
+	
+	@JsonView(VolunteerTable.ByConsumer.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByConsumer", method = RequestMethod.GET)
+	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long consumerId) {
+		logger.info("GET /api/v1/volunteerTableByConsumer");
+		logger.debug("\tconsumerId=" + consumerId);
+		
+		Consumer c = consumerService.selectById(consumerId, false);
+		
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, c);
+		table.add(consumerService.selectVolunteers(c));
+		return table;
+	}	
 }

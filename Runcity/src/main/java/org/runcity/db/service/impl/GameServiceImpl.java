@@ -72,12 +72,22 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
+	public List<Volunteer> selectCoordinators(Long game) {
+		return selectCoordinators(gameRepository.findOne(game));
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinators(Game game) {
+		return volunteerRepository.findByGame(game);
+	}
+
+	@Override
 	public List<Volunteer> selectVolunteers(Long game) {
 		return selectVolunteers(gameRepository.findOne(game));
 	}
 
 	@Override
 	public List<Volunteer> selectVolunteers(Game game) {
-		return volunteerRepository.findByGame(game);
+		return volunteerRepository.findCPByGame(game);
 	}
 }

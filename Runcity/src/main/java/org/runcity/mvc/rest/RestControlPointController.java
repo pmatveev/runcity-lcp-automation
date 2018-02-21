@@ -17,6 +17,7 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
+import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
@@ -162,4 +163,17 @@ public class RestControlPointController extends AbstractRestController {
 		}
 		return result;	
 	}
+	
+	@JsonView(VolunteerTable.ByControlPoint.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByCP", method = RequestMethod.GET)
+	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long controlPointId) {
+		logger.info("GET /api/v1/volunteerTableByCP");
+		logger.debug("\tcontrolPointId=" + controlPointId);
+		
+		ControlPoint cp = controlPointService.selectById(controlPointId, false);
+		
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, cp);
+		table.add(controlPointService.selectVolunteers(cp));
+		return table;
+	}	
 }
