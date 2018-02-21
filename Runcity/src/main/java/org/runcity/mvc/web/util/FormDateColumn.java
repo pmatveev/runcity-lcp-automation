@@ -10,11 +10,23 @@ import org.springframework.validation.Errors;
 public class FormDateColumn extends FormColumn<Date> {
 	private static final Logger logger = Logger.getLogger(FormDateColumn.class);
 
-	protected boolean required;
+	protected boolean required = false;
+	protected boolean timeValue = false;
 	
-	public FormDateColumn(AbstractForm form, ColumnDefinition definition, boolean required) {
+	public FormDateColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
+	}
+
+	public void setRequired(boolean required) {
 		this.required = required;
+	}
+	
+	public void setTimeValue(boolean timeValue) {
+		this.timeValue = timeValue;
+	}
+	
+	public boolean isTimeValue() {
+		return timeValue;
 	}
 	
 	@Override

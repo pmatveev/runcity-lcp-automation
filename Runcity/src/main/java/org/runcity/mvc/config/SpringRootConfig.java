@@ -28,15 +28,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories("org.runcity.db.repository")
 @ComponentScan({ "org.runcity.db.entity" })
 public class SpringRootConfig {
-	public static final String DATE_FORMAT = "yyyy mm dd";
-	private static final String PROP_DATABASE_DRIVER = "db.driver";
-	private static final String PROP_DATABASE_PASSWORD = "db.password";
-	private static final String PROP_DATABASE_URL = "db.url";
-	private static final String PROP_DATABASE_USERNAME = "db.username";
-	private static final String PROP_LANGLIST = "runcity.langlist";
-	private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
-	private static final String PROP_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
-	private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
+	public static final String DATE_FORMAT = "yyyy MM dd";
+	public static final String DATE_FORMAT_JS = "yyyy mm dd";
+	public static final String DATE_TIME_FORMAT = "yyyy MM dd HH mm";
+	public static final String DATE_TIME_FORMAT_JS = "yyyy mm dd hh ii";
 
 	@Resource
 	private Environment env;
@@ -45,11 +40,11 @@ public class SpringRootConfig {
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-		dataSource.setDriverClassName(env.getRequiredProperty(PROP_DATABASE_DRIVER));
-		dataSource.setUrl(env.getRequiredProperty(PROP_DATABASE_URL));
-		dataSource.setUsername(env.getRequiredProperty(PROP_DATABASE_USERNAME));
+		dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
+		dataSource.setUrl(env.getRequiredProperty("db.url"));
+		dataSource.setUsername(env.getRequiredProperty("db.username"));
 
-		String password = env.getRequiredProperty(PROP_DATABASE_PASSWORD);
+		String password = env.getRequiredProperty("db.password");
 		if (password.startsWith("clear:")) {
 			password = password.substring(6);
 		} else {
@@ -89,7 +84,7 @@ public class SpringRootConfig {
 	public DynamicLocaleList getLocaleList() {
 		DynamicLocaleList localeList = new DynamicLocaleList();
 
-		String[] locales = env.getRequiredProperty(PROP_LANGLIST).split(",");
+		String[] locales = env.getRequiredProperty("runcity.langlist").split(",");
 
 		for (int i = 0; i < locales.length; i++) {
 			localeList.add(locales[i]);
@@ -102,12 +97,12 @@ public class SpringRootConfig {
 	public Version getVersion() {
 		return new Version(this.getClass().getPackage().getImplementationVersion());
 	}
-
+	
 	private Properties getHibernateProperties() {
 		Properties properties = new Properties();
-		properties.put(PROP_HIBERNATE_DIALECT, env.getRequiredProperty(PROP_HIBERNATE_DIALECT));
-		properties.put(PROP_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROP_HIBERNATE_SHOW_SQL));
-		properties.put(PROP_HIBERNATE_HBM2DDL_AUTO, env.getRequiredProperty(PROP_HIBERNATE_HBM2DDL_AUTO));
+		properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
+		properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
+		properties.put("hibernate.hbm2ddl.auto", env.getRequiredProperty("hibernate.hbm2ddl.auto"));
 		return properties;
 	}
 

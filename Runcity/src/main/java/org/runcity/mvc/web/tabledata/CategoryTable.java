@@ -74,8 +74,8 @@ public class CategoryTable extends AbstractTable {
 		}
 	}
 
-	public CategoryTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		super("categoryTable", "category.tableHeader", "category.tableHeader", ajaxData, messageSource, localeList);
+	public CategoryTable(MessageSource messageSource, DynamicLocaleList localeList) {
+		super("categoryTable", "category.tableHeader", "category.tableHeader", "/api/v1/categoryTable", messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("badge", "category.badge"));
@@ -88,6 +88,8 @@ public class CategoryTable extends AbstractTable {
 		this.buttons.add(new ButtonDefinition("routes.categoryLink", null, "btn dt-link", "link:/secure/categories/{0}/games:id", "selectedSingle"));
 
 		this.relatedForms.add(new CategoryCreateEditForm(localeList));
+		
+		this.expandFrame = ":id";
 	}
 	
 	public void fetchAll(CategoryService service) {

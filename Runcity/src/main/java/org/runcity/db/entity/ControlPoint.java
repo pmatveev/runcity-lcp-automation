@@ -53,8 +53,11 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@Transient
 	private byte[] imageData;
 	
-	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "controlPoint")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "controlPoint", orphanRemoval = true)
 	private Set<RouteItem> routeItems;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "controlPoint", orphanRemoval = true)
+	private List<Volunteer> volunteers;
 	
 	public ControlPoint() {
 		this.addresses = new ArrayList<Translation>();

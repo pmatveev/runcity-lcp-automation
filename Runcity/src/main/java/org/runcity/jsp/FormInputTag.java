@@ -431,10 +431,16 @@ public class FormInputTag extends TagSupport {
 
 		// "display" input
 		tagWriter.startTag("div");
-		tagWriter.writeAttribute("class", "input-group date datepicker-component");
-		tagWriter.writeAttribute("data-date-format", localize("common.dateFormat"));
 		tagWriter.writeAttribute("data-link-field", column.getHtmlId());
-		tagWriter.writeAttribute("data-link-format", SpringRootConfig.DATE_FORMAT);
+		if (column.isTimeValue()) {
+			tagWriter.writeAttribute("class", "input-group date datetimepicker-component");
+			tagWriter.writeAttribute("data-date-format", localize("common.dateTimeFormat"));
+			tagWriter.writeAttribute("data-link-format", SpringRootConfig.DATE_TIME_FORMAT_JS);
+		} else {
+			tagWriter.writeAttribute("class", "input-group date datepicker-component");
+			tagWriter.writeAttribute("data-date-format", localize("common.dateFormat"));
+			tagWriter.writeAttribute("data-link-format", SpringRootConfig.DATE_FORMAT_JS);
+		}
 		if (Boolean.TRUE.equals(pageContext.getAttribute("modal"))) {
 			tagWriter.writeAttribute("data-date-container", "#modal_" + column.getFormHtmlId());
 		} else {
@@ -462,6 +468,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.writeAttribute("class", "input-group-addon");
 		tagWriter.startTag("span");
 		tagWriter.writeAttribute("class", "glyphicon glyphicon-calendar");
+		tagWriter.appendValue("");
 		tagWriter.endTag();
 		tagWriter.endTag();
 
@@ -476,7 +483,12 @@ public class FormInputTag extends TagSupport {
 		input.setDynamicAttribute(null, "jschecks", column.getJsChecks());
 		input.setDynamicAttribute(null, "show-if", column.getShowCondition());
 		input.setDynamicAttribute(null, "type", "hidden");
-		input.setDynamicAttribute(null, "display-type", "datepicker");
+		
+		if (column.isTimeValue()) {
+			input.setDynamicAttribute(null, "display-type", "datetimepicker");
+		} else {
+			input.setDynamicAttribute(null, "display-type", "datepicker");
+		}
 		if (column.getValue() != null) {
 			input.setDynamicAttribute(null, "default", column.getValue());
 		}

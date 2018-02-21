@@ -56,7 +56,7 @@ public class RestControlPointController extends AbstractRestController {
 			return result;
 		}
 		
-		ControlPointTable table = new ControlPointTable(null, messageSource, localeList, g);
+		ControlPointTable table = new ControlPointTable(messageSource, localeList, g);
 		table.fetchByGame(controlPointService, g);
 		return table;
 	}	

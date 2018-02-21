@@ -41,7 +41,7 @@ public class RestCategoryController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/categoryTable", method = RequestMethod.GET)
 	public CategoryTable getConsumerTable() {
 		logger.info("GET /api/v1/categoryTable");
-		CategoryTable table = new CategoryTable(null, messageSource, localeList);
+		CategoryTable table = new CategoryTable(messageSource, localeList);
 		table.fetchAll(categoryService);
 		return table;
 	}	

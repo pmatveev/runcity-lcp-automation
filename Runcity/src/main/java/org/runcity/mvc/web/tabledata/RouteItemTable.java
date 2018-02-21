@@ -65,8 +65,8 @@ public class RouteItemTable extends AbstractTable {
 		}
 	}
 	
-	public RouteItemTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Route route) {
-		super("routeItemTable", "routeItem.tableHeader", "routeItem.tableHeader", ajaxData, messageSource, localeList);
+	public RouteItemTable(MessageSource messageSource, DynamicLocaleList localeList, Route route) {
+		super("routeItemTable", "routeItem.tableHeader", "routeItem.tableHeader", "/api/v1/routeItemTable?routeId=" + route.getId(), messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("legNum", "routeItem.leg").setSort("asc", 0));

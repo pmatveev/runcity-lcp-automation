@@ -223,7 +223,7 @@ public class RestConsumerController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
 	public ConsumerTable getConsumerTable() {
 		logger.info("GET /api/v1/consumerTable");
-		ConsumerTable table = new ConsumerTable(null, messageSource, localeList);
+		ConsumerTable table = new ConsumerTable(messageSource, localeList);
 		table.fetchAll(consumerService);
 		return table;
 	}

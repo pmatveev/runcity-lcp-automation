@@ -37,7 +37,12 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
-		<c:set value="${formVar.dateColumn}" var="col"/>
+		<c:set value="${formVar.dateFromColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
+		</spring:bind>	
+		
+		<c:set value="${formVar.dateToColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	

@@ -12,9 +12,11 @@ import javax.mail.internet.MimeMessage;
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.repository.ConsumerRepository;
 import org.runcity.db.repository.PersistedLoginsRepository;
 import org.runcity.db.repository.TokenRepository;
+import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
@@ -42,6 +44,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Autowired
 	private PersistedLoginsRepository persistedLoginsRepository;
+	
+	@Autowired
+	private VolunteerRepository volunteerRepository;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -295,5 +300,15 @@ public class ConsumerServiceImpl implements ConsumerService {
 			return c;
 		}
 		return null;
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteers(Long consumer) {
+		return selectVolunteers(consumerRepository.findOne(consumer));
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteers(Consumer consumer) {
+		return volunteerRepository.findByConsumer(consumer);
 	}
 }

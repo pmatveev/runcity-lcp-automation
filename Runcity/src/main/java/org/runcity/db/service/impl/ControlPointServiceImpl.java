@@ -5,10 +5,12 @@ import java.util.List;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.GameRepository;
 import org.runcity.db.repository.RouteRepository;
+import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.BlobContentService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.exception.DBException;
@@ -34,6 +36,9 @@ public class ControlPointServiceImpl implements ControlPointService {
 	
 	@Autowired 
 	private BlobContentService blobContentService;
+	
+	@Autowired
+	private VolunteerRepository volunteerRepository;
 
 	@Override
 	@Secured("ROLE_ADMIN")
@@ -119,11 +124,7 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	private void delete(Long id) {
-//		ControlPoint c = selectById(id, false);
 		controlPointRepository.delete(id);
-/*		if (c.getImage() != null) {
-			blobContentRepository.delete(c.getImage());
-		}*/
 	}
 
 	@Override
@@ -132,5 +133,17 @@ public class ControlPointServiceImpl implements ControlPointService {
 		for (Long i : id) {
 			delete(i);
 		}
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<Volunteer> selectVolunteers(Long controlPoint) {
+		return selectVolunteers(controlPointRepository.findOne(controlPoint));
+	}
+
+	@Override
+	@Secured("ROLE_ADMIN")
+	public List<Volunteer> selectVolunteers(ControlPoint controlPoint) {
+		return volunteerRepository.findByControlPoint(controlPoint);
 	}
 }

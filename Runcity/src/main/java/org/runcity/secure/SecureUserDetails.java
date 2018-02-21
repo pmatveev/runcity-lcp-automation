@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @SuppressWarnings("serial")
 public class SecureUserDetails implements UserDetails {
+	public static final SimpleGrantedAuthority ADMIN_ROLE = new SimpleGrantedAuthority("ROLE_ADMIN");
+	public static final SimpleGrantedAuthority VOLUNTEER_ROLE = new SimpleGrantedAuthority("ROLE_VOLUNTEER");
+	
 	private Long id;
 	private boolean active;
 	private String username;

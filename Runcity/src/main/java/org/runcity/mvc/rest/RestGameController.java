@@ -50,7 +50,7 @@ public class RestGameController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
 	public GameTable getGameTable() {
 		logger.info("GET /api/v1/gameTable");
-		GameTable table = new GameTable(null, messageSource, localeList);
+		GameTable table = new GameTable(messageSource, localeList);
 		table.fetchAll(gameService, localeList);
 		return table;
 	}	
@@ -120,7 +120,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\tgameId=" + gameId);
 		
 		Game game = gameService.selectById(gameId, true);
-		RouteTable table = new RouteTable(null, messageSource, localeList, game);
+		RouteTable table = new RouteTable(messageSource, localeList, game);
 		table.fill(game);
 		return table;
 	}
@@ -132,7 +132,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\tcategoryId=" + categoryId);
 		
 		Category category = categoryService.selectById(categoryId, true);
-		RouteTable table = new RouteTable(null, messageSource, localeList, category);
+		RouteTable table = new RouteTable(messageSource, localeList, category);
 		table.fill(category);
 		return table;
 	}	
@@ -188,7 +188,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\trouteId=" + routeId);
 		
 		Route r = routeService.selectById(routeId, true);
-		RouteItemTable table = new RouteItemTable(null, messageSource, localeList, r);
+		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.fill(r);
 		return table;
 	}	

@@ -119,11 +119,16 @@ public abstract class AbstractTable extends RestGetResponseBody {
 		}
 	}
 	
-	public void prefix(String referrer) {
+	private void prefix(String referrer) {
 		this.prefix = referrer;
 		
 		for (AbstractForm form : relatedForms) {
 			form.prefix(referrer);
 		}
+	}
+	
+	public void processModel(Model model, String referrer) {
+		processModel(model);
+		prefix(referrer);
 	}
 }

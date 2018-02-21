@@ -14,7 +14,10 @@ function initHtml(container, dtLocalizationLink) {
 		useHashPrefix : false
 	});
 	container.find(".datepicker-component").each(function() {
-		initDatePicker($(this));
+		initDatePicker($(this), 'month');
+	});
+	container.find(".datetimepicker-component").each(function() {
+		initDatePicker($(this), 'hour'); // TODO
 	});
 	container.find("table.datatables").each(function() {
 		initDatatables($(this), dtLocalizationLinkConst);
@@ -36,8 +39,27 @@ function removeFormErrorMessage(form) {
 }
 
 function parseDate(datestr) {
+	var d = datestr.split(" ");
+	
+	for (i = 0; i < 6; i++) {
+		if (typeof d[i] === 'undefined') {
+			d[i] = 0;
+		}
+	}
+	
+	d[1] = Number(d[1]) - 1;
+	var date = new Date(d[0], d[1], d[2], d[3], d[4], d[5]);
+	return date;
+}
+
+function formatDate(date, format, locale) {
+	var dateUTC = new Date(date.valueOf() - date.getTimezoneOffset() * 60000);
 	var dpg = $.fn.datetimepicker.DPGlobal;
-	return dpg.parseDate(datestr, dpg.parseFormat('yyyy mm dd', 'standard'));
+	if (format === "DATE") {
+		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+	} else {
+		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableDateTimeFormat'], 'standard'), locale, 'standard');
+	}	
 }
 
 function removeFormFieldErrorMessage(form) {
@@ -286,6 +308,13 @@ function setInputValue(elem, val) {
 				}
 			} else if (dt === 'datepicker') {
 				var picker = elem.closest('.form-group').find('.datepicker-component');
+				if (typeof val !== 'undefined') {
+					picker.datetimepicker('update', parseDate(val));
+				} else {
+					picker.datetimepicker('update', "");
+				}
+			} else if (dt === 'datetimepicker') {
+				var picker = elem.closest('.form-group').find('.datetimepicker-component');
 				if (typeof val !== 'undefined') {
 					picker.datetimepicker('update', parseDate(val));
 				} else {
@@ -1101,7 +1130,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		var cd = $(this);
 		
 		var format = cd.attr("format");
-		if (format === "DATE") {
+		if (format === "DATE" || format == "DATETIME") {
 			columnDefs.push({
 				data : cd.attr("mapping"),
 				name : cd.attr("mapping"),
@@ -1109,8 +1138,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					if (type == "sort" || type == "type") {
 				        return data;
 					}
-					var dpg = $.fn.datetimepicker.DPGlobal;
-					return dpg.formatDate(parseDate(data), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
+					return formatDate(parseDate(data), format, locale);			
 			    },
 				visible : cd.attr("td-visible") == 'true'
 			});
@@ -1218,40 +1246,81 @@ function initDatatablesWithButtons(table, buttons, loc) {
 	if (expand) {
 		var frame = table.attr("expand-frame");
 		
-		if (typeof frame !== 'undefined') {
-			dataTable['formatExpand'] = function(data) {
-				var frameAction = frame.split(":");
-				var link = frameAction[0];
-				var ref = frameAction.slice(1);
-				var reference = "";
-				
-				ref.forEach(function(currentValue, index, array) {
-					link = link.replace("{" + index + "}", data[currentValue]);
-					reference += "_" + data[currentValue];
+		dataTable['formatExpand'] = function(data) {
+			var frameAction = frame.split(":");
+			var link = frameAction[0];
+			var ref = frameAction.slice(1);
+			var reference = "";
+			
+			ref.forEach(function(currentValue, index, array) {
+				link = link.replace("{" + index + "}", encodeURIComponent(data[currentValue]));
+				reference += "_" + data[currentValue];
+			});
+			
+			var prefix = reference.replace("_", table.attr('id'));
+			var processedLink;
+
+			if (link.indexOf('?') == -1) {
+				processedLink = link + "?referrer=" + encodeURIComponent(prefix);
+			} else {
+				processedLink = link + "&referrer=" + encodeURIComponent(prefix);
+			}
+			
+			var divId = "expand" + processedLink.replace(/[\/\?\=]/g, '_');
+			
+			var expandData, expandRef;
+			var expandTemplate = $('#' + table.attr("id") + "_extension");
+			if (expandTemplate.length) {
+				expandTemplate.find("td.dynamic").each(function() {
+					var elem = $(this);
+					var mapping = elem.attr("mapping").split(".");
+					var val = data;
+					
+					mapping.forEach(function(item, i, arr) {
+						val = val[item];
+					});
+					
+					var format = elem.attr("format");
+					if (format === "DATE" || format === "DATETIME") {
+						val = formatDate(parseDate(val), format, locale);
+					} else if (format === "IMAGE") {
+						val = displayDtImage(val, elem.attr("image-url"), data);
+					}
+					elem.html(val);
 				});
-				
-				var prefix = reference.replace("_", table.attr('id'));
-				reference = "referrer=" + prefix;
-				
-				if (link.indexOf('?') == -1) {
-					link += "?" + reference;
-				} else {
-					link += "&" + reference;
-				}
-				
-				var divId = "expand" + link.replace(/[\/\?\=]/g, '_');
-				
+				var detailsHref = table.attr("id");
+				expandData = expandTemplate.html();
+				expandRef = prefix + "_details_";
+			}
+			
+			if (link.length > 0) {
 				$.ajax({
 					type : "GET",
 					contentType : "text/html",
-					url : link,
+					url : processedLink,
 					timeout : 10000,
 					success : function(data) {
 						var div = $('#' + divId);
 						div.html(data);
+						
+						if (typeof expandData !== 'undefined') {
+							div.find("ul.nav.nav-tabs li").first().before("<li><a data-toggle='tab' href='#" 
+									+ expandRef
+									+ "'>"
+									+ translations['extnTabName']
+									+ "</a></li>");
+							div.find("div.tab-content div.tab-pane").first().before("<div id='"
+									+ expandRef
+									+ "' class='tab-pane'>"
+									+ expandData
+									+ "</div>"
+									);
+						}
+						
 						div.attr('id', null);	
 						initHtml(div);					
 						div.find(".div-modal").detach().appendTo("div#modalContainer");
+						var tab = div.find("ul.nav.nav-tabs li a").first().tab('show');
 					},
 					error : function(data) {
 						var err;
@@ -1269,34 +1338,22 @@ function initDatatablesWithButtons(table, buttons, loc) {
 						div.attr('id', null);						
 					}
 				});
-				
 				return "<div class='container container-full container-main' id='" + divId + "' prefix='" + prefix + "'></div>";
-			};
-		} else {
-			var expandTemplate = $('#' + table.attr("id") + "_extension");
-			dataTable['formatExpand'] = function(data) {
-				expandTemplate.find("td.dynamic").each(function() {
-					var elem = $(this);
-					var mapping = elem.attr("mapping").split(".");
-					var val = data;
-					
-					mapping.forEach(function(item, i, arr) {
-						val = val[item];
-					});
-					
-					var format = elem.attr("format");
-					if (format === "DATE") {
-						var dpg = $.fn.datetimepicker.DPGlobal;
-						val = dpg.formatDate(parseDate(val), dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
-					} else if (format === "IMAGE") {
-						val = displayDtImage(val, elem.attr("image-url"), data);
-					}
-					elem.html(val);
-				});
-				return expandTemplate.html();
-			};
+			} else {
+				return "<div class='container container-full container-main'>" 
+				    + "<ul class='nav nav-tabs'><li class='active'><a data-toggle='tab' href='#" 
+					+ expandRef
+					+ "'>"
+					+ translations['extnTabName']
+					+ "</a></li></ul>"
+					+ "<div class='tab-content'><div id='"
+					+ expandRef
+					+ "' class='tab-pane active'>"
+					+ expandData
+					+ "</div></div></div>";
+			}
 		}
-		
+			
 		dataTable['expanded'] = {};
 		
 	    $('#' + table.attr("id") + ' tbody').on('click', 'td.details-control', function () {
@@ -1333,14 +1390,14 @@ function initDatatablesWithButtons(table, buttons, loc) {
 	}
 }
 
-function initDatePicker(elem) {
+function initDatePicker(elem, minView) {
 	elem.datetimepicker({
 		language : locale,
 		autoclose: true,
 		container: elem.attr('data-date-container'),
 		todayHighlight: true,
 		startView: 'month',
-		minView: 'month',
+		minView: minView,
 		forceParse: true
 	});
 }
