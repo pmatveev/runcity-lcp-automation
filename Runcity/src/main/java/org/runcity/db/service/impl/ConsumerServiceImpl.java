@@ -309,6 +309,16 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public List<Volunteer> selectVolunteers(Consumer consumer) {
-		return volunteerRepository.findByConsumer(consumer);
+		return volunteerRepository.findCPByConsumer(consumer);
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinators(Long consumer) {
+		return selectVolunteers(consumerRepository.findOne(consumer));
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinators(Consumer consumer) {
+		return volunteerRepository.findGameByConsumer(consumer);
 	}
 }

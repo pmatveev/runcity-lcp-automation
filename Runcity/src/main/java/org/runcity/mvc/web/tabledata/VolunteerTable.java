@@ -23,7 +23,10 @@ public class VolunteerTable extends AbstractTable {
 	public static class ByControlPoint {
 	}
 
-	public static class ByConsumer {
+	public static class ByConsumerGame {
+	}
+	
+	public static class ByConsumerControlPoint {
 	}
 
 	public static class ByGame {
@@ -32,27 +35,27 @@ public class VolunteerTable extends AbstractTable {
 	public static class ByGameControlPoint {
 	}
 
-	@JsonView({ ByControlPoint.class, ByConsumer.class, ByGame.class, ByGameControlPoint.class })
+	@JsonView({ ByControlPoint.class, ByConsumerGame.class, ByConsumerControlPoint.class, ByGame.class, ByGameControlPoint.class })
 	private List<TableRow> data = new LinkedList<TableRow>();
 
 	protected class TableRow {
-		@JsonView({ ByControlPoint.class, ByConsumer.class, ByGame.class, ByGameControlPoint.class })
+		@JsonView({ ByControlPoint.class, ByConsumerGame.class, ByConsumerControlPoint.class, ByGame.class, ByGameControlPoint.class })
 		private Long id;
 
 		@JsonView({ ByControlPoint.class, ByGame.class, ByGameControlPoint.class })
 		private String name;
 
-		@JsonView(ByConsumer.class)
+		@JsonView({ ByConsumerGame.class, ByConsumerControlPoint.class })
 		private String game;
 
-		@JsonView({ ByConsumer.class, ByGameControlPoint.class })
+		@JsonView({ ByConsumerControlPoint.class, ByGameControlPoint.class })
 		private String controlPoint;
 
-		@JsonView({ ByControlPoint.class, ByConsumer.class, ByGame.class, ByGameControlPoint.class })
+		@JsonView({ ByControlPoint.class, ByConsumerGame.class, ByConsumerControlPoint.class, ByGame.class, ByGameControlPoint.class })
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 		private Date dateFrom;
 
-		@JsonView({ ByControlPoint.class, ByConsumer.class, ByGame.class, ByGameControlPoint.class })
+		@JsonView({ ByControlPoint.class, ByConsumerGame.class, ByConsumerControlPoint.class, ByGame.class, ByGameControlPoint.class })
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 		private Date dateTo;
 
@@ -69,11 +72,17 @@ public class VolunteerTable extends AbstractTable {
 	}
 
 	private static String getId(Class<?> type) {
-		if (ByGame.class.equals(type)) {
-			return "volunteerTableByGame";
+		if (ByConsumerControlPoint.class.equals(type)) {
+			return "volunteerTableByConsumer";
+		}
+		if (ByConsumerGame.class.equals(type)) {
+			return "coordinatorTableByConsumer";
 		}
 		if (ByGameControlPoint.class.equals(type)) {
-			return "volunteerTableByGameCP";
+			return "volunteerTableByGame";
+		}
+		if (ByGame.class.equals(type)) {
+			return "coordinatorTableByGame";
 		}
 		return "volunteerTable";
 	}
@@ -88,8 +97,30 @@ public class VolunteerTable extends AbstractTable {
 		if (ByControlPoint.class.equals(type)) {
 			return "volunteer.tableHeaderByControlPoint";
 		}
-		if (ByConsumer.class.equals(type)) {
-			return "volunteer.tableHeaderByConsumer";
+		if (ByConsumerGame.class.equals(type)) {
+			return "volunteer.tableHeaderByConsumerGame";
+		}
+		if (ByConsumerControlPoint.class.equals(type)) {
+			return "volunteer.tableHeaderByConsumerControlPoint";
+		}
+		throw new RuntimeException("Unsupported type for VolunteerTable");
+	}
+
+	private static String getSimpleHeader(Class<?> type) {
+		if (ByGame.class.equals(type)) {
+			return "volunteer.simpleTableHeaderByGame";
+		}
+		if (ByGameControlPoint.class.equals(type)) {
+			return "volunteer.simpleTableHeaderByGameControlPoint";
+		}
+		if (ByControlPoint.class.equals(type)) {
+			return "volunteer.simpleTableHeaderByControlPoint";
+		}
+		if (ByConsumerGame.class.equals(type)) {
+			return "volunteer.simpleTableHeaderByConsumerGame";
+		}
+		if (ByConsumerControlPoint.class.equals(type)) {
+			return "volunteer.simpleTableHeaderByConsumerControlPoint";
 		}
 		throw new RuntimeException("Unsupported type for VolunteerTable");
 	}
@@ -101,9 +132,12 @@ public class VolunteerTable extends AbstractTable {
 			this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
 		}
 		
-		if (ByConsumer.class.equals(type)) {
+		if (ByConsumerGame.class.equals(type) || ByConsumerControlPoint.class.equals(type)) {
 			this.columns.add(new ColumnDefinition("game", "volunteer.game"));
-			this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
+			
+			if (ByConsumerControlPoint.class.equals(type)) {
+				this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
+			}
 			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("desc", 0));
 		} else {
 			this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
@@ -114,12 +148,12 @@ public class VolunteerTable extends AbstractTable {
 	}
 
 	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, Game g, Class<?> type) {
-		super(getId(type), getHeader(type), getHeader(type), null, messageSource, localeList, g.getName());
+		super(getId(type), getHeader(type), getSimpleHeader(type), null, messageSource, localeList, g.getName());
 
 		if (ByGame.class.equals(type)) {
-			this.ajaxData = "/api/v1/volunteerTableByGame?gameId=" + g.getId();
+			this.ajaxData = "/api/v1/coordinatorTableByGame?gameId=" + g.getId();
 		} else if (ByGameControlPoint.class.equals(type)) {
-			this.ajaxData = "/api/v1/volunteerTableByGameCP?gameId=" + g.getId();
+			this.ajaxData = "/api/v1/volunteerTableByGame?gameId=" + g.getId();
 		} else {
 			throw new RuntimeException("Unsupported type for VolunteerTable");
 		}
@@ -128,16 +162,24 @@ public class VolunteerTable extends AbstractTable {
 	}
 
 	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, ControlPoint c) {
-		super(getId(ByControlPoint.class), getHeader(ByControlPoint.class), getHeader(ByControlPoint.class),
+		super(getId(ByControlPoint.class), getHeader(ByControlPoint.class), getSimpleHeader(ByControlPoint.class),
 				"/api/v1/volunteerTableByCP?controlPointId=" + c.getId(), messageSource, localeList, c.getName());
 		initFields(ByControlPoint.class);
 	}
 
-	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, Consumer c) {
-		super(getId(ByConsumer.class), getHeader(ByConsumer.class), getHeader(ByConsumer.class),
-				"/api/v1/volunteerTableByConsumer?consumerId=" + c.getId(), messageSource, localeList,
+	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, Consumer c, Class<?> type) {
+		super(getId(type), getHeader(type), getSimpleHeader(type), null, messageSource, localeList,
 				c.getCredentials());
-		initFields(ByConsumer.class);
+		
+		if (ByConsumerControlPoint.class.equals(type)) {
+			this.ajaxData = "/api/v1/volunteerTableByConsumer?consumerId=" + c.getId();
+		} else if (ByConsumerGame.class.equals(type)) {
+			this.ajaxData = "/api/v1/coordinatorTableByConsumer?consumerId=" + c.getId();			
+		} else {
+			throw new RuntimeException("Unsupported type for VolunteerTable");			
+		}
+		
+		initFields(type);
 	}
 
 	public void add(Collection<Volunteer> volenteers) {

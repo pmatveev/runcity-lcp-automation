@@ -144,6 +144,7 @@ public class ControlPointServiceImpl implements ControlPointService {
 	@Override
 	@Secured("ROLE_ADMIN")
 	public List<Volunteer> selectVolunteers(ControlPoint controlPoint) {
-		return volunteerRepository.findByControlPoint(controlPoint);
+		ControlPoint cp = controlPoint.getParent() == null ? controlPoint : controlPoint.getParent();
+		return volunteerRepository.findByControlPoint(cp);
 	}
 }

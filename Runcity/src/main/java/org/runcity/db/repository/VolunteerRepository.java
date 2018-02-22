@@ -14,8 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 	public List<Volunteer> findByControlPoint(ControlPoint controlPoint);
-	
-	public List<Volunteer> findByConsumer(Consumer consumer);
+
+	@Query("select v from Volunteer v where v.consumer = :consumer and v.controlPoint is not null")
+	public List<Volunteer> findCPByConsumer(@Param("consumer") Consumer consumer);
+
+	@Query("select v from Volunteer v where v.consumer = :consumer and v.game is not null")
+	public List<Volunteer> findGameByConsumer(@Param("consumer") Consumer consumer);
 	
 	public List<Volunteer> findByGame(Game game);
 	

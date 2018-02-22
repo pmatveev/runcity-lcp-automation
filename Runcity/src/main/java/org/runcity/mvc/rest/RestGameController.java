@@ -253,9 +253,9 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(VolunteerTable.ByGame.class)
-	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/v1/coordinatorTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long gameId) {
-		logger.info("GET /api/v1/volunteerTableByGame");
+		logger.info("GET /api/v1/coordinatorTableByGame");
 		logger.debug("\tgameId=" + gameId);
 		
 		Game g = gameService.selectById(gameId, false);
@@ -266,9 +266,9 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(VolunteerTable.ByGameControlPoint.class)
-	@RequestMapping(value = "/api/v1/volunteerTableByGameCP", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long gameId) {
-		logger.info("GET /api/v1/volunteerTableByGameCP");
+		logger.info("GET /api/v1/volunteerTableByGame");
 		logger.debug("\tgameId=" + gameId);
 		
 		Game g = gameService.selectById(gameId, false);

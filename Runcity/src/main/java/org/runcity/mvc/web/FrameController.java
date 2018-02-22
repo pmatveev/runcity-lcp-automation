@@ -80,8 +80,11 @@ public class FrameController {
 	public String consumerDetails(Model model, @PathVariable Long consumerId, @RequestParam(required = true) String referrer) {
 		Consumer c = consumerService.selectById(consumerId, false);
 
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, c);
-		table.processModel(model, referrer);
+		VolunteerTable coordinatorsTable = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerGame.class);
+		VolunteerTable volunteersTable = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerControlPoint.class);
+
+		coordinatorsTable.processModel(model, referrer);
+		volunteersTable.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
 		return "/sub/consumerDetails";

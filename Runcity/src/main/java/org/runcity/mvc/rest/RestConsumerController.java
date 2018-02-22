@@ -285,7 +285,7 @@ public class RestConsumerController extends AbstractRestController {
 		return result;
 	}
 	
-	@JsonView(VolunteerTable.ByConsumer.class)
+	@JsonView(VolunteerTable.ByConsumerControlPoint.class)
 	@RequestMapping(value = "/api/v1/volunteerTableByConsumer", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long consumerId) {
 		logger.info("GET /api/v1/volunteerTableByConsumer");
@@ -293,8 +293,21 @@ public class RestConsumerController extends AbstractRestController {
 		
 		Consumer c = consumerService.selectById(consumerId, false);
 		
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, c);
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerControlPoint.class);
 		table.add(consumerService.selectVolunteers(c));
+		return table;
+	}	
+	
+	@JsonView(VolunteerTable.ByConsumerGame.class)
+	@RequestMapping(value = "/api/v1/coordinatorTableByConsumer", method = RequestMethod.GET)
+	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long consumerId) {
+		logger.info("GET /api/v1/coordinatorTableByConsumer");
+		logger.debug("\tconsumerId=" + consumerId);
+		
+		Consumer c = consumerService.selectById(consumerId, false);
+		
+		VolunteerTable table = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerGame.class);
+		table.add(consumerService.selectCoordinators(c));
 		return table;
 	}	
 }

@@ -55,4 +55,8 @@ public interface ConsumerService {
 	public List<Volunteer> selectVolunteers(Long consumer);
 
 	public List<Volunteer> selectVolunteers(Consumer consumer);
+
+	public List<Volunteer> selectCoordinators(Long consumer);
+
+	public List<Volunteer> selectCoordinators(Consumer consumer);
 }
