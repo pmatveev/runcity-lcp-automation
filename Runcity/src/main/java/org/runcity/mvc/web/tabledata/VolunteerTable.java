@@ -71,60 +71,6 @@ public class VolunteerTable extends AbstractTable {
 		}
 	}
 
-	private static String getId(Class<?> type) {
-		if (ByConsumerControlPoint.class.equals(type)) {
-			return "volunteerTableByConsumer";
-		}
-		if (ByConsumerGame.class.equals(type)) {
-			return "coordinatorTableByConsumer";
-		}
-		if (ByGameControlPoint.class.equals(type)) {
-			return "volunteerTableByGame";
-		}
-		if (ByGame.class.equals(type)) {
-			return "coordinatorTableByGame";
-		}
-		return "volunteerTable";
-	}
-
-	private static String getHeader(Class<?> type) {
-		if (ByGame.class.equals(type)) {
-			return "volunteer.tableHeaderByGame";
-		}
-		if (ByGameControlPoint.class.equals(type)) {
-			return "volunteer.tableHeaderByGameControlPoint";
-		}
-		if (ByControlPoint.class.equals(type)) {
-			return "volunteer.tableHeaderByControlPoint";
-		}
-		if (ByConsumerGame.class.equals(type)) {
-			return "volunteer.tableHeaderByConsumerGame";
-		}
-		if (ByConsumerControlPoint.class.equals(type)) {
-			return "volunteer.tableHeaderByConsumerControlPoint";
-		}
-		throw new RuntimeException("Unsupported type for VolunteerTable");
-	}
-
-	private static String getSimpleHeader(Class<?> type) {
-		if (ByGame.class.equals(type)) {
-			return "volunteer.simpleTableHeaderByGame";
-		}
-		if (ByGameControlPoint.class.equals(type)) {
-			return "volunteer.simpleTableHeaderByGameControlPoint";
-		}
-		if (ByControlPoint.class.equals(type)) {
-			return "volunteer.simpleTableHeaderByControlPoint";
-		}
-		if (ByConsumerGame.class.equals(type)) {
-			return "volunteer.simpleTableHeaderByConsumerGame";
-		}
-		if (ByConsumerControlPoint.class.equals(type)) {
-			return "volunteer.simpleTableHeaderByConsumerControlPoint";
-		}
-		throw new RuntimeException("Unsupported type for VolunteerTable");
-	}
-
 	public void initFields(Class<?> type) {
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 
@@ -147,39 +93,65 @@ public class VolunteerTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 	}
 
-	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, Game g, Class<?> type) {
-		super(getId(type), getHeader(type), getSimpleHeader(type), null, messageSource, localeList, g.getName());
+	protected VolunteerTable(String id, String title, String simpleTitle, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Object ... titleArgs) {
+		super(id, title, simpleTitle, ajaxData, messageSource, localeList, titleArgs);
+	}
+	
+	public static VolunteerTable initVolunteersByGame(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
+		VolunteerTable table = new VolunteerTable("volunteerTableByGame", "volunteer.tableHeaderByGameControlPoint", "volunteer.simpleTableHeaderByGameControlPoint", "/api/v1/volunteerTableByGame?gameId=" + g.getId(), messageSource, localeList, g.getName());
+		
+		table.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		table.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
+		table.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
+		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
+		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
+		
+		return table;
+	}
+	
+	public static VolunteerTable initCoordinatorsByGame(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
+		VolunteerTable table = new VolunteerTable("coordinatorTableByGame", "volunteer.tableHeaderByGame", "volunteer.simpleTableHeaderByGame", "/api/v1/coordinatorTableByGame?gameId=" + g.getId(), messageSource, localeList, g.getName());
+		
+		table.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		table.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
+		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
+		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
+		
+		return table;
+	}
 
-		if (ByGame.class.equals(type)) {
-			this.ajaxData = "/api/v1/coordinatorTableByGame?gameId=" + g.getId();
-		} else if (ByGameControlPoint.class.equals(type)) {
-			this.ajaxData = "/api/v1/volunteerTableByGame?gameId=" + g.getId();
-		} else {
-			throw new RuntimeException("Unsupported type for VolunteerTable");
-		}
+	public static VolunteerTable initVolunteersByConsumer(MessageSource messageSource, DynamicLocaleList localeList, Consumer c) {
+		VolunteerTable table = new VolunteerTable("volunteerTableByConsumer", "volunteer.tableHeaderByConsumerControlPoint", "volunteer.simpleTableHeaderByConsumerControlPoint", "/api/v1/volunteerTableByConsumer?consumerId=" + c.getId(), messageSource, localeList, c.getCredentials());
+		
+		table.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		table.columns.add(new ColumnDefinition("game", "volunteer.game"));
+		table.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
+		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("desc", 0));
+		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
+		
+		return table;
+	}
 
-		initFields(type);
+	public static VolunteerTable initCoordinatorsByConsumer(MessageSource messageSource, DynamicLocaleList localeList, Consumer c) {
+		VolunteerTable table = new VolunteerTable("coordinatorTableByConsumer", "volunteer.tableHeaderByConsumerGame", "volunteer.simpleTableHeaderByConsumerGame", "/api/v1/coordinatorTableByConsumer?consumerId=" + c.getId(), messageSource, localeList, c.getCredentials());
+		
+		table.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		table.columns.add(new ColumnDefinition("game", "volunteer.game"));
+		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("desc", 0));
+		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
+		
+		return table;
 	}
 
 	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, ControlPoint c) {
-		super(getId(ByControlPoint.class), getHeader(ByControlPoint.class), getSimpleHeader(ByControlPoint.class),
+		super("volunteerTableByCP", "volunteer.tableHeaderByControlPoint", "volunteer.simpleTableHeaderByControlPoint",
 				"/api/v1/volunteerTableByCP?controlPointId=" + c.getId(), messageSource, localeList, c.getName());
-		initFields(ByControlPoint.class);
-	}
 
-	public VolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, Consumer c, Class<?> type) {
-		super(getId(type), getHeader(type), getSimpleHeader(type), null, messageSource, localeList,
-				c.getCredentials());
-		
-		if (ByConsumerControlPoint.class.equals(type)) {
-			this.ajaxData = "/api/v1/volunteerTableByConsumer?consumerId=" + c.getId();
-		} else if (ByConsumerGame.class.equals(type)) {
-			this.ajaxData = "/api/v1/coordinatorTableByConsumer?consumerId=" + c.getId();			
-		} else {
-			throw new RuntimeException("Unsupported type for VolunteerTable");			
-		}
-		
-		initFields(type);
+
+		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
+		this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
+		this.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 	}
 
 	public void add(Collection<Volunteer> volenteers) {

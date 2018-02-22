@@ -55,8 +55,8 @@ public class FrameController {
 	public String gameDetails(Model model, @PathVariable Long gameId, @RequestParam(required = true) String referrer) {
 		Game g = gameService.selectById(gameId, false);
 
-		VolunteerTable coordinatorsTable = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGame.class);
-		VolunteerTable volunteersTable = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGameControlPoint.class);
+		VolunteerTable coordinatorsTable = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
+		VolunteerTable volunteersTable = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);;
 
 		coordinatorsTable.processModel(model, referrer);
 		volunteersTable.processModel(model, referrer);
@@ -80,8 +80,8 @@ public class FrameController {
 	public String consumerDetails(Model model, @PathVariable Long consumerId, @RequestParam(required = true) String referrer) {
 		Consumer c = consumerService.selectById(consumerId, false);
 
-		VolunteerTable coordinatorsTable = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerGame.class);
-		VolunteerTable volunteersTable = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerControlPoint.class);
+		VolunteerTable coordinatorsTable = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
+		VolunteerTable volunteersTable = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
 
 		coordinatorsTable.processModel(model, referrer);
 		volunteersTable.processModel(model, referrer);

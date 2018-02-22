@@ -260,7 +260,7 @@ public class RestGameController extends AbstractRestController {
 		
 		Game g = gameService.selectById(gameId, false);
 		
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGame.class);
+		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
 		table.add(gameService.selectCoordinators(g));
 		return table;
 	}	
@@ -272,8 +272,8 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\tgameId=" + gameId);
 		
 		Game g = gameService.selectById(gameId, false);
-		
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, g, VolunteerTable.ByGame.class);
+
+		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
 		table.add(gameService.selectVolunteers(g));
 		return table;
 	}	

@@ -293,7 +293,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		Consumer c = consumerService.selectById(consumerId, false);
 		
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerControlPoint.class);
+		VolunteerTable table = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectVolunteers(c));
 		return table;
 	}	
@@ -306,7 +306,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		Consumer c = consumerService.selectById(consumerId, false);
 		
-		VolunteerTable table = new VolunteerTable(messageSource, localeList, c, VolunteerTable.ByConsumerGame.class);
+		VolunteerTable table = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectCoordinators(c));
 		return table;
 	}	
