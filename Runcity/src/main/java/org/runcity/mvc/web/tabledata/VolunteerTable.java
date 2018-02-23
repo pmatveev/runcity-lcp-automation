@@ -11,6 +11,8 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.mvc.config.SpringRootConfig;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByCPForm;
+import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
@@ -71,28 +73,6 @@ public class VolunteerTable extends AbstractTable {
 		}
 	}
 
-	public void initFields(Class<?> type) {
-		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
-
-		if (ByGameControlPoint.class.equals(type)) {
-			this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
-		}
-		
-		if (ByConsumerGame.class.equals(type) || ByConsumerControlPoint.class.equals(type)) {
-			this.columns.add(new ColumnDefinition("game", "volunteer.game"));
-			
-			if (ByConsumerControlPoint.class.equals(type)) {
-				this.columns.add(new ColumnDefinition("controlPoint", "volunteer.controlPoint"));
-			}
-			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat().setSort("desc", 0));
-		} else {
-			this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
-			this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
-		}
-
-		this.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
-	}
-
 	protected VolunteerTable(String id, String title, String simpleTitle, String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Object ... titleArgs) {
 		super(id, title, simpleTitle, ajaxData, messageSource, localeList, titleArgs);
 	}
@@ -147,11 +127,22 @@ public class VolunteerTable extends AbstractTable {
 		super("volunteerTableByCP", "volunteer.tableHeaderByControlPoint", "volunteer.simpleTableHeaderByControlPoint",
 				"/api/v1/volunteerTableByCP?controlPointId=" + c.getId(), messageSource, localeList, c.getName());
 
-
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));
 		this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		this.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
+
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByCPForm", null));
+		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByCPForm:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
+		
+		VolunteerCreateEditByCPForm form = new VolunteerCreateEditByCPForm(localeList);
+		form.setControlPointId(c.getParent() == null ? c.getId() : c.getParent().getId());
+		if (c.getGame() != null) {
+			form.setDateFrom(c.getGame().getDateFrom());
+			form.setDateTo(c.getGame().getDateTo());
+		}
+		this.relatedForms.add(form);
 	}
 
 	public void add(Collection<Volunteer> volenteers) {

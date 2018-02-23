@@ -32,6 +32,7 @@ import org.springframework.web.servlet.tags.form.TextareaTag;
 
 @SuppressWarnings("serial")
 public class FormInputTag extends TagSupport {
+	
 	private FormColumn<?> column;
 	private Boolean status;
 	private String autofocus;
@@ -490,7 +491,7 @@ public class FormInputTag extends TagSupport {
 			input.setDynamicAttribute(null, "display-type", "datepicker");
 		}
 		if (column.getValue() != null) {
-			input.setDynamicAttribute(null, "default", column.getValue());
+			input.setDynamicAttribute(null, "default", column.getFormattedValue());
 		}
 
 		input.setPageContext(pageContext);

@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
+import org.runcity.db.entity.ConsumerRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
+import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
@@ -310,4 +312,44 @@ public class RestConsumerController extends AbstractRestController {
 		table.add(consumerService.selectCoordinators(c));
 		return table;
 	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/consumerId", method = RequestMethod.GET)
+	public RestGetResponseBody consumerDddwInit(@RequestParam(required = true) Long id) {
+		logger.info("GET /api/v1/dddw/consumerId");
+		Consumer c = consumerService.selectById(id, false);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		result.addOption(id, c.getCredentials());
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/consumer", method = RequestMethod.GET)
+	public RestGetResponseBody consumerDddw(@RequestParam(required = false) Boolean active, @RequestParam(required = false) List<String> roles) {
+		logger.info("GET /api/v1/dddw/consumer");
+		boolean checkActive = active != null;
+		boolean checkRoles = roles != null && roles.size() > 0;
+		
+		List<Consumer> consumers = consumerService.selectAll(checkRoles);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (Consumer c : consumers) {
+			if (checkActive && !ObjectUtils.nullSafeEquals(c.isActive(), active)) {
+				continue;
+			}
+			if (checkRoles) {
+				boolean ok = false;
+				for (ConsumerRole r : c.getRoles()) {
+					if (roles.contains(r.getCode())) {
+						ok = true;
+						break;
+					}
+				}
+				if (!ok) {
+					continue;
+				}
+			}
+			result.addOption(c.getId(), c.getCredentials());
+		}
+		return result;
+	}
 }

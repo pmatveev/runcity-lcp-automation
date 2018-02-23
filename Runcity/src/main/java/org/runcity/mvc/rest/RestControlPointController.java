@@ -6,9 +6,11 @@ import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
@@ -16,6 +18,7 @@ import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByCPForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,9 @@ public class RestControlPointController extends AbstractRestController {
 	
 	@Autowired 
 	private RouteService routeService;
+	
+	@Autowired 
+	private VolunteerService volunteerService;
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/controlPointsTable", method = RequestMethod.GET)
@@ -152,7 +158,7 @@ public class RestControlPointController extends AbstractRestController {
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/controlPointDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
-	public RestPostResponseBody categoryDelete(@RequestBody List<Long> id) {
+	public RestPostResponseBody controlPointDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/controlPointDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		try {
@@ -176,4 +182,63 @@ public class RestControlPointController extends AbstractRestController {
 		table.add(controlPointService.selectVolunteers(cp));
 		return table;
 	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEdit/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
+		Volunteer v = volunteerService.selectById(id);
+		
+		if (v == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new VolunteerCreateEditByCPForm(v, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEdit", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByCPForm form) {
+		logger.info("POST /api/v1/volunteerCreateEdit");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Volunteer v = null;
+		try {
+			v = volunteerService.addOrUpdate(form.getVolunteer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (v == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/volunteerDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			volunteerService.delete(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("commom.db.deleteConstraint");
+		}
+		return result;	
+	}
 }
