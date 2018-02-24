@@ -9,8 +9,9 @@ import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormDddwConsumerColumn;
+import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
-import org.runcity.mvc.web.util.FormIdControlPointColumn;
+import org.runcity.mvc.web.util.FormIdGameColumn;
 import org.runcity.secure.SecureUserRole;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
@@ -19,14 +20,17 @@ import org.springframework.validation.Errors;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class VolunteerCreateEditByCPForm extends AbstractForm {
-	private static final Logger logger = Logger.getLogger(VolunteerCreateEditByCPForm.class);
+public class VolunteerCreateEditByGameCPForm extends AbstractForm {
+	private static final Logger logger = Logger.getLogger(VolunteerCreateEditByGameCPForm.class);
 
 	@JsonView(Views.Public.class)
 	private FormIdColumn id;
 
 	@JsonView(Views.Public.class)
-	private FormIdControlPointColumn controlPointId;
+	private FormIdGameColumn gameId;
+
+	@JsonView(Views.Public.class)
+	private FormDddwControlPointColumn controlPoint;
 
 	@JsonView(Views.Public.class)
 	private FormDddwConsumerColumn consumer;
@@ -39,22 +43,25 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 	private FormDateColumn dateTo;
 
-	public VolunteerCreateEditByCPForm() {
+	public VolunteerCreateEditByGameCPForm() {
 		this(null);
 	}
 
-	public VolunteerCreateEditByCPForm(DynamicLocaleList localeList) {
-		super("volunteerCreateEditByCPForm", "/api/v1/volunteerCreateEditByCP/{0}", null, "/api/v1/volunteerCreateEditByCP",
-				localeList);
+	public VolunteerCreateEditByGameCPForm(DynamicLocaleList localeList) {
+		super("volunteerCreateEditByGameCPForm", "/api/v1/volunteerCreateEditByGameCP/{0}", null,
+				"/api/v1/volunteerCreateEditByGameCP", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("volunteer.header");
 
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.controlPointId = new FormIdControlPointColumn(this,
-				new ColumnDefinition("controlPointId", "controlPointId"));
+		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameId"));
+
+		this.controlPoint = FormDddwControlPointColumn.getMainByGame(this,
+				new ColumnDefinition("controlPoint", "volunteer.controlPoint"), gameId);
+		this.controlPoint.setRequired(true);
 
 		this.consumer = FormDddwConsumerColumn.getAll(this, new ColumnDefinition("consumer", "volunteer.consumer"),
-				true, SecureUserRole.VOLUNTEER); 
+				true, SecureUserRole.VOLUNTEER);
 		this.consumer.setRequired(true);
 
 		this.dateFrom = new FormDateColumn(this, new ColumnDefinition("dateFrom", "volunteer.dateFrom"));
@@ -66,18 +73,22 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 		this.dateTo.setRequired(true);
 	}
 
-	public VolunteerCreateEditByCPForm(Long id, Long controlPointId, Long consumer, Date dateFrom, Date dateTo,
-			DynamicLocaleList localeList) {
+	public VolunteerCreateEditByGameCPForm(Long id, Long gameId, Long controlPoint, Long consumer, Date dateFrom,
+			Date dateTo, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
-		setControlPointId(controlPointId);
+		setGameId(gameId);
+		setControlPoint(controlPoint);
 		setConsumer(consumer);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
 	}
 
-	public VolunteerCreateEditByCPForm(Volunteer v, DynamicLocaleList localeList) {
-		this(v.getId(), v.getControlPoint() == null ? null : v.getControlPoint().getId(),
+	public VolunteerCreateEditByGameCPForm(Volunteer v, DynamicLocaleList localeList) {
+		this(v.getId(),
+				v.getGame() == null ? (v.getControlPoint() == null ? null : v.getControlPoint().getGame().getId())
+						: v.getGame().getId(),
+				v.getControlPoint() == null ? null : v.getControlPoint().getId(),
 				v.getConsumer() == null ? null : v.getConsumer().getId(), v.getDateFrom(), v.getDateTo(), localeList);
 	}
 
@@ -89,12 +100,20 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 		this.id.setValue(id);
 	}
 
-	public Long getControlPointId() {
-		return controlPointId.getValue();
+	public Long getGameId() {
+		return gameId.getValue();
 	}
 
-	public void setControlPointId(Long controlPointId) {
-		this.controlPointId.setValue(controlPointId);
+	public void setGameId(Long gameId) {
+		this.gameId.setValue(gameId);
+	}
+
+	public Long getControlPoint() {
+		return controlPoint.getValue();
+	}
+
+	public void setControlPoint(Long controlPoint) {
+		this.controlPoint.setValue(controlPoint);
 	}
 
 	public Long getConsumer() {
@@ -125,8 +144,12 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 		return id;
 	}
 
-	public FormIdControlPointColumn getControlPointIdColumn() {
-		return controlPointId;
+	public FormIdGameColumn getGameIdColumn() {
+		return gameId;
+	}
+
+	public FormDddwControlPointColumn getControlPointColumn() {
+		return controlPoint;
 	}
 
 	public FormDddwConsumerColumn getConsumerColumn() {
@@ -140,17 +163,19 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 	public FormDateColumn getDateToColumn() {
 		return dateTo;
 	}
-	
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		id.validate(context, errors);
-		controlPointId.validate(context, errors);
+		gameId.validate(context, errors);
+		controlPoint.validate(context, errors);
 		consumer.validate(context, errors);
 		dateFrom.validate(context, errors);
 		dateTo.validate(context, errors);
 	}
-	
+
 	public Volunteer getVolunteer() {
-		return new Volunteer(getId(), consumer.getConsumer(), controlPointId.getControlPoint(), null, getDateFrom(), getDateTo());
+		return new Volunteer(getId(), consumer.getConsumer(), controlPoint.getControlPoint(), null, getDateFrom(),
+				getDateTo());
 	}
 }

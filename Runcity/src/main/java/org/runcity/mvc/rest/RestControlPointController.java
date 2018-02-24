@@ -95,7 +95,7 @@ public class RestControlPointController extends AbstractRestController {
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/dddw/controlPointMainByGame", method = RequestMethod.GET)
-	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = true) Long self, @RequestParam(required = true) Long game) {
+	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = false) Long self, @RequestParam(required = true) Long game) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
 		
 		List<ControlPoint> controlPoints = controlPointService.selectMainByGame(game);
@@ -184,7 +184,7 @@ public class RestControlPointController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerCreateEdit/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
 		Volunteer v = volunteerService.selectById(id);
 		
@@ -199,7 +199,7 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerCreateEdit", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
 	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByCPForm form) {
 		logger.info("POST /api/v1/volunteerCreateEdit");
@@ -225,20 +225,5 @@ public class RestControlPointController extends AbstractRestController {
 			result.addCommonError("common.popupProcessError");
 		}
 		return result;
-	}
-	
-	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
-	@Secured("ROLE_ADMIN")
-	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
-		logger.info("DELETE /api/v1/volunteerDelete");
-		RestPostResponseBody result = new RestPostResponseBody(messageSource);
-		try {
-			volunteerService.delete(id);
-		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("commom.db.deleteConstraint");
-		}
-		return result;	
 	}
 }

@@ -12,7 +12,7 @@ import org.springframework.validation.Errors;
 
 public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 	private enum FetchType {
-		BY_GAME_NOT_SELF, BY_ROUTE_UNUSED;
+		BY_GAME, BY_GAME_NOT_SELF, BY_ROUTE_UNUSED;
 	}
 
 	private ControlPoint controlPoint;
@@ -23,6 +23,12 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 		super(form, definition, "/api/v1/dddw/controlPointId?id={0}", initParms, ajaxSource, ajaxParms, false,
 				validation);
 		this.fetchType = fetchType;
+	}
+
+	public static FormDddwControlPointColumn getMainByGame(AbstractForm form, ColumnDefinition definition, FormIdColumn gameCol) {
+		return new FormDddwControlPointColumn(form, definition, null,
+				"/api/v1/dddw/controlPointMainByGame?game={0}",
+				new FormColumn<?>[] { gameCol }, FetchType.BY_GAME, gameCol);
 	}
 
 	public static FormDddwControlPointColumn getMainByGameNotSelf(AbstractForm form, ColumnDefinition definition,
@@ -56,6 +62,18 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 		}
 
 		switch (fetchType) {
+		case BY_GAME:
+			/*
+			 * validation 
+			 * 	0: game
+			 */
+
+			if (!ObjectUtils.nullSafeEquals(controlPoint.getGame().getId(),
+					((FormIdColumn) validation[0]).getValue())) {
+				errors.rejectValue(getName(), "common.notFoundId", new Object[] { value }, null);
+				return;
+			}
+			break;
 		case BY_GAME_NOT_SELF:
 			/*
 			 * validation 

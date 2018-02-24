@@ -7,9 +7,11 @@ import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
@@ -17,6 +19,8 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.formdata.RouteItemCreateEditForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCoordForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
@@ -46,6 +50,9 @@ public class RestGameController extends AbstractRestController {
 	
 	@Autowired
 	private RouteService routeService;
+	
+	@Autowired 
+	private VolunteerService volunteerService;
 	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
@@ -277,4 +284,107 @@ public class RestGameController extends AbstractRestController {
 		table.add(gameService.selectVolunteers(g));
 		return table;
 	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
+		Volunteer v = volunteerService.selectById(id);
+		
+		if (v == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new VolunteerCreateEditByGameCPForm(v, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByGameCPForm form) {
+		logger.info("POST /api/v1/volunteerCreateEditByGameCP");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Volunteer v = null;
+		try {
+			v = volunteerService.addOrUpdate(form.getVolunteer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (v == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {		
+		Volunteer v = volunteerService.selectById(id);
+		
+		if (v == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new VolunteerCreateEditByGameCoordForm(v, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody coordinatorCreateEdit(@RequestBody VolunteerCreateEditByGameCoordForm form) {
+		logger.info("POST /api/v1/volunteerCreateEditByGameCoord");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Volunteer v = null;
+		try {
+			v = volunteerService.addOrUpdate(form.getVolunteer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (v == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/volunteerDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			volunteerService.delete(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("commom.db.deleteConstraint");
+		}
+		return result;	
+	}
 }

@@ -12,6 +12,8 @@ import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByCPForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCoordForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
@@ -86,6 +88,15 @@ public class VolunteerTable extends AbstractTable {
 		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 		
+		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByGameCPForm", null));
+		table.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByGameCPForm:id", "selectedSingle"));
+		table.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
+		
+		VolunteerCreateEditByGameCPForm form = new VolunteerCreateEditByGameCPForm(localeList);
+		form.setGameId(g.getId());
+		form.setDateFrom(g.getDateFrom());
+		form.setDateTo(g.getDateTo());
+		table.relatedForms.add(form);
 		return table;
 	}
 	
@@ -97,7 +108,16 @@ public class VolunteerTable extends AbstractTable {
 		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 		
-		return table;
+		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByGameCoordForm", null));
+		table.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByGameCoordForm:id", "selectedSingle"));
+		table.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
+		
+		VolunteerCreateEditByGameCoordForm form = new VolunteerCreateEditByGameCoordForm(localeList);
+		form.setGameId(g.getId());
+		form.setDateFrom(g.getDateFrom());
+		form.setDateTo(g.getDateTo());
+		table.relatedForms.add(form);
+		return table;		
 	}
 
 	public static VolunteerTable initVolunteersByConsumer(MessageSource messageSource, DynamicLocaleList localeList, Consumer c) {

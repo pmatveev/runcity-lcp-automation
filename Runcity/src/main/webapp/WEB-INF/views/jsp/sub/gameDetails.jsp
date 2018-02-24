@@ -8,7 +8,9 @@
 <div id="${prefix}modalForms" class="div-modal">
 	<c:set value="${true}" var="modal"/>
 	<c:set value="${volunteerTableByGame}" var="currTable"/>
+	<%@ include file="../forms/volunteerCreateEditByGameCP.jsp"%>
 	<c:set value="${coordinatorTableByGame}" var="currTable"/>
+	<%@ include file="../forms/volunteerCreateEditByGameCoord.jsp"%>
 </div>
 
 <div class="tab-content">
