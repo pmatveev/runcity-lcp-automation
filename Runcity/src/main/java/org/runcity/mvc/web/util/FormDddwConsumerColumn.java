@@ -1,10 +1,9 @@
 package org.runcity.mvc.web.util;
 
 import org.runcity.db.entity.Consumer;
-import org.runcity.db.entity.ConsumerRole;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.web.formdata.AbstractForm;
-import org.runcity.secure.SecureUserRole;
 import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
@@ -65,13 +64,8 @@ public class FormDddwConsumerColumn extends FormDddwColumn<Long> {
 			if (roles != null) {
 				boolean ok = false;
 				for (SecureUserRole r : roles) {
-					for (ConsumerRole cr : consumer.getRoles()) {
-						if (ObjectUtils.nullSafeEquals(r.toString(), cr.getCode())) {
-							ok = true;
-							break;
-						}
-					}
-					if (ok) {
+					if (consumer.getRoleEnum().contains(r)) {
+						ok = true;
 						break;
 					}
 				}

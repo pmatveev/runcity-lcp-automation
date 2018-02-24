@@ -62,6 +62,7 @@ CREATE TABLE runcity.control_point (
   idt VARCHAR(16) NOT NULL,
   image INT(18) NULL DEFAULT NULL,
   name VARCHAR(255) NOT NULL,
+  type VARCHAR(1) NOT NULL;
   game__id INT(11) NOT NULL,
   control_point__id INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (id),

@@ -37,6 +37,9 @@ public class ControlPointTable extends AbstractTable {
 		private String idt;
 
 		@JsonView(Views.Public.class)
+		private String type;
+
+		@JsonView(Views.Public.class)
 		private String name;
 
 		@JsonView(Views.Public.class)
@@ -53,6 +56,7 @@ public class ControlPointTable extends AbstractTable {
 			this.gameId = c.getGame().getId();
 			this.mainIdt = c.getParent() == null ? StringUtils.xss(c.getIdt()) : StringUtils.xss(c.getParent().getIdt());
 			this.idt = StringUtils.xss(c.getIdt());
+			this.type = StringUtils.xss(c.getType().getDisplayName(messageSource, l));
 			this.name = StringUtils.xss(c.getName());
 			
 			this.address = localeList.prepareMap();
@@ -82,6 +86,10 @@ public class ControlPointTable extends AbstractTable {
 			return idt;
 		}
 
+		public String getType() {
+			return type;
+		}
+
 		public String getName() {
 			return name;
 		}
@@ -102,6 +110,7 @@ public class ControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("gameId", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("mainIdt", "controlPoint.main").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 2));
+		this.columns.add(new ColumnDefinition("type", "controlPoint.type"));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 
 		addLocalizedColumn(this.extensions, "address", "controlPoint.addressLoc");

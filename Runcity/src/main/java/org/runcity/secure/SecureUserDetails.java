@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.runcity.db.entity.ConsumerRole;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,7 +27,7 @@ public class SecureUserDetails implements UserDetails {
 	private Set<GrantedAuthority> roles;
 
 	public SecureUserDetails(Long id, String username, boolean active, String password, String credentials,
-			String email, String locale, List<ConsumerRole> roles) {
+			String email, String locale, List<SecureUserRole> roles) {
 		this.id = id;
 		this.username = username;
 		this.active = active;
@@ -37,10 +37,9 @@ public class SecureUserDetails implements UserDetails {
 		this.locale = locale;
 
 		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
-		for (ConsumerRole r : roles) {
-			if (SecureUserRole.getByCode(r.getCode()) != null) {
-				userRoles.add(new SimpleGrantedAuthority("ROLE_" + r.getCode()));
-			}
+		
+		for (SecureUserRole r : roles) {
+			userRoles.add(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.getStoredValue(r)));
 		}
 		this.roles = userRoles;
 	}

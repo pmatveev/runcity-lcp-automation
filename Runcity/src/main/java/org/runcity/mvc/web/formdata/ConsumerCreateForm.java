@@ -9,7 +9,7 @@ import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
-import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
+import org.runcity.mvc.web.util.FormListboxSecureUserRolesColumn;
 import org.runcity.mvc.web.util.FormPasswordColumn;
 import org.runcity.mvc.web.util.FormPasswordConfirmationColumn;
 import org.runcity.mvc.web.util.FormPasswordPair;
@@ -28,7 +28,7 @@ public class ConsumerCreateForm extends AbstractForm {
 	private FormStringColumn password2;
 	private FormStringColumn email;
 	private FormListboxActiveColumn active;
-	private FormListboxUserRoleColumn roles;
+	private FormListboxSecureUserRolesColumn roles;
 	private FormListboxLocaleColumn locale;
 
 	public ConsumerCreateForm() {
@@ -60,7 +60,7 @@ public class ConsumerCreateForm extends AbstractForm {
 		this.email.setMaxLength(255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"));
 		this.active.setRequired(true);
-		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"));
+		this.roles = new FormListboxSecureUserRolesColumn(this, new ColumnDefinition("roles", "user.roles"));
 		this.roles.setRequired(true);
 		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList);
 	}
@@ -167,7 +167,7 @@ public class ConsumerCreateForm extends AbstractForm {
 		return locale;
 	}
 
-	public FormListboxUserRoleColumn getRolesColumn() {
+	public FormListboxSecureUserRolesColumn getRolesColumn() {
 		return roles;
 	}
 

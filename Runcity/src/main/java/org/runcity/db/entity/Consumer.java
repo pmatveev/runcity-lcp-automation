@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.util.CollectionUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -142,14 +143,28 @@ public class Consumer {
 		roles.add(role);
 	}
 
-	public void addRole(String code) {
-		addRole(new ConsumerRole(null, code, this));
+	public void addRole(SecureUserRole role) {
+		if (role != null) {
+			addRole(new ConsumerRole(null, role, this));
+		}
 	}
 
+	public void addRole(String role) {
+		addRole(SecureUserRole.getByStoredValue(role));
+	}
+
+	public List<SecureUserRole> getRoleEnum() {
+		List<SecureUserRole> res = new ArrayList<SecureUserRole>();
+		for (ConsumerRole r : roles) {
+			res.add(r.getRole());
+		}
+		return res;
+	}
+	
 	public List<String> getRolesCodes() {
 		List<String> str = new ArrayList<String>();
 		for (ConsumerRole r : roles) {
-			str.add(r.getCode());
+			str.add(SecureUserRole.getStoredValue(r.getRole()));
 		}
 		return str;
 	}

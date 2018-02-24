@@ -11,6 +11,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
 import org.runcity.util.StringUtils;
@@ -28,6 +29,9 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "game__id", nullable = false)
 	private Game game;
+
+	@Column(name = "type", length = 1, nullable = false)
+	private String type;
 	
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name = "control_point__id", nullable = true)
@@ -63,23 +67,25 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		this.addresses = new ArrayList<Translation>();
 	}
 
-	public ControlPoint(Long id, Game game, ControlPoint parent, String idt, String name,
+	public ControlPoint(Long id, Game game, ControlPointType type, ControlPoint parent, String idt, String name,
 			List<Translation> addresses, String description, Long image) {
 		this();
-		this.id = id;
-		this.game = game;
-		this.parent = parent;
-		this.idt = idt;
-		this.name = name;
+		setId(id);
+		setGame(game);
+		setType(type);
+		setParent(parent);
+		setIdt(idt);
+		setName(name);
 		if (addresses != null) {
 			this.addresses = addresses;
 		}
-		this.description = description;
-		this.image = image;
+		setDescription(description);
+		setImage(image);
 	}
 
 	public void update(ControlPoint c) {
 		this.game = c.game;
+		this.type = c.type;
 		this.parent = c.parent;
 		this.idt = c.idt;
 		this.name = c.name;
@@ -91,7 +97,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 
 	@Override
 	public ControlPoint cloneForAdd() {
-		return new ControlPoint(id, game, parent, idt, name, null, description, image);
+		return new ControlPoint(id, game, getType(), parent, idt, name, null, description, image);
 	}
 	
 	public Long getId() {
@@ -108,6 +114,14 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	
+	public ControlPointType getType() {
+		return ControlPointType.getByStoredValue(type);
+	}
+	
+	public void setType(ControlPointType type) {
+		this.type = ControlPointType.getStoredValue(type);
 	}
 
 	public ControlPoint getParent() {

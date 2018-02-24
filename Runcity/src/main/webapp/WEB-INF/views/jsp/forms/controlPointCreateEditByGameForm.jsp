@@ -22,9 +22,14 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>
 		</spring:bind>		
 		
-		<c:set value="${formVar.parentColumn}" var="col"/>
+		<c:set value="${formVar.typeColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" autofocus="autofocus" />
+		</spring:bind>	
+		
+		<c:set value="${formVar.parentColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
 		<c:set value="${formVar.idtColumn}" var="col"/>

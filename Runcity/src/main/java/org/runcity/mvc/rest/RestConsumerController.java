@@ -1,10 +1,12 @@
 package org.runcity.mvc.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
@@ -337,9 +339,18 @@ public class RestConsumerController extends AbstractRestController {
 				continue;
 			}
 			if (checkRoles) {
+				List<SecureUserRole> parsedRoles = new ArrayList<SecureUserRole>();
+				
+				for (String s : roles) {
+					SecureUserRole r = SecureUserRole.getByStoredValue(s);
+					if (r != null) {
+						parsedRoles.add(r);
+					}
+				}
+				
 				boolean ok = false;
 				for (ConsumerRole r : c.getRoles()) {
-					if (roles.contains(r.getCode())) {
+					if (parsedRoles.contains(r.getRole())) {
 						ok = true;
 						break;
 					}

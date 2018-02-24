@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
@@ -11,7 +12,6 @@ import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormDddwConsumerColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormIdControlPointColumn;
-import org.runcity.secure.SecureUserRole;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;

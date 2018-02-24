@@ -15,7 +15,6 @@ import org.runcity.mvc.web.formdata.ConsumerEditForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
-import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
@@ -54,7 +53,7 @@ public class ConsumerTable extends AbstractTable {
 			
 			List<String> rolesTmp = new LinkedList<String>();
 			for (ConsumerRole r : c.getRoles()) {
-				rolesTmp.add(new FormListboxUserRoleColumn().getOptionDisplay(r.getCode(), messageSource, l));
+				rolesTmp.add(r.getRole().getDisplayName(messageSource, l));
 			}
 			Collections.sort(rolesTmp);
 			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, l));

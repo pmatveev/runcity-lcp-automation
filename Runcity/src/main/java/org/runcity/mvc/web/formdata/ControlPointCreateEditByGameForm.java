@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
@@ -11,6 +12,7 @@ import org.runcity.mvc.web.util.FormColumn;
 import org.runcity.mvc.web.util.FormDddwControlPointColumn;
 import org.runcity.mvc.web.util.FormFileColumn;
 import org.runcity.mvc.web.util.FormIdGameColumn;
+import org.runcity.mvc.web.util.FormListboxControlPointTypeColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormLocalizedStringColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
@@ -29,6 +31,9 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormIdGameColumn gameId;
+
+	@JsonView(Views.Public.class)
+	private FormListboxControlPointTypeColumn type;
 
 	@JsonView(Views.Public.class)
 	private FormDddwControlPointColumn parent;
@@ -58,6 +63,8 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameid"));
+		this.type = new FormListboxControlPointTypeColumn(this, new ColumnDefinition("type", "controlPoint.type"));
+		this.type.setRequired(true);
 		this.parent = FormDddwControlPointColumn.getMainByGameNotSelf(this,
 				new ColumnDefinition("parent", "controlPoint.parent"), id, gameId);
 		this.parent.setForceRefresh(true);
@@ -80,11 +87,12 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 				"/api/v1/uploadImage", "/secure/controlPointImage?id={0}", new FormColumn<?>[] { this.id }, null);
 	}
 
-	public ControlPointCreateEditByGameForm(Long id, Long gameId, Long parent, String idt, String name,
+	public ControlPointCreateEditByGameForm(Long id, Long gameId, String type, Long parent, String idt, String name,
 			Map<String, String> address, String description, String image, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setGameId(gameId);
+		setType(type);
 		setParent(parent);
 		setIdt(idt);
 		setName(name);
@@ -94,9 +102,10 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	}
 
 	public ControlPointCreateEditByGameForm(ControlPoint c, DynamicLocaleList localeList) {
-		this(c.getId(), c.getGame().getId(), c.getParent() == null ? null : c.getParent().getId(), c.getIdt(),
-				c.getName(), c.getParent() == null ? c.getStringAddresses() : c.getParent().getStringAddresses(),
-				c.getDescription(), StringUtils.toNvlString(c.getImage()), localeList);
+		this(c.getId(), c.getGame().getId(), ControlPointType.getStoredValue(c.getType()),
+				c.getParent() == null ? null : c.getParent().getId(), c.getIdt(), c.getName(),
+				c.getParent() == null ? c.getStringAddresses() : c.getParent().getStringAddresses(), c.getDescription(),
+				StringUtils.toNvlString(c.getImage()), localeList);
 	}
 
 	public Long getId() {
@@ -113,6 +122,14 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 
 	public void setGameId(Long gameId) {
 		this.gameId.setValue(gameId);
+	}
+
+	public String getType() {
+		return type.getValue();
+	}
+
+	public void setType(String type) {
+		this.type.setValue(type);
 	}
 
 	public Long getParent() {
@@ -175,6 +192,10 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		return gameId;
 	}
 
+	public FormListboxControlPointTypeColumn getTypeColumn() {
+		return type;
+	}
+
 	public FormDddwControlPointColumn getParentColumn() {
 		return parent;
 	}
@@ -204,6 +225,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		logger.debug("Validating " + getFormName());
 		id.validate(context, errors);
 		gameId.validate(context, errors);
+		type.validate(context, errors);
 		parent.validate(context, errors);
 		idt.validate(context, errors);
 		name.validate(context, errors);
@@ -223,8 +245,8 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	}
 
 	public ControlPoint getControlPoint() {
-		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), parent.getControlPoint(), getIdt(), getName(),
-				null, getDescription(), null);
+		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), ControlPointType.getByStoredValue(type.getValue()),
+				parent.getControlPoint(), getIdt(), getName(), null, getDescription(), null);
 		c.setImageData(image.getByteValue());
 
 		for (String s : getAddress().keySet()) {

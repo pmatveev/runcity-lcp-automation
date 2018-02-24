@@ -11,7 +11,7 @@ import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
-import org.runcity.mvc.web.util.FormListboxUserRoleColumn;
+import org.runcity.mvc.web.util.FormListboxSecureUserRolesColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.DynamicLocaleList;
@@ -40,7 +40,7 @@ public class ConsumerEditForm extends AbstractForm {
 	private FormListboxActiveColumn active;
 
 	@JsonView(Views.Public.class)
-	private FormListboxUserRoleColumn roles;
+	private FormListboxSecureUserRolesColumn roles;
 
 	@JsonView(Views.Public.class)
 	private FormListboxLocaleColumn locale;
@@ -68,7 +68,7 @@ public class ConsumerEditForm extends AbstractForm {
 		this.email.setMaxLength(255);
 		this.active = new FormListboxActiveColumn(this, new ColumnDefinition("active", "user.active"));
 		this.active.setRequired(true);
-		this.roles = new FormListboxUserRoleColumn(this, new ColumnDefinition("roles", "user.roles"));
+		this.roles = new FormListboxSecureUserRolesColumn(this, new ColumnDefinition("roles", "user.roles"));
 		this.roles.setRequired(true);
 		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList);
 	}
@@ -169,7 +169,7 @@ public class ConsumerEditForm extends AbstractForm {
 		return locale;
 	}
 
-	public FormListboxUserRoleColumn getRolesColumn() {
+	public FormListboxSecureUserRolesColumn getRolesColumn() {
 		return roles;
 	}
 

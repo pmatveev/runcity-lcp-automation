@@ -30,7 +30,7 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 		}
 		
 		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.isActive(), c.getPassHash(),
-				c.getCredentials(), c.getEmail(), c.getLocale(), c.getRoles());
+				c.getCredentials(), c.getEmail(), c.getLocale(), c.getRoleEnum());
 		return details;
 	}
 

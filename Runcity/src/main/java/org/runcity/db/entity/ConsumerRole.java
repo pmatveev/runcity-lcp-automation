@@ -3,6 +3,7 @@ package org.runcity.db.entity;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 
 @Entity
 @Table(name = "consumer_role")
@@ -23,9 +24,9 @@ public class ConsumerRole {
 	public ConsumerRole() {
 	}
 
-	public ConsumerRole(Long id, String code, Consumer consumer) {
+	public ConsumerRole(Long id, SecureUserRole role, Consumer consumer) {
 		setId(id);
-		setCode(code);
+		setRole(role);
 		setConsumer(consumer);
 	}
 
@@ -37,12 +38,12 @@ public class ConsumerRole {
 		this.id = id;
 	}
 
-	public String getCode() {
-		return code;
+	public SecureUserRole getRole() {
+		return SecureUserRole.getByStoredValue(code);
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setRole(SecureUserRole role) {
+		this.code = SecureUserRole.getStoredValue(role);
 	}
 
 	public Consumer getConsumer() {
