@@ -117,7 +117,7 @@ public class GameTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("dateTo", "game.dateTo").setDateTimeFormat().setSort("desc", 1));
 		this.columns.add(new ColumnDefinition("categories", "game.categories"));
 		
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:gameCreateEditForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:gameCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/gameDelete/:id", "selected")); 
 		this.buttons.add(new ButtonDefinition("controlPoint.link", null, "btn dt-link", "link:/secure/games/{0}/controlPoints:id", "selectedSingle"));

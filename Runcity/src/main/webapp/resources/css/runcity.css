@@ -127,3 +127,15 @@ table.dt-expand tr td {
   margin: 0 auto;
   width: 100%;
 }
+
+.create-another-wrapper {
+	padding-left: 12px;
+	padding-right: 12px;
+	padding-top: 6px;
+	padding-bootm: 6px;
+	font-weight: normal;
+}
+
+.create-another-wrapper input.create-another {
+	margin-right: 6px;
+}

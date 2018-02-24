@@ -117,7 +117,7 @@ public class ControlPointTable extends AbstractTable {
 		this.extensions.add(new ColumnDefinition("description", "controlPoint.description"));
 		this.extensions.add(new ColumnDefinition("image", "controlPoint.image").setImageFormat("/secure/controlPointImage?id={0}:id"));
 
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:controlPointCreateEditByGameForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:controlPointCreateEditByGameForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:controlPointCreateEditByGameForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/controlPointDelete/:id", "selected")); 
 

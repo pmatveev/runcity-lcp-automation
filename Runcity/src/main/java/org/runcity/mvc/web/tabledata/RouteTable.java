@@ -126,7 +126,7 @@ public class RouteTable extends AbstractTable {
 
 		this.expandFrame = "/secure/iframe/route/{0}:id";
 
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:routeCreateForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:routeCreateForm", null));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn",
 				"ajax:DELETE:/api/v1/routeDelete/:id", "selected"));
 

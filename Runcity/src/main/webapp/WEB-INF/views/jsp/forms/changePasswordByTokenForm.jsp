@@ -32,16 +32,5 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>		
 		</spring:bind>	
 	</runcity:form-body>
-	<runcity:form-footer modal="${modal}">	
-		<div class="form-group">
-			<button type="submit" class="btn btn-primary">
-				<fmt:message key="common.submitForm" bundle="${msg}" />
-			</button>
-			<c:if test="${modal}">
-				<button type="button" class="btn btn-link" data-dismiss="modal">
-					<fmt:message key="common.closeModal" bundle="${msg}" />
-				</button>
-			</c:if>
-		</div>
-	</runcity:form-footer>
+	<runcity:form-footer bundle="${msg}" modal="${modal}"/>
 </runcity:form>

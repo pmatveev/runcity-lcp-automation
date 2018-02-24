@@ -86,6 +86,13 @@
 		<tag-class>org.runcity.jsp.FormModalFooterTag</tag-class>
 		<body-content>scriptless</body-content>
 		<attribute>
+			<name>bundle</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
 			<name>modal</name>
 			<rtexprvalue>true</rtexprvalue>
 			<required>true</required>

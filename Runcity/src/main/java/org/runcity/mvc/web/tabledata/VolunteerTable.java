@@ -88,7 +88,7 @@ public class VolunteerTable extends AbstractTable {
 		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 		
-		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByGameCPForm", null));
+		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:volunteerCreateEditByGameCPForm", null));
 		table.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByGameCPForm:id", "selectedSingle"));
 		table.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
 		
@@ -108,7 +108,7 @@ public class VolunteerTable extends AbstractTable {
 		table.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		table.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 		
-		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByGameCoordForm", null));
+		table.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:volunteerCreateEditByGameCoordForm", null));
 		table.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByGameCoordForm:id", "selectedSingle"));
 		table.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
 		
@@ -152,7 +152,7 @@ public class VolunteerTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("dateFrom", "volunteer.dateFrom").setDateTimeFormat());
 		this.columns.add(new ColumnDefinition("dateTo", "volunteer.dateTo").setDateTimeFormat());
 
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:volunteerCreateEditByCPForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:volunteerCreateEditByCPForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:volunteerCreateEditByCPForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/volunteerDelete/:id", "selected")); 
 		

@@ -539,8 +539,13 @@ function initAjaxSourced(form, elem, dataIn, val) {
 	});
 }
 
-function beforeOpenModal(form, fetch) {
+function beforeOpenModal(form, fetch, createForm) {
 	removeFormErrorMessage(form);
+	if (createForm) {
+		form.find(".create-another-wrapper").removeClass("hidden");
+	} else {
+		form.find(".create-another-wrapper").addClass("hidden");		
+	}
 	form.data('uploading', 0);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
@@ -632,8 +637,8 @@ function modalFormOpenError(form, data, recId) {
 	addReloadLink(form, recId);
 }
 
-function beforeOpenModalFetch(form, recId) {
-	beforeOpenModal(form, true);
+function beforeOpenModalFetch(form, recId, createForm) {
+	beforeOpenModal(form, true, createForm);
 
 	if (typeof recId === 'undefined') {
 		changeModalFormState(form, false, false, false);
@@ -673,6 +678,15 @@ function beforeCloseModal(form) {
 		return false;
 	}
 	
+	if (form.prop("cancel-refresh")) {
+		form.prop("cancel-refresh", null);
+
+		var refresh = form.attr("related-table");
+		if (typeof refresh !== 'undefined') {
+			$('#' + refresh).DataTable().ajax.reload(null, false);
+		}
+	}
+	
 	return true;
 }
 
@@ -683,8 +697,7 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 	if (loader) {
 		if (!submit.parent().find(".loader").length) {
-			submit.parent().html(
-					"<div class='loader'></div>" + submit.parent().html());
+			submit.parent().prepend("<div class='loader'></div>");
 		}
 	} else {
 		submit.parent().find(".loader").remove();
@@ -771,7 +784,8 @@ function modalFormSuccess(form, data) {
 	changeModalFormState(form, false, false, false);
 
 	if (data.responseClass == "INFO") {
-		closeModalForm(form);
+		var createAnother = form.find("input.create-another").prop("checked");
+		
 
 		if (data.errors) {
 			data.errors.forEach(function(item, i, arr) {
@@ -781,9 +795,16 @@ function modalFormSuccess(form, data) {
 			});
 		}
 		
-		var refresh = form.attr("related-table");
-		if (typeof refresh !== 'undefined') {
-			$('#' + refresh).DataTable().ajax.reload(null, false);
+
+		if (createAnother) {
+			beforeOpenModal(form, false, true);
+			form.prop("cancel-refresh", true);
+		} else {
+			closeModalForm(form);
+			var refresh = form.attr("related-table");
+			if (typeof refresh !== 'undefined') {
+				$('#' + refresh).DataTable().ajax.reload(null, false);
+			}
 		}
 		return;
 	}
@@ -1005,8 +1026,9 @@ function initDatatables(table, loc) {
 			console.warn("Unknown action: " + button.attr("action"));
 		}
 		var action = button.attr("action").split(":");
-		if (action.length > 1 && action[0] == "form") {
+		if (action.length > 1 && (action[0] == "form" || action[0] == "createform")) {
 			var prefix = table.attr("prefix");
+			var create = (action[0] == "createform");
 			var formId = action[1];
 			
 			if (typeof prefix !== 'undefined') {
@@ -1023,13 +1045,13 @@ function initDatatables(table, loc) {
 			if (typeof form.attr("fetchFrom") !== 'undefined') {
 				func = function(e, dt, node, config) {
 					removeTableErrorMessage(dt);
-					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")));
+					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")), create);
 					showModalForm(form);
 				}
 			} else {
 				func = function(e, dt, node, config) {
 					removeTableErrorMessage(dt);
-					beforeOpenModal(form, false);
+					beforeOpenModal(form, false, create);
 					if (typeof refCol !== 'undefined') {
 						var refData = dataTablesSelected(dt, refCol, button.attr("extend"));
 						form.find('input[name="' + refCol + '"]').val(refData);

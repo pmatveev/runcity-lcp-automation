@@ -94,7 +94,7 @@ public class ConsumerTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("active", "user.active"));
 		this.columns.add(new ColumnDefinition("roles", "user.roles"));
 		
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:consumerCreateForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:consumerCreateForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:consumerEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/consumerDelete/:id", "selected"));
 		this.buttons.add(new ButtonDefinition("changePassword.header", null, "btn", "form:changePasswordByIdForm:id", "selected"));

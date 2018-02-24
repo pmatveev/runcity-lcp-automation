@@ -74,7 +74,7 @@ public class RouteItemTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 		this.columns.add(new ColumnDefinition("address", "controlPoint.address"));
 		
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:routeItemCreateEditForm", null));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:routeItemCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:routeItemCreateEditForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/routeItemDelete/:id", "selected")); 
 		
