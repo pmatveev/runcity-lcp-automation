@@ -25,7 +25,13 @@ public class RouteItemTable extends AbstractTable {
 		private Long id;
 		
 		@JsonView(Views.Public.class)
+		private Integer sort;
+		
+		@JsonView(Views.Public.class)
 		private Integer legNum;
+
+		@JsonView(Views.Public.class)
+		private String type;
 		
 		@JsonView(Views.Public.class)
 		private String idt;
@@ -39,7 +45,29 @@ public class RouteItemTable extends AbstractTable {
 		public TableRow(RouteItem ri, MessageSource messageSource, Locale l) {
 			this.id = ri.getId();
 			this.legNum = ri.getLegNumber();
+			if (ri.getControlPoint() != null) {
+				switch (ri.getControlPoint().getType()) {
+				case START:
+					this.sort = 0;
+					this.legNum = null;
+					break;
+				case BONUS:
+					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10;
+					break;
+				case REGULAR:
+					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 1;
+					break;
+				case STAGE_END:
+					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 9;
+					break;
+				case FINISH:
+					this.sort = 9999;
+					this.legNum = null;
+					break;
+				}
+			}
 			this.idt = StringUtils.xss(ri.getControlPoint().getIdt());
+			this.type = StringUtils.xss(ri.getControlPoint().getType().getDisplayName(messageSource, l));
 			this.name = StringUtils.xss(ri.getControlPoint().getName());
 			this.address = StringUtils.xss(ri.getControlPoint().getLocalizedAddress(l.toString()));
 		}
@@ -48,12 +76,20 @@ public class RouteItemTable extends AbstractTable {
 			return id;
 		}
 
+		public Integer getSort() {
+			return sort;
+		}
+
 		public Integer getLegNum() {
 			return legNum;
 		}
 
 		public String getIdt() {
 			return idt;
+		}
+
+		public String getType() {
+			return type;
 		}
 
 		public String getName() {
@@ -69,8 +105,10 @@ public class RouteItemTable extends AbstractTable {
 		super("routeItemTable", "routeItem.tableHeader", "routeItem.tableHeader", "/api/v1/routeItemTable?routeId=" + route.getId(), messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
-		this.columns.add(new ColumnDefinition("legNum", "routeItem.leg").setSort("asc", 0));
+		this.columns.add(new ColumnDefinition("sort", null).setHidden(true).setSort("asc", 0));
+		this.columns.add(new ColumnDefinition("legNum", "routeItem.leg"));
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 1));
+		this.columns.add(new ColumnDefinition("type", "controlPoint.type"));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 		this.columns.add(new ColumnDefinition("address", "controlPoint.address"));
 		
