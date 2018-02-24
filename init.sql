@@ -23,7 +23,7 @@ CREATE TABLE runcity.consumer (
   credentials VARCHAR(32) NOT NULL,
   email VARCHAR(255) NOT NULL,
   locale VARCHAR(16) NULL DEFAULT NULL,
-  passhash LONGTEXT NOT NULL,
+  passhash LONGTEXT NULL DEFAULT NULL,
   username VARCHAR(32) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX consumer_email (email ASC),

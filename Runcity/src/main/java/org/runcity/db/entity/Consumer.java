@@ -8,6 +8,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.util.CollectionUtils;
+import org.runcity.util.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
@@ -25,7 +26,7 @@ public class Consumer {
 	@Column(name = "is_active", columnDefinition = "BIT", length = 1, nullable = false)
 	private Boolean active;
 
-	@Column(name = "passhash", length = 256, nullable = false)
+	@Column(name = "passhash", length = 256, nullable = true)
 	private String passHash;
 
 	@Column(name = "credentials", length = 32, nullable = false)
@@ -39,6 +40,9 @@ public class Consumer {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = true)
 	private List<ConsumerRole> roles;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = true)
+	private List<Token> tokens;
 
 	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = false)
 	private List<Volunteer> volunteers;
@@ -54,7 +58,7 @@ public class Consumer {
 		setUsername(username);
 		setActive(active);
 
-		if (password != null) {
+		if (!StringUtils.isEmpty(password)) {
 			setPassHash(new BCryptPasswordEncoder(10).encode(password));
 		}
 		

@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.runcity.mvc.web.formdata.AbstractForm;
+import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -25,7 +26,7 @@ public class FormPasswordColumn extends FormStringColumn {
 	public void validate(ApplicationContext context, Errors errors) {
 		super.validate(context, errors);
 		
-		if (value == null || !pattern.matcher(value).matches()) {
+		if (!StringUtils.isEmpty(value) && !pattern.matcher(value).matches()) {
 			logger.debug(getName() + " does not match password regexp");
 			errors.rejectValue(getName(), "validation.passwordStrength");
 		}

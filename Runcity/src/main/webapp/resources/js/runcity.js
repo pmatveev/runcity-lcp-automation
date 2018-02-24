@@ -17,7 +17,7 @@ function initHtml(container, dtLocalizationLink) {
 		initDatePicker($(this), 'month');
 	});
 	container.find(".datetimepicker-component").each(function() {
-		initDatePicker($(this), 'hour'); // TODO
+		initDatePicker($(this), 'hour'); 
 	});
 	container.find("table.datatables").each(function() {
 		initDatatables($(this), dtLocalizationLinkConst);
@@ -201,14 +201,14 @@ function checkElem(elem, rule) {
 		}
 	}
 
-	if (rule == "pwd") {
+	if (rule == "pwd" && !emptyValue(getData(elem))) {
 		if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(getData(elem))) {
 			setErrorMessage(elem, translations['passwordStrength']);
 			return false;
 		}
 	}
 
-	if (rule == "email") { // 
+	if (rule == "email" && !emptyValue(getData(elem))) { 
 		if (!/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/
 				.test(getData(elem))) {
 			setErrorMessage(elem, translations['invalidEmail']);

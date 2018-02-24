@@ -53,7 +53,9 @@ public class ConsumerCreateForm extends AbstractForm {
 				new FormPasswordConfirmationColumn(this, new ColumnDefinition("password2", "user.password2")));
 
 		this.password = passwords.getPassword();
+		this.password.setRequired(false);
 		this.password2 = passwords.getPasswordConfirmation();
+		this.password2.setRequired(false);
 
 		this.email = new FormEmailColumn(this, new ColumnDefinition("email", "user.email"));
 		this.email.setRequired(true);
