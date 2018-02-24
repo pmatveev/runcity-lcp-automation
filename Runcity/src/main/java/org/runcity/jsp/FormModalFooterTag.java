@@ -37,7 +37,7 @@ public class FormModalFooterTag extends SimpleTagSupport {
 		
 		if (modal) {
 			out.print("<label class='create-another-wrapper'>");
-			out.print("<input type='checkbox' class='ignore-value create-another'/>");
+			out.print("<input type='checkbox' class='ignore-value create-another' display-type='checkbox'/>");
 			out.print(localize("common.createAnother"));			
 			out.print("</label>");
 		}

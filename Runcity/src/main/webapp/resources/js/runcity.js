@@ -300,7 +300,13 @@ function setInputValue(elem, val) {
 		if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'TEXTAREA') {
 			var dt = elem.attr('display-type');
 			
-			if (dt === 'colorpicker') {
+			if (dt === 'checkbox') {
+				if (typeof val !== 'undefined') {
+					elem.prop("checked", val);
+				} else {
+					elem.prop("checked", false);
+				}
+			} else if (dt === 'colorpicker') {
 				if (typeof val !== 'undefined') {
 					elem.parent().colorpicker('setValue', val);
 				} else {
@@ -539,7 +545,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 	});
 }
 
-function beforeOpenModal(form, fetch, createForm) {
+function beforeOpenModal(form, fetch, createForm, persistCreate) {
 	removeFormErrorMessage(form);
 	if (createForm) {
 		form.find(".create-another-wrapper").removeClass("hidden");
@@ -553,7 +559,10 @@ function beforeOpenModal(form, fetch, createForm) {
 			elem.attr('loaded-from', '');
 		}
 		var val = elem.attr('default');
-		setInputValue(elem, val);
+		
+		if (!(persistCreate && elem.hasClass("create-another"))) {
+			setInputValue(elem, val);
+		}
 		
 		removeErrorMessage(elem);
 	});
@@ -797,7 +806,7 @@ function modalFormSuccess(form, data) {
 		
 
 		if (createAnother) {
-			beforeOpenModal(form, false, true);
+			beforeOpenModal(form, false, true, true);
 			form.prop("cancel-refresh", true);
 		} else {
 			closeModalForm(form);
