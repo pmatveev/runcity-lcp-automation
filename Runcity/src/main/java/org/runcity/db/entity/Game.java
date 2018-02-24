@@ -32,26 +32,33 @@ public class Game {
 	@Column(name = "country", length = 32, nullable = false)
 	private String country;
 
-	@Column(name = "game_date", columnDefinition = "datetime", nullable = false)
-	private Date date;
+	@Column(name = "date_from", columnDefinition = "datetime", nullable = false)
+	private Date dateFrom;
+
+	@Column(name = "date_to", columnDefinition = "datetime", nullable = false)
+	private Date dateTo;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "game", orphanRemoval = true)
 	private Set<Route> categories;
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "game")
 	private Set<ControlPoint> controlPoints;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "game", orphanRemoval = true)
+	private List<Volunteer> volunteers;
 	
 	public Game() {
 		this.categories = new HashSet<Route>();
 	}
 
-	public Game(Long id, String locale, String name, String city, String country, Date date, Set<Route> categories) {
+	public Game(Long id, String locale, String name, String city, String country, Date dateFrom, Date dateTo, Set<Route> categories) {
 		setId(id);
 		setLocale(locale);
 		setName(name);
 		setCity(city);
 		setCountry(country);
-		setDate(date);
+		setDateFrom(dateFrom);
+		setDateTo(dateTo);
 		if (categories != null) {
 			this.categories = categories;
 		}
@@ -62,7 +69,8 @@ public class Game {
 		this.name = g.name;
 		this.city = g.city;
 		this.country = g.country;
-		this.date = g.date;
+		this.dateFrom = g.dateFrom;
+		this.dateTo = g.dateTo;
 		CollectionUtils.applyChanges(categories, g.categories);
 	}
 
@@ -106,12 +114,20 @@ public class Game {
 		this.country = country;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getDateFrom() {
+		return dateFrom;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDateFrom(Date dateFrom) {
+		this.dateFrom = dateFrom;
+	}
+
+	public Date getDateTo() {
+		return dateTo;
+	}
+
+	public void setDateTo(Date dateTo) {
+		this.dateTo = dateTo;
 	}
 
 	public Set<Route> getCategories() {
@@ -153,5 +169,9 @@ public class Game {
 	
 	public void addCategory(Category category) {
 		this.categories.add(new Route(null, this, category));
+	}
+	
+	public String getDisplay() {
+		return name + " (" + city + ", " + country + ")"; 
 	}
 }

@@ -39,6 +39,9 @@ public class Consumer {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = true)
 	private List<ConsumerRole> roles;
 
+	@OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "consumer", orphanRemoval = false)
+	private List<Volunteer> volunteers;
+
 	public Consumer() {
 		this.roles = new ArrayList<ConsumerRole>();
 	}

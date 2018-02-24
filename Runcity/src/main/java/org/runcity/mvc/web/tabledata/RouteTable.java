@@ -13,6 +13,7 @@ import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -46,8 +47,12 @@ public class RouteTable extends AbstractTable {
 		private String categoryDescription;
 
 		@JsonView(ByCategory.class)
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_FORMAT)
-		private Date gameDate;
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+		private Date gameDateFrom;
+
+		@JsonView(ByCategory.class)
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+		private Date gameDateTo;
 
 		@JsonView(ByCategory.class)
 		private String gameCity;
@@ -60,15 +65,16 @@ public class RouteTable extends AbstractTable {
 
 			if (ByGame.class.equals(tableView)) {
 				this.categoryBadge = r.getCategory().getBadge();
-				this.category = r.getCategory().getLocalizedName(r.getGame().getLocale());
-				this.categoryDescription = r.getCategory().getLocalizedDescription(r.getGame().getLocale());
+				this.category = StringUtils.xss(r.getCategory().getLocalizedName(r.getGame().getLocale()));
+				this.categoryDescription = StringUtils.xss(r.getCategory().getLocalizedDescription(r.getGame().getLocale()));
 			}
 
 			if (ByCategory.class.equals(tableView)) {
-				this.game = r.getGame().getName();
-				this.gameDate = r.getGame().getDate();
-				this.gameCity = r.getGame().getCity();
-				this.gameCountry = r.getGame().getCountry();
+				this.game = StringUtils.xss(r.getGame().getName());
+				this.gameDateFrom = r.getGame().getDateFrom();
+				this.gameDateTo = r.getGame().getDateTo();
+				this.gameCity = StringUtils.xss(r.getGame().getCity());
+				this.gameCountry = StringUtils.xss(r.getGame().getCountry());
 			}
 		}
 
@@ -92,8 +98,12 @@ public class RouteTable extends AbstractTable {
 			return game;
 		}
 
-		public Date getGameDate() {
-			return gameDate;
+		public Date getGameDateFrom() {
+			return gameDateFrom;
+		}
+
+		public Date getGameDateTo() {
+			return gameDateTo;
 		}
 
 		public String getGameCity() {
@@ -105,8 +115,8 @@ public class RouteTable extends AbstractTable {
 		}
 	}
 
-	public RouteTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Game g) {
-		super("routeTable", "route.tableHeaderByGame", "route.simpleTableHeader", ajaxData, messageSource, localeList,
+	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
+		super("routeTable", "route.tableHeaderByGame", "route.simpleTableHeader", "/api/v1/routeTableByGame?gameId=" + g.getId(), messageSource, localeList,
 				g.getName());
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
@@ -125,17 +135,18 @@ public class RouteTable extends AbstractTable {
 		this.relatedForms.add(createForm);
 	}
 
-	public RouteTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Category c) {
-		super("routeTable", "route.tableHeaderByCategory", "route.simpleTableHeader", ajaxData, messageSource,
+	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Category c) {
+		super("routeTable", "route.tableHeaderByCategory", "route.simpleTableHeader", "/api/v1/routeTableByCategory?categoryId=" + c.getId(), messageSource,
 				localeList, c.getLocalizedName(LocaleContextHolder.getLocale().toString()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("game", "route.game"));
 		this.columns.add(new ColumnDefinition("gameCity", "game.city"));
 		this.columns.add(new ColumnDefinition("gameCountry", "game.country"));
-		this.columns.add(new ColumnDefinition("gameDate", "game.date").setDateFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("gameDateFrom", "game.dateFrom").setDateTimeFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("gameDateTo", "game.dateTo").setDateTimeFormat().setSort("desc", 1));
 
-		this.expandFrame = "/secure/iframe/route/{0}/:id";
+		this.expandFrame = "/secure/iframe/route/{0}:id";
 	}
 
 	public void fill(Game g) {

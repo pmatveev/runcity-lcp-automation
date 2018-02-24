@@ -85,8 +85,8 @@ public class ConsumerTable extends AbstractTable {
 		}
 	}
 
-	public ConsumerTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		super("consumerTable", "user.tableHeader", "user.tableHeader", ajaxData, messageSource, localeList);
+	public ConsumerTable(MessageSource messageSource, DynamicLocaleList localeList) {
+		super("consumerTable", "user.tableHeader", "user.tableHeader", "/api/v1/consumerTable", messageSource, localeList);
 		
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("username", "user.username"));
@@ -103,6 +103,8 @@ public class ConsumerTable extends AbstractTable {
 		this.relatedForms.add(new ConsumerCreateForm(localeList));
 		this.relatedForms.add(new ConsumerEditForm(localeList));
 		this.relatedForms.add(new ChangePasswordByIdForm());
+
+		this.expandFrame = "/secure/iframe/consumer/{0}:id";
 	}
 
 	public void fetchAll(ConsumerService service) {

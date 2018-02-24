@@ -95,8 +95,8 @@ public class ControlPointTable extends AbstractTable {
 		}
 	}
 	
-	public ControlPointTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList, Game g) {
-		super("controlPointTable", "controlPoint.tableHeader", "controlPoint.simpleTableHeader", ajaxData, messageSource, localeList, g.getName());
+	public ControlPointTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
+		super("controlPointTable", "controlPoint.tableHeader", "controlPoint.simpleTableHeader", "/api/v1/controlPointsTable?gameId=" + g.getId(), messageSource, localeList, g.getName());
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("gameId", null).setHidden(true));
@@ -115,6 +115,8 @@ public class ControlPointTable extends AbstractTable {
 		ControlPointCreateEditByGameForm createEditForm = new ControlPointCreateEditByGameForm(localeList);
 		createEditForm.setGameId(g.getId());
 		this.relatedForms.add(createEditForm);
+		
+		this.expandFrame = "/secure/iframe/controlPoint/{0}:id";
 	}
 	
 	public void fetchByGame(ControlPointService service, Game game) {

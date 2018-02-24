@@ -4,15 +4,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
+import org.runcity.db.entity.ConsumerRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
+import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.*;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
+import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.CommonProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -223,7 +227,7 @@ public class RestConsumerController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
 	public ConsumerTable getConsumerTable() {
 		logger.info("GET /api/v1/consumerTable");
-		ConsumerTable table = new ConsumerTable(null, messageSource, localeList);
+		ConsumerTable table = new ConsumerTable(messageSource, localeList);
 		table.fetchAll(consumerService);
 		return table;
 	}
@@ -280,6 +284,72 @@ public class RestConsumerController extends AbstractRestController {
 			result.addCommonError("common.popupProcessError");
 		}
 		
+		return result;
+	}
+	
+	@JsonView(VolunteerTable.ByConsumerControlPoint.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByConsumer", method = RequestMethod.GET)
+	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long consumerId) {
+		logger.info("GET /api/v1/volunteerTableByConsumer");
+		logger.debug("\tconsumerId=" + consumerId);
+		
+		Consumer c = consumerService.selectById(consumerId, false);
+		
+		VolunteerTable table = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
+		table.add(consumerService.selectVolunteers(c));
+		return table;
+	}	
+	
+	@JsonView(VolunteerTable.ByConsumerGame.class)
+	@RequestMapping(value = "/api/v1/coordinatorTableByConsumer", method = RequestMethod.GET)
+	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long consumerId) {
+		logger.info("GET /api/v1/coordinatorTableByConsumer");
+		logger.debug("\tconsumerId=" + consumerId);
+		
+		Consumer c = consumerService.selectById(consumerId, false);
+		
+		VolunteerTable table = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
+		table.add(consumerService.selectCoordinators(c));
+		return table;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/consumerId", method = RequestMethod.GET)
+	public RestGetResponseBody consumerDddwInit(@RequestParam(required = true) Long id) {
+		logger.info("GET /api/v1/dddw/consumerId");
+		Consumer c = consumerService.selectById(id, false);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		result.addOption(id, c.getCredentials());
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/dddw/consumer", method = RequestMethod.GET)
+	public RestGetResponseBody consumerDddw(@RequestParam(required = false) Boolean active, @RequestParam(required = false) List<String> roles) {
+		logger.info("GET /api/v1/dddw/consumer");
+		boolean checkActive = active != null;
+		boolean checkRoles = roles != null && roles.size() > 0;
+		
+		List<Consumer> consumers = consumerService.selectAll(checkRoles);
+		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
+		for (Consumer c : consumers) {
+			if (checkActive && !ObjectUtils.nullSafeEquals(c.isActive(), active)) {
+				continue;
+			}
+			if (checkRoles) {
+				boolean ok = false;
+				for (ConsumerRole r : c.getRoles()) {
+					if (roles.contains(r.getCode())) {
+						ok = true;
+						break;
+					}
+				}
+				if (!ok) {
+					continue;
+				}
+			}
+			result.addOption(c.getId(), c.getCredentials());
+		}
 		return result;
 	}
 }

@@ -91,7 +91,9 @@
 		confTitle                : '<fmt:message key="confirmation.title" bundle="${msg}" />',
 		modalCancel              : '<fmt:message key="common.closeModal" bundle="${msg}" />',
 		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />',
-		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />'
+		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />',
+		tableDateTimeFormat      : '<fmt:message key="common.tableDateTimeFormat" bundle="${msg}" />',
+		extnTabName              : '<fmt:message key="extension.tabHeader" bundle="${msg}" />'
 	}
 	
 	var locale = '${lang}';

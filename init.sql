@@ -1,3 +1,4 @@
+SET GLOBAL time_zone = '+0:00';
 CREATE SCHEMA runcity DEFAULT CHARACTER SET utf8;
 
 CREATE TABLE runcity.blob_content (
@@ -46,11 +47,12 @@ CREATE TABLE runcity.game (
   id INT(11) NOT NULL,
   city VARCHAR(32) NOT NULL,
   country VARCHAR(32) NOT NULL,
-  game_date DATETIME NOT NULL,
+  date_from DATETIME NOT NULL,
+  date_to DATETIME NOT NULL,
   locale VARCHAR(32) NOT NULL,
   name VARCHAR(32) NOT NULL,
   PRIMARY KEY (id),
-  INDEX game_game_date (game_date ASC))
+  INDEX game_date (date_from DESC, date_to DESC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
@@ -135,6 +137,30 @@ CREATE TABLE runcity.translation (
   ref_table VARCHAR(32) NOT NULL,
   PRIMARY KEY (id),
   INDEX translation_ref (ref_record ASC, ref_column ASC, ref_table ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE runcity.volunteer (
+  id INT(11) NOT NULL,
+  consumer__id INT(11) NOT NULL,
+  control_point__id INT(11) NULL,
+  game__id INT(11) NULL,
+  date_from DATETIME NOT NULL,
+  date_to DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  INDEX volunteer_date (date_from DESC, date_to DESC),
+  INDEX volunteer_consumer (consumer__id ASC),
+  CONSTRAINT FK_volunteer_consumer
+    FOREIGN KEY (consumer__id)
+    REFERENCES runcity.consumer (id),
+  INDEX volunteer_control_point (control_point__id ASC),
+  CONSTRAINT FK_volunteer_control_point
+    FOREIGN KEY (control_point__id)
+    REFERENCES runcity.control_point (id),
+  INDEX volunteer_game (game__id ASC),
+  CONSTRAINT FK_volunteer_game
+    FOREIGN KEY (game__id)
+    REFERENCES runcity.game (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

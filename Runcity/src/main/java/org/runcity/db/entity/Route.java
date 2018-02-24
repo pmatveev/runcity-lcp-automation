@@ -16,11 +16,11 @@ public class Route {
 	@Column(name = "id", columnDefinition = "int", length = 18, nullable = false)
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "game__id", nullable = false)
 	private Game game;
 	
-	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "category__id", nullable = false)
 	private Category category;
 	

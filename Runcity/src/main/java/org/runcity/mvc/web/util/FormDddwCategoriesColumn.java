@@ -22,7 +22,7 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 	private FetchType fetchType;
 
 	private FormDddwCategoriesColumn(AbstractForm form, ColumnDefinition definition, FormColumn<?>[] initParms,
-			String ajaxSource, FormColumn<?>[] ajaxParms, FetchType fetchType, Object... validation) {
+			String ajaxSource, FormColumn<?>[] ajaxParms, FetchType fetchType, Object ... validation) {
 		super(form, definition, "/api/v1/dddw/categoriesId?id={0}&locale={1}", initParms, ajaxSource, ajaxParms, true,
 				validation);
 

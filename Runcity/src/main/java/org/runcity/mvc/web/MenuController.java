@@ -9,12 +9,10 @@ import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.secure.SecureUserDetails;
-import org.runcity.secure.SecureUserRole;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +42,7 @@ public class MenuController {
 	public String home(Model model) {
 		SecureUserDetails user = SecureUserDetails.getCurrent();
 		
-		if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.ADMIN.toString()))) {
+		if (user.getAuthorities().contains(SecureUserDetails.ADMIN_ROLE)) {
 			return "redirect:/secure/games";
 		}
 		
@@ -53,7 +51,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/categories", method = RequestMethod.GET)
 	public String categories(Model model) {
-		CategoryTable table = new CategoryTable("/api/v1/categoryTable", messageSource, localeList);
+		CategoryTable table = new CategoryTable(messageSource, localeList);
 		table.processModel(model);
 		
 		return "/secure/categories";
@@ -61,7 +59,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/games", method = RequestMethod.GET)
 	public String games(Model model) {
-		GameTable table = new GameTable("/api/v1/gameTable", messageSource, localeList);
+		GameTable table = new GameTable(messageSource, localeList);
 		table.processModel(model);
 		
 		return "/secure/games";
@@ -73,7 +71,7 @@ public class MenuController {
 		if (g == null) {
 			throw new RuntimeException();
 		}
-		ControlPointTable table = new ControlPointTable("/api/v1/controlPointsTable?gameId=" + g.getId(), messageSource, localeList, g);
+		ControlPointTable table = new ControlPointTable(messageSource, localeList, g);
 		table.processModel(model);
 		
 		return "/secure/controlPoints";
@@ -86,7 +84,7 @@ public class MenuController {
 			throw new RuntimeException();
 		}
 		
-		RouteTable table = new RouteTable("/api/v1/routeTableByGame?gameId=" + g.getId(), messageSource, localeList, g);
+		RouteTable table = new RouteTable(messageSource, localeList, g);
 		table.processModel(model);
 		
 		return "/secure/routes";
@@ -100,7 +98,7 @@ public class MenuController {
 			throw new RuntimeException();
 		}
 		
-		RouteTable table = new RouteTable("/api/v1/routeTableByCategory?categoryId=" + c.getId(), messageSource, localeList, c);
+		RouteTable table = new RouteTable(messageSource, localeList, c);
 		table.processModel(model);
 		
 		return "/secure/routes";
@@ -108,7 +106,7 @@ public class MenuController {
 	
 	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)
 	public String users(Model model) {
-		ConsumerTable table = new ConsumerTable("/api/v1/consumerTable", messageSource, localeList);
+		ConsumerTable table = new ConsumerTable(messageSource, localeList);
 		table.processModel(model);
 		
 		return "/secure/users";

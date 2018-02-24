@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.repository.GameRepository;
+import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameServiceImpl implements GameService {
 	@Autowired
 	private GameRepository gameRepository;
+	
+	@Autowired
+	private VolunteerRepository volunteerRepository;
 	
 	@Override
 	public Game selectById(Long id, boolean categories) {
@@ -64,5 +69,25 @@ public class GameServiceImpl implements GameService {
 		for (Long i : id) {
 			delete(i);
 		}
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinators(Long game) {
+		return selectCoordinators(gameRepository.findOne(game));
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinators(Game game) {
+		return volunteerRepository.findByGame(game);
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteers(Long game) {
+		return selectVolunteers(gameRepository.findOne(game));
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteers(Game game) {
+		return volunteerRepository.findCPByGame(game);
 	}
 }

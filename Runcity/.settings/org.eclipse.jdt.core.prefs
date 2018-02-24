@@ -97,5 +97,5 @@ org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disa
 org.eclipse.jdt.core.compiler.problem.unusedPrivateMember=warning
 org.eclipse.jdt.core.compiler.problem.unusedTypeParameter=ignore
 org.eclipse.jdt.core.compiler.problem.unusedWarningToken=warning
-org.eclipse.jdt.core.compiler.problem.varargsArgumentNeedCast=info
+org.eclipse.jdt.core.compiler.problem.varargsArgumentNeedCast=ignore
 org.eclipse.jdt.core.compiler.source=1.8

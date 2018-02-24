@@ -1,7 +1,7 @@
 package org.runcity.mvc.web.util;
 
 public class ColumnDefinition {
-	public enum ColumnFormat {DATE, IMAGE}
+	public enum ColumnFormat {DATE, DATETIME, IMAGE}
 	
 	private String name;
 	private String label;
@@ -76,6 +76,11 @@ public class ColumnDefinition {
 		return this;
 	}
 
+	public ColumnDefinition setDateTimeFormat() {
+		this.format = ColumnFormat.DATETIME;
+		return this;
+	}
+	
 	public ColumnDefinition setImageFormat(String url) {
 		this.format = ColumnFormat.IMAGE;
 		this.imageUrl = url;

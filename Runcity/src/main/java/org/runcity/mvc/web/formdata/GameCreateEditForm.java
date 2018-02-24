@@ -38,8 +38,12 @@ public class GameCreateEditForm extends AbstractForm {
 	private FormPlainStringColumn country;
 
 	@JsonView(Views.Public.class)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_FORMAT)
-	private FormDateColumn date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+	private FormDateColumn dateFrom;
+
+	@JsonView(Views.Public.class)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+	private FormDateColumn dateTo;
 
 	public GameCreateEditForm() {
 		this(null);
@@ -62,22 +66,27 @@ public class GameCreateEditForm extends AbstractForm {
 		this.country = new FormPlainStringColumn(this, new ColumnDefinition("country", "game.country"));
 		this.country.setRequired(true);
 		this.country.setMaxLength(32);
-		this.date = new FormDateColumn(this, new ColumnDefinition("date", "game.date"), true);
+		this.dateFrom = new FormDateColumn(this, new ColumnDefinition("dateFrom", "game.dateFrom"));
+		this.dateFrom.setTimeValue(true);
+		this.dateFrom.setRequired(true);
+		this.dateTo = new FormDateColumn(this, new ColumnDefinition("dateTo", "game.dateTo"));
+		this.dateTo.setTimeValue(true);
+		this.dateTo.setRequired(true);
 	}
 
-	public GameCreateEditForm(Long id, String locale, String name, String city, String country, Date date, DynamicLocaleList localeList) {
+	public GameCreateEditForm(Long id, String locale, String name, String city, String country, Date dateFrom, Date dateTo, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setLocale(locale);
 		setName(name);
 		setCity(city);
 		setCountry(country);
-		setDate(date);
+		setDateFrom(dateFrom);
+		setDateTo(dateTo);
 	}
 
 	public GameCreateEditForm(Game g, DynamicLocaleList localeList) {
-		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getDate(),
-				localeList);
+		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getDateFrom(), g.getDateTo(), localeList);
 	}
 
 	public Long getId() {
@@ -120,12 +129,20 @@ public class GameCreateEditForm extends AbstractForm {
 		this.country.setValue(country);
 	}
 
-	public Date getDate() {
-		return date.getValue();
+	public Date getDateFrom() {
+		return dateFrom.getValue();
 	}
 
-	public void setDate(Date date) {
-		this.date.setValue(date);
+	public void setDateFrom(Date dateFrom) {
+		this.dateFrom.setValue(dateFrom);
+	}
+
+	public Date getDateTo() {
+		return dateTo.getValue();
+	}
+
+	public void setDateTo(Date dateTo) {
+		this.dateTo.setValue(dateTo);
 	}
 
 	public FormIdColumn getIdColumn() {
@@ -148,8 +165,12 @@ public class GameCreateEditForm extends AbstractForm {
 		return country;
 	}
 
-	public FormDateColumn getDateColumn() {
-		return date;
+	public FormDateColumn getDateFromColumn() {
+		return dateFrom;
+	}
+
+	public FormDateColumn getDateToColumn() {
+		return dateTo;
 	}
 
 	@Override
@@ -160,10 +181,10 @@ public class GameCreateEditForm extends AbstractForm {
 		name.validate(context, errors);
 		city.validate(context, errors);
 		country.validate(context, errors);
-		date.validate(context, errors);
+		dateFrom.validate(context, errors);
 	}
 
 	public Game getGame() {
-		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDate(), null);
+		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDateFrom(), getDateTo(), null);
 	}
 }

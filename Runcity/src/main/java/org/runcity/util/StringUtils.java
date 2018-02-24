@@ -52,7 +52,11 @@ public class StringUtils {
 		return o == null ? "" : o.toString();
 	}
 
-	public static String concatNvl(String delimiter, Object... objects) {
+	public static String concatNvl(String delimiter, Object ... objects) {
+		if (objects == null) {
+			return "";
+		}
+		
 		StringBuilder sb = new StringBuilder();
 
 		for (Object o : objects) {

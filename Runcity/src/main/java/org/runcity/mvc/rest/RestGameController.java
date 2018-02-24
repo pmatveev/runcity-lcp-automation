@@ -7,9 +7,11 @@ import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
@@ -17,8 +19,11 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.formdata.RouteItemCreateEditForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
+import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCoordForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +51,14 @@ public class RestGameController extends AbstractRestController {
 	@Autowired
 	private RouteService routeService;
 	
+	@Autowired 
+	private VolunteerService volunteerService;
+	
 	@JsonView(Views.Public.class)
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
 	public GameTable getGameTable() {
 		logger.info("GET /api/v1/gameTable");
-		GameTable table = new GameTable(null, messageSource, localeList);
+		GameTable table = new GameTable(messageSource, localeList);
 		table.fetchAll(gameService, localeList);
 		return table;
 	}	
@@ -120,7 +128,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\tgameId=" + gameId);
 		
 		Game game = gameService.selectById(gameId, true);
-		RouteTable table = new RouteTable(null, messageSource, localeList, game);
+		RouteTable table = new RouteTable(messageSource, localeList, game);
 		table.fill(game);
 		return table;
 	}
@@ -132,7 +140,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\tcategoryId=" + categoryId);
 		
 		Category category = categoryService.selectById(categoryId, true);
-		RouteTable table = new RouteTable(null, messageSource, localeList, category);
+		RouteTable table = new RouteTable(messageSource, localeList, category);
 		table.fill(category);
 		return table;
 	}	
@@ -188,7 +196,7 @@ public class RestGameController extends AbstractRestController {
 		logger.debug("\trouteId=" + routeId);
 		
 		Route r = routeService.selectById(routeId, true);
-		RouteItemTable table = new RouteItemTable(null, messageSource, localeList, r);
+		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.fill(r);
 		return table;
 	}	
@@ -249,5 +257,134 @@ public class RestGameController extends AbstractRestController {
 			result.addCommonError("commom.db.deleteConstraint");
 		}
 		return result;		
+	}
+	
+	@JsonView(VolunteerTable.ByGame.class)
+	@RequestMapping(value = "/api/v1/coordinatorTableByGame", method = RequestMethod.GET)
+	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/coordinatorTableByGame");
+		logger.debug("\tgameId=" + gameId);
+		
+		Game g = gameService.selectById(gameId, false);
+		
+		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
+		table.add(gameService.selectCoordinators(g));
+		return table;
+	}	
+	
+	@JsonView(VolunteerTable.ByGameControlPoint.class)
+	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
+	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/volunteerTableByGame");
+		logger.debug("\tgameId=" + gameId);
+		
+		Game g = gameService.selectById(gameId, false);
+
+		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
+		table.add(gameService.selectVolunteers(g));
+		return table;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
+		Volunteer v = volunteerService.selectById(id);
+		
+		if (v == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new VolunteerCreateEditByGameCPForm(v, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByGameCPForm form) {
+		logger.info("POST /api/v1/volunteerCreateEditByGameCP");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Volunteer v = null;
+		try {
+			v = volunteerService.addOrUpdate(form.getVolunteer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (v == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {		
+		Volunteer v = volunteerService.selectById(id);
+		
+		if (v == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupFetchError");
+			return result;
+		}
+
+		return new VolunteerCreateEditByGameCoordForm(v, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord", method = RequestMethod.POST)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody coordinatorCreateEdit(@RequestBody VolunteerCreateEditByGameCoordForm form) {
+		logger.info("POST /api/v1/volunteerCreateEditByGameCoord");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Volunteer v = null;
+		try {
+			v = volunteerService.addOrUpdate(form.getVolunteer());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (v == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("common.popupProcessError");
+		}
+		return result;
+	}	
+	
+	@JsonView(Views.Public.class)
+	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
+	@Secured("ROLE_ADMIN")
+	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/volunteerDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			volunteerService.delete(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonError("commom.db.deleteConstraint");
+		}
+		return result;	
 	}
 }

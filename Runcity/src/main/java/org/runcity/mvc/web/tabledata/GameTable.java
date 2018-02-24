@@ -45,8 +45,12 @@ public class GameTable extends AbstractTable {
 		private String country;
 		
 		@JsonView(Views.Public.class)
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_FORMAT)
-		private Date date;
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+		private Date dateFrom;
+		
+		@JsonView(Views.Public.class)
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+		private Date dateTo;
 		
 		@JsonView(Views.Public.class)
 		private String categories;
@@ -57,7 +61,8 @@ public class GameTable extends AbstractTable {
 			this.name = StringUtils.xss(g.getName());
 			this.city = StringUtils.xss(g.getCity());
 			this.country = StringUtils.xss(g.getCountry());
-			this.date = g.getDate();
+			this.dateFrom = g.getDateFrom();
+			this.dateTo = g.getDateTo();
 			
 			List<String> categories = new ArrayList<String>(g.getCategories().size());
 			for (Route gc : g.getCategories()) {
@@ -87,8 +92,12 @@ public class GameTable extends AbstractTable {
 			return country;
 		}
 
-		public Date getDate() {
-			return date;
+		public Date getDateFrom() {
+			return dateFrom;
+		}
+
+		public Date getDateTo() {
+			return dateTo;
 		}
 
 		public String getCategories() {
@@ -96,15 +105,16 @@ public class GameTable extends AbstractTable {
 		}
 	}
 
-	public GameTable(String ajaxData, MessageSource messageSource, DynamicLocaleList localeList) {
-		super("gameTable", "game.tableHeader", "game.tableHeader", ajaxData, messageSource, localeList);
+	public GameTable(MessageSource messageSource, DynamicLocaleList localeList) {
+		super("gameTable", "game.tableHeader", "game.tableHeader", "/api/v1/gameTable", messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("locale", "game.locale"));
 		this.columns.add(new ColumnDefinition("name", "game.name"));
 		this.columns.add(new ColumnDefinition("city", "game.city"));
 		this.columns.add(new ColumnDefinition("country", "game.country"));
-		this.columns.add(new ColumnDefinition("date", "game.date").setDateFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("dateFrom", "game.dateFrom").setDateTimeFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("dateTo", "game.dateTo").setDateTimeFormat().setSort("desc", 1));
 		this.columns.add(new ColumnDefinition("categories", "game.categories"));
 		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "form:gameCreateEditForm", null));
@@ -114,6 +124,8 @@ public class GameTable extends AbstractTable {
 		this.buttons.add(new ButtonDefinition("routes.gameLink", null, "btn dt-link", "link:/secure/games/{0}/categories:id", "selectedSingle"));
 
 		this.relatedForms.add(new GameCreateEditForm(localeList));
+		
+		this.expandFrame = "/secure/iframe/game/{0}:id";
 	}
 	
 	public void fetchAll(GameService service, DynamicLocaleList localeList) {
