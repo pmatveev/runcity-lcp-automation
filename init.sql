@@ -47,6 +47,7 @@ CREATE TABLE runcity.game (
   id INT(11) NOT NULL,
   city VARCHAR(32) NOT NULL,
   country VARCHAR(32) NOT NULL,
+  timezone VARCHAR(32) NOT NULL,
   date_from DATETIME NOT NULL,
   date_to DATETIME NOT NULL,
   locale VARCHAR(32) NOT NULL,

@@ -31,6 +31,9 @@ public class Game {
 
 	@Column(name = "country", length = 32, nullable = false)
 	private String country;
+	
+	@Column(name = "timezone", length = 32, nullable = false)
+	private String timezone;
 
 	@Column(name = "date_from", columnDefinition = "datetime", nullable = false)
 	private Date dateFrom;
@@ -51,12 +54,13 @@ public class Game {
 		this.categories = new HashSet<Route>();
 	}
 
-	public Game(Long id, String locale, String name, String city, String country, Date dateFrom, Date dateTo, Set<Route> categories) {
+	public Game(Long id, String locale, String name, String city, String country, String timezone, Date dateFrom, Date dateTo, Set<Route> categories) {
 		setId(id);
 		setLocale(locale);
 		setName(name);
 		setCity(city);
 		setCountry(country);
+		setTimezone(timezone);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
 		if (categories != null) {
@@ -69,6 +73,7 @@ public class Game {
 		this.name = g.name;
 		this.city = g.city;
 		this.country = g.country;
+		this.timezone = g.timezone;
 		this.dateFrom = g.dateFrom;
 		this.dateTo = g.dateTo;
 		CollectionUtils.applyChanges(categories, g.categories);
@@ -112,6 +117,14 @@ public class Game {
 
 	public void setCountry(String country) {
 		this.country = country;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 	public Date getDateFrom() {

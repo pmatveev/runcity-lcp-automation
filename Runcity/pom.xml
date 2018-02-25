@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.runcity</groupId>
 	<artifactId>Runcity</artifactId>
-	<version>0.2.23-DEVELOPMENT</version>
+	<version>0.2.24-DEVELOPMENT</version>
 	<packaging>war</packaging>
 	<properties>
 		<jdk.version>1.7</jdk.version>

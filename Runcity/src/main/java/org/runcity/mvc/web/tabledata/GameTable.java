@@ -16,6 +16,7 @@ import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
+import org.runcity.mvc.web.util.FormListboxTimezoneColumn;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
@@ -45,6 +46,9 @@ public class GameTable extends AbstractTable {
 		private String country;
 		
 		@JsonView(Views.Public.class)
+		private String timezone;
+		
+		@JsonView(Views.Public.class)
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 		private Date dateFrom;
 		
@@ -61,6 +65,7 @@ public class GameTable extends AbstractTable {
 			this.name = StringUtils.xss(g.getName());
 			this.city = StringUtils.xss(g.getCity());
 			this.country = StringUtils.xss(g.getCountry());
+			this.timezone = StringUtils.xss(new FormListboxTimezoneColumn().getOptionDisplay(g.getTimezone(), messageSource, l));
 			this.dateFrom = g.getDateFrom();
 			this.dateTo = g.getDateTo();
 			
@@ -92,6 +97,10 @@ public class GameTable extends AbstractTable {
 			return country;
 		}
 
+		public String getTimezone() {
+			return timezone;
+		}
+
 		public Date getDateFrom() {
 			return dateFrom;
 		}
@@ -109,13 +118,15 @@ public class GameTable extends AbstractTable {
 		super("gameTable", "game.tableHeader", "game.tableHeader", "/api/v1/gameTable", messageSource, localeList);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
-		this.columns.add(new ColumnDefinition("locale", "game.locale"));
 		this.columns.add(new ColumnDefinition("name", "game.name"));
 		this.columns.add(new ColumnDefinition("city", "game.city"));
 		this.columns.add(new ColumnDefinition("country", "game.country"));
 		this.columns.add(new ColumnDefinition("dateFrom", "game.dateFrom").setDateTimeFormat().setSort("desc", 0));
 		this.columns.add(new ColumnDefinition("dateTo", "game.dateTo").setDateTimeFormat().setSort("desc", 1));
 		this.columns.add(new ColumnDefinition("categories", "game.categories"));
+
+		this.extensions.add(new ColumnDefinition("locale", "game.locale"));
+		this.extensions.add(new ColumnDefinition("timezone", "game.timezone"));
 		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:gameCreateEditForm:id", "selectedSingle"));

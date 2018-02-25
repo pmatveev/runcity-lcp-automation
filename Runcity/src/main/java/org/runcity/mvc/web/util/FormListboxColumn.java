@@ -20,7 +20,8 @@ import org.springframework.validation.Errors;
 
 public abstract class FormListboxColumn<T> extends FormColumn<T> {
 	private static final Logger logger = Logger.getLogger(FormListboxColumn.class);
-	protected final Map<String, String> options = new HashMap<String, String>();
+	protected Map<String, String> options = new HashMap<String, String>();
+	protected boolean localized = true;
 	protected boolean multiple = false;
 	protected boolean required = false;
 
@@ -99,21 +100,26 @@ public abstract class FormListboxColumn<T> extends FormColumn<T> {
 	}
 
 	public String getOptionDisplay(String key, MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(options.get(key), null, l);
+		return localized ? messageSource.getMessage(options.get(key), null, l) : options.get(key);
 	}
 
 	public String getOptionDisplay(String key, ResourceBundle bundle) {
-		return bundle.getString(options.get(key));
+		return localized ? bundle.getString(options.get(key)) : options.get(key);
 	}
 
 	public List<Map.Entry<String, String>> renderOptions(ResourceBundle bundle) {
-		Map<String, String> locOptions = new HashMap<String, String>();
-
-		for (String key : options.keySet()) {
-			locOptions.put(key, getOptionDisplay(key, bundle));
+		List<Map.Entry<String, String>> list = null;
+		if (localized) {
+			Map<String, String> locOptions = new HashMap<String, String>();
+			for (String key : options.keySet()) {
+				locOptions.put(key, getOptionDisplay(key, bundle));
+			}
+			list = new ArrayList<Map.Entry<String, String>>(locOptions.entrySet()); 
+		} else {
+			list = new ArrayList<Map.Entry<String, String>>(options.entrySet());
 		}
 
-		List<Map.Entry<String, String>> list = new ArrayList<Map.Entry<String, String>>(locOptions.entrySet());
+		
 		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
 			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
 				return (o1.getValue()).compareTo(o2.getValue());

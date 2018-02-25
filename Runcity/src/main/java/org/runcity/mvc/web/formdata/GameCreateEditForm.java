@@ -10,6 +10,7 @@ import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
+import org.runcity.mvc.web.util.FormListboxTimezoneColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.DynamicLocaleList;
@@ -36,6 +37,9 @@ public class GameCreateEditForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormPlainStringColumn country;
+
+	@JsonView(Views.Public.class)
+	private FormListboxTimezoneColumn timezone;
 
 	@JsonView(Views.Public.class)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
@@ -66,6 +70,8 @@ public class GameCreateEditForm extends AbstractForm {
 		this.country = new FormPlainStringColumn(this, new ColumnDefinition("country", "game.country"));
 		this.country.setRequired(true);
 		this.country.setMaxLength(32);
+		this.timezone = new FormListboxTimezoneColumn(this, new ColumnDefinition("timezone", "game.timezone"));
+		this.timezone.setRequired(true);
 		this.dateFrom = new FormDateColumn(this, new ColumnDefinition("dateFrom", "game.dateFrom"));
 		this.dateFrom.setTimeValue(true);
 		this.dateFrom.setRequired(true);
@@ -74,19 +80,22 @@ public class GameCreateEditForm extends AbstractForm {
 		this.dateTo.setRequired(true);
 	}
 
-	public GameCreateEditForm(Long id, String locale, String name, String city, String country, Date dateFrom, Date dateTo, DynamicLocaleList localeList) {
+	public GameCreateEditForm(Long id, String locale, String name, String city, String country, String timezone,
+			Date dateFrom, Date dateTo, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setLocale(locale);
 		setName(name);
 		setCity(city);
 		setCountry(country);
+		setTimezone(timezone);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
 	}
 
 	public GameCreateEditForm(Game g, DynamicLocaleList localeList) {
-		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getDateFrom(), g.getDateTo(), localeList);
+		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getTimezone(), g.getDateFrom(),
+				g.getDateTo(), localeList);
 	}
 
 	public Long getId() {
@@ -129,6 +138,14 @@ public class GameCreateEditForm extends AbstractForm {
 		this.country.setValue(country);
 	}
 
+	public String getTimezone() {
+		return timezone.getValue();
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone.setValue(timezone);
+	}
+
 	public Date getDateFrom() {
 		return dateFrom.getValue();
 	}
@@ -165,6 +182,10 @@ public class GameCreateEditForm extends AbstractForm {
 		return country;
 	}
 
+	public FormListboxTimezoneColumn getTimezoneColumn() {
+		return timezone;
+	}
+
 	public FormDateColumn getDateFromColumn() {
 		return dateFrom;
 	}
@@ -181,10 +202,13 @@ public class GameCreateEditForm extends AbstractForm {
 		name.validate(context, errors);
 		city.validate(context, errors);
 		country.validate(context, errors);
+		timezone.validate(context, errors);
 		dateFrom.validate(context, errors);
+		dateTo.validate(context, errors);
 	}
 
 	public Game getGame() {
-		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getDateFrom(), getDateTo(), null);
+		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getTimezone(), getDateFrom(),
+				getDateTo(), null);
 	}
 }
