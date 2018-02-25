@@ -136,11 +136,11 @@ public class FormInputTag extends TagSupport {
 		input.doEndTag();
 	}
 
-	private void writeLabel(TagWriter tagWriter, String label) throws JspException {
+	private void writeLabel(TagWriter tagWriter, String label, boolean required) throws JspException {
 		tagWriter.startTag("label");
 		tagWriter.writeAttribute("class", "control-label");
 		tagWriter.writeAttribute("for", column.getHtmlId());
-		tagWriter.appendValue(label);
+		tagWriter.appendValue(required ? label + "<p class='required-mark'> *</p>" : label);
 		tagWriter.endTag();
 	}
 
@@ -160,7 +160,7 @@ public class FormInputTag extends TagSupport {
 
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
-		writeLabel(tagWriter, label);
+		writeLabel(tagWriter, label, column.isRequired());
 
 		InputTag input = new InputTag();
 
@@ -198,7 +198,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 		if (!column.isHidden()) {	
-			writeLabel(tagWriter, label);
+			writeLabel(tagWriter, label, column.isRequired());
 	
 			if (column instanceof FormColorPickerColumn) {
 				tagWriter.startTag("div");
@@ -266,7 +266,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 
-		writeLabel(tagWriter, localize(column.getGroupLabel()));
+		writeLabel(tagWriter, localize(column.getGroupLabel()), column.isRequired());
 
 		boolean autofocusAllowed = true;
 		for (String l : column.keySet()) {
@@ -332,7 +332,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 
-		writeLabel(tagWriter, localize(column.getLabel()));
+		writeLabel(tagWriter, localize(column.getLabel()), column.isRequired());
 
 		tagWriter.startTag("br");
 		tagWriter.endTag();
@@ -371,7 +371,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 
-		writeLabel(tagWriter, localize(column.getLabel()));
+		writeLabel(tagWriter, localize(column.getLabel()), column.isRequired());
 
 		tagWriter.startTag("br");
 		tagWriter.endTag();
@@ -428,7 +428,7 @@ public class FormInputTag extends TagSupport {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", status ? "form-group has-error" : "form-group");
 
-		writeLabel(tagWriter, label);
+		writeLabel(tagWriter, label, column.isRequired());
 
 		// "display" input
 		tagWriter.startTag("div");

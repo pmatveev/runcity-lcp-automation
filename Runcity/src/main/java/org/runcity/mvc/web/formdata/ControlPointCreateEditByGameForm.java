@@ -75,8 +75,10 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		this.name.setRequired(true);
 		this.name.setMaxLength(32);
 		this.address = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("address", "controlPoint.address", "controlPoint.addressLoc"), localeList, true,
-				true, false, null, 4000);
+				new ColumnDefinition("address", "controlPoint.address", "controlPoint.addressLoc"), localeList);
+		this.address.setLongValue(true);
+		this.address.setOneRequired(true);
+		this.address.setMaxLength(4000);
 		this.address.setShowCondition("emptyValue({0})", this.parent);
 		this.description = new FormPlainStringColumn(this,
 				new ColumnDefinition("description", "controlPoint.description"));

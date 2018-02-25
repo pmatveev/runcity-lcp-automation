@@ -32,6 +32,10 @@ public class FormDateColumn extends FormColumn<Date> {
 	public void setRequired(boolean required) {
 		this.required = required;
 	}
+
+	public boolean isRequired() {
+		return required;
+	}
 	
 	public void setTimeValue(boolean timeValue) {
 		this.timeValue = timeValue;

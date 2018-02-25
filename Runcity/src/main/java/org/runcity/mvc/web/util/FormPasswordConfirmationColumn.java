@@ -13,6 +13,7 @@ public class FormPasswordConfirmationColumn extends FormStringColumn {
 	public FormPasswordConfirmationColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
 		this.passwordValue = true;
+		setRequired(true);
 	}
 
 	public void setPassword(FormPasswordColumn password) {

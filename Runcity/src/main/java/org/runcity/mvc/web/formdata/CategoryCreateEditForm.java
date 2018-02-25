@@ -50,8 +50,9 @@ public class CategoryCreateEditForm extends AbstractForm {
 		setTitle("category.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("name", "category.name", "category.nameLoc"), localeList, false, true, false,
-				null, 32);
+				new ColumnDefinition("name", "category.name", "category.nameLoc"), localeList);
+		this.name.setOneRequired(true);
+		this.name.setMaxLength(32);
 		this.prefix = new FormPlainStringColumn(this, new ColumnDefinition("prefix", "category.prefix"));
 		this.prefix.setRequired(true);
 		this.prefix.setMinLength(1);
@@ -63,12 +64,13 @@ public class CategoryCreateEditForm extends AbstractForm {
 		this.bgColor.setRequired(true);
 		this.bgColor.setValue("000000");
 		this.description = new FormLocalizedStringColumn(this,
-				new ColumnDefinition("description", "category.description", "category.descriptionLoc"), localeList,
-				true, false, false, null, 4000);
+				new ColumnDefinition("description", "category.description", "category.descriptionLoc"), localeList);
+		this.description.setLongValue(true);
+		this.description.setMaxLength(4000);
 	}
 
-	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor, Map<String, String> description,
-			DynamicLocaleList localeList) {
+	public CategoryCreateEditForm(Long id, Map<String, String> name, String prefix, String fontColor, String bgColor,
+			Map<String, String> description, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setName(name);
@@ -79,7 +81,8 @@ public class CategoryCreateEditForm extends AbstractForm {
 	}
 
 	public CategoryCreateEditForm(Category c, DynamicLocaleList localeList) {
-		this(c.getId(), c.getStringNames(), c.getPrefix(), c.getColor(), c.getBgcolor(), c.getStringDescriptions(), localeList);
+		this(c.getId(), c.getStringNames(), c.getPrefix(), c.getColor(), c.getBgcolor(), c.getStringDescriptions(),
+				localeList);
 	}
 
 	public Long getId() {
@@ -189,11 +192,11 @@ public class CategoryCreateEditForm extends AbstractForm {
 
 	public Category getCategory() {
 		Category c = new Category(getId(), null, getBgColor(), getFontColor(), getPrefix(), null);
-		
+
 		for (String s : getName().keySet()) {
 			c.addName(s, getName().get(s));
 		}
-		
+
 		for (String s : getDescription().keySet()) {
 			c.addDescription(s, getDescription().get(s));
 		}

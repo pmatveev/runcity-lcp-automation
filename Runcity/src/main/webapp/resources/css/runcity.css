@@ -139,3 +139,8 @@ table.dt-expand tr td {
 .create-another-wrapper input.create-another {
 	margin-right: 6px;
 }
+
+p.required-mark {
+	display: inline;
+	color: red;
+}

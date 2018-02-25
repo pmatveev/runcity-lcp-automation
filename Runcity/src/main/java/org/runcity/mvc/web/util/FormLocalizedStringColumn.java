@@ -14,28 +14,22 @@ import org.springframework.validation.Errors;
 public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 	private static final Logger logger = Logger.getLogger(FormLocalizedStringColumn.class);
 
-	protected boolean longValue;
-	protected boolean oneRequired;
-	protected boolean allRequired;
+	protected boolean longValue = false;
+	protected boolean oneRequired = false;
+	protected boolean allRequired = false;
 	protected Integer minLength;
 	protected Integer maxLength;
 
-	public FormLocalizedStringColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList,
-			boolean longValue, boolean oneRequired, boolean allRequired, Integer minLength, Integer maxLength) {
+	public FormLocalizedStringColumn(AbstractForm form, ColumnDefinition definition, DynamicLocaleList localeList) {
 		super(form, definition);
-		
-		this.longValue = longValue;
-		this.oneRequired = oneRequired;
-		this.allRequired = allRequired;
-		this.minLength = minLength;
-		this.maxLength = maxLength;
+
 		if (localeList != null) {
 			this.value = localeList.prepareMap();
 		} else {
 			this.value = new HashMap<String, String>();
 		}
 	}
-	
+		
 	public String getGroupLabel() {
 		return definition.getGroupLabel();
 	}
@@ -131,6 +125,31 @@ public class FormLocalizedStringColumn extends FormColumn<Map<String, String>> {
 		return "onColChange($('#" + getHtmlId() + l + "'))";
 	}
 	
+	
+	public boolean isRequired() {
+		return allRequired || oneRequired;
+	}
+
+	public void setAllRequired(boolean allRequired) {
+		this.allRequired = allRequired;
+	}
+
+	public void setLongValue(boolean longValue) {
+		this.longValue = longValue;
+	}
+
+	public void setOneRequired(boolean oneRequired) {
+		this.oneRequired = oneRequired;
+	}
+
+	public void setMinLength(Integer minLength) {
+		this.minLength = minLength;
+	}
+
+	public void setMaxLength(Integer maxLength) {
+		this.maxLength = maxLength;
+	}
+
 	public boolean isLongValue() {
 		return longValue;
 	}

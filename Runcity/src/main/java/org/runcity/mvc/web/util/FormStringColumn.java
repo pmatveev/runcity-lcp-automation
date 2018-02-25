@@ -76,6 +76,10 @@ public abstract class FormStringColumn extends FormColumn<String> {
 		this.required = required;
 	}
 
+	public boolean isRequired() {
+		return required;
+	}
+
 	public void setMinLength(Integer minLength) {
 		this.minLength = minLength;
 	}
