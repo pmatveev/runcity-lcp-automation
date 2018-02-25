@@ -51,6 +51,7 @@ public class RestControlPointController extends AbstractRestController {
 	private VolunteerService volunteerService;
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/controlPointsTable", method = RequestMethod.GET)
 	public RestGetResponseBody getConsumerTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/controlPointsTable");
@@ -69,6 +70,7 @@ public class RestControlPointController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/controlPointCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initControlPointCreateEditForm(@PathVariable Long id) {		
 		ControlPoint c = controlPointService.selectById(id, false);
@@ -83,6 +85,7 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/controlPointId", method = RequestMethod.GET)
 	public RestGetResponseBody controlPointDddwInit(@RequestParam(required = true) Long id) {
 		logger.info("GET /api/v1/dddw/controlPointId");
@@ -94,6 +97,7 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/controlPointMainByGame", method = RequestMethod.GET)
 	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = false) Long self, @RequestParam(required = true) Long game) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
@@ -109,6 +113,7 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/controlPointByRoute", method = RequestMethod.GET)
 	public RestGetResponseBody controlPointDddwByRoute(@RequestParam(required = false) Long self, @RequestParam(required = true) Long route) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
@@ -127,8 +132,8 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/controlPointCreateEdit", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/controlPointCreateEdit", method = RequestMethod.POST)
 	public RestPostResponseBody controlPointCreateEdit(@RequestBody ControlPointCreateEditByGameForm form) {
 		logger.info("POST /api/v1/controlPointCreateEdit");
 
@@ -156,8 +161,8 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/controlPointDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/controlPointDelete", method = RequestMethod.DELETE)
 	public RestPostResponseBody controlPointDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/controlPointDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -171,6 +176,7 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(VolunteerTable.ByControlPoint.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerTableByCP", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long controlPointId) {
 		logger.info("GET /api/v1/volunteerTableByCP");
@@ -184,6 +190,7 @@ public class RestControlPointController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
 		Volunteer v = volunteerService.selectById(id);
@@ -199,8 +206,8 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP", method = RequestMethod.POST)
 	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByCPForm form) {
 		logger.info("POST /api/v1/volunteerCreateEdit");
 

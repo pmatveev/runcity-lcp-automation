@@ -3,16 +3,19 @@ package org.runcity.db.service.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.repository.ConsumerRepository;
 import org.runcity.db.repository.PersistedLoginsRepository;
 import org.runcity.db.repository.TokenRepository;
@@ -28,14 +31,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 @Service
 @Transactional(rollbackFor = { DBException.class, UnexpectedArgumentException.class })
 public class ConsumerServiceImpl implements ConsumerService {
+	private static final Logger logger = Logger.getLogger(ConsumerServiceImpl.class);
+
 	@Autowired
 	private ConsumerRepository consumerRepository;
 
@@ -44,15 +51,17 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Autowired
 	private PersistedLoginsRepository persistedLoginsRepository;
-	
+
 	@Autowired
 	private VolunteerRepository volunteerRepository;
 
 	@Autowired
 	private JavaMailSender mailSender;
 
+	@Autowired
+	private SessionRegistry sessionRegistry;
+
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<Consumer> selectAll(boolean roles) {
 		List<Consumer> consumers = consumerRepository.findAll();
 		if (roles) {
@@ -91,7 +100,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Consumer add(Consumer c) throws DBException {
 		if (c.getId() != null) {
 			throw new UnexpectedArgumentException("Cannot edit existing user with this service");
@@ -105,7 +113,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Consumer update(Consumer c) throws DBException {
 		if (c.getId() == null) {
 			throw new UnexpectedArgumentException("Cannot create new user with this service");
@@ -114,13 +121,42 @@ public class ConsumerServiceImpl implements ConsumerService {
 		try {
 			Consumer prev = selectById(c.getId(), true);
 
+			String prevUsername = prev.getUsername();
+			List<SecureUserRole> prevRoles = new LinkedList<SecureUserRole>(prev.getRoleEnum());
+
 			if (!StringUtils.isEqual(c.getUsername(), prev.getUsername())) {
 				persistedLoginsRepository.updateUsername(prev.getUsername(), c.getUsername());
 			}
 
 			prev.update(c);
 
-			return consumerRepository.save(prev);
+			Consumer result = consumerRepository.save(prev);
+			Hibernate.initialize(result.getRoles());
+
+			List<SecureUserRole> newRoles = result.getRoleEnum();			
+			boolean forceLogout = Boolean.FALSE.equals(result.isActive()) || !prevRoles.containsAll(newRoles)
+					|| !newRoles.containsAll(prevRoles);
+			logger.debug("User info changed for " + prevUsername + ". Looping principals");
+
+			for (Object p : sessionRegistry.getAllPrincipals()) {
+				if (p instanceof SecureUserDetails) {
+					SecureUserDetails d = (SecureUserDetails) p;
+					if (ObjectUtils.nullSafeEquals(prevUsername, d.getUsername())) {
+						logger.debug("\tPrincipal found");
+						logger.debug("\t\tupdating");
+						d.update(result.getId(), result.getUsername(), result.isActive(), result.getPassHash(),
+								result.getCredentials(), result.getEmail(), result.getLocale(), result.getRoleEnum());
+						if (forceLogout) {
+							for (SessionInformation si : sessionRegistry.getAllSessions(p, false)) {
+								logger.debug("\t\tsession " + si.getSessionId() + " expired");
+								si.expireNow();
+							}
+						}
+					}
+				}
+			}
+
+			return result;
 		} catch (Throwable t) {
 			throw new DBException(t);
 		}
@@ -130,7 +166,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 		consumerRepository.delete(id);
 	}
 
-	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
@@ -204,7 +239,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<Consumer> updatePassword(List<Long> id, String newPassword) throws DBException {
 		List<Consumer> result = new ArrayList<Consumer>(id.size());
 
@@ -216,7 +250,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 		return result;
 	}
-	
+
 	@Override
 	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource,
 			Locale locale) throws DBException, EMailException {
@@ -261,13 +295,16 @@ public class ConsumerServiceImpl implements ConsumerService {
 		MimeMessageHelper helper;
 		try {
 			helper = new MimeMessageHelper(message, false, "utf-8");
-			helper.setFrom(commonProperties.getEmailFrom(), messageSource.getMessage("passwordRecovery.emailSource", null, locale));
+			helper.setFrom(commonProperties.getEmailFrom(),
+					messageSource.getMessage("passwordRecovery.emailSource", null, locale));
 			helper.setTo(c.getEmail());
 			helper.setSubject(messageSource.getMessage("passwordRecovery.emailSubject", null, locale));
-			message.setContent(messageSource.getMessage("passwordRecovery.emailText",
-					new Object[] { c.getCredentials(),
-							commonProperties.getUrl() + "recoverPassword?token=" + token.getToken() + "&check=" + token.check()},
-					messageLocale), "text/html");
+			message.setContent(
+					messageSource.getMessage(
+							"passwordRecovery.emailText", new Object[] { c.getCredentials(), commonProperties.getUrl()
+									+ "recoverPassword?token=" + token.getToken() + "&check=" + token.check() },
+							messageLocale),
+					"text/html");
 			mailSender.send(message);
 		} catch (Throwable t) {
 			throw new EMailException(t);
@@ -275,15 +312,15 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	private void invalidateRecoveryTokens(Consumer c, Date d) {
-		tokenRepository.invalidateToken(c, d);		
+		tokenRepository.invalidateToken(c, d);
 	}
 
 	public Token getPasswordResetToken(String token, String check) {
 		Token t = tokenRepository.selectToken(token, new Date());
-		
+
 		return t == null ? null : StringUtils.isEqual(check, t.check()) ? t : null;
 	}
-	
+
 	public void invalidateRecoveryTokens(Consumer c) throws DBException {
 		try {
 			invalidateRecoveryTokens(c, new Date());
@@ -291,7 +328,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 			throw new DBException(t);
 		}
 	}
-	
+
 	@Override
 	public Consumer resetPasswordByToken(Token token, String password) throws DBException {
 		if (token != null) {

@@ -55,6 +55,7 @@ public class RestGameController extends AbstractRestController {
 	private VolunteerService volunteerService;
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
 	public GameTable getGameTable() {
 		logger.info("GET /api/v1/gameTable");
@@ -64,6 +65,7 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initGameCreateEditForm(@PathVariable Long id) {		
 		Game g = gameService.selectById(id, true);
@@ -78,8 +80,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/gameCreateEdit", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/gameCreateEdit", method = RequestMethod.POST)
 	public RestPostResponseBody gameCreateEdit(@RequestBody GameCreateEditForm form) {
 		logger.info("POST /api/v1/gameCreateEdit");
 
@@ -107,8 +109,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/gameDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/gameDelete", method = RequestMethod.DELETE)
 	public RestPostResponseBody gameDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/gameDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -122,6 +124,7 @@ public class RestGameController extends AbstractRestController {
 	}
 
 	@JsonView(RouteTable.ByGame.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeTableByGame", method = RequestMethod.GET)
 	public RouteTable getRouteTableByGame(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/routeTableByGame");
@@ -134,6 +137,7 @@ public class RestGameController extends AbstractRestController {
 	}
 
 	@JsonView(RouteTable.ByCategory.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeTableByCategory", method = RequestMethod.GET)
 	public RouteTable getRouteTableByCategory(@RequestParam(required = true) Long categoryId) {
 		logger.info("GET /api/v1/routeTableByCategory");
@@ -146,8 +150,8 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/routeCreate", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/routeCreate", method = RequestMethod.POST)
 	public RestPostResponseBody routeCreate(@RequestBody RouteCreateForm form) {
 		logger.info("POST /api/v1/routeEdit");
 
@@ -175,8 +179,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/routeDelete/", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/routeDelete/", method = RequestMethod.DELETE)
 	public RestPostResponseBody routeDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/routeDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -190,6 +194,7 @@ public class RestGameController extends AbstractRestController {
 	}
 
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemTable", method = RequestMethod.GET)
 	public RouteItemTable getRouteItemTable(@RequestParam(required = true) Long routeId) {
 		logger.info("GET /api/v1/routeTable");
@@ -202,6 +207,7 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initRouteItemCreateEditForm(@PathVariable Long id) {		
 		RouteItem ri = routeService.selectItemById(id);
@@ -216,8 +222,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/routeItemCreateEdit", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/routeItemCreateEdit", method = RequestMethod.POST)
 	public RestPostResponseBody routeItemCreateEdit(@RequestBody RouteItemCreateEditForm form) {		
 		logger.info("POST /api/v1/routeItemCreateEdit");
 
@@ -245,8 +251,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/routeItemDelete/", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/routeItemDelete/", method = RequestMethod.DELETE)
 	public RestPostResponseBody routeItemDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/routeItemDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -260,6 +266,7 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(VolunteerTable.ByGame.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/coordinatorTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/coordinatorTableByGame");
@@ -273,6 +280,7 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(VolunteerTable.ByGameControlPoint.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/volunteerTableByGame");
@@ -286,6 +294,7 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
 		Volunteer v = volunteerService.selectById(id);
@@ -301,8 +310,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
 	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByGameCPForm form) {
 		logger.info("POST /api/v1/volunteerCreateEditByGameCP");
 
@@ -330,6 +339,7 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {		
 		Volunteer v = volunteerService.selectById(id);
@@ -345,8 +355,8 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord", method = RequestMethod.POST)
 	public RestPostResponseBody coordinatorCreateEdit(@RequestBody VolunteerCreateEditByGameCoordForm form) {
 		logger.info("POST /api/v1/volunteerCreateEditByGameCoord");
 
@@ -374,8 +384,8 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
 	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/volunteerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);

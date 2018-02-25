@@ -9,7 +9,6 @@ import org.runcity.db.repository.CategoryRepository;
 import org.runcity.db.service.CategoryService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ public class CategoryServiceImpl implements CategoryService {
 	private CategoryRepository categoryRepository;
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Category selectById(Long id, boolean games) {
 		Category c = categoryRepository.findOne(id);
 		if (games) {
@@ -31,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
 	
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Iterable<Category> selectById(Iterable<Long> id, boolean games) {
 		Iterable<Category> categories = categoryRepository.findAll(id);
 		
@@ -71,7 +68,6 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Category addOrUpdate(Category c) throws DBException {
 		try {
 			if (c.getId() != null) {
@@ -94,7 +90,6 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);

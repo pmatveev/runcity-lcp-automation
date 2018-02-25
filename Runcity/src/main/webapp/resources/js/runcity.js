@@ -238,7 +238,7 @@ function checkInput(elem) {
 }
 
 function onColChange(elem) {
-	checkInput(elem);
+	var result = checkInput(elem);
 	var form = elem.closest("form");
 	showConditionalForm(form);
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
@@ -248,6 +248,8 @@ function onColChange(elem) {
 			setInputValue(inp, "");
 		}
 	});
+	
+	return result;
 }
 
 function checkPwdIdent(pwd1, pwd2) {
@@ -852,7 +854,13 @@ function modalFormError(form, data) {
 
 	removeFormErrorMessage(form);
 	removeFormFieldErrorMessage(form);
-	if (data.statusText = "error" && data.status != 0) {
+	
+	if (data.statusText == "parsererror" && data.status == 200) {
+		data.statusText = "error";
+		data.status = 403;
+	}
+	
+	if (data.statusText == "error" && data.status != 0) {		
 		if (data.status == 403) {
 			setFormErrorMessage(form, translations['forbidden']);
 		} else {

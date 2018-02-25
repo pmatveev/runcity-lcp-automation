@@ -15,7 +15,6 @@ import org.runcity.db.service.BlobContentService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,55 +40,46 @@ public class ControlPointServiceImpl implements ControlPointService {
 	private VolunteerRepository volunteerRepository;
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByGame(Game game) {
 		return controlPointRepository.findByGame(game);
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByGame(Long game) {
 		return selectByGame(gameRepository.findOne(game));
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectMainByGame(Game game) {
 		return controlPointRepository.findMainByGame(game);
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectMainByGame(Long game) {
 		return selectMainByGame(gameRepository.findOne(game));
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByRouteNotUsed(Route route) {
 		return controlPointRepository.findByRouteNotUsed(route.getGame(), route);
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByRouteNotUsed(Long route) {
 		return selectByRouteNotUsed(routeRepository.findOne(route));
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByParent(Long parent) {
 		return selectByParent(controlPointRepository.findOne(parent));
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<ControlPoint> selectByParent(ControlPoint parent) {
 		return controlPointRepository.findByParent(parent);
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public ControlPoint selectById(Long id, boolean image) {
 		ControlPoint c = controlPointRepository.findOne(id);
 		
@@ -101,7 +91,6 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 	
 	@Override
-	@Secured("ROLE_ADMIN")
 	public ControlPoint addOrUpdate(ControlPoint c) throws DBException {
 		try {
 			if (c.getId() != null) {
@@ -128,7 +117,6 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
@@ -136,13 +124,11 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<Volunteer> selectVolunteers(Long controlPoint) {
 		return selectVolunteers(controlPointRepository.findOne(controlPoint));
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public List<Volunteer> selectVolunteers(ControlPoint controlPoint) {
 		ControlPoint cp = controlPoint.getParent() == null ? controlPoint : controlPoint.getParent();
 		return volunteerRepository.findByControlPoint(cp);

@@ -10,7 +10,6 @@ import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.service.RouteService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +38,6 @@ public class RouteServiceImpl implements RouteService {
 	}
 	
 	@Override
-	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
@@ -52,7 +50,6 @@ public class RouteServiceImpl implements RouteService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public RouteItem addOrUpdateItem(RouteItem ri) throws DBException {
 		try {
 			return routeItemRepository.save(ri);
@@ -66,7 +63,6 @@ public class RouteServiceImpl implements RouteService {
 	}
 	
 	@Override
-	@Secured("ROLE_ADMIN")
 	public void deleteItem(List<Long> id) {
 		for (Long i : id) {
 			deleteItem(i);

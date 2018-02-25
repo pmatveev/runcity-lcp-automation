@@ -13,6 +13,7 @@ import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +33,12 @@ public class MenuController {
 	
 	@Autowired 
 	private CategoryService categoryService;
-	
+
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
 		return "redirect:/secure/home";
 	}
-	
+
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
 		SecureUserDetails user = SecureUserDetails.getCurrent();
@@ -48,7 +49,8 @@ public class MenuController {
 		
 		return "/secure/home";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/categories", method = RequestMethod.GET)
 	public String categories(Model model) {
 		CategoryTable table = new CategoryTable(messageSource, localeList);
@@ -56,7 +58,8 @@ public class MenuController {
 		
 		return "/secure/categories";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/games", method = RequestMethod.GET)
 	public String games(Model model) {
 		GameTable table = new GameTable(messageSource, localeList);
@@ -64,7 +67,8 @@ public class MenuController {
 		
 		return "/secure/games";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/games/{gameId}/controlPoints", method = RequestMethod.GET)
 	public String controlPointsByGame(Model model, @PathVariable Long gameId) {
 		Game g = gameService.selectById(gameId, false);
@@ -76,7 +80,8 @@ public class MenuController {
 		
 		return "/secure/controlPoints";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/games/{gameId}/categories", method = RequestMethod.GET)
 	public String categoriesByGame(Model model, @PathVariable Long gameId) {
 		Game g = gameService.selectById(gameId, false);
@@ -89,8 +94,8 @@ public class MenuController {
 		
 		return "/secure/routes";
 	}
-	
-	// /secure/categories/{0}/games
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/categories/{categoryId}/games", method = RequestMethod.GET)
 	public String gamesByCategory(Model model, @PathVariable Long categoryId) {
 		Category c = categoryService.selectById(categoryId, false);
@@ -103,7 +108,8 @@ public class MenuController {
 		
 		return "/secure/routes";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/users", method = RequestMethod.GET)
 	public String users(Model model) {
 		ConsumerTable table = new ConsumerTable(messageSource, localeList);

@@ -38,6 +38,7 @@ public class RestCategoryController extends AbstractRestController {
 	private GameService gameService;
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/categoryTable", method = RequestMethod.GET)
 	public CategoryTable getConsumerTable() {
 		logger.info("GET /api/v1/categoryTable");
@@ -47,6 +48,7 @@ public class RestCategoryController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/categoryCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initCategoryCreateEditForm(@PathVariable Long id) {		
 		Category c = categoryService.selectById(id, false);
@@ -61,8 +63,8 @@ public class RestCategoryController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/categoryCreateEdit", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/categoryCreateEdit", method = RequestMethod.POST)
 	public RestPostResponseBody categoryCreateEdit(@RequestBody CategoryCreateEditForm form) {
 		logger.info("POST /api/v1/categoryCreateEdit");
 
@@ -90,8 +92,8 @@ public class RestCategoryController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/categoryDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/categoryDelete", method = RequestMethod.DELETE)
 	public RestPostResponseBody categoryDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/categoryDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -105,6 +107,7 @@ public class RestCategoryController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/categoriesId", method = RequestMethod.GET)
 	public RestGetResponseBody categoriesDddwInit(@RequestParam(required = true) List<Long> id, @RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categoriesId");
@@ -118,6 +121,7 @@ public class RestCategoryController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/categories", method = RequestMethod.GET)
 	public RestGetResponseBody categoriesDddw(@RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categories");
@@ -131,6 +135,7 @@ public class RestCategoryController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/unusedCategories", method = RequestMethod.GET)
 	public RestGetResponseBody unusedCategoriesDddw(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/dddw/unusedCategories");

@@ -64,10 +64,12 @@ public class RestConsumerController extends AbstractRestController {
 		}
 
 		result.setResponseClass(RestResponseClass.INFO);
+		result.addCommonError("changePassword.info");
 		return result;
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/changePasswordById", method = RequestMethod.POST)
 	public RestPostResponseBody changePasswordById(@RequestBody ChangePasswordByIdForm form) {
 		logger.info("POST /api/v1/changePasswordById");
@@ -123,12 +125,14 @@ public class RestConsumerController extends AbstractRestController {
 			result.setResponseClass(RestResponseClass.ERROR);
 			result.addCommonError("common.popupProcessError");
 		}
+		
+		result.addCommonError("common.completed");
 		return result;
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/consumerCreate", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/consumerCreate", method = RequestMethod.POST)
 	public RestPostResponseBody consumerCreate(@RequestBody ConsumerCreateForm form) {
 		logger.info("POST /api/v1/consumerCreate");
 
@@ -156,6 +160,7 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/consumerEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initConsumerEditForm(@PathVariable Long id) {
 		logger.info("GET /api/v1/consumerSelfEdit/" + id);
@@ -172,8 +177,8 @@ public class RestConsumerController extends AbstractRestController {
 	}
 
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/consumerEdit", method = RequestMethod.POST)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/consumerEdit", method = RequestMethod.POST)
 	public RestPostResponseBody consumerEdit(@RequestBody ConsumerEditForm form) {
 		logger.info("POST /api/v1/consumerEdit");
 
@@ -201,8 +206,8 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@RequestMapping(value = "/api/v1/consumerDelete", method = RequestMethod.DELETE)
 	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/consumerDelete", method = RequestMethod.DELETE)
 	public RestPostResponseBody consumerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/consumerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -226,6 +231,7 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/consumerTable", method = RequestMethod.GET)
 	public ConsumerTable getConsumerTable() {
 		logger.info("GET /api/v1/consumerTable");
@@ -290,6 +296,7 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(VolunteerTable.ByConsumerControlPoint.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerTableByConsumer", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long consumerId) {
 		logger.info("GET /api/v1/volunteerTableByConsumer");
@@ -303,6 +310,7 @@ public class RestConsumerController extends AbstractRestController {
 	}	
 	
 	@JsonView(VolunteerTable.ByConsumerGame.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/coordinatorTableByConsumer", method = RequestMethod.GET)
 	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long consumerId) {
 		logger.info("GET /api/v1/coordinatorTableByConsumer");
@@ -316,6 +324,7 @@ public class RestConsumerController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/consumerId", method = RequestMethod.GET)
 	public RestGetResponseBody consumerDddwInit(@RequestParam(required = true) Long id) {
 		logger.info("GET /api/v1/dddw/consumerId");
@@ -326,6 +335,7 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/dddw/consumer", method = RequestMethod.GET)
 	public RestGetResponseBody consumerDddw(@RequestParam(required = false) Boolean active, @RequestParam(required = false) List<String> roles) {
 		logger.info("GET /api/v1/dddw/consumer");

@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 
 import org.runcity.mvc.config.util.CommonAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +17,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebMvcSecurity
@@ -78,7 +82,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.exceptionHandling().accessDeniedHandler(new CommonAccessDeniedHandler("/403"))
 			.and()
-				.headers().xssProtection().contentTypeOptions().frameOptions();
+				.headers().xssProtection().contentTypeOptions().frameOptions()
+			.and()
+				.sessionManagement()
+					.maximumSessions(new Integer(env.getRequiredProperty("runcity.max_sessions")))
+					.sessionRegistry(sessionRegistry())
+					.expiredUrl("/login?state=expired");
 	}
 	
 	@Bean
@@ -93,4 +102,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		db.setDataSource(dataSource);
 		return db;
 	}
+	
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
+    }
 }

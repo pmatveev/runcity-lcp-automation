@@ -9,6 +9,7 @@ import org.runcity.util.FileCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +62,7 @@ public class RestFileUploader {
 	}
 	
 	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/uploadImage", method = RequestMethod.POST)
 	public FileUploadResponse handleImage(@RequestParam MultipartFile image) {
 		FileUploadResponse result = new FileUploadResponse(messageSource);

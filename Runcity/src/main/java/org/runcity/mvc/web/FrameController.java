@@ -13,6 +13,7 @@ import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +40,8 @@ public class FrameController {
 	
 	@Autowired
 	private RouteService routeService;
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "secure/iframe/route/{routeId}", method = RequestMethod.GET)
 	public String routeDetails(Model model, @PathVariable Long routeId, @RequestParam(required = true) String referrer) {
 		Route r = routeService.selectById(routeId, true);
@@ -50,7 +52,8 @@ public class FrameController {
 		model.addAttribute("prefix", referrer);
 		return "/sub/routeDetails";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/game/{gameId}", method = RequestMethod.GET)
 	public String gameDetails(Model model, @PathVariable Long gameId, @RequestParam(required = true) String referrer) {
 		Game g = gameService.selectById(gameId, false);
@@ -64,7 +67,8 @@ public class FrameController {
 		model.addAttribute("prefix", referrer);
 		return "/sub/gameDetails";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/controlPoint/{controlPointId}", method = RequestMethod.GET)
 	public String controlPointDetails(Model model, @PathVariable Long controlPointId, @RequestParam(required = true) String referrer) {
 		ControlPoint cp = controlPointService.selectById(controlPointId, false);
@@ -75,7 +79,8 @@ public class FrameController {
 		model.addAttribute("prefix", referrer);
 		return "/sub/controlPointDetails";
 	}
-	
+
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/consumer/{consumerId}", method = RequestMethod.GET)
 	public String consumerDetails(Model model, @PathVariable Long consumerId, @RequestParam(required = true) String referrer) {
 		Consumer c = consumerService.selectById(consumerId, false);

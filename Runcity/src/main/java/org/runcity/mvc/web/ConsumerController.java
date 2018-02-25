@@ -74,6 +74,10 @@ public class ConsumerController {
 			model.addAttribute("info", "login.pwdChanged");
 		}
 		
+		if ("expired".equals(state)) {
+			model.addAttribute("error", "login.expiredSession");
+		}
+		
 		PasswordRecoveryForm form = new PasswordRecoveryForm(localeList);
 		model.addAttribute(form.getFormName(), form);
 		ConsumerRegisterForm form2 = new ConsumerRegisterForm(localeList);

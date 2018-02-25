@@ -28,6 +28,22 @@ public class SecureUserDetails implements UserDetails {
 
 	public SecureUserDetails(Long id, String username, boolean active, String password, String credentials,
 			String email, String locale, List<SecureUserRole> roles) {
+		update(id, username, active, password, credentials, email, locale, roles);
+	}
+
+	public static SecureUserDetails getCurrent() {
+		Authentication a = SecurityContextHolder.getContext().getAuthentication();
+		Object o = a == null ? null : a.getPrincipal();
+		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
+	}
+
+	public static String getLocaleCurrent() {
+		SecureUserDetails current = getCurrent();
+		return current == null ? null : current.getLocale();
+	}
+	
+	public void update(Long id, String username, boolean active, String password, String credentials,
+			String email, String locale, List<SecureUserRole> roles) {
 		this.id = id;
 		this.username = username;
 		this.active = active;
@@ -42,17 +58,6 @@ public class SecureUserDetails implements UserDetails {
 			userRoles.add(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.getStoredValue(r)));
 		}
 		this.roles = userRoles;
-	}
-
-	public static SecureUserDetails getCurrent() {
-		Authentication a = SecurityContextHolder.getContext().getAuthentication();
-		Object o = a == null ? null : a.getPrincipal();
-		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
-	}
-
-	public static String getLocaleCurrent() {
-		SecureUserDetails current = getCurrent();
-		return current == null ? null : current.getLocale();
 	}
 	
 	@Override

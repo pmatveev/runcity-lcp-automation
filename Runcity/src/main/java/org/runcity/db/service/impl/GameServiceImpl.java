@@ -10,7 +10,6 @@ import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +43,6 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public Game addOrUpdate(Game g) throws DBException {
 		try {
 			if (g.getId() != null) {
@@ -64,7 +62,6 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	@Secured("ROLE_ADMIN")
 	public void delete(List<Long> id) {
 		for (Long i : id) {
 			delete(i);
