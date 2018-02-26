@@ -55,7 +55,7 @@ public class RestCategoryController extends AbstractRestController {
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupFetchError");
+			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
 
@@ -80,13 +80,13 @@ public class RestCategoryController extends AbstractRestController {
 			c = categoryService.addOrUpdate(form.getCategory());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
 	}
@@ -101,7 +101,7 @@ public class RestCategoryController extends AbstractRestController {
 			categoryService.delete(id);
 		} catch (Exception e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("commom.db.deleteConstraint");
+			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	
 	}

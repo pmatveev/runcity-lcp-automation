@@ -15,7 +15,7 @@ public class RestGetResponseBody {
 	private RestResponseClass responseClass;
 	
 	@JsonView(Views.Public.class)
-	private List<String> errors;
+	private List<String> msg;
 	
 	protected MessageSource messageSource;
 	protected Locale locale = LocaleContextHolder.getLocale();
@@ -41,26 +41,26 @@ public class RestGetResponseBody {
 		this.responseClass = responseClass;
 	}
 	
-	public List<String> getErrors() {
-		return errors;
+	public List<String> getMsg() {
+		return msg;
 	}
 
-	public void setErrors(List<String> errors) {
-		this.errors = errors;
+	public void setMsg(List<String> msg) {
+		this.msg = msg;
 	}
 	
-	public void addCommonError(String error, Object[] arguments) {
-		if (this.errors == null) {
-			this.errors = new LinkedList<String>();
+	public void addCommonMsg(String msg, Object[] arguments) {
+		if (this.msg == null) {
+			this.msg = new LinkedList<String>();
 		}
-		this.errors.add(messageSource.getMessage(error, arguments, locale));
+		this.msg.add(messageSource.getMessage(msg, arguments, locale));
 	}
 
-	public void addCommonError(String error) {
-		addCommonError(error, null);
+	public void addCommonMsg(String msg) {
+		addCommonMsg(msg, null);
 	}
 
-	public void addCommonError(ObjectError error) {
-		addCommonError(error.getCode(), error.getArguments());
+	public void addCommonMsg(ObjectError msg) {
+		addCommonMsg(msg.getCode(), msg.getArguments());
 	}
 }

@@ -60,7 +60,7 @@ public class RestControlPointController extends AbstractRestController {
 		Game g = gameService.selectById(gameId, false);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			return result;
 		}
 		
@@ -77,7 +77,7 @@ public class RestControlPointController extends AbstractRestController {
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupFetchError");
+			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
 
@@ -149,13 +149,13 @@ public class RestControlPointController extends AbstractRestController {
 			c = controlPointService.addOrUpdate(form.getControlPoint());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
 	}
@@ -170,7 +170,7 @@ public class RestControlPointController extends AbstractRestController {
 			controlPointService.delete(id);
 		} catch (Exception e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("commom.db.deleteConstraint");
+			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	
 	}
@@ -198,7 +198,7 @@ public class RestControlPointController extends AbstractRestController {
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupFetchError");
+			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
 
@@ -223,13 +223,13 @@ public class RestControlPointController extends AbstractRestController {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (v == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
 	}

@@ -114,12 +114,24 @@
 			allow_dismiss: true,
 			newest_on_top: true,
 			placement: {
-				from: "bottom",
+				from: "top",
 				align: "right"
 			},
 			delay: 3000,
 			mouse_over: "pause",
 			template: notificationTemplate
+		},
+		warning : {
+			type: "warning",
+			allow_dismiss: true,
+			newest_on_top: true,
+			placement: {
+				from: "top",
+				align: "right"
+			},
+			delay: 5000,
+			mouse_over: "pause",
+			template: notificationTemplate			
 		}
 	};
 	

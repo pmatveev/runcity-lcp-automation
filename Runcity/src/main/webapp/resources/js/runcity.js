@@ -34,7 +34,7 @@ function emptyValue(val) {
 	return typeof val == 'undefined' || val == null || val == '' || val.length == 0;
 }
 
-function removeFormErrorMessage(form) {
+function removeFormMessage(form) {
 	form.find(".errorHolder").html("");
 }
 
@@ -64,55 +64,75 @@ function formatDate(date, format, locale) {
 
 function removeFormFieldErrorMessage(form) {
 	form.find("input,textarea").not('[type="submit"]').each(function() {
-		removeErrorMessage($(this));
+		removeMessage($(this));
 	});
 }
 
-function setFormErrorMessage(form, message) {
+function setFormMessage(form, message, cls) {
 	var errHolder = form.find(".errorHolder");
-	var errDiv = errHolder.find(".alert-danger");
+	var errDiv = errHolder.find(".alert-" + cls);
 	if (!errDiv.length) {
-		errHolder.append('<div class="alert alert-danger">' + message
-				+ '</div>');
+		errHolder.append('<div class="alert alert-' + cls + '">' + message + '</div>');
 	} else {
 		errDiv.append('<br/>' + message);
 	}
 }
 
-function removeErrorMessage(element) {
+function removeMessage(element) {
 	var parent = element.closest(".form-group");
 
 	if (parent == null) {
 		return;
 	}
 	parent.removeClass("has-error");
+	parent.removeClass("has-warning");
 	var err = parent.find(".help-block");
 	if (!err.hasClass("file-help-block")) {
 		err.remove();
 	}
 }
 
-function setErrorMessage(element, message) {
+function setMessage(element, message, cls) {
 	var parent = element.closest(".form-group");
 
 	if (parent == null) {
 		return;
 	}
-	parent.addClass("has-error");
+	
+	var clazz = "has-" + cls;
+	if (cls == "danger") {
+		clazz = "has-error";
+	} 
+	var append = parent.hasClass(clazz);
+	parent.removeClass("has-error");
+	parent.removeClass("has-warning");
+	parent.removeClass("has-success");
+	parent.addClass(clazz);
 	var help = parent.find(".help-block");
 	if (!help.length) {
 		parent.append('<span class="help-block">' + message + '</span>');
 	} else {
-		help.append('<br/>' + message);
+		if (append) {
+			help.append('<br/>' + message);
+		} else {
+			help.html(message);			
+		}
 	}
 }
 
-function setErrorMessageStrict(element, message) {
-	element.parent().addClass("has-error");
-	var help = element.parent().find(".help-block");
+function setMessageStrict(element, message, cls) {
+	var parent = element.parent();
+	var clazz = "has-" + cls;
+	if (cls == "danger") {
+		clazz = "has-error";
+	} 
+	parent.removeClass("has-error");
+	parent.removeClass("has-warning");
+	parent.removeClass("has-success");
+	parent.addClass(clazz);
+	var help = parent.find(".help-block");
 	if (!help.length) {
-		element.parent().append(
-				'<span class="help-block">' + message + '</span>');
+		parent.append('<span class="help-block">' + message + '</span>');
 	} else {
 		help.html(message);
 	}
@@ -142,7 +162,7 @@ function showConditionalForm(form) {
 function checkElem(elem, rule) {
 	if (rule == "required") {
 		if (emptyValue(getData(elem))) {
-			setErrorMessage(elem, translations['required']);
+			setMessage(elem, translations['required'], "danger");
 			return false;
 		}
 	}
@@ -159,12 +179,12 @@ function checkElem(elem, rule) {
 		});
 		
 		if (rule == "onerequired" && filled == 0) {
-			setErrorMessage(elem, translations['oneRequired']);
+			setMessage(elem, translations['oneRequired'], "danger");
 			return false;
 		}
 		
 		if (rule == "allrequired" && filled < total) {
-			setErrorMessage(elem, translations['allRequired']);
+			setMessage(elem, translations['allRequired'], "danger");
 			return false;			
 		}
 	}
@@ -172,7 +192,7 @@ function checkElem(elem, rule) {
 	if (rule.indexOf("min=") == 0) {
 		var len = Number(rule.substring(4));
 		if (getData(elem).length > 0 && getData(elem).length < len) {
-			setErrorMessage(elem, translations['minLen'].replace("{0}", len));
+			setMessage(elem, translations['minLen'].replace("{0}", len), "danger");
 			return false;
 		}
 	}
@@ -180,7 +200,7 @@ function checkElem(elem, rule) {
 	if (rule.indexOf("max=") == 0) {
 		var len = Number(rule.substring(4));
 		if (getData(elem).length > len) {
-			setErrorMessage(elem, translations['maxLen'].replace("{0}", len));
+			setMessage(elem, translations['maxLen'].replace("{0}", len), "danger");
 			return false;
 		}
 	}
@@ -188,7 +208,7 @@ function checkElem(elem, rule) {
 	if (rule.indexOf("minval=") == 0) {
 		var val = Number(rule.substring(4));
 		if (getData(elem).length > 0 && Number(getData(elem)) < val) {
-			setErrorMessage(elem, translations['min'].replace("{0}", len));
+			setMessage(elem, translations['min'].replace("{0}", len), "danger");
 			return false;
 		}
 	}
@@ -196,14 +216,14 @@ function checkElem(elem, rule) {
 	if (rule.indexOf("maxval=") == 0) {
 		var val = Number(rule.substring(4));
 		if (getData(elem).length > 0 && Number(getData(elem)) > val) {
-			setErrorMessage(elem, translations['max'].replace("{0}", len));
+			setMessage(elem, translations['max'].replace("{0}", len), "danger");
 			return false;
 		}
 	}
 
 	if (rule == "pwd" && !emptyValue(getData(elem))) {
 		if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(getData(elem))) {
-			setErrorMessage(elem, translations['passwordStrength']);
+			setMessage(elem, translations['passwordStrength'], "danger");
 			return false;
 		}
 	}
@@ -211,7 +231,7 @@ function checkElem(elem, rule) {
 	if (rule == "email" && !emptyValue(getData(elem))) { 
 		if (!/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/
 				.test(getData(elem))) {
-			setErrorMessage(elem, translations['invalidEmail']);
+			setMessage(elem, translations['invalidEmail'], "danger");
 			return false;
 		}
 	}
@@ -220,7 +240,7 @@ function checkElem(elem, rule) {
 }
 
 function checkInput(elem) {
-	removeErrorMessage(elem);
+	removeMessage(elem);
 	var checkList = elem.attr("jschecks");
 	if (typeof checkList === 'undefined') {
 		return true;
@@ -254,7 +274,7 @@ function onColChange(elem) {
 
 function checkPwdIdent(pwd1, pwd2) {
 	if (pwd1.val() != pwd2.val()) {
-		setErrorMessageStrict(pwd2, translations['passwordMatch']);
+		setMessageStrict(pwd2, translations['passwordMatch'], "danger");
 		return false;
 	}
 
@@ -354,7 +374,8 @@ function setInputValue(elem, val) {
 }
 
 function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
-	if (data.responseClass == "INFO") {
+	removeMessage(elem);
+	if (data.responseClass == "INFO" || data.responseClass == "WARNING") { 
 		optionsHtml = "";
 
 		if (!elem.prop('multiple')) {
@@ -373,32 +394,37 @@ function loadAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		elem.html(optionsHtml).selectpicker("refresh");
 		elem.selectpicker('val', val);
 		elem.attr("loaded-from", jsonUrl);
+		
+		if (data.responseClass == "WARNING" && data.msg) {
+			data.msg.forEach(function(item, i, arr) {
+				setMessage(elem, item, "warning");
+			});		
+		}
+		
 		return;
 	}
 
 	elem.attr("loaded-from", null);
-	removeFormErrorMessage(form);
-	removeErrorMessage(elem);
-	if (data.errors) {
-		data.errors.forEach(function(item, i, arr) {
-			setFormErrorMessage(form, item);
+	if (data.msg) {
+		data.msg.forEach(function(item, i, arr) {
+			setMessage(elem, item, "danger");
 		});
 	}
 }
 
 function loadAjaxSourcedError(form, elem, data) {
 	elem.attr("loaded-from", null);
-	removeFormErrorMessage(form);
-	removeErrorMessage(elem);
+	removeFormMessage(form);
+	removeMessage(elem);
 	if (data.statusText = "error" && data.status != 0) {
 		if (data.status == 403) {
-			setFormErrorMessage(form, translations['forbidden']);
+			setFormMessage(form, translations['forbidden'], "danger");
 		} else {
-			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status));
+			setFormMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status), "danger");
 		}
 	} else {
-		setFormErrorMessage(form, translations['ajaxHangPost']);
+		setFormMessage(form, translations['ajaxHangPost'], "danger");
 	}
 }
 
@@ -446,7 +472,8 @@ function loadAjaxSourced(elem) {
 }
 
 function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
-	if (data.responseClass == "INFO") {
+	removeMessage(elem);
+	if (data.responseClass == "INFO" || data.responseClass == "WARNING") { 
 		optionsHtml = "";
 		
 		if (!elem.prop('multiple')) {
@@ -467,6 +494,12 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 
 		elem.selectpicker('val', val);
 		
+		if (data.responseClass == "WARNING" && data.msg) {
+			data.msg.forEach(function(item, i, arr) {
+				setMessage(elem, item, "warning");
+			});		
+		}
+		
 		form.data('loading', form.data('loading') - 1);
 		if (form.data('loading') == 0) {
 			showConditionalForm(form);
@@ -475,11 +508,9 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 		return;
 	}
 
-	removeFormErrorMessage(form);
-	removeErrorMessage(elem);
-	if (data.errors) {
-		data.errors.forEach(function(item, i, arr) {
-			setFormErrorMessage(form, item);
+	if (data.msg) {
+		data.msg.forEach(function(item, i, arr) {
+			setMessage(elem, item, "danger");
 		});
 		form.data('loading', -1);
 		changeModalFormState(form, true, false, false);
@@ -487,17 +518,17 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 }
 
 function initAjaxSourcedError(form, elem, data) {
-	removeFormErrorMessage(form);
-	removeErrorMessage(elem);
+	removeFormMessage(form);
+	removeMessage(elem);
 	if (data.statusText = "error" && data.status != 0) {
 		if (data.status == 403) {
-			setFormErrorMessage(form, translations['forbidden']);
+			setFormMessage(form, translations['forbidden'], "danger");
 		} else {
-			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status));
+			setFormMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status), "danger");
 		}
 	} else {
-		setFormErrorMessage(form, translations['ajaxHangPost']);
+		setFormMessage(form, translations['ajaxHangPost'], "danger");
 	}
 	form.data('loading', -1);
 	changeModalFormState(form, true, false, false);
@@ -548,7 +579,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 }
 
 function beforeOpenModal(form, fetch, createForm, persistCreate) {
-	removeFormErrorMessage(form);
+	removeFormMessage(form);
 	if (createForm) {
 		form.find(".create-another-wrapper").removeClass("hidden");
 	} else {
@@ -566,7 +597,7 @@ function beforeOpenModal(form, fetch, createForm, persistCreate) {
 			setInputValue(elem, val);
 		}
 		
-		removeErrorMessage(elem);
+		removeMessage(elem);
 	});
 	
 	if (fetch) {
@@ -580,11 +611,11 @@ function addReloadLink(form, recId) {
 	var reload = "<a href='#' onclick='beforeOpenModalFetch($(\"#"
 			+ form.attr("id") + "\"), " + recId + ")'>"
 			+ translations['reload'] + "</a>";
-	setFormErrorMessage(form, reload);
+	setFormMessage(form, reload, "danger");
 }
 
 function modalFormOpenSuccess(form, data, recId) {
-	if (data.responseClass == "INFO") {
+	if (data.responseClass == "INFO" || data.responseClass == "WARNING") { 
 		form.data('loading', 0);
 
 		form.find("input,select,textarea").not('[type="submit"]').each(function() {
@@ -615,20 +646,26 @@ function modalFormOpenSuccess(form, data, recId) {
 			}
 		});
 
+		if (data.responseClass == "WARNING" && data.msg) {
+			removeFormMessage(form);
+			data.msg.forEach(function(item, i, arr) {
+				setFormMessage(form, item, "warning");
+			});		
+		}
+		
 		if (form.data('loading') == 0) {
 			showConditionalForm(form);
 			changeModalFormState(form, false, false, false);
 		}
 		
-		
 		return;
 	}
 
 	changeModalFormState(form, true, false, false);
-	removeFormErrorMessage(form);
-	if (data.errors) {
-		data.errors.forEach(function(item, i, arr) {
-			setFormErrorMessage(form, item);
+	removeFormMessage(form);
+	if (data.msg) {
+		data.msg.forEach(function(item, i, arr) {
+			setFormMessage(form, item, "danger");
 		});
 	}
 	addReloadLink(form, recId);
@@ -637,13 +674,13 @@ function modalFormOpenSuccess(form, data, recId) {
 function modalFormOpenError(form, data, recId) {
 	changeModalFormState(form, true, false, false);
 
-	removeFormErrorMessage(form);
+	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
 	if (data.statusText = "error" && data.status != 0) {
-		setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
-				data.status));
+		setFormMessage(form, translations['ajaxErr'].replace("{0}",
+				data.status), "danger");
 	} else {
-		setFormErrorMessage(form, translations['ajaxHangGet']);
+		setFormMessage(form, translations['ajaxHangGet'], "danger");
 	}
 	addReloadLink(form, recId);
 }
@@ -794,16 +831,25 @@ function closeModalForm(form) {
 function modalFormSuccess(form, data) {
 	changeModalFormState(form, false, false, false);
 
-	if (data.responseClass == "INFO") {
+	if (data.responseClass == "INFO" || data.responseClass == "WARNING") { 
 		var createAnother = form.find("input.create-another").prop("checked");
 		
-
-		if (data.errors) {
-			data.errors.forEach(function(item, i, arr) {
-				$.notify({
-					message: item
-				}, notifySettings['success']);
-			});
+		if (data.responseClass == "INFO") {
+			if (data.msg) {
+				data.msg.forEach(function(item, i, arr) {
+					$.notify({
+						message: item
+					}, notifySettings['success']);
+				});
+			}
+		} else {
+			if (data.msg) {
+				data.msg.forEach(function(item, i, arr) {
+					$.notify({
+						message: item
+					}, notifySettings['warning']);
+				});
+			}			
 		}
 		
 
@@ -820,10 +866,10 @@ function modalFormSuccess(form, data) {
 		return;
 	}
 
-	removeFormErrorMessage(form);
-	if (data.errors) {
-		data.errors.forEach(function(item, i, arr) {
-			setFormErrorMessage(form, item);
+	removeFormMessage(form);
+	if (data.msg) {
+		data.msg.forEach(function(item, i, arr) {
+			setFormMessage(form, item, "danger");
 		});
 	}
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
@@ -833,7 +879,7 @@ function modalFormSuccess(form, data) {
 		if (typeof name === 'undefined' || elem.attr("type") === "hidden") {
 			return;
 		}
-		removeErrorMessage(elem);
+		removeMessage(elem);
 		
 		var index = name.indexOf("['"); 
 		if (index >= 0) {
@@ -843,7 +889,7 @@ function modalFormSuccess(form, data) {
 		var err = data.colErrors[name];
 		if (err) {
 			err.forEach(function(item, i, arr) {
-				setErrorMessage(elem, item);
+				setMessage(elem, item, "danger");
 			});
 		}
 	});
@@ -852,7 +898,7 @@ function modalFormSuccess(form, data) {
 function modalFormError(form, data) {
 	changeModalFormState(form, false, false, false);
 
-	removeFormErrorMessage(form);
+	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
 	
 	if (data.statusText == "parsererror" && data.status == 200) {
@@ -862,13 +908,13 @@ function modalFormError(form, data) {
 	
 	if (data.statusText == "error" && data.status != 0) {		
 		if (data.status == 403) {
-			setFormErrorMessage(form, translations['forbidden']);
+			setFormMessage(form, translations['forbidden'], "danger");
 		} else {
-			setFormErrorMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status));
+			setFormMessage(form, translations['ajaxErr'].replace("{0}",
+					data.status), "danger");
 		}
 	} else {
-		setFormErrorMessage(form, translations['ajaxHangPost']);
+		setFormMessage(form, translations['ajaxHangPost'], "danger");
 	}
 }
 
@@ -936,7 +982,7 @@ function initModal(modal) {
 	});
 }
 
-function removeTableErrorMessage(dt) {
+function removeTableMessage(dt) {
 	var parent = ($(dt.table().node())).closest(".dataTables_wrapper");
 
 	if (parent == null) {
@@ -945,16 +991,16 @@ function removeTableErrorMessage(dt) {
 	parent.find(".errorHolder").html("");
 }
 
-function setTableErrorMessage(dt, message) {
+function setTableMessage(dt, message, cls) {
 	var parent = ($(dt.table().node())).closest(".dataTables_wrapper");
 
 	if (parent == null) {
 		return;
 	}
 	var errHolder = parent.find(".errorHolder");
-	var errDiv = errHolder.find(".alert-danger");
+	var errDiv = errHolder.find(".alert-" + cls);
 	if (!errDiv.length) {
-		errHolder.append('<div class="alert alert-danger">' + message
+		errHolder.append('<div class="alert alert-' + cls + '">' + message
 				+ '</div>');
 	} else {
 		errDiv.append('<br/>' + message);
@@ -963,13 +1009,19 @@ function setTableErrorMessage(dt, message) {
 
 
 function dataTablesAjaxSuccess(dt, data) {
-	if (data.responseClass == "INFO") {
+	removeTableMessage(dt);
+	if (data.responseClass == "INFO" || data.responseClass == "WARNING") { 
+		if (data.responseClass == "WARNING" && data.msg) {
+			data.msg.forEach(function(item, i, arr) {
+				setTableMessage(dt, item, "warning");
+			});		
+		}
 		dt.ajax.reload(null, false);
 		return;
 	}
-	if (data.errors) {
-		data.errors.forEach(function(item, i, arr) {
-			setTableErrorMessage(dt, item);
+	if (data.msg) {
+		data.msg.forEach(function(item, i, arr) {
+			setTableMessage(dt, item, "danger");
 		});
 	}
 }
@@ -977,13 +1029,13 @@ function dataTablesAjaxSuccess(dt, data) {
 function dataTablesAjaxError(dt, data) {
 	if (data.statusText = "error" && data.status != 0) {
 		if (data.status == 403) {
-			setTableErrorMessage(dt, translations['forbidden']);
+			setTableMessage(dt, translations['forbidden'], "danger");
 		} else {
-			setTableErrorMessage(dt, translations['ajaxErr'].replace("{0}",
-					data.status));
+			setTableMessage(dt, translations['ajaxErr'].replace("{0}",
+					data.status), "danger");
 		}
 	} else {
-		setTableErrorMessage(dt, translations['ajaxHangPost']);
+		setTableMessage(dt, translations['ajaxHangPost'], "danger");
 	}
 }
 
@@ -1061,13 +1113,13 @@ function initDatatables(table, loc) {
 
 			if (typeof form.attr("fetchFrom") !== 'undefined') {
 				func = function(e, dt, node, config) {
-					removeTableErrorMessage(dt);
+					removeTableMessage(dt);
 					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")), create);
 					showModalForm(form);
 				}
 			} else {
 				func = function(e, dt, node, config) {
-					removeTableErrorMessage(dt);
+					removeTableMessage(dt);
 					beforeOpenModal(form, false, create);
 					if (typeof refCol !== 'undefined') {
 						var refData = dataTablesSelected(dt, refCol, button.attr("extend"));
@@ -1087,7 +1139,7 @@ function initDatatables(table, loc) {
 			var confirmation = button.attr("confirmation");
 			if (typeof confirmation !== 'undefined') {
 				func = function(e, dt, node, config) {
-					removeTableErrorMessage(dt);
+					removeTableMessage(dt);
 					bootbox.confirm({
 						animate : false,
 						title : translations['confTitle'],
@@ -1129,7 +1181,7 @@ function initDatatables(table, loc) {
 			}
 		} else {
 			func = function(e, dt, node, config) {
-				removeTableErrorMessage(dt);
+				removeTableMessage(dt);
 				dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
 			}
 		}
@@ -1236,7 +1288,23 @@ function initDatatablesWithButtons(table, buttons, loc) {
 
 	var dataTable = {};
 	dataTable = table.DataTable({
-		ajaxSource : table.attr("ajaxSource"),
+		ajax : { 
+			url : table.attr("ajaxSource"),
+			dataSrc : function(json) {
+				removeTableMessage(dataTable);
+				if (json.responseClass == "ERROR" && json.msg) {
+					json.msg.forEach(function(item, i, arr) {
+						setTableMessage(dataTable, item, "danger");
+					});		
+				}
+				if (json.responseClass == "WARNING" && json.msg) {
+					json.msg.forEach(function(item, i, arr) {
+						setTableMessage(dataTable, item, "warning");
+					});		
+				}
+				return json.data;
+			}
+		},
 		buttons : {
 			dom : {
 				container : {

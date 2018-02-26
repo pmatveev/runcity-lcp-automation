@@ -60,11 +60,11 @@ public class RestConsumerController extends AbstractRestController {
 			consumerService.updateCurrentPassword(form.getPassword());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 		}
 
 		result.setResponseClass(RestResponseClass.INFO);
-		result.addCommonError("changePassword.info");
+		result.addCommonMsg("changePassword.info");
 		return result;
 	}
 	
@@ -85,7 +85,7 @@ public class RestConsumerController extends AbstractRestController {
 			consumerService.updatePassword(form.getId(), form.getPassword());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 		}
 
 		result.setResponseClass(RestResponseClass.INFO);
@@ -101,7 +101,7 @@ public class RestConsumerController extends AbstractRestController {
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupFetchError");
+			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
 
@@ -123,10 +123,10 @@ public class RestConsumerController extends AbstractRestController {
 		Consumer c = consumerService.updateCurrentData(form.getUsername(), form.getCredentials(), form.getEmail(), form.getLocale());
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		
-		result.addCommonError("common.completed");
+		result.addCommonMsg("common.completed");
 		return result;
 	}
 	
@@ -148,13 +148,13 @@ public class RestConsumerController extends AbstractRestController {
 			c = consumerService.add(form.getConsumer());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;
 		}
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
 	}
@@ -169,7 +169,7 @@ public class RestConsumerController extends AbstractRestController {
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupFetchError");
+			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
 
@@ -194,13 +194,13 @@ public class RestConsumerController extends AbstractRestController {
 			c = consumerService.update(form.getConsumer());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;
 		}
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
 	}
@@ -216,7 +216,7 @@ public class RestConsumerController extends AbstractRestController {
 		for (Long i : id) {
 			if (ObjectUtils.nullSafeEquals(myId, i)) {
 				result.setResponseClass(RestResponseClass.ERROR);
-				result.addCommonError("user.selfDelete");
+				result.addCommonMsg("user.selfDelete");
 				return result;
 			}
 		}
@@ -225,7 +225,7 @@ public class RestConsumerController extends AbstractRestController {
 			consumerService.delete(id);
 		} catch (Exception e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("commom.db.deleteConstraint");
+			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;		
 	}
@@ -256,12 +256,12 @@ public class RestConsumerController extends AbstractRestController {
 			consumerService.recoverPassword(form.getConsumer(), commonProperties, messageSource,  LocaleContextHolder.getLocale());
 		} catch (DBException | EMailException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 			return result;
 		}
 		
 		if (result.getResponseClass() == RestResponseClass.INFO) {
-			result.addCommonError("passwordRecovery.sent");
+			result.addCommonMsg("passwordRecovery.sent");
 		}
 		
 		return result;
@@ -284,12 +284,12 @@ public class RestConsumerController extends AbstractRestController {
 			c = consumerService.register(form.getUsername(), form.getPassword(), form.getCredentials(), form.getEmail(), form.getLocale());
 		} catch (DBException e) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.db.fail");
+			result.addCommonMsg("common.db.fail");
 		}
 
 		if (c == null) {
 			result.setResponseClass(RestResponseClass.ERROR);
-			result.addCommonError("common.popupProcessError");
+			result.addCommonMsg("common.popupProcessError");
 		}
 		
 		return result;

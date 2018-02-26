@@ -19,7 +19,7 @@ public class RestPostResponseBody {
 	private RestResponseClass responseClass;
 
 	@JsonView(Views.Public.class)
-	private List<String> errors;
+	private List<String> msg;
 
 	@JsonView(Views.Public.class)
 	private Map<String, List<String>> colErrors;
@@ -48,12 +48,12 @@ public class RestPostResponseBody {
 		this.responseClass = responseClass;
 	}
 
-	public List<String> getErrors() {
-		return errors;
+	public List<String> getMsg() {
+		return msg;
 	}
 
-	public void setErrors(List<String> errors) {
-		this.errors = errors;
+	public void setMsg(List<String> msg) {
+		this.msg = msg;
 	}
 
 	public Map<String, List<String>> getColErrors() {
@@ -64,19 +64,19 @@ public class RestPostResponseBody {
 		this.colErrors = colErrors;
 	}
 
-	public void addCommonError(String error, Object[] arguments) {
-		if (this.errors == null) {
-			this.errors = new LinkedList<String>();
+	public void addCommonMsg(String msg, Object[] arguments) {
+		if (this.msg == null) {
+			this.msg = new LinkedList<String>();
 		}
-		this.errors.add(messageSource.getMessage(error, arguments, locale));
+		this.msg.add(messageSource.getMessage(msg, arguments, locale));
 	}
 
-	public void addCommonError(String error) {
-		addCommonError(error, null);
+	public void addCommonMsg(String msg) {
+		addCommonMsg(msg, null);
 	}
 
-	public void addCommonError(ObjectError error) {
-		addCommonError(error.getCode(), error.getArguments());
+	public void addCommonMsg(ObjectError msg) {
+		addCommonMsg(msg.getCode(), msg.getArguments());
 	}
 
 	public void addColError(String col, String error, Object[] arguments) {
@@ -109,7 +109,7 @@ public class RestPostResponseBody {
 			}
 
 			if (e instanceof ObjectError) {
-				addCommonError((ObjectError) e);
+				addCommonMsg((ObjectError) e);
 			}
 		}
 	}
