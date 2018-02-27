@@ -131,4 +131,6 @@ public abstract class AbstractTable extends RestGetResponseBody {
 		processModel(model);
 		prefix(referrer);
 	}
+	
+	public abstract AbstractTable validate();
 }

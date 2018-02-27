@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
@@ -59,13 +58,13 @@ public class GameTable extends AbstractTable {
 		@JsonView(Views.Public.class)
 		private String categories;
 
-		public TableRow(Game g,  MessageSource messageSource, Locale l, DynamicLocaleList localeList) {
+		public TableRow(Game g) {
 			this.id = g.getId();
-			this.locale = new FormListboxLocaleColumn(localeList).getOptionDisplay(g.getLocale(), messageSource, l);
+			this.locale = new FormListboxLocaleColumn(localeList).getOptionDisplay(g.getLocale(), messageSource, GameTable.this.locale);
 			this.name = StringUtils.xss(g.getName());
 			this.city = StringUtils.xss(g.getCity());
 			this.country = StringUtils.xss(g.getCountry());
-			this.timezone = StringUtils.xss(new FormListboxTimezoneColumn().getOptionDisplay(g.getTimezone(), messageSource, l));
+			this.timezone = StringUtils.xss(new FormListboxTimezoneColumn().getOptionDisplay(g.getTimezone(), messageSource, GameTable.this.locale));
 			this.dateFrom = g.getDateFrom();
 			this.dateTo = g.getDateTo();
 			
@@ -142,11 +141,16 @@ public class GameTable extends AbstractTable {
 	public void fetchAll(GameService service, DynamicLocaleList localeList) {
 		List<Game> games = service.selectAll(true);
 		for (Game g : games) {
-			data.add(new TableRow(g, messageSource, locale, localeList));
+			data.add(new TableRow(g));
 		}
 	}	
 	
 	public List<TableRow> getData() {
 		return data;
+	}
+	
+	@Override
+	public GameTable validate() {
+		return this;
 	}
 }

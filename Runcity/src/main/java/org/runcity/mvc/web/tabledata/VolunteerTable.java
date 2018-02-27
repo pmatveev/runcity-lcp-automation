@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ControlPoint;
@@ -63,12 +62,12 @@ public class VolunteerTable extends AbstractTable {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 		private Date dateTo;
 
-		public TableRow(Volunteer v, MessageSource messageSource, Locale l) {
+		public TableRow(Volunteer v) {
 			this.id = v.getId();
 			this.name = StringUtils.xss(v.getConsumer().getCredentials());
 			this.game = v.getGame() != null ? StringUtils.xss(v.getGame().getDisplay())
 					: StringUtils.xss(v.getControlPoint().getGame().getDisplay());
-			this.controlPoint = v.getControlPoint() != null ? StringUtils.xss(v.getControlPoint().getNameDisplay())
+			this.controlPoint = v.getControlPoint() != null ? StringUtils.xss(v.getControlPoint().getNameDisplay(messageSource, locale))
 					: null;
 			this.dateFrom = v.getDateFrom();
 			this.dateTo = v.getDateTo();
@@ -167,7 +166,12 @@ public class VolunteerTable extends AbstractTable {
 
 	public void add(Collection<Volunteer> volenteers) {
 		for (Volunteer v : volenteers) {
-			data.add(new TableRow(v, messageSource, locale));
+			data.add(new TableRow(v));
 		}
+	}
+	
+	@Override
+	public VolunteerTable validate() {
+		return this;
 	}
 }

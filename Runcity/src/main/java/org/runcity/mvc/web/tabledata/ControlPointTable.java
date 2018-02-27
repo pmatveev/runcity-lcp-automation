@@ -2,7 +2,6 @@ package org.runcity.mvc.web.tabledata;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.runcity.db.entity.ControlPoint;
@@ -51,12 +50,12 @@ public class ControlPointTable extends AbstractTable {
 		@JsonView(Views.Public.class)
 		private String description;
 
-		public TableRow(ControlPoint c, MessageSource messageSource, Locale l) {
+		public TableRow(ControlPoint c) {
 			this.id = c.getId();
 			this.gameId = c.getGame().getId();
 			this.mainIdt = c.getParent() == null ? StringUtils.xss(c.getIdt()) : StringUtils.xss(c.getParent().getIdt());
 			this.idt = StringUtils.xss(c.getIdt());
-			this.type = StringUtils.xss(c.getType().getDisplayName(messageSource, l));
+			this.type = StringUtils.xss(c.getType().getDisplayName(messageSource, locale));
 			this.name = StringUtils.xss(c.getName());
 			
 			this.address = localeList.prepareMap();
@@ -131,11 +130,16 @@ public class ControlPointTable extends AbstractTable {
 	public void fetchByGame(ControlPointService service, Game game) {
 		List<ControlPoint> controlPoints = service.selectByGame(game);
 		for (ControlPoint c : controlPoints) {
-			data.add(new TableRow(c, messageSource, locale));
+			data.add(new TableRow(c));
 		}
 	}	
 	
 	public List<TableRow> getData() {
 		return data;
+	}
+	
+	@Override
+	public ControlPointTable validate() {
+		return this;
 	}
 }

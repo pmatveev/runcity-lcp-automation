@@ -3,7 +3,6 @@ package org.runcity.mvc.web.tabledata;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
@@ -44,19 +43,19 @@ public class ConsumerTable extends AbstractTable {
 		@JsonView(Views.Public.class)
 		private String roles;
 
-		public TableRow(Consumer c, MessageSource messageSource, Locale l) {
+		public TableRow(Consumer c) {
 			this.id = c.getId();
 			this.username = StringUtils.xss(c.getUsername());
 			this.credentials = StringUtils.xss(c.getCredentials());
 			this.email = StringUtils.xss(c.getEmail());
-			this.active = new FormListboxActiveColumn().getOptionDisplay(c.isActive().toString(), messageSource, l);
+			this.active = new FormListboxActiveColumn().getOptionDisplay(c.isActive().toString(), messageSource, locale);
 			
 			List<String> rolesTmp = new LinkedList<String>();
 			for (ConsumerRole r : c.getRoles()) {
-				rolesTmp.add(r.getRole().getDisplayName(messageSource, l));
+				rolesTmp.add(r.getRole().getDisplayName(messageSource, locale));
 			}
 			Collections.sort(rolesTmp);
-			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, l));
+			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, locale));
 		}
 
 		public Long getId() {
@@ -109,11 +108,16 @@ public class ConsumerTable extends AbstractTable {
 	public void fetchAll(ConsumerService service) {
 		List<Consumer> consumers = service.selectAll(true);
 		for (Consumer c : consumers) {
-			data.add(new TableRow(c, messageSource, locale));
+			data.add(new TableRow(c));
 		}
 	}
 
 	public List<TableRow> getData() {
 		return data;
+	}
+	
+	@Override
+	public ConsumerTable validate() {
+		return this;
 	}
 }

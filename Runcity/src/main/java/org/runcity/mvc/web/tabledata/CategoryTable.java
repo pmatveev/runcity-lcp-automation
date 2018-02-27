@@ -2,7 +2,6 @@ package org.runcity.mvc.web.tabledata;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.runcity.db.entity.Category;
@@ -36,7 +35,7 @@ public class CategoryTable extends AbstractTable {
 		@JsonView(Views.Public.class)
 		private Map<String, String> description; 
 
-		public TableRow(Category c, MessageSource messageSource, Locale l) {
+		public TableRow(Category c) {
 			this.id = c.getId();
 			this.badge = c.getBadge();
 			
@@ -95,11 +94,16 @@ public class CategoryTable extends AbstractTable {
 	public void fetchAll(CategoryService service) {
 		List<Category> categories = service.selectAll(false);
 		for (Category c : categories) {
-			data.add(new TableRow(c, messageSource, locale));
+			data.add(new TableRow(c));
 		}
 	}	
 	
 	public List<TableRow> getData() {
 		return data;
+	}
+	
+	@Override
+	public CategoryTable validate() {
+		return this;
 	}
 }

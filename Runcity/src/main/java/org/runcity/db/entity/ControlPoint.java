@@ -3,6 +3,7 @@ package org.runcity.db.entity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
 import org.runcity.util.StringUtils;
+import org.springframework.context.MessageSource;
 
 @Entity
 @Table(name = "control_point")
@@ -196,8 +198,8 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		this.imageData = imageData;
 	}
 	
-	public String getNameDisplay() {
-		return StringUtils.xss(idt + " " + name);
+	public String getNameDisplay(MessageSource messageSource, Locale l) {
+		return StringUtils.xss(idt + " (" + getType().getDisplayName(messageSource, l) + ") " + name);
 	}
 
 	@Override

@@ -1113,13 +1113,11 @@ function initDatatables(table, loc) {
 
 			if (typeof form.attr("fetchFrom") !== 'undefined') {
 				func = function(e, dt, node, config) {
-					removeTableMessage(dt);
 					beforeOpenModalFetch(form, dataTablesSelected(dt, refCol, button.attr("extend")), create);
 					showModalForm(form);
 				}
 			} else {
 				func = function(e, dt, node, config) {
-					removeTableMessage(dt);
 					beforeOpenModal(form, false, create);
 					if (typeof refCol !== 'undefined') {
 						var refData = dataTablesSelected(dt, refCol, button.attr("extend"));

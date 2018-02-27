@@ -237,7 +237,7 @@ public class RestConsumerController extends AbstractRestController {
 		logger.info("GET /api/v1/consumerTable");
 		ConsumerTable table = new ConsumerTable(messageSource, localeList);
 		table.fetchAll(consumerService);
-		return table;
+		return table.validate();
 	}
 	
 	@JsonView(Views.Public.class)
@@ -306,7 +306,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		VolunteerTable table = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectVolunteers(c));
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(VolunteerTable.ByConsumerGame.class)
@@ -320,7 +320,7 @@ public class RestConsumerController extends AbstractRestController {
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectCoordinators(c));
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)

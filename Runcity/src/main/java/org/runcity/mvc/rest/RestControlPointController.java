@@ -66,7 +66,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		ControlPointTable table = new ControlPointTable(messageSource, localeList, g);
 		table.fetchByGame(controlPointService, g);
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
@@ -92,7 +92,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		ControlPoint c = controlPointService.selectById(id, false);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-		result.addOption(c.getId(), c.getNameDisplay());
+		result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
 		return result;
 	}
 	
@@ -106,7 +106,7 @@ public class RestControlPointController extends AbstractRestController {
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
-				result.addOption(c.getId(), c.getNameDisplay());
+				result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
 			}
 		}
 		return result;
@@ -126,7 +126,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
-			result.addOption(c.getId(), c.getNameDisplay());
+			result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
 		}
 		return result;
 	}
@@ -186,7 +186,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		VolunteerTable table = new VolunteerTable(messageSource, localeList, cp);
 		table.add(controlPointService.selectVolunteers(cp));
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)

@@ -61,7 +61,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/gameTable");
 		GameTable table = new GameTable(messageSource, localeList);
 		table.fetchAll(gameService, localeList);
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
@@ -133,7 +133,7 @@ public class RestGameController extends AbstractRestController {
 		Game game = gameService.selectById(gameId, true);
 		RouteTable table = new RouteTable(messageSource, localeList, game);
 		table.fill(game);
-		return table;
+		return table.validate();
 	}
 
 	@JsonView(RouteTable.ByCategory.class)
@@ -146,7 +146,7 @@ public class RestGameController extends AbstractRestController {
 		Category category = categoryService.selectById(categoryId, true);
 		RouteTable table = new RouteTable(messageSource, localeList, category);
 		table.fill(category);
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
@@ -203,7 +203,7 @@ public class RestGameController extends AbstractRestController {
 		Route r = routeService.selectById(routeId, true);
 		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.fill(r);
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
@@ -276,7 +276,7 @@ public class RestGameController extends AbstractRestController {
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
 		table.add(gameService.selectCoordinators(g));
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(VolunteerTable.ByGameControlPoint.class)
@@ -290,7 +290,7 @@ public class RestGameController extends AbstractRestController {
 
 		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
 		table.add(gameService.selectVolunteers(g));
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)

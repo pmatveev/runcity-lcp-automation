@@ -40,11 +40,11 @@ public class RestCategoryController extends AbstractRestController {
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/categoryTable", method = RequestMethod.GET)
-	public CategoryTable getConsumerTable() {
+	public CategoryTable getCategoryTable() {
 		logger.info("GET /api/v1/categoryTable");
 		CategoryTable table = new CategoryTable(messageSource, localeList);
 		table.fetchAll(categoryService);
-		return table;
+		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)

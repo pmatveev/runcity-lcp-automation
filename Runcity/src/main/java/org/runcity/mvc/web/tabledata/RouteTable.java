@@ -3,7 +3,6 @@ package org.runcity.mvc.web.tabledata;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
@@ -60,22 +59,16 @@ public class RouteTable extends AbstractTable {
 		@JsonView(ByCategory.class)
 		private String gameCountry;
 
-		public TableRow(Route r, MessageSource messageSource, Locale l, Class<?> tableView) {
+		public TableRow(Route r) {
 			this.id = r.getId();
-
-			if (ByGame.class.equals(tableView)) {
-				this.categoryBadge = r.getCategory().getBadge();
-				this.category = StringUtils.xss(r.getCategory().getLocalizedName(r.getGame().getLocale()));
-				this.categoryDescription = StringUtils.xss(r.getCategory().getLocalizedDescription(r.getGame().getLocale()));
-			}
-
-			if (ByCategory.class.equals(tableView)) {
-				this.game = StringUtils.xss(r.getGame().getName());
-				this.gameDateFrom = r.getGame().getDateFrom();
-				this.gameDateTo = r.getGame().getDateTo();
-				this.gameCity = StringUtils.xss(r.getGame().getCity());
-				this.gameCountry = StringUtils.xss(r.getGame().getCountry());
-			}
+			this.categoryBadge = r.getCategory().getBadge();
+			this.category = StringUtils.xss(r.getCategory().getLocalizedName(r.getGame().getLocale()));
+			this.categoryDescription = StringUtils.xss(r.getCategory().getLocalizedDescription(r.getGame().getLocale()));
+			this.game = StringUtils.xss(r.getGame().getName());
+			this.gameDateFrom = r.getGame().getDateFrom();
+			this.gameDateTo = r.getGame().getDateTo();
+			this.gameCity = StringUtils.xss(r.getGame().getCity());
+			this.gameCountry = StringUtils.xss(r.getGame().getCountry());
 		}
 
 		public Long getId() {
@@ -151,17 +144,22 @@ public class RouteTable extends AbstractTable {
 
 	public void fill(Game g) {
 		for (Route r : g.getCategories()) {
-			data.add(new TableRow(r, messageSource, locale, ByGame.class));
+			data.add(new TableRow(r));
 		}
 	}
 
 	public void fill(Category c) {
 		for (Route r : c.getGames()) {
-			data.add(new TableRow(r, messageSource, locale, ByCategory.class));
+			data.add(new TableRow(r));
 		}
 	}
 
 	public List<TableRow> getData() {
 		return data;
+	}
+	
+	@Override
+	public RouteTable validate() {
+		return this;
 	}
 }
