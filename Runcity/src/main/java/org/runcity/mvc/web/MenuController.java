@@ -73,7 +73,7 @@ public class MenuController {
 	public String controlPointsByGame(Model model, @PathVariable Long gameId) {
 		Game g = gameService.selectById(gameId, false);
 		if (g == null) {
-			throw new RuntimeException();
+			return "exception/invalidUrl";
 		}
 		ControlPointTable table = new ControlPointTable(messageSource, localeList, g);
 		table.processModel(model);
@@ -86,7 +86,7 @@ public class MenuController {
 	public String categoriesByGame(Model model, @PathVariable Long gameId) {
 		Game g = gameService.selectById(gameId, false);
 		if (g == null) {
-			throw new RuntimeException();
+			return "exception/invalidUrl";
 		}
 		
 		RouteTable table = new RouteTable(messageSource, localeList, g);
@@ -100,7 +100,7 @@ public class MenuController {
 	public String gamesByCategory(Model model, @PathVariable Long categoryId) {
 		Category c = categoryService.selectById(categoryId, false);
 		if (c == null) {
-			throw new RuntimeException();
+			return "exception/invalidUrl";
 		}
 		
 		RouteTable table = new RouteTable(messageSource, localeList, c);

@@ -45,6 +45,10 @@ public class FrameController {
 	@RequestMapping(value = "secure/iframe/route/{routeId}", method = RequestMethod.GET)
 	public String routeDetails(Model model, @PathVariable Long routeId, @RequestParam(required = true) String referrer) {
 		Route r = routeService.selectById(routeId, true);
+		
+		if (r == null) {
+			return "exception/invalidUrlSub";
+		}
 	
 		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.processModel(model, referrer);
@@ -57,6 +61,10 @@ public class FrameController {
 	@RequestMapping(value = "/secure/iframe/game/{gameId}", method = RequestMethod.GET)
 	public String gameDetails(Model model, @PathVariable Long gameId, @RequestParam(required = true) String referrer) {
 		Game g = gameService.selectById(gameId, false);
+		
+		if (g == null) {
+			return "exception/invalidUrlSub";
+		}
 
 		VolunteerTable coordinatorsTable = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
 		VolunteerTable volunteersTable = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);;
@@ -72,6 +80,10 @@ public class FrameController {
 	@RequestMapping(value = "/secure/iframe/controlPoint/{controlPointId}", method = RequestMethod.GET)
 	public String controlPointDetails(Model model, @PathVariable Long controlPointId, @RequestParam(required = true) String referrer) {
 		ControlPoint cp = controlPointService.selectById(controlPointId, false);
+		
+		if (cp == null) {
+			return "exception/invalidUrlSub";
+		}
 
 		VolunteerTable table = new VolunteerTable(messageSource, localeList, cp);
 		table.processModel(model, referrer);
@@ -84,6 +96,10 @@ public class FrameController {
 	@RequestMapping(value = "/secure/iframe/consumer/{consumerId}", method = RequestMethod.GET)
 	public String consumerDetails(Model model, @PathVariable Long consumerId, @RequestParam(required = true) String referrer) {
 		Consumer c = consumerService.selectById(consumerId, false);
+		
+		if (c == null) {
+			return "exception/invalidUrlSub";
+		}
 
 		VolunteerTable coordinatorsTable = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
 		VolunteerTable volunteersTable = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
