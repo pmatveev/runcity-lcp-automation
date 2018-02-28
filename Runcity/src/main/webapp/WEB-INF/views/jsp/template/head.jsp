@@ -69,6 +69,8 @@
 	<script type="text/javascript" src="${fileLoc}" charset="UTF-8"></script>
 	<script type="text/javascript" src="${selectLoc}" charset="UTF-8"></script>
 </c:if>
+<spring:url value="/resources/i18n/http-error.${lang}.js" var="httpErrLoc" />
+<script type="text/javascript" src="${httpErrLoc}" charset="UTF-8"></script>
 
 <title><fmt:message key="common.title" bundle="${msg}" /></title>
 <script type="text/javascript">

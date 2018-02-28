@@ -30,6 +30,24 @@ function initHtml(container, dtLocalizationLink) {
 	});
 }
 
+function getHttpError(statusText, status, type) {
+	var result;
+	
+	if (statusText == "parsererror" && status == 200) {
+		result = httpError[403];
+	} else if (statusText == "error") {
+		result = httpError[status];
+	} else  {
+		result = httpError["hang" + type];
+	}
+	
+	if (typeof result === 'undefined') {
+		result = httpError["default"];
+	}
+	
+	return result;
+}
+
 function emptyValue(val) {
 	return typeof val == 'undefined' || val == null || val == '' || val.length == 0;
 }
@@ -416,22 +434,7 @@ function loadAjaxSourcedError(form, elem, data) {
 	elem.attr("loaded-from", null);
 	removeFormMessage(form);
 	removeMessage(elem);
-
-	if (data.statusText == "parsererror" && data.status == 200) {
-		data.statusText = "error";
-		data.status = 403;
-	}
-	
-	if (data.statusText == "error" && data.status != 0) {
-		if (data.status == 403) {
-			setFormMessage(form, translations['forbidden'], "danger");
-		} else {
-			setFormMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status), "danger");
-		}
-	} else {
-		setFormMessage(form, translations['ajaxHangPost'], "danger");
-	}
+	setFormMessage(form, getHttpError(data.statusText, data.status, "GET"), "danger");
 }
 
 function loadAjaxSourced(elem) {
@@ -526,22 +529,7 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 function initAjaxSourcedError(form, elem, data) {
 	removeFormMessage(form);
 	removeMessage(elem);
-
-	if (data.statusText == "parsererror" && data.status == 200) {
-		data.statusText = "error";
-		data.status = 403;
-	}
-	
-	if (data.statusText == "error" && data.status != 0) {
-		if (data.status == 403) {
-			setFormMessage(form, translations['forbidden'], "danger");
-		} else {
-			setFormMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status), "danger");
-		}
-	} else {
-		setFormMessage(form, translations['ajaxHangPost'], "danger");
-	}
+	setFormMessage(form, getHttpError(data.statusText, data.status, "GET"), "danger");
 	form.data('loading', -1);
 	changeModalFormState(form, true, false, false);
 }
@@ -688,18 +676,8 @@ function modalFormOpenError(form, data, recId) {
 
 	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
+	setFormMessage(form, getHttpError(data.statusText, data.status, "GET"), "danger");
 
-	if (data.statusText == "parsererror" && data.status == 200) {
-		data.statusText = "error";
-		data.status = 403;
-	}
-	
-	if (data.statusText == "error" && data.status != 0) {
-		setFormMessage(form, translations['ajaxErr'].replace("{0}",
-				data.status), "danger");
-	} else {
-		setFormMessage(form, translations['ajaxHangGet'], "danger");
-	}
 	addReloadLink(form, recId);
 }
 
@@ -918,22 +896,7 @@ function modalFormError(form, data) {
 
 	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
-	
-	if (data.statusText == "parsererror" && data.status == 200) {
-		data.statusText = "error";
-		data.status = 403;
-	}
-	
-	if (data.statusText == "error" && data.status != 0) {		
-		if (data.status == 403) {
-			setFormMessage(form, translations['forbidden'], "danger");
-		} else {
-			setFormMessage(form, translations['ajaxErr'].replace("{0}",
-					data.status), "danger");
-		}
-	} else {
-		setFormMessage(form, translations['ajaxHangPost'], "danger");
-	}
+	setFormMessage(form, getHttpError(data.statusText, data.status, "POST"), "danger");
 }
 
 function submitModalForm(form, event) {
@@ -1045,21 +1008,7 @@ function dataTablesAjaxSuccess(dt, data) {
 }
 
 function dataTablesAjaxError(dt, data) {
-	if (data.statusText == "parsererror" && data.status == 200) {
-		data.statusText = "error";
-		data.status = 403;
-	}
-	
-	if (data.statusText == "error" && data.status != 0) {
-		if (data.status == 403) {
-			setTableMessage(dt, translations['forbidden'], "danger");
-		} else {
-			setTableMessage(dt, translations['ajaxErr'].replace("{0}",
-					data.status), "danger");
-		}
-	} else {
-		setTableMessage(dt, translations['ajaxHangPost'], "danger");
-	}
+	setTableMessage(dt, getHttpError(data.statusText, data.status, "GET"), "danger");
 }
 
 function dataTablesSelected(dt, refCol, selector) {
@@ -1451,22 +1400,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 						var tab = div.find("ul.nav.nav-tabs li a").first().tab('show');
 					},
 					error : function(data) {
-						var err;
-
-						if (data.statusText == "parsererror" && data.status == 200) {
-							data.statusText = "error";
-							data.status = 403;
-						}
-						
-						if (data.statusText == "error" && data.status != 0) {
-							if (data.status == 403) {
-								err = translations['forbidden'];
-							} else {
-								err = translations['ajaxErr'].replace("{0}", data.status);
-							}
-						} else {
-							err = translations['ajaxHangPost'];
-						}
+						var err = getHttpError(data.statusText, data.status, "GET");
 						var div = $('#' + divId);
 						div.html('<div class="alert alert-danger">' + err + '</div>');
 						div.attr('id', null);						
