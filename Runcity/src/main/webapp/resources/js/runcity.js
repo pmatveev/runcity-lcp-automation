@@ -416,7 +416,13 @@ function loadAjaxSourcedError(form, elem, data) {
 	elem.attr("loaded-from", null);
 	removeFormMessage(form);
 	removeMessage(elem);
-	if (data.statusText = "error" && data.status != 0) {
+
+	if (data.statusText == "parsererror" && data.status == 200) {
+		data.statusText = "error";
+		data.status = 403;
+	}
+	
+	if (data.statusText == "error" && data.status != 0) {
 		if (data.status == 403) {
 			setFormMessage(form, translations['forbidden'], "danger");
 		} else {
@@ -520,7 +526,13 @@ function initAjaxSourcedSuccess(form, elem, jsonUrl, val, data) {
 function initAjaxSourcedError(form, elem, data) {
 	removeFormMessage(form);
 	removeMessage(elem);
-	if (data.statusText = "error" && data.status != 0) {
+
+	if (data.statusText == "parsererror" && data.status == 200) {
+		data.statusText = "error";
+		data.status = 403;
+	}
+	
+	if (data.statusText == "error" && data.status != 0) {
 		if (data.status == 403) {
 			setFormMessage(form, translations['forbidden'], "danger");
 		} else {
@@ -676,7 +688,13 @@ function modalFormOpenError(form, data, recId) {
 
 	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
-	if (data.statusText = "error" && data.status != 0) {
+
+	if (data.statusText == "parsererror" && data.status == 200) {
+		data.statusText = "error";
+		data.status = 403;
+	}
+	
+	if (data.statusText == "error" && data.status != 0) {
 		setFormMessage(form, translations['ajaxErr'].replace("{0}",
 				data.status), "danger");
 	} else {
@@ -1027,7 +1045,12 @@ function dataTablesAjaxSuccess(dt, data) {
 }
 
 function dataTablesAjaxError(dt, data) {
-	if (data.statusText = "error" && data.status != 0) {
+	if (data.statusText == "parsererror" && data.status == 200) {
+		data.statusText = "error";
+		data.status = 403;
+	}
+	
+	if (data.statusText == "error" && data.status != 0) {
 		if (data.status == 403) {
 			setTableMessage(dt, translations['forbidden'], "danger");
 		} else {
@@ -1429,7 +1452,13 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					},
 					error : function(data) {
 						var err;
-						if (data.statusText = "error" && data.status != 0) {
+
+						if (data.statusText == "parsererror" && data.status == 200) {
+							data.statusText = "error";
+							data.status = 403;
+						}
+						
+						if (data.statusText == "error" && data.status != 0) {
 							if (data.status == 403) {
 								err = translations['forbidden'];
 							} else {
