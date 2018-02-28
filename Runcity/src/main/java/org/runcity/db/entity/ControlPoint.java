@@ -199,6 +199,10 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	}
 	
 	public String getNameDisplay(MessageSource messageSource, Locale l) {
+		return StringUtils.xss(idt + " " + name);
+	}
+	
+	public String getNameDisplayWithType(MessageSource messageSource, Locale l) {
 		return StringUtils.xss(idt + " (" + getType().getDisplayName(messageSource, l) + ") " + name);
 	}
 

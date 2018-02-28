@@ -92,7 +92,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		ControlPoint c = controlPointService.selectById(id, false);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-		result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
+		result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
 		return result;
 	}
 	
@@ -106,7 +106,7 @@ public class RestControlPointController extends AbstractRestController {
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
-				result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
+				result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
 			}
 		}
 		return result;
@@ -126,7 +126,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
-			result.addOption(c.getId(), c.getNameDisplay(messageSource, locale));
+			result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
 		}
 		return result;
 	}
