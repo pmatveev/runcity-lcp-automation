@@ -9,6 +9,7 @@ import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
+import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,11 @@ public class FrameController {
 			return "exception/invalidUrlSub";
 		}
 	
-		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
-		table.processModel(model, referrer);
+		RouteItemTable routeItemTable = new RouteItemTable(messageSource, localeList, r);
+		routeItemTable.processModel(model, referrer);
+		
+		TeamTable teamTable = new TeamTable(messageSource, localeList, r);
+		teamTable.processModel(model, referrer);
 		
 		model.addAttribute("prefix", referrer);
 		return "/sub/routeDetails";

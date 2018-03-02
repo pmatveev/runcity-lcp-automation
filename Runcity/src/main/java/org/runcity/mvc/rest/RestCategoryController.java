@@ -15,6 +15,7 @@ import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
+import org.runcity.mvc.web.tabledata.RouteTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -149,4 +150,17 @@ public class RestCategoryController extends AbstractRestController {
 		}
 		return result;
 	}
+
+	@JsonView(RouteTable.ByCategory.class)
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/routeTableByCategory", method = RequestMethod.GET)
+	public RouteTable getRouteTableByCategory(@RequestParam(required = true) Long categoryId) {
+		logger.info("GET /api/v1/routeTableByCategory");
+		logger.debug("\tcategoryId=" + categoryId);
+		
+		Category category = categoryService.selectById(categoryId, true);
+		RouteTable table = new RouteTable(messageSource, localeList, category);
+		table.fill(category);
+		return table.validate();
+	}	
 }

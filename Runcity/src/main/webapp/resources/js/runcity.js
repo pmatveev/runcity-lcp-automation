@@ -1425,7 +1425,12 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		dataTable['expanded'] = {};
 		
 	    $('#' + table.attr("id") + ' tbody').on('click', 'td.details-control', function () {
-	        var tr = $(this).closest('tr');
+	    	var elem = $(this);
+	    	if (table.attr("id") != elem.closest("table").attr("id")) {
+	    		return;
+	    	}
+	    	
+	        var tr = elem.closest("tr");
 	        var tdi = tr.find("span.glyphicon");
 	        var row = dataTable.row(tr);
 	

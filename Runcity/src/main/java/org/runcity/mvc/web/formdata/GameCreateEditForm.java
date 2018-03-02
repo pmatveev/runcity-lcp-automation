@@ -11,6 +11,7 @@ import org.runcity.mvc.web.util.FormDateColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.mvc.web.util.FormListboxLocaleColumn;
 import org.runcity.mvc.web.util.FormListboxTimezoneColumn;
+import org.runcity.mvc.web.util.FormNumberColumn;
 import org.runcity.mvc.web.util.FormPlainStringColumn;
 import org.runcity.mvc.web.util.FormStringColumn;
 import org.runcity.util.DynamicLocaleList;
@@ -49,6 +50,9 @@ public class GameCreateEditForm extends AbstractForm {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
 	private FormDateColumn dateTo;
 
+	@JsonView(Views.Public.class)
+	private FormNumberColumn delay;
+
 	public GameCreateEditForm() {
 		this(null);
 	}
@@ -78,10 +82,12 @@ public class GameCreateEditForm extends AbstractForm {
 		this.dateTo = new FormDateColumn(this, new ColumnDefinition("dateTo", "game.dateTo"));
 		this.dateTo.setTimeValue(true);
 		this.dateTo.setRequired(true);
+		this.delay = new FormNumberColumn(this, new ColumnDefinition("delay", "game.delay"));
+		this.delay.setMin(0);
 	}
 
 	public GameCreateEditForm(Long id, String locale, String name, String city, String country, String timezone,
-			Date dateFrom, Date dateTo, DynamicLocaleList localeList) {
+			Date dateFrom, Date dateTo, Integer delay, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setLocale(locale);
@@ -91,11 +97,12 @@ public class GameCreateEditForm extends AbstractForm {
 		setTimezone(timezone);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
+		setDelay(delay);
 	}
 
 	public GameCreateEditForm(Game g, DynamicLocaleList localeList) {
 		this(g.getId(), g.getLocale(), g.getName(), g.getCity(), g.getCountry(), g.getTimezone(), g.getDateFrom(),
-				g.getDateTo(), localeList);
+				g.getDateTo(), g.getDelay(), localeList);
 	}
 
 	public Long getId() {
@@ -162,6 +169,14 @@ public class GameCreateEditForm extends AbstractForm {
 		this.dateTo.setValue(dateTo);
 	}
 
+	public Integer getDelay() {
+		return delay.getValue();
+	}
+
+	public void setDelay(Integer delay) {
+		this.delay.setValue(delay);
+	}
+
 	public FormIdColumn getIdColumn() {
 		return id;
 	}
@@ -194,6 +209,10 @@ public class GameCreateEditForm extends AbstractForm {
 		return dateTo;
 	}
 
+	public FormNumberColumn getDelayColumn() {
+		return delay;
+	}
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		logger.debug("Validating " + getFormName());
@@ -209,6 +228,6 @@ public class GameCreateEditForm extends AbstractForm {
 
 	public Game getGame() {
 		return new Game(getId(), getLocale(), getName(), getCity(), getCountry(), getTimezone(), getDateFrom(),
-				getDateTo(), null);
+				getDateTo(), getDelay(), null);
 	}
 }

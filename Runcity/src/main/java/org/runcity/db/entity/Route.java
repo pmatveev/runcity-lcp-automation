@@ -27,6 +27,9 @@ public class Route {
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "route")
 	private Set<RouteItem> routeItems;
 	
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "route")
+	private Set<Team> teams;
+	
 	public Route() {
 	}
 
@@ -93,5 +96,12 @@ public class Route {
 		} else if (!game.equals(other.game))
 			return false;
 		return true;
+	}
+	
+	public String getControlPointName() {
+		if (game == null || category == null) {
+			return null;
+		}
+		return category.getLocalizedName(game.getLocale());
 	}
 }

@@ -3,14 +3,14 @@ package org.runcity.mvc.rest;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
-import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
@@ -18,15 +18,18 @@ import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.RouteCreateForm;
-import org.runcity.mvc.web.formdata.RouteItemCreateEditForm;
+import org.runcity.mvc.web.formdata.RouteItemCreateEditByRouteForm;
+import org.runcity.mvc.web.formdata.TeamCreateEditByRouteForm;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCoordForm;
 import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,13 +49,16 @@ public class RestGameController extends AbstractRestController {
 	private GameService gameService;
 	
 	@Autowired
-	private CategoryService categoryService;
+	private RouteService routeService;
 	
 	@Autowired
-	private RouteService routeService;
+	private TeamService teamService;
 	
 	@Autowired 
 	private VolunteerService volunteerService;
+	
+	@Autowired
+	private ApplicationContext context;
 	
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
@@ -132,22 +138,9 @@ public class RestGameController extends AbstractRestController {
 		
 		Game game = gameService.selectById(gameId, true);
 		RouteTable table = new RouteTable(messageSource, localeList, game);
-		table.fill(game);
+		table.fill(game, context);
 		return table.validate();
 	}
-
-	@JsonView(RouteTable.ByCategory.class)
-	@Secured("ROLE_ADMIN")
-	@RequestMapping(value = "/api/v1/routeTableByCategory", method = RequestMethod.GET)
-	public RouteTable getRouteTableByCategory(@RequestParam(required = true) Long categoryId) {
-		logger.info("GET /api/v1/routeTableByCategory");
-		logger.debug("\tcategoryId=" + categoryId);
-		
-		Category category = categoryService.selectById(categoryId, true);
-		RouteTable table = new RouteTable(messageSource, localeList, category);
-		table.fill(category);
-		return table.validate();
-	}	
 	
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
@@ -218,13 +211,13 @@ public class RestGameController extends AbstractRestController {
 			return result;
 		}
 		
-		return new RouteItemCreateEditForm(ri, localeList);
+		return new RouteItemCreateEditByRouteForm(ri, localeList);
 	}
 	
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemCreateEdit", method = RequestMethod.POST)
-	public RestPostResponseBody routeItemCreateEdit(@RequestBody RouteItemCreateEditForm form) {		
+	public RestPostResponseBody routeItemCreateEdit(@RequestBody RouteItemCreateEditByRouteForm form) {		
 		logger.info("POST /api/v1/routeItemCreateEdit");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -396,5 +389,78 @@ public class RestGameController extends AbstractRestController {
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/teamTableByRoute", method = RequestMethod.GET)
+	public TeamTable getTeamsTableByRoute(@RequestParam(required = true) Long routeId) {
+		logger.info("GET /api/v1/teamTableByRoute");
+		logger.debug("\tgameId=" + routeId);
+		
+		Route r = routeService.selectById(routeId, false);
+		TeamTable table = new TeamTable(messageSource, localeList, r);
+		table.add(routeService.selectTeams(r));
+
+		return table.validate();
+	}	
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/teamCreateEdit/{id}", method = RequestMethod.GET)
+	public RestGetResponseBody initTeamCreateEditForm(@PathVariable Long id) {		
+		Team t = teamService.selectById(id);
+		if (t == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.popupFetchError");
+			return result;
+		}
+		
+		return new TeamCreateEditByRouteForm(t, localeList);
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/teamCreateEdit", method = RequestMethod.POST)
+	public RestPostResponseBody teamCreateEdit(@RequestBody TeamCreateEditByRouteForm form) {		
+		logger.info("POST /api/v1/teamCreateEdit");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		Team t = null;
+		try {
+			t = teamService.addOrUpdate(form.getTeam());
+		} catch (DBException e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.db.fail");
+			logger.error("DB exception", e);
+			return result;			
+		}
+		if (t == null) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.popupProcessError");
+		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/api/v1/teamDelete/", method = RequestMethod.DELETE)
+	public RestPostResponseBody teamDelete(@RequestBody List<Long> id) {
+		logger.info("DELETE /api/v1/routeItemDelete");
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		try {
+			teamService.delete(id);
+		} catch (Exception e) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("commom.db.deleteConstraint");
+		}
+		return result;		
 	}
 }

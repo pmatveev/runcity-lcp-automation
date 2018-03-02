@@ -5,7 +5,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="runcity" uri="/WEB-INF/runcity.tld"%>
 
-<c:set value="${gameCreateEditForm}" var="formVar"/>
+<c:set value="${teamCreateEditByRouteForm}" var="formVar"/>
 <runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}">	
 	<runcity:form-body modal="${modal}">
 		<div class="errorHolder">
@@ -17,7 +17,12 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>
 		</spring:bind>		
 		
-		<c:set value="${formVar.localeColumn}" var="col"/>
+		<c:set value="${formVar.routeIdColumn}" var="col"/>
+		<spring:bind path="${col.name}">
+			<runcity:input bundle="${msg}" column="${col}" status="${status.error}"/>
+		</spring:bind>	
+		
+		<c:set value="${formVar.numberColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" autofocus="autofocus" />
 		</spring:bind>	
@@ -27,32 +32,17 @@
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
-		<c:set value="${formVar.cityColumn}" var="col"/>
+		<c:set value="${formVar.startColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
-		<c:set value="${formVar.countryColumn}" var="col"/>
+		<c:set value="${formVar.contactColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	
 		
-		<c:set value="${formVar.timezoneColumn}" var="col"/>
-		<spring:bind path="${col.name}">
-			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
-		</spring:bind>	
-		
-		<c:set value="${formVar.dateFromColumn}" var="col"/>
-		<spring:bind path="${col.name}">
-			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
-		</spring:bind>	
-		
-		<c:set value="${formVar.dateToColumn}" var="col"/>
-		<spring:bind path="${col.name}">
-			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
-		</spring:bind>	
-		
-		<c:set value="${formVar.delayColumn}" var="col"/>
+		<c:set value="${formVar.addDataColumn}" var="col"/>
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" />
 		</spring:bind>	

@@ -56,6 +56,9 @@ public class GameTable extends AbstractTable {
 		private Date dateTo;
 		
 		@JsonView(Views.Public.class)
+		private Integer delay;
+		
+		@JsonView(Views.Public.class)
 		private String categories;
 
 		public TableRow(Game g) {
@@ -67,6 +70,7 @@ public class GameTable extends AbstractTable {
 			this.timezone = StringUtils.xss(new FormListboxTimezoneColumn().getOptionDisplay(g.getTimezone(), messageSource, GameTable.this.locale));
 			this.dateFrom = g.getDateFrom();
 			this.dateTo = g.getDateTo();
+			this.delay = g.getDelay();
 			
 			List<String> categories = new ArrayList<String>(g.getCategories().size());
 			for (Route gc : g.getCategories()) {
@@ -107,6 +111,10 @@ public class GameTable extends AbstractTable {
 		public Date getDateTo() {
 			return dateTo;
 		}
+		
+		public Integer getDelay() {
+			return delay;
+		}
 
 		public String getCategories() {
 			return categories;
@@ -126,6 +134,7 @@ public class GameTable extends AbstractTable {
 
 		this.extensions.add(new ColumnDefinition("locale", "game.locale"));
 		this.extensions.add(new ColumnDefinition("timezone", "game.timezone"));
+		this.extensions.add(new ColumnDefinition("delay", "game.delay"));
 		
 		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:gameCreateEditForm", null));
 		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:gameCreateEditForm:id", "selectedSingle"));

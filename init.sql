@@ -52,6 +52,7 @@ CREATE TABLE runcity.game (
   date_to DATETIME NOT NULL,
   locale VARCHAR(32) NOT NULL,
   name VARCHAR(32) NOT NULL,
+  delay INT(11) DEFAULT NULL,
   PRIMARY KEY (id),
   INDEX game_date (date_from DESC, date_to DESC))
 ENGINE = InnoDB
@@ -63,7 +64,7 @@ CREATE TABLE runcity.control_point (
   idt VARCHAR(16) NOT NULL,
   image INT(18) NULL DEFAULT NULL,
   name VARCHAR(255) NOT NULL,
-  type VARCHAR(1) NOT NULL;
+  type VARCHAR(1) NOT NULL,
   game__id INT(11) NOT NULL,
   control_point__id INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (id),
@@ -84,7 +85,6 @@ CREATE TABLE runcity.route (
   category__id INT(11) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX route_game (game__id ASC, category__id ASC),
-  UNIQUE INDEX route_category (category__id ASC, game__id ASC),
   CONSTRAINT FK_route_category
     FOREIGN KEY (category__id)
     REFERENCES runcity.category (id),
@@ -163,6 +163,23 @@ CREATE TABLE runcity.volunteer (
   CONSTRAINT FK_volunteer_game
     FOREIGN KEY (game__id)
     REFERENCES runcity.game (id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE runcity.team (
+  id INT(11) NOT NULL,
+  route__id INT(11) NOT NULL,
+  team_number VARCHAR(32) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  start_date DATETIME NOT NULL,
+  contact VARCHAR(255) NOT NULL,
+  add_data VARCHAR(4000) DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX team_number (team_number ASC, route__id ASC),
+  INDEX team_route (route__id ASC),
+  CONSTRAINT FK_team_route
+    FOREIGN KEY (route__id)
+    REFERENCES runcity.route (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

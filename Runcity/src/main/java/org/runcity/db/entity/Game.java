@@ -31,7 +31,7 @@ public class Game {
 
 	@Column(name = "country", length = 32, nullable = false)
 	private String country;
-	
+
 	@Column(name = "timezone", length = 32, nullable = false)
 	private String timezone;
 
@@ -41,6 +41,9 @@ public class Game {
 	@Column(name = "date_to", columnDefinition = "datetime", nullable = false)
 	private Date dateTo;
 
+	@Column(name = "delay", columnDefinition = "int", nullable = true)
+	private Integer delay;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "game", orphanRemoval = true)
 	private Set<Route> categories;
 
@@ -49,12 +52,13 @@ public class Game {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "game", orphanRemoval = true)
 	private List<Volunteer> volunteers;
-	
+
 	public Game() {
 		this.categories = new HashSet<Route>();
 	}
 
-	public Game(Long id, String locale, String name, String city, String country, String timezone, Date dateFrom, Date dateTo, Set<Route> categories) {
+	public Game(Long id, String locale, String name, String city, String country, String timezone, Date dateFrom,
+			Date dateTo, Integer delay, Set<Route> categories) {
 		setId(id);
 		setLocale(locale);
 		setName(name);
@@ -63,6 +67,7 @@ public class Game {
 		setTimezone(timezone);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
+		setDelay(delay);
 		if (categories != null) {
 			this.categories = categories;
 		}
@@ -76,6 +81,7 @@ public class Game {
 		this.timezone = g.timezone;
 		this.dateFrom = g.dateFrom;
 		this.dateTo = g.dateTo;
+		this.delay = g.delay;
 		CollectionUtils.applyChanges(categories, g.categories);
 	}
 
@@ -143,6 +149,14 @@ public class Game {
 		this.dateTo = dateTo;
 	}
 
+	public Integer getDelay() {
+		return delay;
+	}
+
+	public void setDelay(Integer delay) {
+		this.delay = delay;
+	}
+
 	public Set<Route> getCategories() {
 		return categories;
 	}
@@ -179,12 +193,12 @@ public class Game {
 			return false;
 		return true;
 	}
-	
+
 	public void addCategory(Category category) {
 		this.categories.add(new Route(null, this, category));
 	}
-	
+
 	public String getDisplay() {
-		return name + " (" + city + ", " + country + ")"; 
+		return name + " (" + city + ", " + country + ")";
 	}
 }

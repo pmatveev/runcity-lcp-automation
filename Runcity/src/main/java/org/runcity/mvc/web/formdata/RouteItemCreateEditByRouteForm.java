@@ -14,8 +14,8 @@ import org.springframework.validation.Errors;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class RouteItemCreateEditForm extends AbstractForm {
-	private static final Logger logger = Logger.getLogger(RouteItemCreateEditForm.class);
+public class RouteItemCreateEditByRouteForm extends AbstractForm {
+	private static final Logger logger = Logger.getLogger(RouteItemCreateEditByRouteForm.class);
 
 	@JsonView(Views.Public.class)
 	private FormIdColumn id;
@@ -29,12 +29,12 @@ public class RouteItemCreateEditForm extends AbstractForm {
 	@JsonView(Views.Public.class)
 	private FormDddwControlPointColumn controlPoint;
 	
-	public RouteItemCreateEditForm() {
+	public RouteItemCreateEditByRouteForm() {
 		this(null);
 	}
 	
-	public RouteItemCreateEditForm(DynamicLocaleList localeList) {
-		super("routeItemCreateEditForm", "/api/v1/routeItemCreateEdit/{0}", null, "/api/v1/routeItemCreateEdit", localeList);
+	public RouteItemCreateEditByRouteForm(DynamicLocaleList localeList) {
+		super("routeItemCreateEditByRouteForm", "/api/v1/routeItemCreateEdit/{0}", null, "/api/v1/routeItemCreateEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("routeItem.header");
 		
@@ -42,12 +42,13 @@ public class RouteItemCreateEditForm extends AbstractForm {
 		this.routeId = new FormIdRouteColumn(this, new ColumnDefinition("routeId", "routeid"));
 		this.leg = new FormNumberColumn(this, new ColumnDefinition("leg", "routeItem.leg"));
 		this.leg.setMin(0);
+		this.leg.setMax(99);
 		this.controlPoint = FormDddwControlPointColumn.getByRouteUnused(this, new ColumnDefinition("controlPoint", "routeItem.controlPoint"), id, routeId);
 		this.controlPoint.setForceRefresh(true);
 		this.controlPoint.setRequired(true);
 	}
 	
-	public RouteItemCreateEditForm(Long id, Long routeId, Integer leg, Long controlPointId, DynamicLocaleList localeList) {
+	public RouteItemCreateEditByRouteForm(Long id, Long routeId, Integer leg, Long controlPointId, DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setRouteId(routeId);
@@ -55,7 +56,7 @@ public class RouteItemCreateEditForm extends AbstractForm {
 		setControlPoint(controlPointId);
 	}
 	
-	public RouteItemCreateEditForm(RouteItem ri, DynamicLocaleList localeList) {
+	public RouteItemCreateEditByRouteForm(RouteItem ri, DynamicLocaleList localeList) {
 		this(ri.getId(), ri.getRoute().getId(), ri.getLegNumber(), ri.getControlPoint().getId(), localeList);
 	}
 

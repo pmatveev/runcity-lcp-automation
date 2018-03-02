@@ -5,7 +5,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="runcity" uri="/WEB-INF/runcity.tld"%>
 
-<c:set value="${routeItemCreateEditForm}" var="formVar"/>
+<c:set value="${routeItemCreateEditByRouteForm}" var="formVar"/>
 <runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}">	
 	<runcity:form-body modal="${modal}">
 		<div class="errorHolder">

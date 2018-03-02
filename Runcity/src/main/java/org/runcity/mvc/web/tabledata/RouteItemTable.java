@@ -9,7 +9,7 @@ import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
-import org.runcity.mvc.web.formdata.RouteItemCreateEditForm;
+import org.runcity.mvc.web.formdata.RouteItemCreateEditByRouteForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
@@ -28,6 +28,7 @@ public class RouteItemTable extends AbstractTable {
 	private Map<Integer, Integer> legEnd = new HashMap<Integer, Integer>();
 	
 	protected class TableRow {
+		private static final int MAX_SORT = 9999;
 		private final RouteItemTable table = RouteItemTable.this;
 		
 		@JsonView(Views.Public.class)
@@ -88,7 +89,7 @@ public class RouteItemTable extends AbstractTable {
 					break;
 				case FINISH:
 					table.finish++;
-					this.sort = 9999;
+					this.sort = MAX_SORT;
 					this.legNum = null;
 					break;
 				}
@@ -139,11 +140,11 @@ public class RouteItemTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 		this.columns.add(new ColumnDefinition("address", "controlPoint.address"));
 		
-		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:routeItemCreateEditForm", null));
-		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:routeItemCreateEditForm:id", "selectedSingle"));
+		this.buttons.add(new ButtonDefinition("actions.create", null, "btn", "createform:routeItemCreateEditByRouteForm", null));
+		this.buttons.add(new ButtonDefinition("actions.edit", null, "btn", "form:routeItemCreateEditByRouteForm:id", "selectedSingle"));
 		this.buttons.add(new ButtonDefinition("actions.delete", "confirmation.delete", "btn", "ajax:DELETE:/api/v1/routeItemDelete/:id", "selected")); 
 		
-		RouteItemCreateEditForm form = new RouteItemCreateEditForm(localeList);
+		RouteItemCreateEditByRouteForm form = new RouteItemCreateEditByRouteForm(localeList);
 		form.setRouteId(route.getId());
 		this.relatedForms.add(form);
 	}

@@ -7,12 +7,14 @@ import java.util.List;
 import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.service.RouteService;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -59,7 +61,10 @@ public class RouteTable extends AbstractTable {
 		@JsonView(ByCategory.class)
 		private String gameCountry;
 
-		public TableRow(Route r) {
+		@JsonView(ByGame.class)
+		private Long teamNumber;
+
+		public TableRow(Route r, ApplicationContext context) {
 			this.id = r.getId();
 			this.categoryBadge = r.getCategory().getBadge();
 			this.category = StringUtils.xss(r.getCategory().getLocalizedName(r.getGame().getLocale()));
@@ -69,6 +74,11 @@ public class RouteTable extends AbstractTable {
 			this.gameDateTo = r.getGame().getDateTo();
 			this.gameCity = StringUtils.xss(r.getGame().getCity());
 			this.gameCountry = StringUtils.xss(r.getGame().getCountry());
+			
+			if (context != null) {
+				RouteService routeService = context.getBean(RouteService.class);
+				this.teamNumber = routeService.selectTeamNumber(r);
+			}
 		}
 
 		public Long getId() {
@@ -106,6 +116,10 @@ public class RouteTable extends AbstractTable {
 		public String getGameCountry() {
 			return gameCountry;
 		}
+		
+		public Long getTeamNumber() {
+			return teamNumber;
+		}
 	}
 
 	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
@@ -115,7 +129,9 @@ public class RouteTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("categoryBadge", "category.badge"));
 		this.columns.add(new ColumnDefinition("category", "route.category").setSort("asc", 0));
-		this.columns.add(new ColumnDefinition("categoryDescription", "category.description"));
+		this.columns.add(new ColumnDefinition("teamNumber", "route.teamNumber"));
+		
+		this.extensions.add(new ColumnDefinition("categoryDescription", "category.description"));
 
 		this.expandFrame = "/secure/iframe/route/{0}:id";
 
@@ -142,15 +158,15 @@ public class RouteTable extends AbstractTable {
 		this.expandFrame = "/secure/iframe/route/{0}:id";
 	}
 
-	public void fill(Game g) {
+	public void fill(Game g, ApplicationContext context) {
 		for (Route r : g.getCategories()) {
-			data.add(new TableRow(r));
+			data.add(new TableRow(r, context));
 		}
 	}
 
 	public void fill(Category c) {
 		for (Route r : c.getGames()) {
-			data.add(new TableRow(r));
+			data.add(new TableRow(r, null));
 		}
 	}
 

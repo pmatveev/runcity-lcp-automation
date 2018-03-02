@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Category;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormDddwCategoriesColumn;
 import org.runcity.mvc.web.util.FormIdGameColumn;
 import org.runcity.mvc.web.util.FormIdColumn;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
@@ -24,7 +26,7 @@ public class RouteCreateForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormDddwCategoriesColumn categories;
-	
+
 	private boolean categoriesAdded = false;
 
 	public RouteCreateForm() {
@@ -37,8 +39,10 @@ public class RouteCreateForm extends AbstractForm {
 
 		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameid"));
 		this.gameId.setCategories(true);
-		this.categories = FormDddwCategoriesColumn.getUnusedByGame(this, new ColumnDefinition("categories", "game.categories"), gameId);
+		this.categories = FormDddwCategoriesColumn.getUnusedByGame(this,
+				new ColumnDefinition("categories", "game.categories"), gameId);
 		this.categories.setForceRefresh(true);
+		this.categories.setCheckSubstring(true);
 	}
 
 	public Long getGameId() {
@@ -48,7 +52,7 @@ public class RouteCreateForm extends AbstractForm {
 	public void setGameId(Long gameId) {
 		this.gameId.setValue(gameId);
 	}
-	
+
 	public List<Long> getCategories() {
 		return categories.getValue();
 	}
@@ -70,8 +74,21 @@ public class RouteCreateForm extends AbstractForm {
 		logger.debug("Validating " + getFormName());
 		gameId.validate(context, errors);
 		categories.validate(context, errors);
+
+		String locale = gameId.getGame().getLocale();
+		for (Route r : gameId.getGame().getCategories()) {
+			for (Category c : categories.getCategories()) {
+				if (StringUtils.startsWith(r.getCategory().getPrefix(), c.getPrefix())
+						|| StringUtils.startsWith(c.getPrefix(), r.getCategory().getPrefix())) {
+					errors.rejectValue(categories.getName(), "game.validation.prefixUsed",
+							new Object[] { c.getLocalizedName(locale), r.getControlPointName(), c.getPrefix(),
+									r.getCategory().getPrefix() },
+							null);
+				}
+			}
+		}
 	}
-	
+
 	public Game getGame() {
 		if (!categoriesAdded) {
 			for (Category c : categories.getCategories()) {

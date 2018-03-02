@@ -5,8 +5,10 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Team;
 import org.runcity.db.repository.RouteItemRepository;
 import org.runcity.db.repository.RouteRepository;
+import org.runcity.db.repository.TeamRepository;
 import org.runcity.db.service.RouteService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class RouteServiceImpl implements RouteService {
 	
 	@Autowired
 	private RouteItemRepository routeItemRepository;
+	
+	@Autowired
+	private TeamRepository teamRepository;
 	
 	@Override
 	public Route selectById(Long id, boolean routeItem) {
@@ -67,5 +72,20 @@ public class RouteServiceImpl implements RouteService {
 		for (Long i : id) {
 			deleteItem(i);
 		}
+	}
+
+	@Override
+	public Long selectTeamNumber(Route r) {
+		return routeRepository.selectTeamNumber(r);
+	}
+
+	@Override
+	public List<Team> selectTeams(Long route) {
+		return selectTeams(routeRepository.findOne(route));
+	}
+
+	@Override
+	public List<Team> selectTeams(Route route) {
+		return teamRepository.findByRoute(route);
 	}
 }
