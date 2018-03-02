@@ -1,17 +1,20 @@
 package org.runcity.mvc.config;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.runcity.mvc.config.util.CommonAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
@@ -55,11 +59,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-			.antMatchers("/secure/**").authenticated()
-			.antMatchers("/api/**").authenticated()
-			.antMatchers("/api/**").authenticated()
-			.antMatchers("/register").anonymous()
-			.antMatchers("/common/api/**").anonymous()
+				.antMatchers("/secure/**").authenticated()
+				.antMatchers("/api/**").authenticated()
+				.antMatchers("/api/**").authenticated()
+				.antMatchers("/register").anonymous()
+				.antMatchers("/common/api/**").anonymous()
 			.and()
 				.formLogin()
 					.defaultSuccessUrl("/home")
@@ -111,5 +115,20 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
         return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
+    }
+    
+    @Bean
+    public ApplicationListener<InteractiveAuthenticationSuccessEvent> loginListener() {
+    	return new ApplicationListener<InteractiveAuthenticationSuccessEvent>() {
+    		@Autowired
+    		private HttpSession httpSession;
+    		
+			@Override
+			public void onApplicationEvent(InteractiveAuthenticationSuccessEvent event) {
+				if (RememberMeAuthenticationFilter.class.equals(event.getGeneratedBy())) {
+					sessionRegistry().registerNewSession(httpSession.getId(), event.getAuthentication().getPrincipal());
+				}
+			}
+		};
     }
 }

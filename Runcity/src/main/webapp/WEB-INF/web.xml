@@ -36,6 +36,11 @@
 			<taglib-location>/WEB-INF/tags/c-1_0-rt.tld</taglib-location>
 		</taglib>
 	</jsp-config>
+	<listener>
+		<listener-class>
+			org.springframework.web.context.request.RequestContextListener
+		</listener-class>
+	</listener>
 	<context-param>
 		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
 		<param-value>org.runcity.resources.i18n.main</param-value>
