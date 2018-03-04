@@ -38,11 +38,13 @@
 	</jsp-config>
 	<listener>
 		<listener-class>
-			org.springframework.web.context.request.RequestContextListener
-		</listener-class>
+			org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
 	<context-param>
 		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
 		<param-value>org.runcity.resources.i18n.main</param-value>
 	</context-param>
+	<error-page>
+		<location>/errors</location>
+	</error-page>
 </web-app>
