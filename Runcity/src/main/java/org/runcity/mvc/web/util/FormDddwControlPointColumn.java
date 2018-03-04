@@ -54,7 +54,7 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 		}
 
 		ControlPointService controlPointService = context.getBean(ControlPointService.class);
-		controlPoint = controlPointService.selectById(value, false);
+		controlPoint = controlPointService.selectById(value, ControlPoint.SelectMode.NONE);
 
 		if (controlPoint == null) {
 			errors.rejectValue(getName(), "common.notFoundId", new Object[] { value }, null);
@@ -95,7 +95,7 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 			 */
 
 			RouteService routeService = context.getBean(RouteService.class);
-			Route r = routeService.selectById(((FormIdColumn) validation[1]).getValue(), false);
+			Route r = routeService.selectById(((FormIdColumn) validation[1]).getValue(), Route.SelectMode.NONE);
 			
 			// by game
 			if (!ObjectUtils.nullSafeEquals(controlPoint.getGame(), r.getGame())) {

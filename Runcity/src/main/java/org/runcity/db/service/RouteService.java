@@ -8,7 +8,7 @@ import org.runcity.db.entity.Team;
 import org.runcity.exception.DBException;
 
 public interface RouteService {
-	public Route selectById(Long id, boolean routeItem);
+	public Route selectById(Long id, Route.SelectMode selectMode);
 
 	public void delete(List<Long> id);
 	

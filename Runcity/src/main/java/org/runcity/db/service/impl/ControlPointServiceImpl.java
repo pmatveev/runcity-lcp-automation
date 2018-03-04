@@ -2,6 +2,7 @@ package org.runcity.db.service.impl;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
@@ -39,6 +40,25 @@ public class ControlPointServiceImpl implements ControlPointService {
 	@Autowired
 	private VolunteerRepository volunteerRepository;
 
+	private void initialize(ControlPoint c, ControlPoint.SelectMode selectMode) {
+		switch (selectMode) {
+		case WITH_IMAGE:
+			if (c.getImage() != null) {
+				c.setImageData(blobContentRepository.findOne(c.getImage()).getContent());
+			}
+			break;
+		case FOR_VOLUNTEER:
+			Hibernate.initialize(c.getChildren());
+			Hibernate.initialize(c.getRouteItems());
+			for (ControlPoint ch : c.getChildren()) {
+				Hibernate.initialize(ch.getRouteItems());
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
 	@Override
 	public List<ControlPoint> selectByGame(Game game) {
 		return controlPointRepository.findByGame(game);
@@ -80,21 +100,18 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	@Override
-	public ControlPoint selectById(Long id, boolean image) {
+	public ControlPoint selectById(Long id, ControlPoint.SelectMode selectMode) {
 		ControlPoint c = controlPointRepository.findOne(id);
-		
-		if (image && c.getImage() != null) {
-			c.setImageData(blobContentRepository.findOne(c.getImage()).getContent());
-		}
+		initialize(c, selectMode);
 		
 		return c;
 	}
-	
+
 	@Override
 	public ControlPoint addOrUpdate(ControlPoint c) throws DBException {
 		try {
 			if (c.getId() != null) {
-				ControlPoint prev = selectById(c.getId(), false);
+				ControlPoint prev = selectById(c.getId(), ControlPoint.SelectMode.NONE);
 				
 				prev.update(c);
 				prev.setImage(blobContentService.handleBlobContent(prev.getImage(), c.getImageData()));

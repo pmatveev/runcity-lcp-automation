@@ -25,8 +25,8 @@ public interface ControlPointService {
 	
 	public List<ControlPoint> selectByParent(ControlPoint parent);
 
-	public ControlPoint selectById(Long id, boolean image);
-	
+	public ControlPoint selectById(Long id, ControlPoint.SelectMode selectMode);
+
 	public ControlPoint addOrUpdate(ControlPoint c) throws DBException;
 
 	public void delete(List<Long> id);

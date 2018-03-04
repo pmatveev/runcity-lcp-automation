@@ -188,12 +188,12 @@ public class ConsumerCreateForm extends AbstractForm {
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
 
 		// creating new record
-		if (consumerService.selectByUsername(username.getValue(), false) != null) {
+		if (consumerService.selectByUsername(username.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(username.getName() + " is not unique");
 			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
-		if (consumerService.selectByEmail(email.getValue(), false) != null) {
+		if (consumerService.selectByEmail(email.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "validation.emailExists");
 		}

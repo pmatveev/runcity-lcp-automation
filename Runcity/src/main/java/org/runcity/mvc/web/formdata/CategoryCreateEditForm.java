@@ -175,7 +175,7 @@ public class CategoryCreateEditForm extends AbstractForm {
 
 		if (getId() != null) {
 			CategoryService categoryService = context.getBean(CategoryService.class);
-			Category c = categoryService.selectById(getId(), true);
+			Category c = categoryService.selectById(getId(), Category.SelectMode.WITH_GAMES);
 
 			if (c == null) {
 				errors.reject("common.notFoundId", new Object[] { getId() }, null);

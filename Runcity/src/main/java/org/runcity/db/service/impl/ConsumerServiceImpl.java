@@ -61,41 +61,43 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Autowired
 	private SessionRegistry sessionRegistry;
 
+	private void initialize(Consumer c, Consumer.SelectMode selectMode) {
+		switch (selectMode) {
+		case WITH_ROLES:
+			Hibernate.initialize(c.getRoles());
+			break;
+		default:
+			break;
+		}		
+	}
+	
 	@Override
-	public List<Consumer> selectAll(boolean roles) {
+	public List<Consumer> selectAll(Consumer.SelectMode selectMode) {
 		List<Consumer> consumers = consumerRepository.findAll();
-		if (roles) {
-			for (Consumer c : consumers) {
-				Hibernate.initialize(c.getRoles());
-			}
+		for (Consumer c : consumers) {
+			initialize(c, selectMode);
 		}
 		return consumers;
 	}
 
 	@Override
-	public Consumer selectByUsername(String username, boolean roles) {
+	public Consumer selectByUsername(String username, Consumer.SelectMode selectMode) {
 		Consumer c = consumerRepository.findByUsername(username);
-		if (roles) {
-			Hibernate.initialize(c.getRoles());
-		}
+		initialize(c, selectMode);
 		return c;
 	}
 
 	@Override
-	public Consumer selectByEmail(String email, boolean roles) {
+	public Consumer selectByEmail(String email, Consumer.SelectMode selectMode) {
 		Consumer c = consumerRepository.findByEmail(email);
-		if (roles) {
-			Hibernate.initialize(c.getRoles());
-		}
+		initialize(c, selectMode);
 		return c;
 	}
 
 	@Override
-	public Consumer selectById(Long id, boolean roles) {
+	public Consumer selectById(Long id, Consumer.SelectMode selectMode) {
 		Consumer c = consumerRepository.findOne(id);
-		if (roles) {
-			Hibernate.initialize(c.getRoles());
-		}
+		initialize(c, selectMode);
 		return c;
 	}
 
@@ -112,6 +114,42 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 	}
 
+	private void updateSessionsNoRoles(String username, Consumer c) {
+		updateSessions(username, c, false, null);
+	}
+	
+	private void updateSessionsWithRoles(String username, Consumer c, List<SecureUserRole> prevRoles) {
+		updateSessions(username, c, true, prevRoles);
+	}
+	
+	private void updateSessions(String username, Consumer c, boolean roles, List<SecureUserRole> prevRoles) {
+		List<SecureUserRole> newRoles = c.getRoleEnum();
+		boolean forceLogout = Boolean.FALSE.equals(c.isActive());
+		
+		if (roles) {
+			forceLogout = forceLogout || !prevRoles.containsAll(newRoles) || !newRoles.containsAll(prevRoles);
+		}
+		logger.debug("User info changed for " + username + ". Looping principals");
+
+		for (Object p : sessionRegistry.getAllPrincipals()) {
+			if (p instanceof SecureUserDetails) {
+				SecureUserDetails d = (SecureUserDetails) p;
+				if (ObjectUtils.nullSafeEquals(username, d.getUsername())) {
+					logger.debug("\tPrincipal found");
+					logger.debug("\t\tupdating");
+					d.update(c.getId(), c.getUsername(), c.isActive(), c.getPassHash(), c.getCredentials(),
+							c.getEmail(), c.getLocale(), roles ? c.getRoleEnum() : null);
+					if (forceLogout) {
+						for (SessionInformation si : sessionRegistry.getAllSessions(p, false)) {
+							logger.debug("\t\tsession " + si.getSessionId() + " expired");
+							si.expireNow();
+						}
+					}
+				}
+			}
+		}
+	}
+
 	@Override
 	public Consumer update(Consumer c) throws DBException {
 		if (c.getId() == null) {
@@ -119,7 +157,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		}
 
 		try {
-			Consumer prev = selectById(c.getId(), true);
+			Consumer prev = selectById(c.getId(), Consumer.SelectMode.WITH_ROLES);
 
 			String prevUsername = prev.getUsername();
 			List<SecureUserRole> prevRoles = new LinkedList<SecureUserRole>(prev.getRoleEnum());
@@ -133,28 +171,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 			Consumer result = consumerRepository.save(prev);
 			Hibernate.initialize(result.getRoles());
 
-			List<SecureUserRole> newRoles = result.getRoleEnum();			
-			boolean forceLogout = Boolean.FALSE.equals(result.isActive()) || !prevRoles.containsAll(newRoles)
-					|| !newRoles.containsAll(prevRoles);
-			logger.debug("User info changed for " + prevUsername + ". Looping principals");
-
-			for (Object p : sessionRegistry.getAllPrincipals()) {
-				if (p instanceof SecureUserDetails) {
-					SecureUserDetails d = (SecureUserDetails) p;
-					if (ObjectUtils.nullSafeEquals(prevUsername, d.getUsername())) {
-						logger.debug("\tPrincipal found");
-						logger.debug("\t\tupdating");
-						d.update(result.getId(), result.getUsername(), result.isActive(), result.getPassHash(),
-								result.getCredentials(), result.getEmail(), result.getLocale(), result.getRoleEnum());
-						if (forceLogout) {
-							for (SessionInformation si : sessionRegistry.getAllSessions(p, false)) {
-								logger.debug("\t\tsession " + si.getSessionId() + " expired");
-								si.expireNow();
-							}
-						}
-					}
-				}
-			}
+			updateSessionsWithRoles(prevUsername, result, prevRoles);
 
 			return result;
 		} catch (Throwable t) {
@@ -196,16 +213,18 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public Consumer getCurrent() {
-		return selectById(getCurrentUserId(), false);
+		return selectById(getCurrentUserId(), Consumer.SelectMode.NONE);
 	}
 
 	@Override
 	public Consumer updateCurrentData(String username, String credentials, String email, String locale) {
 		Consumer c = getCurrent();
-
+		
 		if (c == null) {
 			return null;
 		}
+		
+		String prevUsername = c.getUsername();
 
 		c.setUsername(username);
 		c.setCredentials(credentials);
@@ -214,11 +233,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		try {
 			c = update(c);
 
-			SecureUserDetails user = getCurrentUser();
-			user.setUsername(c.getUsername());
-			user.setCredentials(c.getCredentials());
-			user.setEmail(c.getEmail());
-			user.setLocale(locale);
+			updateSessionsNoRoles(prevUsername, c);
 
 			return c;
 		} catch (DBException e) {
@@ -243,7 +258,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		List<Consumer> result = new ArrayList<Consumer>(id.size());
 
 		for (Long i : id) {
-			Consumer c = selectById(i, false);
+			Consumer c = selectById(i, Consumer.SelectMode.NONE);
 			c = updateConsumerPassword(c, newPassword);
 			result.add(c);
 		}
@@ -332,7 +347,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	@Override
 	public Consumer resetPasswordByToken(Token token, String password) throws DBException {
 		if (token != null) {
-			Consumer c = updateConsumerPassword(selectById(token.getConsumer().getId(), false), password);
+			Consumer c = updateConsumerPassword(selectById(token.getConsumer().getId(), Consumer.SelectMode.NONE), password);
 			invalidateRecoveryTokens(c);
 			return c;
 		}

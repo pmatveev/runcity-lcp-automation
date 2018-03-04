@@ -1,9 +1,15 @@
 package org.runcity.mvc.web;
 
+import java.util.List;
+
 import org.runcity.db.entity.Category;
+import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.CategoryService;
+import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.db.service.VolunteerService;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
@@ -30,9 +36,15 @@ public class MenuController {
 	
 	@Autowired 
 	private GameService gameService;
+
+	@Autowired
+	private ControlPointService controlPointService;
 	
 	@Autowired 
 	private CategoryService categoryService;
+	
+	@Autowired 
+	private VolunteerService volunteerService;
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
@@ -42,6 +54,10 @@ public class MenuController {
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
 		SecureUserDetails user = SecureUserDetails.getCurrent();
+		
+		if (user.getAuthorities().contains(SecureUserDetails.VOLUNTEER_ROLE)) {
+			return "redirect:/secure/volunteer";
+		}
 		
 		if (user.getAuthorities().contains(SecureUserDetails.ADMIN_ROLE)) {
 			return "redirect:/secure/games";
@@ -71,7 +87,7 @@ public class MenuController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/games/{gameId}/controlPoints", method = RequestMethod.GET)
 	public String controlPointsByGame(Model model, @PathVariable Long gameId) {
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		if (g == null) {
 			return "exception/invalidUrl";
 		}
@@ -84,7 +100,7 @@ public class MenuController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/games/{gameId}/categories", method = RequestMethod.GET)
 	public String categoriesByGame(Model model, @PathVariable Long gameId) {
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		if (g == null) {
 			return "exception/invalidUrl";
 		}
@@ -98,7 +114,7 @@ public class MenuController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/categories/{categoryId}/games", method = RequestMethod.GET)
 	public String gamesByCategory(Model model, @PathVariable Long categoryId) {
-		Category c = categoryService.selectById(categoryId, false);
+		Category c = categoryService.selectById(categoryId, Category.SelectMode.NONE);
 		if (c == null) {
 			return "exception/invalidUrl";
 		}
@@ -116,5 +132,39 @@ public class MenuController {
 		table.processModel(model);
 		
 		return "/secure/users";
+	}
+
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/volunteer", method = RequestMethod.GET)
+	public String volunteer(Model model) {
+		String username = SecureUserDetails.getCurrent().getUsername();
+		List<Volunteer> volunteer = volunteerService.getUpcomingVolunteers(username);
+		List<Volunteer> coordinator = volunteerService.getUpcomingCoordinations(username);
+		
+		model.addAttribute("volunteerData", volunteer);
+		model.addAttribute("coordinatorData", coordinator);
+		
+		return "/secure/volunteer";
+	}
+
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/volunteerDetails/{cpId}", method = RequestMethod.GET)
+	public String volunteerDetails(Model model, @PathVariable Long cpId) {
+		ControlPoint cp = controlPointService.selectById(cpId, ControlPoint.SelectMode.FOR_VOLUNTEER);
+		
+		if (cp == null) {
+			return "exception/invalidUrl";			
+		}
+
+		String username = SecureUserDetails.getCurrent().getUsername();
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username);
+		
+		if (v == null) {
+			return "exception/forbidden";		
+		}
+		
+		model.addAttribute("volunteer", v);
+		model.addAttribute("controlPoint", cp);
+		return "secure/volunteerDetails";	
 	}
 }

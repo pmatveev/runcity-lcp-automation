@@ -22,22 +22,28 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private VolunteerRepository volunteerRepository;
 	
-	@Override
-	public Game selectById(Long id, boolean categories) {
-		Game g = gameRepository.findOne(id);
-		if (categories) {
+	private void initialize(Game g, Game.SelectMode selectMode) {
+		switch (selectMode) {
+		case WITH_CATEGORIES:
 			Hibernate.initialize(g.getCategories());
-		}
+			break;
+		default:
+			break;
+		}		
+	}
+	
+	@Override
+	public Game selectById(Long id, Game.SelectMode selectMode) {
+		Game g = gameRepository.findOne(id);
+		initialize(g, selectMode);		
 		return g;
 	}
 
 	@Override
-	public List<Game> selectAll(boolean categories) {
+	public List<Game> selectAll(Game.SelectMode selectMode) {
 		List<Game> games = gameRepository.findAll();
-		if (categories) {
-			for (Game g : games) {
-				Hibernate.initialize(g.getCategories());
-			}
+		for (Game g : games) {
+			initialize(g, selectMode);
 		}
 		return games;
 	}
@@ -46,7 +52,7 @@ public class GameServiceImpl implements GameService {
 	public Game addOrUpdate(Game g) throws DBException {
 		try {
 			if (g.getId() != null) {
-				Game prev = selectById(g.getId(), true);
+				Game prev = selectById(g.getId(), Game.SelectMode.WITH_CATEGORIES);
 				prev.update(g);
 				return gameRepository.save(prev);
 			} else {

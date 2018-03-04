@@ -17,7 +17,7 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Consumer c = consumerService.selectByUsername(username, true);
+		Consumer c = consumerService.selectByUsername(username, Consumer.SelectMode.WITH_ROLES);
 
 		if (c == null) {
 			throw new UsernameNotFoundException(username);

@@ -1,6 +1,8 @@
 package org.runcity.db.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +24,10 @@ import org.springframework.context.MessageSource;
 @Table(name = "control_point")
 @SQLDelete(sql = "delete cp, bc from control_point cp left outer join blob_content bc on bc.id = cp.image where cp.id = ?")
 public class ControlPoint extends TranslatedEntity<ControlPoint> {
+	public enum SelectMode {
+		NONE, WITH_IMAGE, FOR_VOLUNTEER;
+	}
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -38,6 +44,9 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name = "control_point__id", nullable = true)
 	private ControlPoint parent;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
+	private List<ControlPoint> children;
 
 	@Column(name = "idt", length = 16, nullable = false)
 	private String idt;
@@ -133,6 +142,10 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	public void setParent(ControlPoint parent) {
 		this.parent = parent;
 	}
+	
+	public List<ControlPoint> getChildren() {
+		return children;
+	}
 
 	public String getIdt() {
 		return idt;
@@ -198,8 +211,43 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		this.imageData = imageData;
 	}
 	
+	public Set<RouteItem> getRouteItems() {
+		return routeItems;
+	}
+	
+	public List<Volunteer> getVolunteers() {
+		return volunteers;
+	}
+	
 	public String getNameDisplay(MessageSource messageSource, Locale l) {
 		return StringUtils.xss(idt + " " + name);
+	}
+	
+	public String getNameDisplayWithChildren() {
+		ControlPoint cp = parent == null ? this : parent;
+		StringBuilder sb = new StringBuilder(cp.idt);
+		
+		if (cp.children.size() > 0) {
+			Collections.sort(cp.children, new Comparator<ControlPoint>() {
+				@Override
+				public int compare(ControlPoint o1, ControlPoint o2) {
+					return o1.getIdt().compareTo(o2.getIdt());
+				}
+			});
+			
+			sb.append(" (");
+			for (ControlPoint ch : cp.children) {
+				sb.append(ch.getIdt());
+				sb.append(", ");
+			}
+			sb.delete(sb.length() - 2, sb.length());
+			sb.append(")");
+		}
+		
+		sb.append(" ");
+		sb.append(cp.name);
+		
+		return StringUtils.xss(sb.toString());
 	}
 	
 	public String getNameDisplayWithType(MessageSource messageSource, Locale l) {

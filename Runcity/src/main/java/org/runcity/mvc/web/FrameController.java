@@ -45,7 +45,7 @@ public class FrameController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "secure/iframe/route/{routeId}", method = RequestMethod.GET)
 	public String routeDetails(Model model, @PathVariable Long routeId, @RequestParam(required = true) String referrer) {
-		Route r = routeService.selectById(routeId, true);
+		Route r = routeService.selectById(routeId, Route.SelectMode.WITH_ITEMS);
 		
 		if (r == null) {
 			return "exception/invalidUrlSub";
@@ -64,7 +64,7 @@ public class FrameController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/game/{gameId}", method = RequestMethod.GET)
 	public String gameDetails(Model model, @PathVariable Long gameId, @RequestParam(required = true) String referrer) {
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		
 		if (g == null) {
 			return "exception/invalidUrlSub";
@@ -83,7 +83,7 @@ public class FrameController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/controlPoint/{controlPointId}", method = RequestMethod.GET)
 	public String controlPointDetails(Model model, @PathVariable Long controlPointId, @RequestParam(required = true) String referrer) {
-		ControlPoint cp = controlPointService.selectById(controlPointId, false);
+		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.NONE);
 		
 		if (cp == null) {
 			return "exception/invalidUrlSub";
@@ -99,7 +99,7 @@ public class FrameController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/iframe/consumer/{consumerId}", method = RequestMethod.GET)
 	public String consumerDetails(Model model, @PathVariable Long consumerId, @RequestParam(required = true) String referrer) {
-		Consumer c = consumerService.selectById(consumerId, false);
+		Consumer c = consumerService.selectById(consumerId, Consumer.SelectMode.NONE);
 		
 		if (c == null) {
 			return "exception/invalidUrlSub";

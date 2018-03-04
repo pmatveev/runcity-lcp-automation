@@ -18,7 +18,7 @@ public class FormIdRouteColumn extends FormIdColumn {
 		super.validate(context, errors);
 
 		RouteService routeService = context.getBean(RouteService.class);
-		route = routeService.selectById(value, false);
+		route = routeService.selectById(value, Route.SelectMode.NONE);
 
 		if (route == null) {
 			errors.reject("common.notFoundHiddenId", new Object[] { getLabel(), value }, null);

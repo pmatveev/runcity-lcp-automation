@@ -60,7 +60,7 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 
 		boolean proceed = true;
 		for (Long id : value) {
-			Category c = categoryService.selectById(id, false);
+			Category c = categoryService.selectById(id, Category.SelectMode.NONE);
 			if (c == null) {
 				errors.rejectValue(getName(), "common.notFoundId", new Object[] { id }, null);
 				proceed = false;

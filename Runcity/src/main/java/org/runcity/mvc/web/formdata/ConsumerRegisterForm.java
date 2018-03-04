@@ -1,6 +1,7 @@
 package org.runcity.mvc.web.formdata;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.*;
@@ -154,12 +155,12 @@ public class ConsumerRegisterForm extends AbstractForm {
 		locale.validate(context, errors);
 
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		if (consumerService.selectByUsername(username.getValue(), false) != null) {
+		if (consumerService.selectByUsername(username.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(username.getName() + " is not unique");
 			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
-		if (consumerService.selectByEmail(email.getValue(), false) != null) {
+		if (consumerService.selectByEmail(email.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(email.getName() + " is not unique");
 			errors.rejectValue(email.getName(), "validation.emailExists");
 		}

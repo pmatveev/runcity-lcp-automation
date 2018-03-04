@@ -12,13 +12,13 @@ import org.runcity.util.CommonProperties;
 import org.springframework.context.MessageSource;
 
 public interface ConsumerService {
-	public List<Consumer> selectAll(boolean roles);
+	public List<Consumer> selectAll(Consumer.SelectMode selectMode);
 
-	public Consumer selectByUsername(String username, boolean roles);
+	public Consumer selectByUsername(String username, Consumer.SelectMode selectMode);
 
-	public Consumer selectByEmail(String email, boolean roles);
+	public Consumer selectByEmail(String email, Consumer.SelectMode selectMode);
 	
-	public Consumer selectById(Long id, boolean roles);
+	public Consumer selectById(Long id, Consumer.SelectMode selectMode);
 	
 	public Consumer add(Consumer c) throws DBException;
 	

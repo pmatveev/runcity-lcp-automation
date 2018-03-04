@@ -1,5 +1,6 @@
 package org.runcity.db.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.runcity.db.entity.Consumer;
@@ -25,4 +26,22 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 	
 	@Query("select v from Volunteer v, ControlPoint cp where v.controlPoint = cp and cp.game = :game")
 	public List<Volunteer> findCPByGame(@Param("game") Game game);
+
+	@Query("select v from Volunteer v, Consumer c, ControlPoint cp, Game g "
+			+ "where c = v.consumer "
+			+ "and c.username = :user "
+			+ "and cp = v.controlPoint "
+			+ "and g = cp.game "
+			+ "and g.dateTo > :date")
+	public List<Volunteer> findUpcomingByUsernameCP(@Param("user") String username, @Param("date") Date dateTo);
+	
+	@Query("select v from Volunteer v, Consumer c, Game g "
+			+ "where c = v.consumer "
+			+ "and c.username = :user "
+			+ "and g = v.game "
+			+ "and g.dateTo > :date")
+	public List<Volunteer> findUpcomingByUsernameGame(@Param("user") String username, @Param("date") Date dateTo);
+	
+	@Query("select v from Volunteer v, Consumer c where v.controlPoint = :cp and c = v.consumer and c.username = :user")
+	public Volunteer findByCPandUsername(@Param("cp") ControlPoint cp, @Param("user") String username);
 }

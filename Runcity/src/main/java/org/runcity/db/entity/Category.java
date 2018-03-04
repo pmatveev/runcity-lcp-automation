@@ -17,6 +17,10 @@ import org.runcity.util.StringUtils;
 @Entity
 @Table(name = "category")
 public class Category extends TranslatedEntity<Category> {
+	public enum SelectMode {
+		NONE, WITH_GAMES;
+	}
+	
 	private static final String DEFAULT_POSTFIX = "XX";
 	
 	@Id

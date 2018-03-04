@@ -51,10 +51,10 @@ public class PasswordRecoveryForm extends AbstractForm {
 		input.validate(context, errors);
 		
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		consumer = consumerService.selectByUsername(input.getValue(), false);
+		consumer = consumerService.selectByUsername(input.getValue(), Consumer.SelectMode.NONE);
 		
 		if (consumer == null) {
-			consumer = consumerService.selectByEmail(input.getValue(), false);
+			consumer = consumerService.selectByEmail(input.getValue(), Consumer.SelectMode.NONE);
 		}
 		
 		if (consumer == null) {

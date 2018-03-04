@@ -164,7 +164,8 @@
 							<li><a href="${goUsers}" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
 						</sec:authorize>
 						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
-							<li><a href="#" role="button"><fmt:message key="menu.control" bundle="${msg}" /></a></li>
+							<spring:url value="/secure/volunteer" var="goVolunteer" />
+							<li><a href="${goVolunteer}" role="button"><fmt:message key="menu.volunteer" bundle="${msg}" /></a></li>
 						</sec:authorize>
 					</ul>
 				</sec:authorize>

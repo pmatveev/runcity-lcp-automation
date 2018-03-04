@@ -7,9 +7,9 @@ import org.runcity.db.entity.Volunteer;
 import org.runcity.exception.DBException;
 
 public interface GameService {
-	public Game selectById(Long id, boolean categories);
+	public Game selectById(Long id, Game.SelectMode selectMode);
 
-	public List<Game> selectAll(boolean categories);
+	public List<Game> selectAll(Game.SelectMode selectMode);
 	
 	public Game addOrUpdate(Game g) throws DBException;
 	

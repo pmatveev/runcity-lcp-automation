@@ -148,7 +148,7 @@ public class GameTable extends AbstractTable {
 	}
 	
 	public void fetchAll(GameService service, DynamicLocaleList localeList) {
-		List<Game> games = service.selectAll(true);
+		List<Game> games = service.selectAll(Game.SelectMode.WITH_CATEGORIES);
 		for (Game g : games) {
 			data.add(new TableRow(g));
 		}

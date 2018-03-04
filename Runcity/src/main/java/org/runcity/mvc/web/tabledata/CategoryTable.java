@@ -92,7 +92,7 @@ public class CategoryTable extends AbstractTable {
 	}
 	
 	public void fetchAll(CategoryService service) {
-		List<Category> categories = service.selectAll(false);
+		List<Category> categories = service.selectAll(Category.SelectMode.NONE);
 		for (Category c : categories) {
 			data.add(new TableRow(c));
 		}

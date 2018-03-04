@@ -106,7 +106,7 @@ public class ConsumerTable extends AbstractTable {
 	}
 
 	public void fetchAll(ConsumerService service) {
-		List<Consumer> consumers = service.selectAll(true);
+		List<Consumer> consumers = service.selectAll(Consumer.SelectMode.WITH_ROLES);
 		for (Consumer c : consumers) {
 			data.add(new TableRow(c));
 		}

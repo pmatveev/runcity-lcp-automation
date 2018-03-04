@@ -165,7 +165,7 @@ public class RestConsumerController extends AbstractRestController {
 	public RestGetResponseBody initConsumerEditForm(@PathVariable Long id) {
 		logger.info("GET /api/v1/consumerSelfEdit/" + id);
 
-		Consumer c = consumerService.selectById(id, true);
+		Consumer c = consumerService.selectById(id, Consumer.SelectMode.WITH_ROLES);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
@@ -302,7 +302,7 @@ public class RestConsumerController extends AbstractRestController {
 		logger.info("GET /api/v1/volunteerTableByConsumer");
 		logger.debug("\tconsumerId=" + consumerId);
 		
-		Consumer c = consumerService.selectById(consumerId, false);
+		Consumer c = consumerService.selectById(consumerId, Consumer.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectVolunteers(c));
@@ -316,7 +316,7 @@ public class RestConsumerController extends AbstractRestController {
 		logger.info("GET /api/v1/coordinatorTableByConsumer");
 		logger.debug("\tconsumerId=" + consumerId);
 		
-		Consumer c = consumerService.selectById(consumerId, false);
+		Consumer c = consumerService.selectById(consumerId, Consumer.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
 		table.add(consumerService.selectCoordinators(c));
@@ -328,7 +328,7 @@ public class RestConsumerController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/dddw/consumerId", method = RequestMethod.GET)
 	public RestGetResponseBody consumerDddwInit(@RequestParam(required = true) Long id) {
 		logger.info("GET /api/v1/dddw/consumerId");
-		Consumer c = consumerService.selectById(id, false);
+		Consumer c = consumerService.selectById(id, Consumer.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		result.addOption(id, c.getCredentials());
 		return result;
@@ -342,7 +342,7 @@ public class RestConsumerController extends AbstractRestController {
 		boolean checkActive = active != null;
 		boolean checkRoles = roles != null && roles.size() > 0;
 		
-		List<Consumer> consumers = consumerService.selectAll(checkRoles);
+		List<Consumer> consumers = consumerService.selectAll(checkRoles ? Consumer.SelectMode.WITH_ROLES : Consumer.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Consumer c : consumers) {
 			if (checkActive && !ObjectUtils.nullSafeEquals(c.isActive(), active)) {

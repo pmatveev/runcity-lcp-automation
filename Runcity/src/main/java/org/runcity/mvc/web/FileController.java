@@ -1,6 +1,7 @@
 package org.runcity.mvc.web;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.util.CommonProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,6 @@ public class FileController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setCacheControl("max-age=" + properties.getCacheTime() + ", must-revalidate");
 		headers.setPragma("");
-		return new ResponseEntity<byte[]>(controlPointService.selectById(id, true).getImageData(), headers, HttpStatus.OK);
+		return new ResponseEntity<byte[]>(controlPointService.selectById(id, ControlPoint.SelectMode.WITH_IMAGE).getImageData(), headers, HttpStatus.OK);
 	}
 }

@@ -57,7 +57,7 @@ public class RestControlPointController extends AbstractRestController {
 		logger.info("GET /api/v1/controlPointsTable");
 		logger.debug("\tgameId=" + gameId);
 		
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.addCommonMsg("common.db.fail");
@@ -73,7 +73,7 @@ public class RestControlPointController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/controlPointCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initControlPointCreateEditForm(@PathVariable Long id) {		
-		ControlPoint c = controlPointService.selectById(id, false);
+		ControlPoint c = controlPointService.selectById(id, ControlPoint.SelectMode.NONE);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
@@ -90,7 +90,7 @@ public class RestControlPointController extends AbstractRestController {
 	public RestGetResponseBody controlPointDddwInit(@RequestParam(required = true) Long id) {
 		logger.info("GET /api/v1/dddw/controlPointId");
 		
-		ControlPoint c = controlPointService.selectById(id, false);
+		ControlPoint c = controlPointService.selectById(id, ControlPoint.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
 		return result;
@@ -182,7 +182,7 @@ public class RestControlPointController extends AbstractRestController {
 		logger.info("GET /api/v1/volunteerTableByCP");
 		logger.debug("\tcontrolPointId=" + controlPointId);
 		
-		ControlPoint cp = controlPointService.selectById(controlPointId, false);
+		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.NONE);
 		
 		VolunteerTable table = new VolunteerTable(messageSource, localeList, cp);
 		table.add(controlPointService.selectVolunteers(cp));
@@ -193,7 +193,7 @@ public class RestControlPointController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
-		Volunteer v = volunteerService.selectById(id);
+		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);

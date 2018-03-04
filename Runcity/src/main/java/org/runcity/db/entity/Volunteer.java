@@ -1,14 +1,25 @@
 package org.runcity.db.entity;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.enumeration.VolunteerType;
+import org.springframework.util.ObjectUtils;
 
 @Entity
 @Table(name = "volunteer")
 public class Volunteer {
+	public enum SelectMode {
+		NONE;
+	}
+	
+	@Transient
+	private boolean datesUpdated = false;
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -26,12 +37,21 @@ public class Volunteer {
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name = "game__id", nullable = true)
 	private Game game;
+	
+	@Transient
+	private TimeZone tz;
 
 	@Column(name = "date_from", columnDefinition = "datetime", nullable = false)
 	private Date dateFrom;
+	
+	@Transient
+	private Date utcDateFrom;
 
 	@Column(name = "date_to", columnDefinition = "datetime", nullable = false)
 	private Date dateTo;
+	
+	@Transient
+	private Date utcDateTo;
 	
 	public Volunteer() {
 	}
@@ -43,6 +63,21 @@ public class Volunteer {
 		setGame(game);
 		setDateFrom(dateFrom);
 		setDateTo(dateTo);
+		datesUpdated = false;
+	}
+	
+	private void updateDates() {
+		if (!datesUpdated || !ObjectUtils.nullSafeEquals(getVolunteerGame().getTz(), tz)) {
+			tz = getVolunteerGame().getTz();
+			Calendar c = Calendar.getInstance();
+			c.setTime(dateFrom);
+			c.add(Calendar.MILLISECOND, -tz.getRawOffset());
+			utcDateFrom = c.getTime();
+			c.setTime(dateTo);
+			c.add(Calendar.MILLISECOND, -tz.getRawOffset());
+			utcDateTo = c.getTime();
+			datesUpdated = true;
+		}
 	}
 	
 	public Long getId() {
@@ -77,19 +112,36 @@ public class Volunteer {
 		this.game = game;
 	}
 
+	public TimeZone getTz() {
+		updateDates();
+		return tz;
+	}
+	
 	public Date getDateFrom() {
 		return dateFrom;
 	}
+	
+	public Date getUtcDateFrom() {
+		updateDates();
+		return utcDateFrom;
+	}
 
 	public void setDateFrom(Date dateFrom) {
+		datesUpdated = false;
 		this.dateFrom = dateFrom;
 	}
 
 	public Date getDateTo() {
 		return dateTo;
 	}
+	
+	public Date getUtcDateTo() {
+		updateDates();
+		return utcDateTo;
+	}
 
 	public void setDateTo(Date dateTo) {
+		datesUpdated = false;
 		this.dateTo = dateTo;
 	}
 
@@ -116,5 +168,13 @@ public class Volunteer {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	
+	public Game getVolunteerGame() {
+		return this.controlPoint == null ? this.game : this.controlPoint.getGame();
+	}
+	
+	public VolunteerType getVolunteerType() {
+		return this.controlPoint == null ? VolunteerType.COORDINATOR : VolunteerType.VOLUNTEER;
 	}
 }

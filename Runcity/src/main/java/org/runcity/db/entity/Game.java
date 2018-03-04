@@ -1,10 +1,12 @@
 package org.runcity.db.entity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.persistence.*;
 
@@ -14,6 +16,13 @@ import org.runcity.util.CollectionUtils;
 @Entity
 @Table(name = "game")
 public class Game {
+	public enum SelectMode {
+		NONE, WITH_CATEGORIES;
+	}
+	
+	@Transient
+	private boolean datesUpdated = false;
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -34,12 +43,21 @@ public class Game {
 
 	@Column(name = "timezone", length = 32, nullable = false)
 	private String timezone;
+	
+	@Transient
+	private TimeZone tz;
 
 	@Column(name = "date_from", columnDefinition = "datetime", nullable = false)
 	private Date dateFrom;
+	
+	@Transient
+	private Date utcDateFrom;
 
 	@Column(name = "date_to", columnDefinition = "datetime", nullable = false)
 	private Date dateTo;
+	
+	@Transient
+	private Date utcDateTo;
 
 	@Column(name = "delay", columnDefinition = "int", nullable = true)
 	private Integer delay;
@@ -71,6 +89,7 @@ public class Game {
 		if (categories != null) {
 			this.categories = categories;
 		}
+		datesUpdated = false;
 	}
 
 	public void update(Game g) {
@@ -83,6 +102,21 @@ public class Game {
 		this.dateTo = g.dateTo;
 		this.delay = g.delay;
 		CollectionUtils.applyChanges(categories, g.categories);
+		datesUpdated = false;
+	}
+	
+	private void updateDates() {
+		if (!datesUpdated) {
+			tz = TimeZone.getTimeZone(timezone);
+			Calendar c = Calendar.getInstance();
+			c.setTime(dateFrom);
+			c.add(Calendar.MILLISECOND, -tz.getRawOffset());
+			utcDateFrom = c.getTime();
+			c.setTime(dateTo);
+			c.add(Calendar.MILLISECOND, -tz.getRawOffset());
+			utcDateTo = c.getTime();
+			datesUpdated = true;
+		}
 	}
 
 	public Long getId() {
@@ -128,25 +162,43 @@ public class Game {
 	public String getTimezone() {
 		return timezone;
 	}
+	
+	public TimeZone getTz() {
+		updateDates();
+		return tz;
+	}
 
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
+		datesUpdated = false;
 	}
 
 	public Date getDateFrom() {
 		return dateFrom;
 	}
+	
+	public Date getUtcDateFrom() {
+		updateDates();
+		return utcDateFrom;
+	}
 
 	public void setDateFrom(Date dateFrom) {
 		this.dateFrom = dateFrom;
+		datesUpdated = false;
 	}
 
 	public Date getDateTo() {
 		return dateTo;
 	}
+	
+	public Date getUtcDateTo() {
+		updateDates();
+		return utcDateTo;
+	}
 
 	public void setDateTo(Date dateTo) {
 		this.dateTo = dateTo;
+		datesUpdated = false;
 	}
 
 	public Integer getDelay() {

@@ -19,7 +19,7 @@ public class FormIdControlPointColumn extends FormIdColumn {
 		super.validate(context, errors);
 
 		ControlPointService controlPointService = context.getBean(ControlPointService.class);
-		controlPoint = controlPointService.selectById(value, false);
+		controlPoint = controlPointService.selectById(value, ControlPoint.SelectMode.NONE);
 		
 		if (mainOnly && controlPoint.getParent() != null) {
 			controlPoint = null;

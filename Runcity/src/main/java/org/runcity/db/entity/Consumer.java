@@ -14,6 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Entity
 @Table(name = "consumer")
 public class Consumer {
+	public enum SelectMode {
+		NONE, WITH_ROLES;
+	}
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")

@@ -19,7 +19,7 @@ public class FormIdGameColumn extends FormIdColumn {
 		super.validate(context, errors);
 
 		GameService gameService = context.getBean(GameService.class);
-		game = gameService.selectById(value, categories);
+		game = gameService.selectById(value, categories ? Game.SelectMode.WITH_CATEGORIES : Game.SelectMode.NONE);
 
 		if (game == null) {
 			errors.reject("common.notFoundHiddenId", new Object[] { getLabel(), value }, null);

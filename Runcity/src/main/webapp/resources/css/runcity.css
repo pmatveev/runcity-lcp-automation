@@ -144,3 +144,43 @@ p.required-mark {
 	display: inline;
 	color: red;
 }
+
+.volunteer-entry p.game-nogames {
+	font-size: 18px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	font-weight: 500;
+	line-height: 1.1;
+}
+
+.volunteer-entry p.game-caption {
+	font-size: 24px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	font-weight: 500;
+	line-height: 1.1;
+}
+
+.volunteer-entry p.game-caption .label {
+	font-size: 12px;	
+	vertical-align: 30%;
+}
+
+.volunteer-entry p.game-sub {
+	margin-bottom: 0;
+}
+
+form.read-form div.form-group {
+	margin-bottom: 0;
+}
+
+form.read-form label {
+	margin-bottom: 0;
+	padding-left: 0;
+}
+
+p.volunteer-category-reminder {
+	color: red;
+	font-style: italic;
+	margin-left: 10px;
+}

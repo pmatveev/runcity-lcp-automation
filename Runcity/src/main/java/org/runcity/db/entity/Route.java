@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "route",  
 	uniqueConstraints = @UniqueConstraint(columnNames = {"game__id", "category__id"}))
 public class Route {
+	public enum SelectMode {
+		NONE, WITH_ITEMS;
+	}
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")

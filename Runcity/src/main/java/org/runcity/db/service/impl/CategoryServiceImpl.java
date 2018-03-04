@@ -18,50 +18,52 @@ public class CategoryServiceImpl implements CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	@Override
-	public Category selectById(Long id, boolean games) {
-		Category c = categoryRepository.findOne(id);
-		if (games) {
+	private void initialize(Category c, Category.SelectMode selectMode) {
+		switch (selectMode) {
+		case WITH_GAMES:
 			Hibernate.initialize(c.getGames());
+			break;
+		default:
+			break;
 		}
+	}
+	
+	@Override
+	public Category selectById(Long id, Category.SelectMode selectMode) {
+		Category c = categoryRepository.findOne(id);
+		initialize(c, selectMode);		
 		return c;
 	}
 	
 
 	@Override
-	public Iterable<Category> selectById(Iterable<Long> id, boolean games) {
+	public Iterable<Category> selectById(Iterable<Long> id, Category.SelectMode selectMode) {
 		Iterable<Category> categories = categoryRepository.findAll(id);
 		
-		if (games) {
-			for (Category c : categories) {
-				Hibernate.initialize(c.getGames());				
-			}
+		for (Category c : categories) {
+			initialize(c, selectMode);
 		}
 		
 		return categories;
 	}
 
 	@Override
-	public List<Category> selectAll(boolean games) {
+	public List<Category> selectAll(Category.SelectMode selectMode) {
 		List<Category> categories = categoryRepository.findAll();
-		
-		if (games) {
-			for (Category c : categories) {
-				Hibernate.initialize(c.getGames());				
-			}
+
+		for (Category c : categories) {
+			initialize(c, selectMode);
 		}
 		
 		return categories;
 	}
 	
 	@Override
-	public List<Category> selectUnused(Game g, boolean games) {
+	public List<Category> selectUnused(Game g, Category.SelectMode selectMode) {
 		List<Category> categories = categoryRepository.selectUnused(g);
 		
-		if (games) {
-			for (Category c : categories) {
-				Hibernate.initialize(c.getGames());				
-			}
+		for (Category c : categories) {
+			initialize(c, selectMode);
 		}
 		
 		return categories;		
@@ -71,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category addOrUpdate(Category c) throws DBException {
 		try {
 			if (c.getId() != null) {
-				Category prev = selectById(c.getId(), false);
+				Category prev = selectById(c.getId(), Category.SelectMode.NONE);
 				prev.update(c);
 				return categoryRepository.save(prev);
 			} else {

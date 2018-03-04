@@ -52,12 +52,14 @@ public class SecureUserDetails implements UserDetails {
 		this.email = email;
 		this.locale = locale;
 
-		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
-		
-		for (SecureUserRole r : roles) {
-			userRoles.add(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.getStoredValue(r)));
+		if (roles != null) {
+			Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
+			
+			for (SecureUserRole r : roles) {
+				userRoles.add(new SimpleGrantedAuthority("ROLE_" + SecureUserRole.getStoredValue(r)));
+			}
+			this.roles = userRoles;
 		}
-		this.roles = userRoles;
 	}
 	
 	@Override

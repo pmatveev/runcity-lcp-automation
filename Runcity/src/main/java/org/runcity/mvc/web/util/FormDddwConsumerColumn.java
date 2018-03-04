@@ -41,7 +41,7 @@ public class FormDddwConsumerColumn extends FormDddwColumn<Long> {
 		}
 		
 		ConsumerService consumerService = context.getBean(ConsumerService.class);
-		consumer = consumerService.selectById(value, true);
+		consumer = consumerService.selectById(value, Consumer.SelectMode.WITH_ROLES);
 		
 		if (consumer == null) {
 			errors.rejectValue(getName(), "common.notFoundId", new Object[] { value }, null);

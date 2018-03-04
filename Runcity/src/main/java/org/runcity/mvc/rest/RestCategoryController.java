@@ -52,7 +52,7 @@ public class RestCategoryController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/categoryCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initCategoryCreateEditForm(@PathVariable Long id) {		
-		Category c = categoryService.selectById(id, false);
+		Category c = categoryService.selectById(id, Category.SelectMode.NONE);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
@@ -113,7 +113,7 @@ public class RestCategoryController extends AbstractRestController {
 	public RestGetResponseBody categoriesDddwInit(@RequestParam(required = true) List<Long> id, @RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categoriesId");
 		
-		Iterable<Category> categories = categoryService.selectById(id, false);
+		Iterable<Category> categories = categoryService.selectById(id, Category.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
 			result.addOption(c.getId(), c.getLocalizedName(locale));
@@ -127,7 +127,7 @@ public class RestCategoryController extends AbstractRestController {
 	public RestGetResponseBody categoriesDddw(@RequestParam(required = true) String locale) {
 		logger.info("GET /api/v1/dddw/categories");
 		
-		List<Category> categories = categoryService.selectAll(false);
+		List<Category> categories = categoryService.selectAll(Category.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
 			result.addOption(c.getId(), c.getLocalizedName(locale));
@@ -141,8 +141,8 @@ public class RestCategoryController extends AbstractRestController {
 	public RestGetResponseBody unusedCategoriesDddw(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/dddw/unusedCategories");
 		
-		Game game = gameService.selectById(gameId, false);
-		List<Category> categories = categoryService.selectUnused(game, false);
+		Game game = gameService.selectById(gameId, Game.SelectMode.NONE);
+		List<Category> categories = categoryService.selectUnused(game, Category.SelectMode.NONE);
 		
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
@@ -158,7 +158,7 @@ public class RestCategoryController extends AbstractRestController {
 		logger.info("GET /api/v1/routeTableByCategory");
 		logger.debug("\tcategoryId=" + categoryId);
 		
-		Category category = categoryService.selectById(categoryId, true);
+		Category category = categoryService.selectById(categoryId, Category.SelectMode.WITH_GAMES);
 		RouteTable table = new RouteTable(messageSource, localeList, category);
 		table.fill(category);
 		return table.validate();

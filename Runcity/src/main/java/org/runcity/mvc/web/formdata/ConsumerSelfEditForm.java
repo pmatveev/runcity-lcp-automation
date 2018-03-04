@@ -125,13 +125,13 @@ public class ConsumerSelfEditForm extends AbstractForm {
 		Consumer current = consumerService.getCurrent();
 
 		if (!StringUtils.isEqual(current.getUsername(), username.getValue())
-				&& consumerService.selectByUsername(username.getValue(), false) != null) {
+				&& consumerService.selectByUsername(username.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(username.getName() + " changed but not unique");
 			errors.rejectValue(username.getName(), "validation.userExists");
 		}
 
 		if (!StringUtils.isEqual(current.getEmail(), email.getValue())
-				&& consumerService.selectByEmail(email.getValue(), false) != null) {
+				&& consumerService.selectByEmail(email.getValue(), Consumer.SelectMode.NONE) != null) {
 			logger.debug(email.getName() + " changed but not unique");
 			errors.rejectValue(email.getName(), "validation.emailExists");
 		}

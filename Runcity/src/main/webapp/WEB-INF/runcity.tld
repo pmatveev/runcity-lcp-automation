@@ -126,4 +126,49 @@
 			<fragment>false</fragment>
 		</attribute>
 	</tag>
+	<tag>
+		<name>volunteer</name>
+		<tag-class>org.runcity.jsp.VolunteerTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>data</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>java.util.Collection</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
+			<name>bundle</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
+			<fragment>false</fragment>
+		</attribute>
+	</tag>
+	<tag>
+		<name>controlPoint</name>
+		<tag-class>org.runcity.jsp.VolunteerControlPointTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>volunteer</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>org.runcity.db.entity.Volunteer</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
+			<name>controlPoint</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>org.runcity.db.entity.ControlPoint</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
+			<name>bundle</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>true</required>
+			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
+			<fragment>false</fragment>
+		</attribute>
+	</tag>
 </taglib>

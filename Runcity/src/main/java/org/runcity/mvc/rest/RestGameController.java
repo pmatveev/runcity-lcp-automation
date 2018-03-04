@@ -74,7 +74,7 @@ public class RestGameController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initGameCreateEditForm(@PathVariable Long id) {		
-		Game g = gameService.selectById(id, true);
+		Game g = gameService.selectById(id, Game.SelectMode.WITH_CATEGORIES);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);
@@ -136,7 +136,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/routeTableByGame");
 		logger.debug("\tgameId=" + gameId);
 		
-		Game game = gameService.selectById(gameId, true);
+		Game game = gameService.selectById(gameId, Game.SelectMode.WITH_CATEGORIES);
 		RouteTable table = new RouteTable(messageSource, localeList, game);
 		table.fill(game, context);
 		return table.validate();
@@ -193,7 +193,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/routeTable");
 		logger.debug("\trouteId=" + routeId);
 		
-		Route r = routeService.selectById(routeId, true);
+		Route r = routeService.selectById(routeId, Route.SelectMode.WITH_ITEMS);
 		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.fill(r);
 		return table.validate();
@@ -265,7 +265,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/coordinatorTableByGame");
 		logger.debug("\tgameId=" + gameId);
 		
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
 		table.add(gameService.selectCoordinators(g));
@@ -279,7 +279,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/volunteerTableByGame");
 		logger.debug("\tgameId=" + gameId);
 		
-		Game g = gameService.selectById(gameId, false);
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 
 		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
 		table.add(gameService.selectVolunteers(g));
@@ -290,7 +290,7 @@ public class RestGameController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
-		Volunteer v = volunteerService.selectById(id);
+		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -335,7 +335,7 @@ public class RestGameController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {		
-		Volunteer v = volunteerService.selectById(id);
+		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -398,7 +398,7 @@ public class RestGameController extends AbstractRestController {
 		logger.info("GET /api/v1/teamTableByRoute");
 		logger.debug("\tgameId=" + routeId);
 		
-		Route r = routeService.selectById(routeId, false);
+		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
 		TeamTable table = new TeamTable(messageSource, localeList, r);
 		table.add(routeService.selectTeams(r));
 

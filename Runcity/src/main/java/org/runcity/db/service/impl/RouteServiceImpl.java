@@ -26,15 +26,21 @@ public class RouteServiceImpl implements RouteService {
 	
 	@Autowired
 	private TeamRepository teamRepository;
+
+	private void initialize(Route r, Route.SelectMode selectMode) {
+		switch (selectMode) {
+		case WITH_ITEMS:
+			Hibernate.initialize(r.getRouteItems());
+			break;
+		default:
+			break;
+		}
+	}
 	
 	@Override
-	public Route selectById(Long id, boolean routeItem) {
+	public Route selectById(Long id, Route.SelectMode selectMode) {
 		Route r = routeRepository.findOne(id);
-		
-		if (routeItem) {
-			Hibernate.initialize(r.getRouteItems());
-		}
-		
+		initialize(r, selectMode);
 		return r;
 	}
 
