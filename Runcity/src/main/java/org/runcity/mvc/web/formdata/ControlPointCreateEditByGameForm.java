@@ -74,6 +74,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		this.name = new FormPlainStringColumn(this, new ColumnDefinition("name", "controlPoint.name"));
 		this.name.setRequired(true);
 		this.name.setMaxLength(32);
+		this.name.setShowCondition("emptyValue({0})", this.parent);
 		this.address = new FormLocalizedStringColumn(this,
 				new ColumnDefinition("address", "controlPoint.address", "controlPoint.addressLoc"), localeList);
 		this.address.setLongValue(true);
@@ -230,12 +231,13 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		type.validate(context, errors);
 		parent.validate(context, errors);
 		idt.validate(context, errors);
-		name.validate(context, errors);
 
 		if (parent.getControlPoint() == null) {
 			address.validate(context, errors);
+			name.validate(context, errors);
 		} else {
 			address.clearValue();
+			name.setValue(null);
 		}
 		description.validate(context, errors);
 		image.validate(context, errors);

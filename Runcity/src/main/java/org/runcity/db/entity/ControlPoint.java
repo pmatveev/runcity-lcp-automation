@@ -51,7 +51,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@Column(name = "idt", length = 16, nullable = false)
 	private String idt;
 
-	@Column(name = "name", length = 255, nullable = false)
+	@Column(name = "name", length = 255, nullable = true)
 	private String name;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
@@ -156,7 +156,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	}
 
 	public String getName() {
-		return name;
+		return parent == null ? name : parent.name;
 	}
 
 	public void setName(String name) {
