@@ -13,9 +13,13 @@ public interface VolunteerService {
 	
 	public void delete(List<Long> id);
 	
-	public List<Volunteer> getUpcomingVolunteers(String username);
+	public List<Volunteer> getUpcomingVolunteers(String username, Volunteer.SelectMode selectMode);
 	
-	public List<Volunteer> getUpcomingCoordinations(String username);
+	public List<Volunteer> getUpcomingCoordinations(String username, Volunteer.SelectMode selectMode);
 	
-	public Volunteer selectByControlPointAndUsername(ControlPoint cp, String username);
+	public Volunteer selectByControlPointAndUsername(ControlPoint cp, String username, Volunteer.SelectMode selectMode);
+	
+	public void setCurrent(Volunteer v, boolean isActive) throws DBException;
+	
+	public Volunteer getCurrentByUsername(String username);
 }

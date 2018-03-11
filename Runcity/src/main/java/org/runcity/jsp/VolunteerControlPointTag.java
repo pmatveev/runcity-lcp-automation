@@ -11,6 +11,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.taglibs.standard.tag.el.core.UrlTag;
 import org.runcity.db.entity.Category;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.RouteItem;
@@ -23,11 +24,10 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 public class VolunteerControlPointTag extends TagSupport {
 
 	private LocalizationContext bundle;
-
 	private Volunteer volunteer;
+	private String onsiteHandler;
+	private String ajaxTarget;
 	
-	private ControlPoint controlPoint;
-
 	public void setBundle(LocalizationContext bundle) {
 		this.bundle = bundle;
 	}
@@ -35,9 +35,13 @@ public class VolunteerControlPointTag extends TagSupport {
 	public void setVolunteer(Volunteer volunteer) {
 		this.volunteer = volunteer;
 	}
-
-	public void setControlPoint(ControlPoint controlPoint) {
-		this.controlPoint = controlPoint;
+	
+	public void setOnsiteHandler(String onsiteHandler) {
+		this.onsiteHandler = onsiteHandler;
+	}
+	
+	public void setAjaxTarget(String ajaxTarget) {
+		this.ajaxTarget = ajaxTarget;
 	}
 
 	private String localize(String message, Object... args) {
@@ -49,7 +53,7 @@ public class VolunteerControlPointTag extends TagSupport {
 
 		return MessageFormat.format(result, args);
 	}
-/*
+	
 	private void processUrl(String url, String var) throws JspException {
 		if (url != null) {
 			UrlTag urlTag = new UrlTag();
@@ -63,7 +67,7 @@ public class VolunteerControlPointTag extends TagSupport {
 			pageContext.setAttribute(var, null);
 		}
 	}
-*/
+
 	private void writeField(TagWriter tagWriter, String id, String caption, String content) throws JspException {
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", "form-group");
@@ -84,6 +88,7 @@ public class VolunteerControlPointTag extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspException {
+		ControlPoint controlPoint = volunteer.getControlPoint();
 		if (controlPoint == null) {
 			return SKIP_BODY;
 		}
@@ -96,7 +101,32 @@ public class VolunteerControlPointTag extends TagSupport {
 		tagWriter.startTag("h1");
 		tagWriter.appendValue(localize("jsp.controlPoint.headerPrefix") + " " + controlPoint.getNameDisplayWithChildren());
 		tagWriter.endTag();
+		
+		// on site - off site selector
+		if (onsiteHandler != null) {
+			tagWriter.startTag("div");
+			tagWriter.writeAttribute("class", "row cp-onsite-toggle-div form-group");
+			tagWriter.startTag("input");
+			tagWriter.writeAttribute("type", "checkbox");
+			tagWriter.writeAttribute("data-toggle", "toggle");
+			tagWriter.writeAttribute("class", "cp-onsite-toggle");
+			tagWriter.writeAttribute("data-on", localize("jsp.controlPoint.onsiteAction"));
+			tagWriter.writeAttribute("data-off", localize("jsp.controlPoint.offsiteAction"));
+			tagWriter.writeAttribute("data-onstyle", "success");
+			tagWriter.writeAttribute("data-offstyle", "danger");
+			tagWriter.writeAttribute("onchange", onsiteHandler);
+			if (ajaxTarget != null) {
+				processUrl(ajaxTarget, "ajaxTarget");
+				tagWriter.writeAttribute("ajax-target", pageContext.getAttribute("ajaxTarget").toString());
+			}
+			if (volunteer.isActive()) {
+				tagWriter.writeAttribute("checked", "checked");
+			}
+			tagWriter.endTag();
+			tagWriter.endTag();
+		}
 
+		// basic info
 		tagWriter.startTag("form");
 		tagWriter.writeAttribute("class", "form-horizontal read-form col-sm-6");
 		tagWriter.startTag("h3");
@@ -108,6 +138,7 @@ public class VolunteerControlPointTag extends TagSupport {
 		writeField(tagWriter, "dateto", localize("jsp.volunteer.to"), dateTimeFormat.format(volunteer.getUtcDateTo()));
 		tagWriter.endTag();
 
+		// categories
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", "volunteer-categories col-sm-6");
 		tagWriter.startTag("h3");

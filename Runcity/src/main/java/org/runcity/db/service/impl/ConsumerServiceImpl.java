@@ -62,6 +62,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 	private SessionRegistry sessionRegistry;
 
 	private void initialize(Consumer c, Consumer.SelectMode selectMode) {
+		if (c == null) {
+			return;
+		}
 		switch (selectMode) {
 		case WITH_ROLES:
 			Hibernate.initialize(c.getRoles());
@@ -204,7 +207,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	private SecureUserDetails getCurrentUser() {
-		return SecureUserDetails.getCurrent();
+		return SecureUserDetails.getCurrentUser();
 	}
 
 	private Long getCurrentUserId() {
@@ -300,7 +303,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 		Locale messageLocale = null;
 		try {
 			messageLocale = org.springframework.util.StringUtils
-					.parseLocaleString(SecureUserDetails.getLocaleCurrent());
+					.parseLocaleString(SecureUserDetails.getCurrentUserLocale());
 		} catch (Throwable t) {
 		}
 

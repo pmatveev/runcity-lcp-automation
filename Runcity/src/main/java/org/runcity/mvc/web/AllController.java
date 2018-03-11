@@ -2,7 +2,9 @@ package org.runcity.mvc.web;
 
 import org.runcity.mvc.web.formdata.ChangePasswordByPasswordForm;
 import org.runcity.mvc.web.formdata.ConsumerSelfEditForm;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.JspAttributes;
 import org.runcity.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -43,6 +45,19 @@ public class AllController {
 	public void addVersionInfo(Model model) {
 		if (!model.containsAttribute(version.getName())) {
 			model.addAttribute(version.getName(), version);
+		}
+	}
+
+	@ModelAttribute
+	public void addJspAttributes(Model model) {
+		if (!model.containsAttribute("attributes")) {
+			SecureUserDetails principal = SecureUserDetails.getCurrentUser();
+			if (principal == null) {
+				return;
+			}
+			JspAttributes attributes = new JspAttributes();
+			attributes.setCurrentCP(principal.getCurrent() != null);
+			model.addAttribute("attributes", attributes);
 		}
 	}
 }

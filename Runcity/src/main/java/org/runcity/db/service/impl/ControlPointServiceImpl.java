@@ -41,6 +41,9 @@ public class ControlPointServiceImpl implements ControlPointService {
 	private VolunteerRepository volunteerRepository;
 
 	private void initialize(ControlPoint c, ControlPoint.SelectMode selectMode) {
+		if (c == null) {
+			return;
+		}
 		switch (selectMode) {
 		case WITH_IMAGE:
 			if (c.getImage() != null) {

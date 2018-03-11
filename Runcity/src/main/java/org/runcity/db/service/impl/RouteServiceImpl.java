@@ -28,6 +28,9 @@ public class RouteServiceImpl implements RouteService {
 	private TeamRepository teamRepository;
 
 	private void initialize(Route r, Route.SelectMode selectMode) {
+		if (r == null) {
+			return;
+		}
 		switch (selectMode) {
 		case WITH_ITEMS:
 			Hibernate.initialize(r.getRouteItems());

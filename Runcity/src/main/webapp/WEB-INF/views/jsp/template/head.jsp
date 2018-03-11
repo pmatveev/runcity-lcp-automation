@@ -16,6 +16,7 @@
 <spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
 <spring:url value="/resources/css/fixedHeader.bootstrap.min.css" var="dtFixedHeaderCss" />
 <spring:url value="/resources/css/select.bootstrap.min.css" var="dtSelectCss" />
+<spring:url value="/resources/css/bootstrap-toggle.min.css" var="bootstrapToggleCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
@@ -31,6 +32,7 @@
 <spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/bootstrap-notify.min.js" var="bootstrapNotifyJs" />
+<spring:url value="/resources/js/bootstrap-toggle.min.js" var="bootstrapToggleJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'/>
@@ -43,6 +45,7 @@
 <link rel='stylesheet' href='${dtButtonsCss}'/>
 <link rel='stylesheet' href='${dtFixedHeaderCss}'/>
 <link rel='stylesheet' href='${dtSelectCss}'/>
+<link rel='stylesheet' href='${bootstrapToggleCss}'/>
 <link rel='stylesheet' href='${runcityCss}'/>
 <script type="text/javascript" src="${jqueryJs}"></script>
 <script type="text/javascript" src="${bootstrapJs}"></script>
@@ -58,6 +61,7 @@
 <script type="text/javascript" src="${dtFinedHeaderJs}"></script>
 <script type="text/javascript" src="${dtSelectJs}"></script>
 <script type="text/javascript" src="${bootstrapNotifyJs}"></script>
+<script type="text/javascript" src="${bootstrapToggleJs}"></script>
 <script type="text/javascript" src="${runcityJs}"></script>
 
 <c:if test="${lang != 'en'}">
@@ -166,6 +170,10 @@
 						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
 							<spring:url value="/secure/volunteer" var="goVolunteer" />
 							<li><a href="${goVolunteer}" role="button"><fmt:message key="menu.volunteer" bundle="${msg}" /></a></li>
+							<c:if test="${attributes.currentCP}">
+								<spring:url value="/secure/current" var="goCurrent" />
+								<li><a href="${goCurrent}" role="button"><fmt:message key="menu.current" bundle="${msg}" /></a></li>							
+							</c:if>
 						</sec:authorize>
 					</ul>
 				</sec:authorize>

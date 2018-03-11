@@ -14,7 +14,7 @@ import org.springframework.util.ObjectUtils;
 @Table(name = "volunteer")
 public class Volunteer {
 	public enum SelectMode {
-		NONE;
+		NONE, WITH_ACTIVE;
 	}
 	
 	@Transient
@@ -52,6 +52,9 @@ public class Volunteer {
 	
 	@Transient
 	private Date utcDateTo;
+	
+	@Transient
+	private Boolean active;
 	
 	public Volunteer() {
 	}
@@ -176,5 +179,17 @@ public class Volunteer {
 	
 	public VolunteerType getVolunteerType() {
 		return this.controlPoint == null ? VolunteerType.COORDINATOR : VolunteerType.VOLUNTEER;
+	}
+
+	public Boolean isActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
+	public Date now() {
+		return getVolunteerGame().now();
 	}
 }

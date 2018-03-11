@@ -23,6 +23,9 @@ public class GameServiceImpl implements GameService {
 	private VolunteerRepository volunteerRepository;
 	
 	private void initialize(Game g, Game.SelectMode selectMode) {
+		if (g == null) {
+			return;
+		}
 		switch (selectMode) {
 		case WITH_CATEGORIES:
 			Hibernate.initialize(g.getCategories());

@@ -1,6 +1,7 @@
 package org.runcity.mvc.validator;
 
 import org.runcity.mvc.web.formdata.ValidatedForm;
+import org.runcity.util.JspAttributes;
 import org.runcity.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,7 +16,7 @@ public class FormValidator implements Validator {
 	
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return ValidatedForm.class.isAssignableFrom(clazz) || Version.class.equals(clazz);
+		return ValidatedForm.class.isAssignableFrom(clazz) || Version.class.equals(clazz) || JspAttributes.class.equals(clazz);
 	}
 
 	@Override

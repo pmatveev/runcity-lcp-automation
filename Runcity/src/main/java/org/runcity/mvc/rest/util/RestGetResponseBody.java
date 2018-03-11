@@ -49,7 +49,7 @@ public class RestGetResponseBody {
 		this.msg = msg;
 	}
 	
-	public void addCommonMsg(String msg, Object[] arguments) {
+	public void addCommonMsg(String msg, Object ... arguments) {
 		if (this.msg == null) {
 			this.msg = new LinkedList<String>();
 		}

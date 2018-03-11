@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,21 +26,24 @@ public class SecureUserDetails implements UserDetails {
 	private String email;
 	private String locale;
 	private Set<GrantedAuthority> roles;
+	
+	private Volunteer current;
 
 	public SecureUserDetails(Long id, String username, boolean active, String password, String credentials,
-			String email, String locale, List<SecureUserRole> roles) {
+			String email, String locale, List<SecureUserRole> roles, Volunteer current) {
 		update(id, username, active, password, credentials, email, locale, roles);
+		this.current = current;
 	}
 
-	public static SecureUserDetails getCurrent() {
+	public static SecureUserDetails getCurrentUser() {
 		Authentication a = SecurityContextHolder.getContext().getAuthentication();
 		Object o = a == null ? null : a.getPrincipal();
 		return o instanceof SecureUserDetails ? (SecureUserDetails) o : null;
 	}
 
-	public static String getLocaleCurrent() {
-		SecureUserDetails current = getCurrent();
-		return current == null ? null : current.getLocale();
+	public static String getCurrentUserLocale() {
+		SecureUserDetails currentUser = getCurrentUser();
+		return currentUser == null ? null : currentUser.getLocale();
 	}
 	
 	public void update(Long id, String username, boolean active, String password, String credentials,
@@ -127,5 +131,13 @@ public class SecureUserDetails implements UserDetails {
 	
 	public void setLocale(String locale) {
 		this.locale = locale;
+	}
+
+	public void setCurrent(Volunteer current) {
+		this.current = current;
+	}
+	
+	public Volunteer getCurrent() {
+		return current;
 	}
 }

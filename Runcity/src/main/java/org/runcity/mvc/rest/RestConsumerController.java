@@ -212,7 +212,7 @@ public class RestConsumerController extends AbstractRestController {
 		logger.info("DELETE /api/v1/consumerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		
-		Long myId = SecureUserDetails.getCurrent().getId();
+		Long myId = SecureUserDetails.getCurrentUser().getId();
 		for (Long i : id) {
 			if (ObjectUtils.nullSafeEquals(myId, i)) {
 				result.setResponseClass(RestResponseClass.ERROR);

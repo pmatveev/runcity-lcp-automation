@@ -107,11 +107,21 @@ public class VolunteerTag extends TagSupport {
 				tagWriter.appendValue(g.getName() + " (" + v.getControlPoint().getName() + ")");
 			}
 			tagWriter.endTag();
-			tagWriter.appendValue("&nbsp;");
+			tagWriter.appendValue(" ");
 			tagWriter.startTag("span");
 			tagWriter.writeAttribute("class", "label " + label);
 			tagWriter.appendValue(labelContent);
 			tagWriter.endTag();
+			
+			// isActive may be null for coordinators!
+			if (Boolean.TRUE.equals(v.isActive())) {
+				tagWriter.appendValue(" ");
+				tagWriter.startTag("span");
+				tagWriter.writeAttribute("class", "label label-info");
+				tagWriter.appendValue(localize("jsp.game.current"));
+				tagWriter.endTag();				
+			}
+			
 			tagWriter.endTag();
 
 			Date from = v.getUtcDateFrom();

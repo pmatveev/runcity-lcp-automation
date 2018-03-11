@@ -64,7 +64,7 @@ public class RestPostResponseBody {
 		this.colErrors = colErrors;
 	}
 
-	public void addCommonMsg(String msg, Object[] arguments) {
+	public void addCommonMsg(String msg, Object ... arguments) {
 		if (this.msg == null) {
 			this.msg = new LinkedList<String>();
 		}
@@ -79,7 +79,7 @@ public class RestPostResponseBody {
 		addCommonMsg(msg.getCode(), msg.getArguments());
 	}
 
-	public void addColError(String col, String error, Object[] arguments) {
+	public void addColError(String col, String error, Object ... arguments) {
 		if (this.colErrors == null) {
 			this.colErrors = new HashMap<String, List<String>>();
 		}

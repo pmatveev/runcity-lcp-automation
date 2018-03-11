@@ -53,7 +53,7 @@ public class MenuController {
 
 	@RequestMapping(value = "/secure/home", method = RequestMethod.GET)
 	public String home(Model model) {
-		SecureUserDetails user = SecureUserDetails.getCurrent();
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
 		
 		if (user.getAuthorities().contains(SecureUserDetails.VOLUNTEER_ROLE)) {
 			return "redirect:/secure/volunteer";
@@ -137,9 +137,9 @@ public class MenuController {
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/secure/volunteer", method = RequestMethod.GET)
 	public String volunteer(Model model) {
-		String username = SecureUserDetails.getCurrent().getUsername();
-		List<Volunteer> volunteer = volunteerService.getUpcomingVolunteers(username);
-		List<Volunteer> coordinator = volunteerService.getUpcomingCoordinations(username);
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		List<Volunteer> volunteer = volunteerService.getUpcomingVolunteers(username, Volunteer.SelectMode.WITH_ACTIVE);
+		List<Volunteer> coordinator = volunteerService.getUpcomingCoordinations(username, Volunteer.SelectMode.NONE);
 		
 		model.addAttribute("volunteerData", volunteer);
 		model.addAttribute("coordinatorData", coordinator);
@@ -156,15 +156,37 @@ public class MenuController {
 			return "exception/invalidUrl";			
 		}
 
-		String username = SecureUserDetails.getCurrent().getUsername();
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username);
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, Volunteer.SelectMode.WITH_ACTIVE);
 		
 		if (v == null) {
 			return "exception/forbidden";		
 		}
-		
+
+		v.setControlPoint(cp);
 		model.addAttribute("volunteer", v);
-		model.addAttribute("controlPoint", cp);
 		return "secure/volunteerDetails";	
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/current", method = RequestMethod.GET)
+	public String currentVolunteerDetails(Model model) {
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
+		
+		if (user == null) {
+			return "exception/forbidden";
+		}
+		
+		Volunteer v = volunteerService.getCurrentByUsername(user.getUsername());
+		
+		if (v == null || v.getControlPoint() == null) {
+			// exception
+			user.setCurrent(null);
+			return "redirect:/secure/volunteer";
+		}
+		
+		// just for a case
+		user.setCurrent(v);
+		return "redirect:/secure/volunteerDetails/" + v.getControlPoint().getId();
 	}
 }

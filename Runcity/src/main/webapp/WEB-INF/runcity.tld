@@ -150,17 +150,24 @@
 		<tag-class>org.runcity.jsp.VolunteerControlPointTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
+			<name>ajaxTarget</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>false</required>
+			<type>java.lang.String</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
+			<name>onsiteHandler</name>
+			<rtexprvalue>true</rtexprvalue>
+			<required>false</required>
+			<type>java.lang.String</type>
+			<fragment>false</fragment>
+		</attribute>
+		<attribute>
 			<name>volunteer</name>
 			<rtexprvalue>true</rtexprvalue>
 			<required>true</required>
 			<type>org.runcity.db.entity.Volunteer</type>
-			<fragment>false</fragment>
-		</attribute>
-		<attribute>
-			<name>controlPoint</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>true</required>
-			<type>org.runcity.db.entity.ControlPoint</type>
 			<fragment>false</fragment>
 		</attribute>
 		<attribute>

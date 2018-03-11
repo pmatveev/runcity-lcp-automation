@@ -19,6 +19,9 @@ public class CategoryServiceImpl implements CategoryService {
 	private CategoryRepository categoryRepository;
 
 	private void initialize(Category c, Category.SelectMode selectMode) {
+		if (c == null) {
+			return;
+		}
 		switch (selectMode) {
 		case WITH_GAMES:
 			Hibernate.initialize(c.getGames());

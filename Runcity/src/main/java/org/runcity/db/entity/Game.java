@@ -253,4 +253,10 @@ public class Game {
 	public String getDisplay() {
 		return name + " (" + city + ", " + country + ")";
 	}
+	
+	public Date now() {
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.MILLISECOND, getTz().getRawOffset());
+		return c.getTime();
+	}
 }

@@ -1556,3 +1556,49 @@ function initFileInput(elem, initial, destroy) {
 	    });
 	});
 }
+
+function processToggleAjax(input, ajaxData, successHandler) {
+	if (input.prop('ajax-communication')) {
+		return;
+	}
+	removeMessage(input);
+	input.prop('ajax-communication', true);
+	input.prop('disabled', true);
+	input.parent().addClass("disabled");
+	var csrfToken = $("meta[name='_csrf']").attr("content");
+	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	
+	var rollback = function() {
+		input.prop('disabled', false);
+		input.parent().removeClass("disabled");
+		input.prop('checked', !input.prop('checked')).change();
+		input.prop('ajax-communication', false);
+	}
+	
+	$.ajax({
+		type : "POST",
+		contentType : "application/json",
+		url : input.attr("ajax-target"),
+		data : JSON.stringify(ajaxData),
+		dataType : "json",
+		timeout : 10000,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader(csrfHeader, csrfToken);
+		},
+		success : function(data) {
+			if (successHandler(data)) {
+				return;
+			}
+			rollback();
+			if (data.msg) {
+				data.msg.forEach(function(item, i, arr) {
+					setMessage(input, item, "danger");
+				});
+			}
+		},
+		error : function(data) {
+			rollback();
+			setMessage(input, getHttpError(data.statusText, data.status, "POST"), "danger");
+		}
+	});
+}

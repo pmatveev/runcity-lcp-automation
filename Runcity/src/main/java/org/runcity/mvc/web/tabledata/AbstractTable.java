@@ -43,7 +43,7 @@ public abstract class AbstractTable extends RestGetResponseBody {
 	}
 	
 	protected void addLocalizedColumn(List<ColumnDefinition> list, String name, String label, String sortType, int sortOrder) {
-		String userLocale = SecureUserDetails.getLocaleCurrent();
+		String userLocale = SecureUserDetails.getCurrentUserLocale();
 		boolean sort = !StringUtils.isEmpty(sortType);
 		for (String l : localeList.locales()) {
 			ColumnDefinition c = new ColumnDefinition(name + "." + l, null, label, messageSource.getMessage("locale." + l, null, locale)); 

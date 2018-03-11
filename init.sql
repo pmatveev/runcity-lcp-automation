@@ -183,5 +183,25 @@ CREATE TABLE runcity.team (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+CREATE TABLE runcity.event (
+  id INT(11) NOT NULL,
+  type VARCHAR(1) NOT NULL,
+  status VARCHAR(1) NOT NULL,
+  date_from DATETIME NOT NULL,
+  date_to DATETIME DEFAULT NULL,
+  volunteer__id INT(11) NOT NULL,
+  team__id INT(11) DEFAULT NULL,
+  PRIMARY KEY (id),
+  INDEX event_volunteer (volunteer__id ASC, type ASC, status ASC),
+  CONSTRAINT FK_event_volunteer
+    FOREIGN KEY (volunteer__id)
+    REFERENCES runcity.volunteer (id),
+  INDEX event_team (team__id ASC, type ASC, status ASC),
+  CONSTRAINT FK_event_team
+    FOREIGN KEY (team__id)
+    REFERENCES runcity.team (id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
 insert into runcity.consumer(id, username, credentials, email, is_active, passhash) values (1, 'admin', 'Administrator', 'admin@runcity.org', 1, '$2a$10$mVfrrJmajq8eud2fKg4UrupgG/FoPMin1Vk067IHqKaSxyvQWzpiG');
 insert into runcity.consumer_role(id, code, consumer__id) values (1, 'ADMIN', 1);
