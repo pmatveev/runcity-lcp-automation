@@ -1145,6 +1145,11 @@ function initDatatables(table, loc) {
 						}
 					});
 				}
+			} else {
+				func = function(e, dt, node, config) {
+					removeTableMessage(dt);
+					dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, button.attr("extend"));
+				}
 			} 
 		} else if (action.length > 1 && action[0] == "link") {
 			var link = action[1];
@@ -1161,10 +1166,9 @@ function initDatatables(table, loc) {
 					window.open(processedLink, '_blank')
 				}
 			}
-		} else {
+		} else if (action.length > 0 && action[0] == "refresh") {
 			func = function(e, dt, node, config) {
-				removeTableMessage(dt);
-				dataTablesAjax(dt, ajaxMethod, ajaxAddress, button.attr("extend"));
+				dt.ajax.reload(null, false);
 			}
 		}
 
@@ -1172,7 +1176,7 @@ function initDatatables(table, loc) {
 			action : func,
 			className : button.attr("class"),
 			extend : button.attr("extend"),
-			text : button.text()
+			text : button.html()
 		});
 	});
 	buttonDiv.remove();

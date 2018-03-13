@@ -76,6 +76,7 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("volunteers", "controlPoint.volunteers"));
 		
 		this.buttons.add(new ButtonDefinition("coordinator.createVolunteer", null, "btn", "createform:volunteerCreateEditByGameCPForm", null));
+		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
 		
 		VolunteerCreateEditByGameCPForm form = new VolunteerCreateEditByGameCPForm(localeList);
 		form.setGameId(g.getId());
