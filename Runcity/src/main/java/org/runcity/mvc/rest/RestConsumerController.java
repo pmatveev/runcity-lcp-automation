@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
@@ -40,6 +42,9 @@ public class RestConsumerController extends AbstractRestController {
 
 	@Autowired
 	private ConsumerService consumerService;
+
+	@Autowired
+	private VolunteerService volunteerService;
 	
 	@Autowired
 	private CommonProperties commonProperties;
@@ -305,7 +310,7 @@ public class RestConsumerController extends AbstractRestController {
 		Consumer c = consumerService.selectById(consumerId, Consumer.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initVolunteersByConsumer(messageSource, localeList, c);
-		table.add(consumerService.selectVolunteers(c));
+		table.add(volunteerService.selectVolunteersByConsumer(c, Volunteer.SelectMode.NONE));
 		return table.validate();
 	}	
 	
@@ -319,12 +324,12 @@ public class RestConsumerController extends AbstractRestController {
 		Consumer c = consumerService.selectById(consumerId, Consumer.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByConsumer(messageSource, localeList, c);
-		table.add(consumerService.selectCoordinators(c));
+		table.add(volunteerService.selectCoordinatorsByConsumer(c, Volunteer.SelectMode.NONE));
 		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/dddw/consumerId", method = RequestMethod.GET)
 	public RestGetResponseBody consumerDddwInit(@RequestParam(required = true) Long id) {
 		logger.info("GET /api/v1/dddw/consumerId");
@@ -335,7 +340,7 @@ public class RestConsumerController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/dddw/consumer", method = RequestMethod.GET)
 	public RestGetResponseBody consumerDddw(@RequestParam(required = false) Boolean active, @RequestParam(required = false) List<String> roles) {
 		logger.info("GET /api/v1/dddw/consumer");

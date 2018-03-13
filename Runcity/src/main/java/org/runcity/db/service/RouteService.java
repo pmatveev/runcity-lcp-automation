@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
-import org.runcity.db.entity.Team;
 import org.runcity.exception.DBException;
 
 public interface RouteService {
@@ -19,8 +18,4 @@ public interface RouteService {
 	public void deleteItem(List<Long> id);
 	
 	public Long selectTeamNumber(Route r);
-	
-	public List<Team> selectTeams(Long route);
-	
-	public List<Team> selectTeams(Route route);
 }

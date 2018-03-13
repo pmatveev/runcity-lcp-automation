@@ -11,10 +11,10 @@ import org.springframework.validation.ObjectError;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestGetResponseBody {
-	@JsonView(Views.Public.class)
+	@JsonView(Object.class)
 	private RestResponseClass responseClass;
 	
-	@JsonView(Views.Public.class)
+	@JsonView(Object.class)
 	private List<String> msg;
 	
 	protected MessageSource messageSource;

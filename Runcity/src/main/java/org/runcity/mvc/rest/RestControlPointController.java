@@ -21,6 +21,7 @@ import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByCPForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
+import org.runcity.secure.SecureUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
@@ -97,12 +98,12 @@ public class RestControlPointController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/dddw/controlPointMainByGame", method = RequestMethod.GET)
 	public RestGetResponseBody controlPointDddwMainByGame(@RequestParam(required = false) Long self, @RequestParam(required = true) Long game) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
 		
-		List<ControlPoint> controlPoints = controlPointService.selectMainByGame(game);
+		List<ControlPoint> controlPoints = controlPointService.selectMainByGame(game, ControlPoint.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
@@ -118,7 +119,7 @@ public class RestControlPointController extends AbstractRestController {
 	public RestGetResponseBody controlPointDddwByRoute(@RequestParam(required = false) Long self, @RequestParam(required = true) Long route) {
 		logger.info("GET /api/v1/dddw/controlPointMainByGame");
 		
-		List<ControlPoint> controlPoints = controlPointService.selectByRouteNotUsed(route);
+		List<ControlPoint> controlPoints = controlPointService.selectByRouteNotUsed(route, ControlPoint.SelectMode.NONE);
 		if (self != null) {
 			RouteItem ri = routeService.selectItemById(self);
 			controlPoints.add(ri.getControlPoint());
@@ -185,14 +186,14 @@ public class RestControlPointController extends AbstractRestController {
 		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.NONE);
 		
 		VolunteerTable table = new VolunteerTable(messageSource, localeList, cp);
-		table.add(controlPointService.selectVolunteers(cp));
+		table.add(volunteerService.selectByControlPoint(cp, Volunteer.SelectMode.NONE));
 		return table.validate();
 	}	
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {
 		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
 		
 		if (v == null) {
@@ -202,11 +203,19 @@ public class RestControlPointController extends AbstractRestController {
 			return result;
 		}
 
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
+		if (!user.isAdmin() && !volunteerService.isCoordinator(v.getVolunteerGame(), user.getUsername())) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.forbidden");
+			return result;
+		}
+
 		return new VolunteerCreateEditByCPForm(v, localeList);
 	}
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByCP", method = RequestMethod.POST)
 	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByCPForm form) {
 		logger.info("POST /api/v1/volunteerCreateEdit");
@@ -215,6 +224,13 @@ public class RestControlPointController extends AbstractRestController {
 		Errors errors = validateForm(form, result);
 
 		if (errors.hasErrors()) {
+			return result;
+		}
+
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
+		if (!user.isAdmin() && !volunteerService.isCoordinator(form.getVolunteer().getVolunteerGame(), user.getUsername())) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.forbidden");
 			return result;
 		}
 		

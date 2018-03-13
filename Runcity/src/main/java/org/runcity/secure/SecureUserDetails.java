@@ -140,4 +140,12 @@ public class SecureUserDetails implements UserDetails {
 	public Volunteer getCurrent() {
 		return current;
 	}
+	
+	public boolean isAdmin() {
+		return roles.contains(ADMIN_ROLE);
+	}
+	
+	public boolean isVolunteer() {
+		return roles.contains(VOLUNTEER_ROLE);
+	}
 }

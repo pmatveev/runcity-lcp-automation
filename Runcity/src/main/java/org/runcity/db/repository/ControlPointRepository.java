@@ -22,4 +22,13 @@ public interface ControlPointRepository extends JpaRepository<ControlPoint, Long
 	
 	@Query("select c from ControlPoint c where c.game = :game and not exists (select ri from RouteItem ri where ri.route = :route and ri.controlPoint = c)")
 	public List<ControlPoint> findByRouteNotUsed(@Param("game") Game game, @Param("route") Route route);
+	
+	@Query("select c from ControlPoint c where c.game = :game and exists (select v from Volunteer v where v.controlPoint = c)")
+	public List<ControlPoint> findLiveByGame(@Param("game") Game game);
+	
+	@Query("select count(v) from Volunteer v where v.controlPoint = :cp")
+	public Long countVolunteers(@Param("cp") ControlPoint controlPoint);
+	
+	@Query("select count(distinct v) from Volunteer v, Event e where v.controlPoint = :cp and e.volunteer = v and e.status = 'P' and e.type = 'V'")
+	public Long countActiveVolunteers(@Param("cp") ControlPoint controlPoint);
 }

@@ -113,7 +113,7 @@ public class FormDddwControlPointColumn extends FormDddwColumn<Long> {
 				}
 			}
 			
-			if (!self && !controlPointService.selectByRouteNotUsed(r).contains(controlPoint)) {
+			if (!self && !controlPointService.selectByRouteNotUsed(r, ControlPoint.SelectMode.NONE).contains(controlPoint)) {
 				errors.rejectValue(getName(), "controlPoint.validation.alreadyUsed", new Object[] { value }, null);	
 				return;				
 			}

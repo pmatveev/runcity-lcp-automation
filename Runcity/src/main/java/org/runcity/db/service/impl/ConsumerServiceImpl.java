@@ -2,6 +2,7 @@ package org.runcity.db.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,12 +15,10 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
-import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.repository.ConsumerRepository;
 import org.runcity.db.repository.PersistedLoginsRepository;
 import org.runcity.db.repository.TokenRepository;
-import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
@@ -53,9 +52,6 @@ public class ConsumerServiceImpl implements ConsumerService {
 	private PersistedLoginsRepository persistedLoginsRepository;
 
 	@Autowired
-	private VolunteerRepository volunteerRepository;
-
-	@Autowired
 	private JavaMailSender mailSender;
 
 	@Autowired
@@ -69,17 +65,24 @@ public class ConsumerServiceImpl implements ConsumerService {
 		case WITH_ROLES:
 			Hibernate.initialize(c.getRoles());
 			break;
-		default:
+		case NONE:
 			break;
 		}		
+	}
+	
+	private void initialize(Collection<Consumer> consumers, Consumer.SelectMode selectMode) {
+		if (consumers == null || selectMode == Consumer.SelectMode.NONE) {
+			return;
+		}
+		for (Consumer c : consumers) {
+			initialize(c, selectMode);
+		}
 	}
 	
 	@Override
 	public List<Consumer> selectAll(Consumer.SelectMode selectMode) {
 		List<Consumer> consumers = consumerRepository.findAll();
-		for (Consumer c : consumers) {
-			initialize(c, selectMode);
-		}
+		initialize(consumers, selectMode);
 		return consumers;
 	}
 
@@ -355,25 +358,5 @@ public class ConsumerServiceImpl implements ConsumerService {
 			return c;
 		}
 		return null;
-	}
-
-	@Override
-	public List<Volunteer> selectVolunteers(Long consumer) {
-		return selectVolunteers(consumerRepository.findOne(consumer));
-	}
-
-	@Override
-	public List<Volunteer> selectVolunteers(Consumer consumer) {
-		return volunteerRepository.findCPByConsumer(consumer);
-	}
-
-	@Override
-	public List<Volunteer> selectCoordinators(Long consumer) {
-		return selectVolunteers(consumerRepository.findOne(consumer));
-	}
-
-	@Override
-	public List<Volunteer> selectCoordinators(Consumer consumer) {
-		return volunteerRepository.findGameByConsumer(consumer);
 	}
 }

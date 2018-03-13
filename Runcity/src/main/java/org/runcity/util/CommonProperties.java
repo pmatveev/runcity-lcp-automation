@@ -13,7 +13,7 @@ public class CommonProperties {
 	public void setCacheTime(int cacheTime) {
 		this.cacheTime = cacheTime;
 	}
-
+	
 	public int getPasswordTokenLifetime() {
 		return passwordTokenLifetime;
 	}

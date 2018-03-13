@@ -5,10 +5,8 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
-import org.runcity.db.entity.Team;
 import org.runcity.db.repository.RouteItemRepository;
 import org.runcity.db.repository.RouteRepository;
-import org.runcity.db.repository.TeamRepository;
 import org.runcity.db.service.RouteService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +22,6 @@ public class RouteServiceImpl implements RouteService {
 	@Autowired
 	private RouteItemRepository routeItemRepository;
 	
-	@Autowired
-	private TeamRepository teamRepository;
-
 	private void initialize(Route r, Route.SelectMode selectMode) {
 		if (r == null) {
 			return;
@@ -35,11 +30,20 @@ public class RouteServiceImpl implements RouteService {
 		case WITH_ITEMS:
 			Hibernate.initialize(r.getRouteItems());
 			break;
-		default:
+		case NONE:
 			break;
 		}
 	}
 	
+/*	private void initialize(Collection<Route> routes, Route.SelectMode selectMode) {
+		if (routes == null || selectMode == Route.SelectMode.NONE) {
+			return;
+		}
+		for (Route r : routes) {
+			initialize(r, selectMode);
+		}
+	}
+*/	
 	@Override
 	public Route selectById(Long id, Route.SelectMode selectMode) {
 		Route r = routeRepository.findOne(id);
@@ -86,15 +90,5 @@ public class RouteServiceImpl implements RouteService {
 	@Override
 	public Long selectTeamNumber(Route r) {
 		return routeRepository.selectTeamNumber(r);
-	}
-
-	@Override
-	public List<Team> selectTeams(Long route) {
-		return selectTeams(routeRepository.findOne(route));
-	}
-
-	@Override
-	public List<Team> selectTeams(Route route) {
-		return teamRepository.findByRoute(route);
 	}
 }

@@ -26,8 +26,17 @@ public class CategoryServiceImpl implements CategoryService {
 		case WITH_GAMES:
 			Hibernate.initialize(c.getGames());
 			break;
-		default:
+		case NONE:
 			break;
+		}
+	}
+	
+	private void initialize(Iterable<Category> categories, Category.SelectMode selectMode) {
+		if (categories == null || selectMode == Category.SelectMode.NONE) {
+			return;
+		}
+		for (Category c : categories) {
+			initialize(c, selectMode);
 		}
 	}
 	
@@ -42,33 +51,21 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Iterable<Category> selectById(Iterable<Long> id, Category.SelectMode selectMode) {
 		Iterable<Category> categories = categoryRepository.findAll(id);
-		
-		for (Category c : categories) {
-			initialize(c, selectMode);
-		}
-		
+		initialize(categories, selectMode);
 		return categories;
 	}
 
 	@Override
 	public List<Category> selectAll(Category.SelectMode selectMode) {
 		List<Category> categories = categoryRepository.findAll();
-
-		for (Category c : categories) {
-			initialize(c, selectMode);
-		}
-		
+		initialize(categories, selectMode);
 		return categories;
 	}
 	
 	@Override
 	public List<Category> selectUnused(Game g, Category.SelectMode selectMode) {
 		List<Category> categories = categoryRepository.selectUnused(g);
-		
-		for (Category c : categories) {
-			initialize(c, selectMode);
-		}
-		
+		initialize(categories, selectMode);
 		return categories;		
 	}
 

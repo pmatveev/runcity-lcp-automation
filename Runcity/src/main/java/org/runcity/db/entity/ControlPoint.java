@@ -25,7 +25,7 @@ import org.springframework.context.MessageSource;
 @SQLDelete(sql = "delete cp, bc from control_point cp left outer join blob_content bc on bc.id = cp.image where cp.id = ?")
 public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	public enum SelectMode {
-		NONE, WITH_IMAGE, FOR_VOLUNTEER;
+		NONE, WITH_IMAGE, FOR_VOLUNTEER, WITH_CHILDREN;
 	}
 	
 	@Id

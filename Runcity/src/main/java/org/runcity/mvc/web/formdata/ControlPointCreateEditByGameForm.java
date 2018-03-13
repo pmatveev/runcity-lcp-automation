@@ -243,7 +243,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		image.validate(context, errors);
 
 		ControlPointService controlPointService = context.getBean(ControlPointService.class);
-		if (getParent() != null && getId() != null && !controlPointService.selectByParent(getId()).isEmpty()) {
+		if (getParent() != null && getId() != null && !controlPointService.selectByParent(getId(), ControlPoint.SelectMode.NONE).isEmpty()) {
 			errors.rejectValue(parent.getName(), "controlPoint.errorParentChain");
 		}
 	}

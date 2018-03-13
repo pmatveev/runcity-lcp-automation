@@ -3,7 +3,9 @@ package org.runcity.db.service.impl;
 import java.util.List;
 
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
 import org.runcity.db.entity.Team;
+import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.repository.TeamRepository;
 import org.runcity.db.service.TeamService;
 import org.runcity.exception.DBException;
@@ -16,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class TeamServiceImpl implements TeamService {
 	@Autowired
 	private TeamRepository teamRepository;
+	
+	@Autowired
+	private RouteRepository routeRepository;
 
 	@Override
 	public Team selectById(Long id) {
@@ -45,5 +50,15 @@ public class TeamServiceImpl implements TeamService {
 		for (Long i : id) {
 			delete(i);
 		}
+	}
+
+	@Override
+	public List<Team> selectTeams(Long route) {
+		return selectTeams(routeRepository.findOne(route));
+	}
+
+	@Override
+	public List<Team> selectTeams(Route route) {
+		return teamRepository.findByRoute(route);
 	}
 }

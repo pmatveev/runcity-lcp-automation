@@ -1,17 +1,16 @@
 package org.runcity.db.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
-import org.runcity.db.entity.Volunteer;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.GameRepository;
 import org.runcity.db.repository.RouteRepository;
-import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.BlobContentService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.exception.DBException;
@@ -37,9 +36,6 @@ public class ControlPointServiceImpl implements ControlPointService {
 	@Autowired 
 	private BlobContentService blobContentService;
 	
-	@Autowired
-	private VolunteerRepository volunteerRepository;
-
 	private void initialize(ControlPoint c, ControlPoint.SelectMode selectMode) {
 		if (c == null) {
 			return;
@@ -57,56 +53,86 @@ public class ControlPointServiceImpl implements ControlPointService {
 				Hibernate.initialize(ch.getRouteItems());
 			}
 			break;
-		default:
+		case WITH_CHILDREN:
+			Hibernate.initialize(c.getChildren());
+		case NONE:
 			break;
 		}
 	}
 	
+	private void initialize(Collection<ControlPoint> controlPoints, ControlPoint.SelectMode selectMode) {
+		if (controlPoints == null || selectMode == ControlPoint.SelectMode.NONE) {
+			return;
+		}
+		for (ControlPoint cp : controlPoints) {
+			initialize(cp, selectMode);
+		}
+	}
+	
 	@Override
-	public List<ControlPoint> selectByGame(Game game) {
-		return controlPointRepository.findByGame(game);
+	public List<ControlPoint> selectByGame(Game game, ControlPoint.SelectMode selectMode) {
+		List<ControlPoint> result = controlPointRepository.findByGame(game);
+		initialize(result, selectMode);
+		return result;
 	}
 
 	@Override
-	public List<ControlPoint> selectByGame(Long game) {
-		return selectByGame(gameRepository.findOne(game));
+	public List<ControlPoint> selectByGame(Long game, ControlPoint.SelectMode selectMode) {
+		return selectByGame(gameRepository.findOne(game), selectMode);
 	}
 
 	@Override
-	public List<ControlPoint> selectMainByGame(Game game) {
-		return controlPointRepository.findMainByGame(game);
+	public List<ControlPoint> selectMainByGame(Game game, ControlPoint.SelectMode selectMode) {
+		List<ControlPoint> result = controlPointRepository.findMainByGame(game);
+		initialize(result, selectMode);
+		return result;
 	}
 
 	@Override
-	public List<ControlPoint> selectMainByGame(Long game) {
-		return selectMainByGame(gameRepository.findOne(game));
+	public List<ControlPoint> selectMainByGame(Long game, ControlPoint.SelectMode selectMode) {
+		return selectMainByGame(gameRepository.findOne(game), selectMode);
 	}
 
 	@Override
-	public List<ControlPoint> selectByRouteNotUsed(Route route) {
-		return controlPointRepository.findByRouteNotUsed(route.getGame(), route);
+	public List<ControlPoint> selectByRouteNotUsed(Route route, ControlPoint.SelectMode selectMode) {
+		List<ControlPoint> result = controlPointRepository.findByRouteNotUsed(route.getGame(), route);
+		initialize(result, selectMode);
+		return result;
 	}
 
 	@Override
-	public List<ControlPoint> selectByRouteNotUsed(Long route) {
-		return selectByRouteNotUsed(routeRepository.findOne(route));
+	public List<ControlPoint> selectByRouteNotUsed(Long route, ControlPoint.SelectMode selectMode) {
+		return selectByRouteNotUsed(routeRepository.findOne(route), selectMode);
 	}
 
 	@Override
-	public List<ControlPoint> selectByParent(Long parent) {
-		return selectByParent(controlPointRepository.findOne(parent));
+	public List<ControlPoint> selectByParent(Long parent, ControlPoint.SelectMode selectMode) {
+		return selectByParent(controlPointRepository.findOne(parent), selectMode);
 	}
 
 	@Override
-	public List<ControlPoint> selectByParent(ControlPoint parent) {
-		return controlPointRepository.findByParent(parent);
+	public List<ControlPoint> selectByParent(ControlPoint parent, ControlPoint.SelectMode selectMode) {
+		List<ControlPoint> result = controlPointRepository.findByParent(parent);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<ControlPoint> selectLiveByGame(Long game, ControlPoint.SelectMode selectMode) {
+		return selectLiveByGame(gameRepository.findOne(game), selectMode);
+	}
+
+	@Override
+	public List<ControlPoint> selectLiveByGame(Game game, ControlPoint.SelectMode selectMode) {
+		List<ControlPoint> result = controlPointRepository.findLiveByGame(game);
+		initialize(result, selectMode);
+		return result;
 	}
 
 	@Override
 	public ControlPoint selectById(Long id, ControlPoint.SelectMode selectMode) {
 		ControlPoint c = controlPointRepository.findOne(id);
 		initialize(c, selectMode);
-		
 		return c;
 	}
 
@@ -144,13 +170,22 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	@Override
-	public List<Volunteer> selectVolunteers(Long controlPoint) {
-		return selectVolunteers(controlPointRepository.findOne(controlPoint));
+	public Long countVolunteers(Long controlPoint) {
+		return countVolunteers(controlPointRepository.findOne(controlPoint));
 	}
 
 	@Override
-	public List<Volunteer> selectVolunteers(ControlPoint controlPoint) {
-		ControlPoint cp = controlPoint.getParent() == null ? controlPoint : controlPoint.getParent();
-		return volunteerRepository.findByControlPoint(cp);
+	public Long countVolunteers(ControlPoint controlPoint) {
+		return controlPointRepository.countVolunteers(controlPoint);
+	}
+
+	@Override
+	public Long countActiveVolunteers(Long controlPoint) {
+		return countActiveVolunteers(controlPointRepository.findOne(controlPoint));
+	}
+
+	@Override
+	public Long countActiveVolunteers(ControlPoint controlPoint) {
+		return controlPointRepository.countActiveVolunteers(controlPoint);
 	}
 }

@@ -26,6 +26,7 @@ import org.runcity.mvc.web.formdata.GameCreateEditForm;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,7 +269,7 @@ public class RestGameController extends AbstractRestController {
 		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 		
 		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
-		table.add(gameService.selectCoordinators(g));
+		table.add(volunteerService.selectCoordinatorsByGame(g, Volunteer.SelectMode.NONE));
 		return table.validate();
 	}	
 	
@@ -282,7 +283,7 @@ public class RestGameController extends AbstractRestController {
 		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 
 		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
-		table.add(gameService.selectVolunteers(g));
+		table.add(volunteerService.selectVolunteersByGame(g, Volunteer.SelectMode.NONE));
 		return table.validate();
 	}	
 	
@@ -303,7 +304,7 @@ public class RestGameController extends AbstractRestController {
 	}
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
 	public RestPostResponseBody volunteerCreateEdit(@RequestBody VolunteerCreateEditByGameCPForm form) {
 		logger.info("POST /api/v1/volunteerCreateEditByGameCP");
@@ -312,6 +313,13 @@ public class RestGameController extends AbstractRestController {
 		Errors errors = validateForm(form, result);
 
 		if (errors.hasErrors()) {
+			return result;
+		}
+
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
+		if (!user.isAdmin() && !volunteerService.isCoordinator(form.getVolunteer().getVolunteerGame(), user.getUsername())) {
+			result.setResponseClass(RestResponseClass.ERROR);
+			result.addCommonMsg("common.forbidden");
 			return result;
 		}
 		
@@ -377,11 +385,24 @@ public class RestGameController extends AbstractRestController {
 	}	
 	
 	@JsonView(Views.Public.class)
-	@Secured("ROLE_ADMIN")
+	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
 	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/volunteerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		
+		SecureUserDetails user = SecureUserDetails.getCurrentUser();
+		if (!user.isAdmin()) {
+			for (Long i : id) {
+				Volunteer v = volunteerService.selectById(i, Volunteer.SelectMode.NONE);
+				if (!volunteerService.isCoordinator(v.getVolunteerGame(), user.getUsername())) {
+					result.setResponseClass(RestResponseClass.ERROR);
+					result.addCommonMsg("common.forbidden");
+					return result;
+				}
+			}
+		}
+		
 		try {
 			volunteerService.delete(id);
 		} catch (Exception e) {
@@ -400,7 +421,7 @@ public class RestGameController extends AbstractRestController {
 		
 		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
 		TeamTable table = new TeamTable(messageSource, localeList, r);
-		table.add(routeService.selectTeams(r));
+		table.add(teamService.selectTeams(r));
 
 		return table.validate();
 	}	

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
-public class RuntimeController extends AbstractRestController {
-	private static final Logger logger = Logger.getLogger(RuntimeController.class);
+public class RestRuntimeController extends AbstractRestController {
+	private static final Logger logger = Logger.getLogger(RestRuntimeController.class);
 	
 	@Autowired
 	private VolunteerService volunteerService;

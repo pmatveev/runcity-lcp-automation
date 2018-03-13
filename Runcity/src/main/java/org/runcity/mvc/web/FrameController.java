@@ -8,9 +8,12 @@ import org.runcity.db.service.ConsumerService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.VolunteerService;
+import org.runcity.mvc.web.tabledata.CoordinatorVolunteerTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
+import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.DynamicLocaleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -41,6 +44,9 @@ public class FrameController {
 	
 	@Autowired
 	private RouteService routeService;
+	
+	@Autowired 
+	private VolunteerService volunteerService;
 
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "secure/iframe/route/{routeId}", method = RequestMethod.GET)
@@ -113,5 +119,25 @@ public class FrameController {
 
 		model.addAttribute("prefix", referrer);
 		return "/sub/consumerDetails";
+	}
+
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/iframe/coordination/controlPoint/{controlPointId}", method = RequestMethod.GET)
+	public String coordControlPointDetails(Model model, @PathVariable Long controlPointId, @RequestParam(required = true) String referrer) {
+		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.NONE);
+		
+		if (cp == null) {
+			return "exception/invalidUrlSub";
+		}
+
+		if (!volunteerService.isCoordinator(cp.getGame(), SecureUserDetails.getCurrentUser().getUsername())) {
+			return "exception/forbidden";		
+		}
+
+		CoordinatorVolunteerTable table = new CoordinatorVolunteerTable(messageSource, localeList, cp);
+		table.processModel(model, referrer);
+
+		model.addAttribute("prefix", referrer);
+		return "/sub/coordControlPointDetails";
 	}
 }

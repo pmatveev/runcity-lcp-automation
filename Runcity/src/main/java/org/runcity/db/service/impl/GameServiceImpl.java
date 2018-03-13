@@ -1,12 +1,11 @@
 package org.runcity.db.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.Game;
-import org.runcity.db.entity.Volunteer;
 import org.runcity.db.repository.GameRepository;
-import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.GameService;
 import org.runcity.exception.DBException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameServiceImpl implements GameService {
 	@Autowired
 	private GameRepository gameRepository;
-	
-	@Autowired
-	private VolunteerRepository volunteerRepository;
-	
+
 	private void initialize(Game g, Game.SelectMode selectMode) {
 		if (g == null) {
 			return;
@@ -30,9 +26,18 @@ public class GameServiceImpl implements GameService {
 		case WITH_CATEGORIES:
 			Hibernate.initialize(g.getCategories());
 			break;
-		default:
+		case NONE:
 			break;
 		}		
+	}
+	
+	private void initialize(Collection<Game> games, Game.SelectMode selectMode) {
+		if (games == null || selectMode == Game.SelectMode.NONE) {
+			return;
+		}
+		for (Game g : games) {
+			initialize(g, selectMode);
+		}
 	}
 	
 	@Override
@@ -45,9 +50,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public List<Game> selectAll(Game.SelectMode selectMode) {
 		List<Game> games = gameRepository.findAll();
-		for (Game g : games) {
-			initialize(g, selectMode);
-		}
+		initialize(games, selectMode);
 		return games;
 	}
 
@@ -75,25 +78,5 @@ public class GameServiceImpl implements GameService {
 		for (Long i : id) {
 			delete(i);
 		}
-	}
-
-	@Override
-	public List<Volunteer> selectCoordinators(Long game) {
-		return selectCoordinators(gameRepository.findOne(game));
-	}
-
-	@Override
-	public List<Volunteer> selectCoordinators(Game game) {
-		return volunteerRepository.findByGame(game);
-	}
-
-	@Override
-	public List<Volunteer> selectVolunteers(Long game) {
-		return selectVolunteers(gameRepository.findOne(game));
-	}
-
-	@Override
-	public List<Volunteer> selectVolunteers(Game game) {
-		return volunteerRepository.findCPByGame(game);
 	}
 }

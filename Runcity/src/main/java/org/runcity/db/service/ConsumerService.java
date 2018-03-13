@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
-import org.runcity.db.entity.Volunteer;
 import org.runcity.exception.DBException;
 import org.runcity.exception.EMailException;
 import org.runcity.util.CommonProperties;
@@ -45,12 +44,4 @@ public interface ConsumerService {
 	public void invalidateRecoveryTokens(Consumer c) throws DBException;
 	
 	public Consumer resetPasswordByToken(Token token, String password) throws DBException;
-
-	public List<Volunteer> selectVolunteers(Long consumer);
-
-	public List<Volunteer> selectVolunteers(Consumer consumer);
-
-	public List<Volunteer> selectCoordinators(Long consumer);
-
-	public List<Volunteer> selectCoordinators(Consumer consumer);
 }

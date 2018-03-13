@@ -128,7 +128,7 @@ public class ControlPointTable extends AbstractTable {
 	}
 	
 	public void fetchByGame(ControlPointService service, Game game) {
-		List<ControlPoint> controlPoints = service.selectByGame(game);
+		List<ControlPoint> controlPoints = service.selectByGame(game, ControlPoint.SelectMode.NONE);
 		for (ControlPoint c : controlPoints) {
 			data.add(new TableRow(c));
 		}

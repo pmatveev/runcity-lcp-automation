@@ -99,7 +99,7 @@ public class VolunteerControlPointTag extends TagSupport {
 		dateTimeFormat.setTimeZone(volunteer.getTz());
 
 		tagWriter.startTag("h1");
-		tagWriter.appendValue(localize("jsp.controlPoint.headerPrefix") + " " + controlPoint.getNameDisplayWithChildren());
+		tagWriter.appendValue(localize("jsp.controlPoint.header", controlPoint.getNameDisplayWithChildren()));
 		tagWriter.endTag();
 		
 		// on site - off site selector

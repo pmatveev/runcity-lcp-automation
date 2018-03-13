@@ -13,6 +13,7 @@ import org.runcity.db.service.VolunteerService;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
+import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.mvc.web.tabledata.GameTable;
@@ -188,5 +189,29 @@ public class MenuController {
 		// just for a case
 		user.setCurrent(v);
 		return "redirect:/secure/volunteerDetails/" + v.getControlPoint().getId();
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/coordinatorDetails/{gameId}", method = RequestMethod.GET)
+	public String coordinatorDetails(Model model, @PathVariable Long gameId) {
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
+		
+		if (g == null) {
+			return "exception/invalidUrl";			
+		}
+
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		Volunteer v = volunteerService.selectCoordinatorByUsername(g, username, Volunteer.SelectMode.NONE);
+		
+		if (v == null) {
+			return "exception/forbidden";		
+		}
+		
+		model.addAttribute("volunteer", v);
+		
+		CoordinatorControlPointTable controlPoints = new CoordinatorControlPointTable(messageSource, localeList, g);
+		controlPoints.processModel(model);
+		
+		return "secure/coordinatorDetails";	
 	}
 }

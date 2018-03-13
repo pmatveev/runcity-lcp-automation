@@ -1,17 +1,24 @@
 package org.runcity.db.service.impl;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
+import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.Volunteer.SelectMode;
 import org.runcity.db.entity.enumeration.EventStatus;
 import org.runcity.db.entity.enumeration.EventType;
+import org.runcity.db.repository.ConsumerRepository;
+import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.EventRepository;
+import org.runcity.db.repository.GameRepository;
 import org.runcity.db.repository.VolunteerRepository;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
@@ -25,6 +32,15 @@ import org.springframework.util.ObjectUtils;
 @Service
 @Transactional(rollbackFor = { DBException.class })
 public class VolunteerServiceImpl implements VolunteerService {
+	@Autowired
+	private GameRepository gameRepository;
+	
+	@Autowired
+	private ConsumerRepository consumerRepository;
+	
+	@Autowired
+	private ControlPointRepository controlPointRepository;
+	
 	@Autowired
 	private VolunteerRepository volunteerRepository;
 	
@@ -42,8 +58,17 @@ public class VolunteerServiceImpl implements VolunteerService {
 		case WITH_ACTIVE :
 			v.setActive(eventRepository.isActiveVolunteer(v) > 0);
 			break;
-		default:
+		case NONE:
 			break;
+		}
+	}
+	
+	private void initialize(Collection<Volunteer> volunteers, Volunteer.SelectMode selectMode) {
+		if (volunteers == null || selectMode == Volunteer.SelectMode.NONE) {
+			return;
+		}
+		for (Volunteer v : volunteers) {
+			initialize(v, selectMode);
 		}
 	}
 
@@ -90,9 +115,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 		c.add(Calendar.DATE, -2);
 		List<Volunteer> result = volunteerRepository.findUpcomingByUsernameCP(username, c.getTime());
 		Collections.sort(result, volunteerSorter);
-		for (Volunteer v : result) {
-			initialize(v, selectMode);
-		}
+		initialize(result, selectMode);
 		return result;
 	}
 
@@ -102,9 +125,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 		c.add(Calendar.DATE, -2);
 		List<Volunteer> result = volunteerRepository.findUpcomingByUsernameGame(username, c.getTime());
 		Collections.sort(result, volunteerSorter);
-		for (Volunteer v : result) {
-			initialize(v, selectMode);
-		}
+		initialize(result, selectMode);
 		return result;
 	}
 
@@ -153,5 +174,78 @@ public class VolunteerServiceImpl implements VolunteerService {
 	@Override
 	public Volunteer getCurrentByUsername(String username) {
 		return volunteerRepository.findCurrentByUsername(username);
+	}
+
+	@Override
+	public Volunteer selectCoordinatorByUsername(Game g, String username, SelectMode selectMode) {
+		Volunteer result = volunteerRepository.findByGameandUsername(g, username);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public boolean isCoordinator(Game g, String username) {
+		return selectCoordinatorByUsername(g, username, Volunteer.SelectMode.NONE) != null;
+	}
+	
+	@Override
+	public List<Volunteer> selectByControlPoint(Long controlPoint, Volunteer.SelectMode selectMode) {
+		return selectByControlPoint(controlPointRepository.findOne(controlPoint), selectMode);
+	}
+
+	@Override
+	public List<Volunteer> selectByControlPoint(ControlPoint controlPoint, Volunteer.SelectMode selectMode) {
+		ControlPoint cp = controlPoint.getParent() == null ? controlPoint : controlPoint.getParent();
+		List<Volunteer> result = volunteerRepository.findByControlPoint(cp);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinatorsByGame(Long game, Volunteer.SelectMode selectMode) {
+		return selectCoordinatorsByGame(gameRepository.findOne(game), selectMode);
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinatorsByGame(Game game, Volunteer.SelectMode selectMode) {
+		List<Volunteer> result = volunteerRepository.findByGame(game);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteersByGame(Long game, Volunteer.SelectMode selectMode) {
+		return selectVolunteersByGame(gameRepository.findOne(game), selectMode);
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteersByGame(Game game, Volunteer.SelectMode selectMode) {
+		List<Volunteer> result =  volunteerRepository.findCPByGame(game);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteersByConsumer(Long consumer, Volunteer.SelectMode selectMode) {
+		return selectVolunteersByConsumer(consumerRepository.findOne(consumer), selectMode);
+	}
+
+	@Override
+	public List<Volunteer> selectVolunteersByConsumer(Consumer consumer, Volunteer.SelectMode selectMode) {
+		List<Volunteer> result = volunteerRepository.findCPByConsumer(consumer);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinatorsByConsumer(Long consumer, Volunteer.SelectMode selectMode) {
+		return selectVolunteersByConsumer(consumerRepository.findOne(consumer), selectMode);
+	}
+
+	@Override
+	public List<Volunteer> selectCoordinatorsByConsumer(Consumer consumer, Volunteer.SelectMode selectMode) {
+		List<Volunteer> result = volunteerRepository.findGameByConsumer(consumer);
+		initialize(result, selectMode);
+		return result;
 	}
 }
