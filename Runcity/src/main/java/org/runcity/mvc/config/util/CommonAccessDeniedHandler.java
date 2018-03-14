@@ -24,7 +24,6 @@ public class CommonAccessDeniedHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e)
 			throws IOException, ServletException {
 		logger.info("AccessDeniedHandler"); 
-		
 		if (StringUtils.isEqual(request.getContentType(), "application/x-www-form-urlencoded")) {
 			// form
 	        response.setStatus(HttpServletResponse.SC_FORBIDDEN);

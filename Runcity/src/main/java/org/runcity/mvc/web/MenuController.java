@@ -64,7 +64,7 @@ public class MenuController {
 			return "redirect:/secure/games";
 		}
 		
-		return "/secure/home";
+		return "/exception/noRole";
 	}
 
 	@Secured("ROLE_ADMIN")

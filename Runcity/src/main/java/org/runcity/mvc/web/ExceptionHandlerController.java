@@ -20,6 +20,9 @@ public class ExceptionHandlerController {
 	@RequestMapping(value = "errors", method = RequestMethod.GET)
 	public String renderErrorPage(HttpServletRequest httpRequest) {
 		switch (getErrorCode(httpRequest)) {
+		case 403: {
+			return "exception/forbidden";
+		}
 		case 404: {
 			return "exception/invalidUrl";
 		}
