@@ -145,72 +145,81 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
-					<span class="icon-bar"></span> 
-					<span class="icon-bar"></span> 
-					<span class="icon-bar"></span>
-				</button>
-				<spring:url value="/secure/home" var="goHome"/>
-				<a href="${goHome}" role="button" class="navbar-brand"><fmt:message key="common.brand" bundle="${msg}" /></a>
-			</div>
-			<div class="nav collapse navbar-collapse" id="mainNav">
-				<sec:authorize access="isAuthenticated()">
-					<ul class="nav navbar-nav">
-						<sec:authorize ifAllGranted="ROLE_ADMIN">
-							<spring:url value="/secure/users" var="goUsers" />
-							<spring:url value="/secure/categories" var="goCategories" />
-							<spring:url value="/secure/games" var="goGames" />
-							<li><a href="${goGames}" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a></li>
-							<li><a href="${goCategories}" role="button"><fmt:message key="menu.categories" bundle="${msg}" /></a></li>
-							<li><a href="${goUsers}" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
-						</sec:authorize>
-						<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
-							<spring:url value="/secure/volunteer" var="goVolunteer" />
-							<li><a href="${goVolunteer}" role="button"><fmt:message key="menu.volunteer" bundle="${msg}" /></a></li>
-							<c:if test="${attributes.currentCP}">
-								<spring:url value="/secure/current" var="goCurrent" />
-								<li><a href="${goCurrent}" role="button"><fmt:message key="menu.current" bundle="${msg}" /></a></li>							
-							</c:if>
+	<noscript>
+		<style type="text/css">
+		.pagecontainer {
+			display: none;
+		}
+		</style>
+		<h1><fmt:message key="common.nojs" bundle="${msg}" /></h1>
+	</noscript>
+	<div class="pagecontainer">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span>
+					</button>
+					<spring:url value="/secure/home" var="goHome"/>
+					<a href="${goHome}" role="button" class="navbar-brand"><fmt:message key="common.brand" bundle="${msg}" /></a>
+				</div>
+				<div class="nav collapse navbar-collapse" id="mainNav">
+					<sec:authorize access="isAuthenticated()">
+						<ul class="nav navbar-nav">
+							<sec:authorize ifAllGranted="ROLE_ADMIN">
+								<spring:url value="/secure/users" var="goUsers" />
+								<spring:url value="/secure/categories" var="goCategories" />
+								<spring:url value="/secure/games" var="goGames" />
+								<li><a href="${goGames}" role="button"><fmt:message key="menu.games" bundle="${msg}" /></a></li>
+								<li><a href="${goCategories}" role="button"><fmt:message key="menu.categories" bundle="${msg}" /></a></li>
+								<li><a href="${goUsers}" role="button"><fmt:message key="menu.users" bundle="${msg}" /></a></li>
+							</sec:authorize>
+							<sec:authorize ifAllGranted="ROLE_VOLUNTEER">
+								<spring:url value="/secure/volunteer" var="goVolunteer" />
+								<li><a href="${goVolunteer}" role="button"><fmt:message key="menu.volunteer" bundle="${msg}" /></a></li>
+								<c:if test="${attributes.currentCP}">
+									<spring:url value="/secure/current" var="goCurrent" />
+									<li><a href="${goCurrent}" role="button"><fmt:message key="menu.current" bundle="${msg}" /></a></li>							
+								</c:if>
+							</sec:authorize>
+						</ul>
+					</sec:authorize>
+					<ul class="nav navbar-nav navbar-right">
+						<spring:url value="/logout" var="goLogout"/>
+						<sec:authorize access="isAuthenticated()">
+							<li>
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									<span class="glyphicon glyphicon-user"></span> 
+									<sec:authentication property="principal.credentials" />
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'), false)" href="#">
+											<fmt:message key="changePassword.header" bundle="${msg}" />
+										</a>
+										<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
+											<fmt:message key="common.edit" bundle="${msg}" />
+										</a>
+										<a data-toggle="modal" data-target="#modal_about" href="#">
+											<fmt:message key="common.about" bundle="${msg}" />
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
 						</sec:authorize>
 					</ul>
-				</sec:authorize>
-				<ul class="nav navbar-nav navbar-right">
-					<spring:url value="/logout" var="goLogout"/>
-					<sec:authorize access="isAuthenticated()">
-						<li>
-							<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-								<span class="glyphicon glyphicon-user"></span> 
-								<sec:authentication property="principal.credentials" />
-								<span class="caret"></span>
-							</a>
-							<ul class="dropdown-menu">
-								<li>
-									<a data-toggle="modal" data-target="#modal_${changePasswordByPasswordForm.htmlId}" onclick="beforeOpenModal($('#${changePasswordByPasswordForm.htmlId}'), false)" href="#">
-										<fmt:message key="changePassword.header" bundle="${msg}" />
-									</a>
-									<a data-toggle="modal" data-target="#modal_${consumerSelfEditForm.htmlId}" onclick="beforeOpenModalFetch($('#${consumerSelfEditForm.htmlId}'), null)" href="#">
-										<fmt:message key="common.edit" bundle="${msg}" />
-									</a>
-									<a data-toggle="modal" data-target="#modal_about" href="#">
-										<fmt:message key="common.about" bundle="${msg}" />
-									</a>
-								</li>
-							</ul>
-						</li>
-						<li><a href="${goLogout}" role="button"><span class="glyphicon glyphicon-log-out"></span> <fmt:message key="common.logout" bundle="${msg}" /></a></li>
-					</sec:authorize>
-				</ul>
+				</div>
 			</div>
-		</div>
-	</nav>
-	<div class="nav-buffer"></div>
-	<!-- Modals -->
-	<sec:authorize access="isAuthenticated()">
-		<%@ include file="about.jsp"%>
-		<c:set value="${true}" var="modal"/>
-		<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
-		<%@ include file="../forms/consumerSelfEditForm.jsp"%>
-	</sec:authorize>
+		</nav>
+		<div class="nav-buffer"></div>
+		<!-- Modals -->
+		<sec:authorize access="isAuthenticated()">
+			<%@ include file="about.jsp"%>
+			<c:set value="${true}" var="modal"/>
+			<%@ include file="../forms/changePasswordByPasswordForm.jsp"%>
+			<%@ include file="../forms/consumerSelfEditForm.jsp"%>
+		</sec:authorize>
