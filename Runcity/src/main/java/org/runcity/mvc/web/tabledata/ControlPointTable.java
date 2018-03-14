@@ -68,38 +68,6 @@ public class ControlPointTable extends AbstractTable {
 			this.image = c.getImage();
 			this.description = StringUtils.xss(c.getDescription());
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public Long getGameId() {
-			return gameId;
-		}
-
-		public String getMainIdt() {
-			return mainIdt;
-		}
-
-		public String getIdt() {
-			return idt;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Map<String, String> getAddress() {
-			return address;
-		}
-
-		public String getDescription() {
-			return description;
-		}
 	}
 	
 	public ControlPointTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {

@@ -249,7 +249,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	}
 
 	public ControlPoint getControlPoint() {
-		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), ControlPointType.getByStoredValue(type.getValue()),
+		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), null, ControlPointType.getByStoredValue(type.getValue()),
 				parent.getControlPoint(), getIdt(), getName(), null, getDescription(), null);
 		c.setImageData(image.getByteValue());
 

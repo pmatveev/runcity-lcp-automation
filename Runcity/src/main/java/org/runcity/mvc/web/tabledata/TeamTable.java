@@ -52,30 +52,6 @@ public class TeamTable extends AbstractTable {
 			this.contact = StringUtils.xss(t.getContact());
 			this.addData = StringUtils.xss(t.getAddData());
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public String getNumber() {
-			return number;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Date getStart() {
-			return start;
-		}
-
-		public String getContact() {
-			return contact;
-		}
-
-		public String getAddData() {
-			return addData;
-		}
 	}
 
 	public TeamTable(MessageSource messageSource, DynamicLocaleList localeList, Route r) {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
@@ -34,6 +35,12 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		private String address; 
 
 		@JsonView(Views.Public.class)
+		private String mode;
+
+		@JsonView(Views.Public.class)
+		private String modeDisplay;
+
+		@JsonView(Views.Public.class)
 		private String volunteers;
 
 		public TableRow(ControlPoint c, Long volunteers, Long active) {
@@ -41,27 +48,17 @@ public class CoordinatorControlPointTable extends AbstractTable {
 			this.idt = StringUtils.xss(c.getNameDisplayWithChildren());
 			this.name = StringUtils.xss(c.getName());
 			this.address = StringUtils.xss(c.getLocalizedAddress(locale.toString()));
+			this.mode = ControlPointMode.getStoredValue(c.getMode());
+			this.modeDisplay = c.getMode().getDisplayBadge(messageSource, locale);
 			this.volunteers = StringUtils.xss(active + " / " + volunteers);
-		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public String getIdt() {
-			return idt;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getAddress() {
-			return address;
-		}
-
-		public String getVolunteers() {
-			return volunteers;
+			
+			if (active == 0 && volunteers > 0) {
+				this.volunteers = "<span class='label label-danger'>" + this.volunteers + "</span>";
+			} else if (active == volunteers && active > 0) {
+				this.volunteers = "<span class='label label-success'>" + this.volunteers + "</span>";
+			} else {
+				this.volunteers = "<span class='label label-warning'>" + this.volunteers + "</span>";
+			}
 		}
 	}
 	
@@ -73,8 +70,10 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 0));
 		this.columns.add(new ColumnDefinition("name", "controlPoint.name"));
 		this.columns.add(new ColumnDefinition("address", "controlPoint.address"));
+		this.columns.add(new ColumnDefinition("mode", null).setHidden(true));
+		this.columns.add(new ColumnDefinition("modeDisplay", "controlPoint.mode"));
 		this.columns.add(new ColumnDefinition("volunteers", "controlPoint.volunteers"));
-		
+
 		this.buttons.add(new ButtonDefinition("coordinator.createVolunteer", null, "btn", "createform:volunteerCreateEditByGameCPForm", null));
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
 		

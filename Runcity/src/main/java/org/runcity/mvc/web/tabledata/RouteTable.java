@@ -80,46 +80,6 @@ public class RouteTable extends AbstractTable {
 				this.teamNumber = routeService.selectTeamNumber(r);
 			}
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public String getCategory() {
-			return category;
-		}
-
-		public String getCategoryBadge() {
-			return categoryBadge;
-		}
-
-		public String getCategoryDescription() {
-			return categoryDescription;
-		}
-
-		public String getGame() {
-			return game;
-		}
-
-		public Date getGameDateFrom() {
-			return gameDateFrom;
-		}
-
-		public Date getGameDateTo() {
-			return gameDateTo;
-		}
-
-		public String getGameCity() {
-			return gameCity;
-		}
-
-		public String getGameCountry() {
-			return gameCountry;
-		}
-		
-		public Long getTeamNumber() {
-			return teamNumber;
-		}
 	}
 
 	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {

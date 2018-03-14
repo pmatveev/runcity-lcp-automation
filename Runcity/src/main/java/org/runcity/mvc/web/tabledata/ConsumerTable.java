@@ -57,30 +57,6 @@ public class ConsumerTable extends AbstractTable {
 			Collections.sort(rolesTmp);
 			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, locale));
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public String getCredentials() {
-			return credentials;
-		}
-
-		public String getEmail() {
-			return email;
-		}
-
-		public String getActive() {
-			return active;
-		}
-
-		public String getRoles() {
-			return roles;
-		}
 	}
 
 	public ConsumerTable(MessageSource messageSource, DynamicLocaleList localeList) {

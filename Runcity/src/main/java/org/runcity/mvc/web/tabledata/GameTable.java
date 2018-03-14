@@ -79,46 +79,6 @@ public class GameTable extends AbstractTable {
 			Collections.sort(categories);
 			this.categories = StringUtils.xss(StringUtils.toString(categories));
 		}
-		
-		public Long getId() {
-			return id;
-		}
-
-		public String getLocale() {
-			return locale;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getCity() {
-			return city;
-		}
-
-		public String getCountry() {
-			return country;
-		}
-
-		public String getTimezone() {
-			return timezone;
-		}
-
-		public Date getDateFrom() {
-			return dateFrom;
-		}
-
-		public Date getDateTo() {
-			return dateTo;
-		}
-		
-		public Integer getDelay() {
-			return delay;
-		}
-
-		public String getCategories() {
-			return categories;
-		}
 	}
 
 	public GameTable(MessageSource messageSource, DynamicLocaleList localeList) {

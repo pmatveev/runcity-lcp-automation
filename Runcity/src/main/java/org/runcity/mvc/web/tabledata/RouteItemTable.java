@@ -99,34 +99,6 @@ public class RouteItemTable extends AbstractTable {
 			this.name = StringUtils.xss(ri.getControlPoint().getName());
 			this.address = StringUtils.xss(ri.getControlPoint().getLocalizedAddress(locale.toString()));
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public Integer getSort() {
-			return sort;
-		}
-
-		public Integer getLegNum() {
-			return legNum;
-		}
-
-		public String getIdt() {
-			return idt;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getAddress() {
-			return address;
-		}
 	}
 	
 	public RouteItemTable(MessageSource messageSource, DynamicLocaleList localeList, Route route) {

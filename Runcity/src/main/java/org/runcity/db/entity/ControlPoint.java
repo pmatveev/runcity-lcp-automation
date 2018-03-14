@@ -14,6 +14,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
@@ -37,6 +38,9 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "game__id", nullable = false)
 	private Game game;
+
+	@Column(name = "mode", length = 1, nullable = false)
+	private String mode;
 
 	@Column(name = "type", length = 1, nullable = false)
 	private String type;
@@ -78,11 +82,16 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		this.addresses = new ArrayList<Translation>();
 	}
 
-	public ControlPoint(Long id, Game game, ControlPointType type, ControlPoint parent, String idt, String name,
+	public ControlPoint(Long id, Game game, ControlPointMode mode, ControlPointType type, ControlPoint parent, String idt, String name,
 			List<Translation> addresses, String description, Long image) {
 		this();
 		setId(id);
 		setGame(game);
+		if (id == null) {
+			setMode(ControlPointMode.ONLINE);
+		} else {
+			setMode(mode);
+		}
 		setType(type);
 		setParent(parent);
 		setIdt(idt);
@@ -96,6 +105,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 
 	public void update(ControlPoint c) {
 		this.game = c.game;
+		this.mode = c.mode == null ? this.mode : c.mode;
 		this.type = c.type;
 		this.parent = c.parent;
 		this.idt = c.idt;
@@ -108,7 +118,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 
 	@Override
 	public ControlPoint cloneForAdd() {
-		return new ControlPoint(id, game, getType(), parent, idt, name, null, description, image);
+		return new ControlPoint(id, game, getMode(), getType(), parent, idt, name, null, description, image);
 	}
 	
 	public Long getId() {
@@ -125,6 +135,14 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	
+	public ControlPointMode getMode() {
+		return ControlPointMode.getByStoredValue(mode);
+	}
+	
+	public void setMode(ControlPointMode mode) {
+		this.mode = ControlPointMode.getStoredValue(mode);
 	}
 	
 	public ControlPointType getType() {

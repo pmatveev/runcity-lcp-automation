@@ -55,22 +55,6 @@ public class CategoryTable extends AbstractTable {
 				}
 			}
 		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public Map<String, String> getNames() {
-			return name;
-		}
-		
-		public String getBadge() {
-			return badge;
-		}
-
-		public Map<String, String> getDescription() {
-			return description;
-		}
 	}
 
 	public CategoryTable(MessageSource messageSource, DynamicLocaleList localeList) {
