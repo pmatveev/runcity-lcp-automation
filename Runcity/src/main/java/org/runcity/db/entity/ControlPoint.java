@@ -220,7 +220,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	}
 	
 	public String getNameDisplay(MessageSource messageSource, Locale l) {
-		return StringUtils.xss(idt + " " + name);
+		return StringUtils.xss(idt + " " + getName());
 	}
 	
 	public String getNameDisplayWithChildren() {
@@ -245,13 +245,13 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		}
 		
 		sb.append(" ");
-		sb.append(cp.name);
+		sb.append(cp.getName());
 		
 		return StringUtils.xss(sb.toString());
 	}
 	
 	public String getNameDisplayWithType(MessageSource messageSource, Locale l) {
-		return StringUtils.xss(idt + " (" + getType().getDisplayName(messageSource, l) + ") " + name);
+		return StringUtils.xss(idt + " (" + getType().getDisplayName(messageSource, l) + ") " + getName());
 	}
 
 	@Override
