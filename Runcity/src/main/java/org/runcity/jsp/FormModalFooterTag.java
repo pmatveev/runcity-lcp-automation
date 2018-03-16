@@ -31,6 +31,8 @@ public class FormModalFooterTag extends SimpleTagSupport {
 
 		if (modal) {
 			out.println("<div class='modal-footer'>");
+		} else {
+			out.println("<div class='form-footer'>");
 		}
 
 		out.println("<div class='form-group'>");
@@ -58,9 +60,6 @@ public class FormModalFooterTag extends SimpleTagSupport {
 		}
 
 		out.println("</div>");
-		
-		if (modal) {
-			out.println("</div>");
-		}
+		out.println("</div>");
 	}
 }

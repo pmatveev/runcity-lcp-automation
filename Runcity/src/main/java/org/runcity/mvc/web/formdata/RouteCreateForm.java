@@ -34,7 +34,7 @@ public class RouteCreateForm extends AbstractForm {
 	}
 
 	public RouteCreateForm(DynamicLocaleList localeList) {
-		super("routeCreateForm", null, null, "/api/v1/routeCreate", localeList);
+		super("routeCreateForm", null, "/api/v1/routeCreate", localeList);
 		setTitle("category.header");
 
 		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameid"));

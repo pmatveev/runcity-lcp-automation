@@ -45,8 +45,7 @@ public class CategoryCreateEditForm extends AbstractForm {
 	}
 
 	public CategoryCreateEditForm(DynamicLocaleList localeList) {
-		super("categoryCreateEditForm", "/api/v1/categoryCreateEdit/{0}", null, "/api/v1/categoryCreateEdit",
-				localeList);
+		super("categoryCreateEditForm", "/api/v1/categoryCreateEdit/{0}", "/api/v1/categoryCreateEdit", localeList);
 		setTitle("category.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.name = new FormLocalizedStringColumn(this,

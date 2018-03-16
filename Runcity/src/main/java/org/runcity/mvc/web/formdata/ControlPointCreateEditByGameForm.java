@@ -58,7 +58,7 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 	}
 
 	public ControlPointCreateEditByGameForm(DynamicLocaleList localeList) {
-		super("controlPointCreateEditByGameForm", "/api/v1/controlPointCreateEdit/{0}", null,
+		super("controlPointCreateEditByGameForm", "/api/v1/controlPointCreateEdit/{0}",
 				"/api/v1/controlPointCreateEdit", localeList);
 		setTitle("controlPoint.header");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
@@ -243,14 +243,16 @@ public class ControlPointCreateEditByGameForm extends AbstractForm {
 		image.validate(context, errors);
 
 		ControlPointService controlPointService = context.getBean(ControlPointService.class);
-		if (getParent() != null && getId() != null && !controlPointService.selectByParent(getId(), ControlPoint.SelectMode.NONE).isEmpty()) {
+		if (getParent() != null && getId() != null
+				&& !controlPointService.selectByParent(getId(), ControlPoint.SelectMode.NONE).isEmpty()) {
 			errors.rejectValue(parent.getName(), "controlPoint.errorParentChain");
 		}
 	}
 
 	public ControlPoint getControlPoint() {
-		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), null, ControlPointType.getByStoredValue(type.getValue()),
-				parent.getControlPoint(), getIdt(), getName(), null, getDescription(), null);
+		ControlPoint c = new ControlPoint(getId(), gameId.getGame(), null,
+				ControlPointType.getByStoredValue(type.getValue()), parent.getControlPoint(), getIdt(), getName(), null,
+				getDescription(), null);
 		c.setImageData(image.getByteValue());
 
 		for (String s : getAddress().keySet()) {

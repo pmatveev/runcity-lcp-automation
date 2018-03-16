@@ -46,7 +46,7 @@ public class CoordinatorVolunteerTable extends AbstractTable {
 		public TableRow(Volunteer v) {
 			this.id = v.getId();
 			this.name = StringUtils.xss(v.getConsumer().getCredentials());
-			if (v.isActive()) {
+			if (v.getActive()) {
 				this.status = "<span class='label label-success'>" + messageSource.getMessage("volunteer.active", null, locale) + "</span>";
 			} else {
 				this.status = "<span class='label label-danger'>" + messageSource.getMessage("volunteer.inactive", null, locale) + "</span>";

@@ -58,7 +58,7 @@ public class GameCreateEditForm extends AbstractForm {
 	}
 
 	public GameCreateEditForm(DynamicLocaleList localeList) {
-		super("gameCreateEditForm", "/api/v1/gameCreateEdit/{0}", null, "/api/v1/gameCreateEdit", localeList);
+		super("gameCreateEditForm", "/api/v1/gameCreateEdit/{0}", "/api/v1/gameCreateEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("game.header");
 

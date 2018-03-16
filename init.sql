@@ -175,6 +175,7 @@ CREATE TABLE runcity.team (
   start_date DATETIME NOT NULL,
   contact VARCHAR(255) NOT NULL,
   add_data VARCHAR(4000) DEFAULT NULL,
+  status VARCHAR(2) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX team_number (team_number ASC, route__id ASC),
   INDEX team_route (route__id ASC),

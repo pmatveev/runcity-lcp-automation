@@ -24,7 +24,7 @@ public class PasswordRecoveryForm extends AbstractForm {
 	}
 	
 	public PasswordRecoveryForm(DynamicLocaleList localeList) {
-		super("passwordRecoveryForm", null, null, "/common/api/v1/passwordRecovery", localeList);
+		super("passwordRecoveryForm", null, "/common/api/v1/passwordRecovery", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("passwordRecovery.header");
 

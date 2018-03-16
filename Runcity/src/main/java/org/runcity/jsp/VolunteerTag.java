@@ -114,7 +114,7 @@ public class VolunteerTag extends TagSupport {
 			tagWriter.endTag();
 			
 			// isActive may be null for coordinators!
-			if (Boolean.TRUE.equals(v.isActive())) {
+			if (Boolean.TRUE.equals(v.getActive())) {
 				tagWriter.appendValue(" ");
 				tagWriter.startTag("span");
 				tagWriter.writeAttribute("class", "label label-info");

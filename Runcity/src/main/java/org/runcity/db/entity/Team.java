@@ -5,10 +5,15 @@ import java.util.Date;
 import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.runcity.db.entity.enumeration.TeamStatus;
 
 @Entity
 @Table(name = "team")
 public class Team {
+	public enum SelectMode {
+		NONE;
+	}
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
@@ -34,6 +39,9 @@ public class Team {
 	@Column(name = "add_data", length = 4000, nullable = true)
 	private String addData;
 
+	@Column(name = "status", length = 2, nullable = false)
+	private String status;
+
 	public Team() {
 	}
 
@@ -45,6 +53,19 @@ public class Team {
 		setStart(start);
 		setContact(contact);
 		setAddData(addData);
+		if (id == null) {
+			setStatus(TeamStatus.ACTIVE);
+		}
+	}
+	
+	public void update(Team t) {
+		this.route = t.route;
+		this.number = t.number;
+		this.name = t.name;
+		this.start = t.start;
+		this.contact = t.contact;
+		this.addData = t.addData;
+		this.status = t.status == null ? this.status : t.status;
 	}
 
 	public Long getId() {
@@ -101,6 +122,22 @@ public class Team {
 
 	public void setAddData(String addData) {
 		this.addData = addData;
+	}
+	
+	public TeamStatus getStatus() {
+		return TeamStatus.getByStoredValue(status);
+	}
+	
+	public int getLeg() {
+		return new Integer(status);
+	}
+	
+	public void setStatus(TeamStatus status) {
+		this.status = TeamStatus.getStoredValue(status);
+	}
+	
+	public void setLeg(int leg) {
+		this.status = leg + "";
 	}
 
 	@Override

@@ -421,7 +421,7 @@ public class RestGameController extends AbstractRestController {
 		
 		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
 		TeamTable table = new TeamTable(messageSource, localeList, r);
-		table.add(teamService.selectTeams(r));
+		table.add(teamService.selectTeams(r, Team.SelectMode.NONE));
 
 		return table.validate();
 	}	
@@ -430,7 +430,7 @@ public class RestGameController extends AbstractRestController {
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/teamCreateEdit/{id}", method = RequestMethod.GET)
 	public RestGetResponseBody initTeamCreateEditForm(@PathVariable Long id) {		
-		Team t = teamService.selectById(id);
+		Team t = teamService.selectById(id, Team.SelectMode.NONE);
 		if (t == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(RestResponseClass.ERROR);

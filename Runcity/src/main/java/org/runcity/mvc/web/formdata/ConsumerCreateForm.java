@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.service.ConsumerService;
+import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.mvc.web.util.FormEmailColumn;
 import org.runcity.mvc.web.util.FormListboxActiveColumn;
@@ -19,16 +20,33 @@ import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class ConsumerCreateForm extends AbstractForm {
 	private static final Logger logger = Logger.getLogger(ConsumerCreateForm.class);
 
+	@JsonView(Views.Public.class)
 	private FormStringColumn username;
+
+	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
+
+	@JsonView(Views.Public.class)
 	private FormStringColumn password;
+
+	@JsonView(Views.Public.class)
 	private FormStringColumn password2;
+
+	@JsonView(Views.Public.class)
 	private FormStringColumn email;
+
+	@JsonView(Views.Public.class)
 	private FormListboxActiveColumn active;
+
+	@JsonView(Views.Public.class)
 	private FormListboxSecureUserRolesColumn roles;
+
+	@JsonView(Views.Public.class)
 	private FormListboxLocaleColumn locale;
 
 	public ConsumerCreateForm() {
@@ -36,7 +54,7 @@ public class ConsumerCreateForm extends AbstractForm {
 	}
 	
 	public ConsumerCreateForm(DynamicLocaleList localeList) {
-		super("consumerCreateForm", null, null, "/api/v1/consumerCreate", localeList);
+		super("consumerCreateForm", null, "/api/v1/consumerCreate", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.create");
 		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));

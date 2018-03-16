@@ -36,7 +36,7 @@ public class ConsumerSelfEditForm extends AbstractForm {
 	}
 	
 	public ConsumerSelfEditForm(DynamicLocaleList localeList) {
-		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", null, "/api/v1/consumerSelfEdit", localeList);
+		super("consumerSelfEditForm", "/api/v1/consumerSelfEdit", "/api/v1/consumerSelfEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
 		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));

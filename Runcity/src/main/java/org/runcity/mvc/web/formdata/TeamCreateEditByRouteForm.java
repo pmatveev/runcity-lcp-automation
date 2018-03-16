@@ -55,8 +55,7 @@ public class TeamCreateEditByRouteForm extends AbstractForm {
 	}
 
 	public TeamCreateEditByRouteForm(DynamicLocaleList localeList) {
-		super("teamCreateEditByRouteForm", "/api/v1/teamCreateEdit/{0}", null, "/api/v1/teamCreateEdit/",
-				localeList);
+		super("teamCreateEditByRouteForm", "/api/v1/teamCreateEdit/{0}", "/api/v1/teamCreateEdit/", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("team.header");
 
@@ -238,13 +237,13 @@ public class TeamCreateEditByRouteForm extends AbstractForm {
 
 		contact.validate(context, errors);
 		addData.validate(context, errors);
-		
+
 		if (r != null) {
 			TeamService teamService = context.getBean(TeamService.class);
-			Team t = teamService.selectByNumberGame(getNumber(), r.getGame());
-			
+			Team t = teamService.selectByNumberGame(getNumber(), r.getGame(), Team.SelectMode.NONE);
+
 			if (t != null && !ObjectUtils.nullSafeEquals(t.getId(), getId())) {
-				errors.rejectValue(number.getName(), "team.validation.numberUsed");				
+				errors.rejectValue(number.getName(), "team.validation.numberUsed");
 			}
 		}
 	}

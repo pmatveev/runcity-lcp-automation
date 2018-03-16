@@ -10,6 +10,7 @@ import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.VolunteerService;
+import org.runcity.mvc.web.formdata.TeamProcessForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
@@ -166,6 +167,13 @@ public class MenuController {
 
 		v.setControlPoint(cp);
 		model.addAttribute("volunteer", v);
+		
+		if (v.getActive()) {
+			TeamProcessForm form = new TeamProcessForm();
+			form.setVolunteerId(v.getId());
+			model.addAttribute(form.getFormName(), form);
+		}
+		
 		return "secure/volunteerDetails";	
 	}
 	

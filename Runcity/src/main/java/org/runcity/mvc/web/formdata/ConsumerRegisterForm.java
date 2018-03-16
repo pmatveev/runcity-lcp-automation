@@ -16,28 +16,28 @@ public class ConsumerRegisterForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormStringColumn username;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn credentials;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn password;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn password2;
-	
+
 	@JsonView(Views.Public.class)
 	private FormStringColumn email;
-	
+
 	@JsonView(Views.Public.class)
 	private FormListboxLocaleColumn locale;
 
 	public ConsumerRegisterForm() {
 		this(null);
 	}
-	
+
 	public ConsumerRegisterForm(DynamicLocaleList localeList) {
-		super("consumerRegisterForm", null, null, "/common/api/v1/register", localeList);
+		super("consumerRegisterForm", null, "/common/api/v1/register", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("register.header");
 		this.username = new FormPlainStringColumn(this, new ColumnDefinition("username", "user.username"));
@@ -62,7 +62,8 @@ public class ConsumerRegisterForm extends AbstractForm {
 		this.locale = new FormListboxLocaleColumn(this, new ColumnDefinition("locale", "user.locale"), localeList);
 	}
 
-	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email, String locale, DynamicLocaleList localeList) {
+	public ConsumerRegisterForm(String username, String credentials, String password, String password2, String email,
+			String locale, DynamicLocaleList localeList) {
 		this(localeList);
 		setUsername(username);
 		setCredentials(credentials);
@@ -111,11 +112,11 @@ public class ConsumerRegisterForm extends AbstractForm {
 	public void setEmail(String email) {
 		this.email.setValue(email);
 	}
-	
+
 	public String getLocale() {
 		return locale.getValue();
 	}
-	
+
 	public void setLocale(String locale) {
 		this.locale.setValue(locale);
 	}
@@ -139,7 +140,7 @@ public class ConsumerRegisterForm extends AbstractForm {
 	public FormStringColumn getEmailColumn() {
 		return email;
 	}
-	
+
 	public FormListboxLocaleColumn getLocaleColumn() {
 		return locale;
 	}

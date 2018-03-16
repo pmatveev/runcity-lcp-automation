@@ -181,7 +181,7 @@ public class Volunteer {
 		return this.controlPoint == null ? VolunteerType.COORDINATOR : VolunteerType.VOLUNTEER;
 	}
 
-	public Boolean isActive() {
+	public Boolean getActive() {
 		return active;
 	}
 

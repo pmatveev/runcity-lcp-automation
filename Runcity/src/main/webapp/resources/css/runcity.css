@@ -115,7 +115,7 @@ table.dt-expand tr td {
 	display : none;
 }
 
-.login-container {
+.narrow {
 	max-width : 300px;
 }
 
@@ -185,6 +185,14 @@ p.volunteer-category-reminder {
 	margin-left: 10px;
 }
 
-.cp-onsite-toggle-div {
+.cp-onsite-toggle-div,.cut-div {
 	text-align: center;
+}
+
+.div-center {
+	margin: auto;
+}
+
+.form-footer {
+	text-align: right;
 }

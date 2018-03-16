@@ -50,7 +50,7 @@ public class ConsumerEditForm extends AbstractForm {
 	}
 	
 	public ConsumerEditForm(DynamicLocaleList localeList) {
-		super("consumerEditForm", "/api/v1/consumerEdit/{0}", null, "/api/v1/consumerEdit", localeList);
+		super("consumerEditForm", "/api/v1/consumerEdit/{0}", "/api/v1/consumerEdit", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("common.edit");
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));

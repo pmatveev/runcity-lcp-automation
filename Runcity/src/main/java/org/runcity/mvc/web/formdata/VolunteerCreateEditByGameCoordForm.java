@@ -44,17 +44,16 @@ public class VolunteerCreateEditByGameCoordForm extends AbstractForm {
 	}
 
 	public VolunteerCreateEditByGameCoordForm(DynamicLocaleList localeList) {
-		super("volunteerCreateEditByGameCoordForm", "/api/v1/volunteerCreateEditByGameCoord/{0}", null, "/api/v1/volunteerCreateEditByGameCoord",
-				localeList);
+		super("volunteerCreateEditByGameCoordForm", "/api/v1/volunteerCreateEditByGameCoord/{0}",
+				"/api/v1/volunteerCreateEditByGameCoord", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("volunteer.header");
 
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
-		this.gameId = new FormIdGameColumn(this,
-				new ColumnDefinition("gameId", "gameId"));
+		this.gameId = new FormIdGameColumn(this, new ColumnDefinition("gameId", "gameId"));
 
 		this.consumer = FormDddwConsumerColumn.getAll(this, new ColumnDefinition("consumer", "volunteer.consumer"),
-				true, SecureUserRole.VOLUNTEER); 
+				true, SecureUserRole.VOLUNTEER);
 		this.consumer.setRequired(true);
 
 		this.dateFrom = new FormDateColumn(this, new ColumnDefinition("dateFrom", "volunteer.dateFrom"));
@@ -140,7 +139,7 @@ public class VolunteerCreateEditByGameCoordForm extends AbstractForm {
 	public FormDateColumn getDateToColumn() {
 		return dateTo;
 	}
-	
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		id.validate(context, errors);
@@ -149,7 +148,7 @@ public class VolunteerCreateEditByGameCoordForm extends AbstractForm {
 		dateFrom.validate(context, errors);
 		dateTo.validate(context, errors);
 	}
-	
+
 	public Volunteer getVolunteer() {
 		return new Volunteer(getId(), consumer.getConsumer(), null, gameId.getGame(), getDateFrom(), getDateTo());
 	}

@@ -48,7 +48,7 @@ public class VolunteerCreateEditByGameCPForm extends AbstractForm {
 	}
 
 	public VolunteerCreateEditByGameCPForm(DynamicLocaleList localeList) {
-		super("volunteerCreateEditByGameCPForm", "/api/v1/volunteerCreateEditByGameCP/{0}", null,
+		super("volunteerCreateEditByGameCPForm", "/api/v1/volunteerCreateEditByGameCP/{0}",
 				"/api/v1/volunteerCreateEditByGameCP", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("volunteer.header");

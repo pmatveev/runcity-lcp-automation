@@ -590,14 +590,7 @@ function initAjaxSourced(form, elem, dataIn, val) {
 	});
 }
 
-function beforeOpenModal(form, fetch, createForm, persistCreate) {
-	removeFormMessage(form);
-	if (createForm) {
-		form.find(".create-another-wrapper").removeClass("hidden");
-	} else {
-		form.find(".create-another-wrapper").addClass("hidden");		
-	}
-	form.data('uploading', 0);
+function setDefaults(form, persistCreate) {
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
 		if (elem.prop("tagName") === 'SELECT' && elem.attr('force-refresh') == 'true') {
@@ -611,6 +604,17 @@ function beforeOpenModal(form, fetch, createForm, persistCreate) {
 		
 		removeMessage(elem);
 	});
+}
+
+function beforeOpenModal(form, fetch, createForm, persistCreate) {
+	removeFormMessage(form);
+	if (createForm) {
+		form.find(".create-another-wrapper").removeClass("hidden");
+	} else {
+		form.find(".create-another-wrapper").addClass("hidden");		
+	}
+	form.data('uploading', 0);
+	setDefaults(form, persistCreate);
 	
 	if (fetch) {
 		return;
@@ -720,13 +724,16 @@ function beforeOpenModalFetch(form, recId, createForm) {
 	});
 }
 
-function afterOpenModal(form) {
-	showConditionalForm(form);
-	
+function autofocus(form) {
 	var focus = form.find('[autofocus="autofocus"]')[0];
 	if (focus) {
 		focus.focus();
 	}
+}
+
+function afterOpenModal(form) {
+	showConditionalForm(form);
+	autofocus(form);
 }
 
 function beforeCloseModal(form) {
@@ -833,7 +840,14 @@ function showModalForm(form) {
 }
 
 function closeModalForm(form) {
-	$('#modal_' + form.attr("id")).modal('hide');
+	var modal = $('#modal_' + form.attr("id"));
+	
+	if (modal.hasClass("modal")) {
+		$('#modal_' + form.attr("id")).modal('hide');
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function modalFormSuccess(form, data) {
@@ -865,10 +879,15 @@ function modalFormSuccess(form, data) {
 			beforeOpenModal(form, false, true, true);
 			form.prop("cancel-refresh", true);
 		} else {
-			closeModalForm(form);
 			var refresh = form.attr("related-table");
 			if (typeof refresh !== 'undefined') {
 				$('#' + refresh).DataTable().ajax.reload(null, false);
+			}
+
+			if (!closeModalForm(form)) {
+				removeFormMessage(form);
+				setDefaults(form, false);
+				autofocus(form);
 			}
 		}
 		return;
@@ -901,6 +920,7 @@ function modalFormSuccess(form, data) {
 			});
 		}
 	});
+	autofocus(form);
 }
 
 function modalFormError(form, data) {
@@ -909,6 +929,8 @@ function modalFormError(form, data) {
 	removeFormMessage(form);
 	removeFormFieldErrorMessage(form);
 	setFormMessage(form, getHttpError(data.statusText, data.status, "POST"), "danger");
+
+	autofocus(form);
 }
 
 function submitModalForm(form, event) {

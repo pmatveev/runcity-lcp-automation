@@ -44,7 +44,7 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 	}
 
 	public VolunteerCreateEditByCPForm(DynamicLocaleList localeList) {
-		super("volunteerCreateEditByCPForm", "/api/v1/volunteerCreateEditByCP/{0}", null, "/api/v1/volunteerCreateEditByCP",
+		super("volunteerCreateEditByCPForm", "/api/v1/volunteerCreateEditByCP/{0}", "/api/v1/volunteerCreateEditByCP",
 				localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("volunteer.header");
@@ -54,7 +54,7 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 				new ColumnDefinition("controlPointId", "controlPointId"));
 
 		this.consumer = FormDddwConsumerColumn.getAll(this, new ColumnDefinition("consumer", "volunteer.consumer"),
-				true, SecureUserRole.VOLUNTEER); 
+				true, SecureUserRole.VOLUNTEER);
 		this.consumer.setRequired(true);
 
 		this.dateFrom = new FormDateColumn(this, new ColumnDefinition("dateFrom", "volunteer.dateFrom"));
@@ -140,7 +140,7 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 	public FormDateColumn getDateToColumn() {
 		return dateTo;
 	}
-	
+
 	@Override
 	public void validate(ApplicationContext context, Errors errors) {
 		id.validate(context, errors);
@@ -149,8 +149,9 @@ public class VolunteerCreateEditByCPForm extends AbstractForm {
 		dateFrom.validate(context, errors);
 		dateTo.validate(context, errors);
 	}
-	
+
 	public Volunteer getVolunteer() {
-		return new Volunteer(getId(), consumer.getConsumer(), controlPointId.getControlPoint(), null, getDateFrom(), getDateTo());
+		return new Volunteer(getId(), consumer.getConsumer(), controlPointId.getControlPoint(), null, getDateFrom(),
+				getDateTo());
 	}
 }

@@ -7,10 +7,12 @@ import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.TeamProcessForm;
 import org.runcity.secure.SecureUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,7 +76,7 @@ public class RestRuntimeController extends AbstractRestController {
 			return result;
 		}
 		
-		if (ObjectUtils.nullSafeEquals(request.getOnsite(), v.isActive())) {
+		if (ObjectUtils.nullSafeEquals(request.getOnsite(), v.getActive())) {
 			// no action needed
 			return result;
 		}
@@ -88,6 +90,23 @@ public class RestRuntimeController extends AbstractRestController {
 			return result;			
 		}
 		
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/teamProcess/", method = RequestMethod.POST)
+	public RestPostResponseBody processTeam(@RequestBody TeamProcessForm form) {
+		logger.info("POST /api/v1/teamProcess");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+		
+		result.addCommonMsg("common.completed");		
 		return result;
 	}
 }

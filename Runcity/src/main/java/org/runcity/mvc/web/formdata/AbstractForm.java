@@ -11,15 +11,13 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 	protected String formTitle;
 	protected String urlOnOpenAjax;
 	protected String urlOnSubmit;
-	protected String urlOnSubmitAjax;
 
-	protected AbstractForm(String formName, String urlOnOpenAjax, String urlOnSubmit, String urlOnSubmitAjax, DynamicLocaleList localeList) {
+	protected AbstractForm(String formName, String urlOnOpenAjax, String urlOnSubmitAjax, DynamicLocaleList localeList) {
 		super();
 		this.id = formName;
 		this.formName = formName;
 		this.urlOnOpenAjax = urlOnOpenAjax;
-		this.urlOnSubmit = urlOnSubmit;
-		this.urlOnSubmitAjax = urlOnSubmitAjax;
+		this.urlOnSubmit = urlOnSubmitAjax;
 		this.localeList = localeList;
 	}
 
@@ -40,10 +38,6 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 	}
 
 	public String getOnSubmit() {
-		return "return validateForm($('#" + getHtmlId() + "'), event)";
-	}
-
-	public String getOnModalSubmit() {
 		return "return submitModalForm($('#" + getHtmlId() + "'), event)";
 	}
 
@@ -61,14 +55,6 @@ public abstract class AbstractForm extends RestGetResponseBody implements Valida
 
 	public void setUrlOnSubmit(String urlOnSubmit) {
 		this.urlOnSubmit = urlOnSubmit;
-	}
-
-	public String getUrlOnSubmitAjax() {
-		return urlOnSubmitAjax;
-	}
-
-	public void setUrlOnSubmitAjax(String urlOnSubmitAjax) {
-		this.urlOnSubmitAjax = urlOnSubmitAjax;
 	}
 	
 	public void prefix(String referrer) {

@@ -28,34 +28,37 @@ public class RouteItemCreateEditByRouteForm extends AbstractForm {
 
 	@JsonView(Views.Public.class)
 	private FormDddwControlPointColumn controlPoint;
-	
+
 	public RouteItemCreateEditByRouteForm() {
 		this(null);
 	}
-	
+
 	public RouteItemCreateEditByRouteForm(DynamicLocaleList localeList) {
-		super("routeItemCreateEditByRouteForm", "/api/v1/routeItemCreateEdit/{0}", null, "/api/v1/routeItemCreateEdit", localeList);
+		super("routeItemCreateEditByRouteForm", "/api/v1/routeItemCreateEdit/{0}", "/api/v1/routeItemCreateEdit",
+				localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("routeItem.header");
-		
+
 		this.id = new FormIdColumn(this, new ColumnDefinition("id", "id"));
 		this.routeId = new FormIdRouteColumn(this, new ColumnDefinition("routeId", "routeid"));
 		this.leg = new FormNumberColumn(this, new ColumnDefinition("leg", "routeItem.leg"));
 		this.leg.setMin(0);
 		this.leg.setMax(99);
-		this.controlPoint = FormDddwControlPointColumn.getByRouteUnused(this, new ColumnDefinition("controlPoint", "routeItem.controlPoint"), id, routeId);
+		this.controlPoint = FormDddwControlPointColumn.getByRouteUnused(this,
+				new ColumnDefinition("controlPoint", "routeItem.controlPoint"), id, routeId);
 		this.controlPoint.setForceRefresh(true);
 		this.controlPoint.setRequired(true);
 	}
-	
-	public RouteItemCreateEditByRouteForm(Long id, Long routeId, Integer leg, Long controlPointId, DynamicLocaleList localeList) {
+
+	public RouteItemCreateEditByRouteForm(Long id, Long routeId, Integer leg, Long controlPointId,
+			DynamicLocaleList localeList) {
 		this(localeList);
 		setId(id);
 		setRouteId(routeId);
 		setLeg(leg);
 		setControlPoint(controlPointId);
 	}
-	
+
 	public RouteItemCreateEditByRouteForm(RouteItem ri, DynamicLocaleList localeList) {
 		this(ri.getId(), ri.getRoute().getId(), ri.getLegNumber(), ri.getControlPoint().getId(), localeList);
 	}
@@ -91,7 +94,7 @@ public class RouteItemCreateEditByRouteForm extends AbstractForm {
 	public void setControlPoint(Long controlPoint) {
 		this.controlPoint.setValue(controlPoint);
 	}
-	
+
 	public FormIdColumn getIdColumn() {
 		return id;
 	}
@@ -103,7 +106,7 @@ public class RouteItemCreateEditByRouteForm extends AbstractForm {
 	public FormNumberColumn getLegColumn() {
 		return leg;
 	}
-	
+
 	public FormDddwControlPointColumn getControlPointColumn() {
 		return controlPoint;
 	}
@@ -116,7 +119,7 @@ public class RouteItemCreateEditByRouteForm extends AbstractForm {
 		leg.validate(context, errors);
 		controlPoint.validate(context, errors);
 	}
-	
+
 	public RouteItem getRouteItem() {
 		return new RouteItem(getId(), getLeg(), routeId.getRoute(), controlPoint.getControlPoint());
 	}

@@ -6,7 +6,9 @@
 <%@ taglib prefix="runcity" uri="/WEB-INF/runcity.tld"%>
 
 <c:set value="${changePasswordByTokenForm}" var="formVar"/>
-<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}">	
+<h1><fmt:message key="${formVar.title}" bundle="${msg}" /></h1>
+<spring:url value="${formVar.urlOnSubmit }" var="doSubmit" />
+<form:form id="${formVar.htmlId}" method="POST" modelAttribute="${formVar.formName}" action="${doSubmit}" onsubmit="return validateForm($('#${formVar.htmlId}'), event)">	
 	<runcity:form-body modal="${modal}">
 		<div class="errorHolder">
 			<form:errors cssClass="alert alert-danger" element="div"/>
@@ -33,4 +35,4 @@
 		</spring:bind>	
 	</runcity:form-body>
 	<runcity:form-footer bundle="${msg}" modal="${modal}"/>
-</runcity:form>
+</form:form>

@@ -2,6 +2,7 @@ package org.runcity.db.repository;
 
 import java.util.List;
 
+import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.Team;
@@ -15,5 +16,8 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 	public List<Team> findByRoute(Route r);
 	
 	@Query("select t from Team t where t.number = :number and t.route.game = :game")
-	public Team selectByGameAndNumber(@Param("number") String number, @Param("game") Game g);
+	public Team selectByGameAndNumber(@Param("number") String number, @Param("game") Game game);
+	
+	@Query("select t from Team t, RouteItem ri where t.number = :number and t.route = ri.route and ri.controlPoint = :cp")
+	public Team selectByCPAndNumber(@Param("number") String number, @Param("cp") ControlPoint controlPoint);
 }

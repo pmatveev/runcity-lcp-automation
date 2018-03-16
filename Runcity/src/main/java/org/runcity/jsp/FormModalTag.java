@@ -68,13 +68,10 @@ public class FormModalTag extends FormTag {
 			this.getDynamicAttributes().clear();
 		}
 		this.tagWriter = tagWriter;
-		
-		String onSubmit;
+
+		processUrl(form.getUrlOnSubmit(), form.getFormName() + "_formAction");
 		if (modal) {
-			processUrl(form.getUrlOnSubmitAjax(), form.getFormName() + "_formAction");
 			processUrl(form.getUrlOnOpenAjax(), form.getFormName() + "_formFetchFrom");
-			
-			onSubmit = form.getOnModalSubmit();
 			
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("id", "modal_" + form.getHtmlId());
@@ -90,20 +87,20 @@ public class FormModalTag extends FormTag {
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("class", "modal-header");
 			
-			tagWriter.startTag("h4");
-			tagWriter.writeAttribute("class", "modal-title");
-			tagWriter.appendValue(localize(form.getTitle()));
-			tagWriter.endTag();
+			if (form.getTitle() != null) {
+				tagWriter.startTag("h4");
+				tagWriter.writeAttribute("class", "modal-title");
+				tagWriter.appendValue(localize(form.getTitle()));
+				tagWriter.endTag();
+			}
 			
 			tagWriter.endTag();
 		} else {
-			processUrl(form.getUrlOnSubmit(), form.getFormName() + "_formAction");
-
-			onSubmit = form.getOnSubmit();
-			
-			tagWriter.startTag("h1");
-			tagWriter.appendValue(localize(form.getTitle()));
-			tagWriter.endTag();
+			if (form.getTitle() != null) {
+				tagWriter.startTag("h1");
+				tagWriter.appendValue(localize(form.getTitle()));
+				tagWriter.endTag();
+			}
 			
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("id", "form_" + form.getHtmlId());
@@ -119,7 +116,7 @@ public class FormModalTag extends FormTag {
 			setAction(null);
 		}
 		setId(form.getHtmlId());
-		setOnsubmit(onSubmit);
+		setOnsubmit(form.getOnSubmit());
 		if (modal) {
 			Object val = pageContext.getAttribute(form.getFormName() + "_formFetchFrom");
 			if (val != null) {

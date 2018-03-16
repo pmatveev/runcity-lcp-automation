@@ -33,7 +33,7 @@ public class ChangePasswordByTokenForm extends AbstractForm {
 	}
 	
 	public ChangePasswordByTokenForm(DynamicLocaleList localeList) {
-		super("changePasswordByTokenForm", null, "/recoverPassword", null, localeList);
+		super("changePasswordByTokenForm", null, "/recoverPassword", localeList);
 		logger.trace("Creating form " + getFormName());
 		setTitle("changePassword.header");
 
