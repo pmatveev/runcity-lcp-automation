@@ -79,4 +79,9 @@ public class GameServiceImpl implements GameService {
 			delete(i);
 		}
 	}
+
+	@Override
+	public Long getMaxLegNumber(Game g) {
+		return gameRepository.selectMaxLeg(g);
+	}
 }

@@ -2,8 +2,10 @@ package org.runcity.db.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
@@ -15,6 +17,7 @@ import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.EventStatus;
 import org.runcity.db.entity.enumeration.EventType;
 import org.runcity.db.entity.enumeration.TeamStatus;
+import org.runcity.db.entity.util.TeamAggregate;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.db.repository.EventRepository;
 import org.runcity.db.repository.RouteRepository;
@@ -157,5 +160,35 @@ public class TeamServiceImpl implements TeamService {
 		if (pass == null || team == null) {
 			throw new DBException();
 		}
+	}
+
+	@Override
+	public Map<Route, Map<String, Long>> selectStatsByGame(Game game) {
+		Map<Route, Map<String, Long>> result = new HashMap<Route, Map<String, Long>>();
+		
+		List<TeamAggregate> aggr = teamRepository.selectStatsByGame(game);
+		for (TeamAggregate ta : aggr) {
+			Map<String, Long> map = result.get(ta.getRoute());
+			
+			if (map == null) {
+				map = new HashMap<String, Long>();
+				
+				for (TeamStatus ts : TeamStatus.values()) {
+					if (ts != TeamStatus.ACTIVE) {
+						map.put(TeamStatus.getStoredValue(ts), 0L);
+					}
+				}
+				
+				Long max = routeRepository.selectMaxLeg(ta.getRoute());
+				for (long i = 1; i <= (max == null ? 1 : max); i++) {
+					map.put(i + "", 0L);
+				}
+				result.put(ta.getRoute(), map);
+			}
+			
+			map.put(ta.getStatus(), ta.getNumber());
+		}
+		
+		return result;
 	}
 }

@@ -15,6 +15,7 @@ import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
+import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.mvc.web.tabledata.GameTable;
@@ -219,6 +220,10 @@ public class MenuController {
 		
 		CoordinatorControlPointTable controlPoints = new CoordinatorControlPointTable(messageSource, localeList, g);
 		controlPoints.processModel(model);
+		
+		Long maxStage = gameService.getMaxLegNumber(g);
+		CoordinatorTeamStatTable stat = new CoordinatorTeamStatTable(messageSource, localeList, maxStage, g);
+		stat.processModel(model);
 		
 		return "secure/coordinatorDetails";	
 	}

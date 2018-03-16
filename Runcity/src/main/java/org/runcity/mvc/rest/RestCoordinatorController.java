@@ -9,11 +9,13 @@ import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
+import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.CoordinatorVolunteerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class RestCoordinatorController extends AbstractRestController {
 	
 	@Autowired
 	private VolunteerService volunteerService;
+	
+	@Autowired
+	private TeamService teamService;
 	
 	private boolean isCoordinator(Game game) {
 		return volunteerService.isCoordinator(game, SecureUserDetails.getCurrentUser().getUsername());
@@ -136,5 +141,30 @@ public class RestCoordinatorController extends AbstractRestController {
 		logger.info("POST /api/v1/cpOnline");
 		return setControlPointMode(id, ControlPointMode.OFFLINE);
 	}
-
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "api/v1/coordTeamStatTable", method = RequestMethod.GET)
+	public RestGetResponseBody getTeamStatTable(@RequestParam(required = true) Long gameId) {
+		logger.info("GET /api/v1/coordControlPointsTable");
+		
+		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
+		
+		if (g == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.addCommonMsg("common.db.fail");
+			return result;		
+		}
+		
+		if (!isCoordinator(g)) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.addCommonMsg("common.forbidden");
+			return result;				
+		}
+		
+		Long maxStage = gameService.getMaxLegNumber(g);
+		CoordinatorTeamStatTable result = new CoordinatorTeamStatTable(messageSource, localeList, maxStage, g);
+		result.fetchByGame(teamService, g);
+		return result.validate();
+	}
 }

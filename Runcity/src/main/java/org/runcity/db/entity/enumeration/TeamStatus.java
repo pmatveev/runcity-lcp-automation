@@ -5,7 +5,8 @@ import java.util.Locale;
 import org.springframework.context.MessageSource;
 
 public enum TeamStatus {
-	ACTIVE("teamStatus.active", "1");
+	ACTIVE("teamStatus.active", "1"), 
+	FINISHED("teamStatus.finish", "F");
 
 	private String displayName;
 	private String storedValue;
@@ -18,7 +19,7 @@ public enum TeamStatus {
 	public static String getDisplayName(TeamStatus data) {
 		return data == null ? null : data.displayName;
 	}
-	
+
 	public static String getDisplayName(TeamStatus data, MessageSource messageSource, Locale l) {
 		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
@@ -35,12 +36,14 @@ public enum TeamStatus {
 		}
 		return true;
 	}
-	
+
 	public static TeamStatus getByStoredValue(String storedValue) {
 		if (isNumber(storedValue)) {
 			return ACTIVE;
 		}
 		switch (storedValue) {
+		case "F":
+			return TeamStatus.FINISHED;
 		default:
 			return null;
 		}

@@ -34,6 +34,9 @@ public class Route {
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "route")
 	private Set<Team> teams;
 	
+	@Transient
+	private Long maxLeg;
+	
 	public Route() {
 	}
 
@@ -70,7 +73,7 @@ public class Route {
 	public Set<RouteItem> getRouteItems() {
 		return routeItems;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

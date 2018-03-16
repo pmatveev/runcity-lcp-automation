@@ -8,6 +8,7 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.Team;
+import org.runcity.db.entity.util.TeamAggregate;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -28,4 +29,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select t from Team t where t = :team")
 	public Team selectForUpdate(@Param("team") Team team);
+	
+	@Query("select new org.runcity.db.entity.util.TeamAggregate(r, t.status, count(t)) from Route r, Team t where r.game = :game and t.route = r group by r, t.status")
+	public List<TeamAggregate> selectStatsByGame(@Param("game") Game game);
 }

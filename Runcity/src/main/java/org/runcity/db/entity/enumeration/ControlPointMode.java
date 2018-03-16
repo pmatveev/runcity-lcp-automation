@@ -28,7 +28,7 @@ public enum ControlPointMode {
 	}
 	
 	public static String getDisplayBadge(ControlPointMode data, MessageSource messageSource, Locale l) {
-		return "<span class='label " + data == null ? "" : data.cls + "'>" + StringUtils.xss(getDisplayName(data, messageSource, l)) + "</span>";
+		return "<span class='label " + (data == null ? "" : data.cls) + "'>" + StringUtils.xss(getDisplayName(data, messageSource, l)) + "</span>";
 	}
 
 	public static ControlPointMode getByStoredValue(String storedValue) {

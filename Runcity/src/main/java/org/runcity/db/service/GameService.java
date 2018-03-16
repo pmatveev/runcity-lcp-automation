@@ -13,4 +13,6 @@ public interface GameService {
 	public Game addOrUpdate(Game g) throws DBException;
 	
 	public void delete(List<Long> id);
+	
+	public Long getMaxLegNumber(Game g);
 }

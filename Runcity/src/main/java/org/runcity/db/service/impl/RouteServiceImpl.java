@@ -89,6 +89,6 @@ public class RouteServiceImpl implements RouteService {
 
 	@Override
 	public Long selectTeamNumber(Route r) {
-		return routeRepository.selectTeamNumber(r);
+		return routeRepository.selectTeamCount(r);
 	}
 }

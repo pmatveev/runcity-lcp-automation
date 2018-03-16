@@ -1,6 +1,7 @@
 package org.runcity.db.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
@@ -28,4 +29,6 @@ public interface TeamService {
 	public List<Team> selectTeams(Route route, Team.SelectMode selectMode);
 	
 	public void processTeamByVolunteer(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException;
+	
+	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
 }
