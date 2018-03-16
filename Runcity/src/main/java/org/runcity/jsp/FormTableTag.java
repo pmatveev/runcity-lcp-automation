@@ -64,6 +64,7 @@ public class FormTableTag extends TagSupport {
 				tagWriter.startTag("button");
 				tagWriter.writeOptionalAttributeValue("class", b.getClassName());
 				tagWriter.writeOptionalAttributeValue("extend", b.getExtend());
+				tagWriter.writeOptionalAttributeValue("jscheck", b.getJsCondition());
 				if (b.getAction() == null || (!b.getAction().startsWith("ajax:") && !b.getAction().startsWith("link:"))) {
 					tagWriter.writeOptionalAttributeValue("action", b.getAction());
 				} else {

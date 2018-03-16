@@ -1194,10 +1194,40 @@ function initDatatables(table, loc) {
 			}
 		}
 
+		var init;
+		var check = button.attr("jscheck");
+		if (typeof check !== 'undefined') {
+			init = function(dt, node, config) {
+				var that = this;
+				that.disable();
+				dt.on('select.dt.DT deselect.dt.DT', function() {
+					var data = dt.rows({ selected : true }).data();
+					
+					if (data.length == 0) {
+						that.disable();
+						return;
+					}
+					
+					var ok = true;
+					for (var i = 0; i < data.length; i++) {
+						var row = data[i];
+						
+						if (!eval(check)) {
+							ok = false;
+							break;
+						}
+					}
+					
+					that.enable(ok);
+				});
+			}
+		}
+		
 		buttons.push({
 			action : func,
 			className : button.attr("class"),
 			extend : button.attr("extend"),
+			init: init,
 			text : button.html()
 		});
 	});

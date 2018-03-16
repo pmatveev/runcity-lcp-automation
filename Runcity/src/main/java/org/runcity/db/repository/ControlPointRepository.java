@@ -7,6 +7,7 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,4 +32,9 @@ public interface ControlPointRepository extends JpaRepository<ControlPoint, Long
 	
 	@Query("select count(distinct v) from Volunteer v, Event e where v.controlPoint = :cp and e.volunteer = v and e.status = 'P' and e.type = 'V'")
 	public Long countActiveVolunteers(@Param("cp") ControlPoint controlPoint);
+	
+    @Modifying
+    @Transactional
+    @Query("update ControlPoint c set c.mode = :mode where c.id in (:cp)")
+    public void updateMode(@Param("cp") List<Long> id, @Param("mode") String mode);
 }

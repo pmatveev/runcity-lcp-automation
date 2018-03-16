@@ -3,8 +3,10 @@ package org.runcity.db.service;
 import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.ControlPoint.SelectMode;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.exception.DBException;
 
 public interface ControlPointService {	
@@ -41,4 +43,8 @@ public interface ControlPointService {
 	public Long countActiveVolunteers(Long controlPoint);
 	
 	public Long countActiveVolunteers(ControlPoint controlPoint);
+	
+	public void setMode(List<Long> id, ControlPointMode mode);
+
+	public Iterable<ControlPoint> selectById(List<Long> id, SelectMode selectMode);
 }

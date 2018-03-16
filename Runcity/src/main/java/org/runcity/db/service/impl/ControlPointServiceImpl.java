@@ -1,12 +1,12 @@
 package org.runcity.db.service.impl;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.repository.BlobContentRepository;
 import org.runcity.db.repository.ControlPointRepository;
 import org.runcity.db.repository.GameRepository;
@@ -60,7 +60,7 @@ public class ControlPointServiceImpl implements ControlPointService {
 		}
 	}
 	
-	private void initialize(Collection<ControlPoint> controlPoints, ControlPoint.SelectMode selectMode) {
+	private void initialize(Iterable<ControlPoint> controlPoints, ControlPoint.SelectMode selectMode) {
 		if (controlPoints == null || selectMode == ControlPoint.SelectMode.NONE) {
 			return;
 		}
@@ -137,6 +137,13 @@ public class ControlPointServiceImpl implements ControlPointService {
 	}
 
 	@Override
+	public Iterable<ControlPoint> selectById(List<Long> id, ControlPoint.SelectMode selectMode) {
+		Iterable<ControlPoint> c = controlPointRepository.findAll(id);
+		initialize(c, selectMode);
+		return c;
+	}
+
+	@Override
 	public ControlPoint addOrUpdate(ControlPoint c) throws DBException {
 		try {
 			if (c.getId() != null) {
@@ -187,5 +194,10 @@ public class ControlPointServiceImpl implements ControlPointService {
 	@Override
 	public Long countActiveVolunteers(ControlPoint controlPoint) {
 		return controlPointRepository.countActiveVolunteers(controlPoint);
+	}
+
+	@Override
+	public void setMode(List<Long> id, ControlPointMode mode) {
+		controlPointRepository.updateMode(id, ControlPointMode.getStoredValue(mode));
 	}
 }

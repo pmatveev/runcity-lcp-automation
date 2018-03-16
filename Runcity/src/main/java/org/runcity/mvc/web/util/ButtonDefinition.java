@@ -6,6 +6,7 @@ public class ButtonDefinition {
 	private String className;
 	private String action;
 	private String extend;
+	private String jsCondition;
 
 	public ButtonDefinition() {
 	}
@@ -58,4 +59,12 @@ public class ButtonDefinition {
 		this.extend = extend;
 	}
 
+	public ButtonDefinition setJsCondition(String condition) {
+		this.jsCondition = condition;
+		return this;
+	}
+	
+	public String getJsCondition() {
+		return jsCondition;
+	}
 }
