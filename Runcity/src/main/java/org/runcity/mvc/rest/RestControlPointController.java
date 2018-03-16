@@ -15,13 +15,13 @@ import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByCPForm;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
+import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
@@ -77,7 +77,7 @@ public class RestControlPointController extends AbstractRestController {
 		ControlPoint c = controlPointService.selectById(id, ControlPoint.SelectMode.NONE);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -149,13 +149,13 @@ public class RestControlPointController extends AbstractRestController {
 		try {
 			c = controlPointService.addOrUpdate(form.getControlPoint());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (c == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -170,7 +170,7 @@ public class RestControlPointController extends AbstractRestController {
 		try {
 			controlPointService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	
@@ -198,7 +198,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -206,7 +206,7 @@ public class RestControlPointController extends AbstractRestController {
 		SecureUserDetails user = SecureUserDetails.getCurrentUser();
 		if (!user.isAdmin() && !volunteerService.isCoordinator(v.getVolunteerGame(), user.getUsername())) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
 			return result;
 		}
@@ -229,7 +229,7 @@ public class RestControlPointController extends AbstractRestController {
 
 		SecureUserDetails user = SecureUserDetails.getCurrentUser();
 		if (!user.isAdmin() && !volunteerService.isCoordinator(form.getVolunteer().getVolunteerGame(), user.getUsername())) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
 			return result;
 		}
@@ -238,13 +238,13 @@ public class RestControlPointController extends AbstractRestController {
 		try {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (v == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;

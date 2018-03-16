@@ -11,11 +11,11 @@ import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetDddwResponseBody;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -55,7 +55,7 @@ public class RestCategoryController extends AbstractRestController {
 		Category c = categoryService.selectById(id, Category.SelectMode.NONE);
 		if (c == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -80,13 +80,13 @@ public class RestCategoryController extends AbstractRestController {
 		try {
 			c = categoryService.addOrUpdate(form.getCategory());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (c == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -101,7 +101,7 @@ public class RestCategoryController extends AbstractRestController {
 		try {
 			categoryService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	

@@ -7,7 +7,7 @@ public class FormListboxControlPointTypeColumn extends FormListboxColumn<String>
 	@Override
 	protected void initDictionary() {
 		for (ControlPointType ct : ControlPointType.values()) {
-			options.put(ControlPointType.getStoredValue(ct), ct.getDisplayName());
+			options.put(ControlPointType.getStoredValue(ct), ControlPointType.getDisplayName(ct));
 		}
 	}
 

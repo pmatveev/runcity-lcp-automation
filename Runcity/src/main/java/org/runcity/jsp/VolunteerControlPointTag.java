@@ -15,6 +15,7 @@ import org.runcity.db.entity.Category;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.util.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.tags.form.TagWriter;
@@ -132,7 +133,7 @@ public class VolunteerControlPointTag extends TagSupport {
 			case BONUS:
 			case FINISH:
 				tagWriter.appendValue(localize("jsp.controlPoint.categoryNoStage", c.getLocalizedName(locale),
-						localize(ri.getControlPoint().getType().getDisplayName())));
+						localize(ControlPointType.getDisplayName(ri.getControlPoint().getType()))));
 				break;
 			case REGULAR:
 			case STAGE_END:

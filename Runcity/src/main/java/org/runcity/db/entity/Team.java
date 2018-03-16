@@ -124,12 +124,16 @@ public class Team {
 		this.addData = addData;
 	}
 	
+	public String getStatusData() {
+		return status;
+	}
+	
 	public TeamStatus getStatus() {
 		return TeamStatus.getByStoredValue(status);
 	}
 	
-	public int getLeg() {
-		return new Integer(status);
+	public Integer getLeg() {
+		return getStatus() == TeamStatus.ACTIVE ? new Integer(status) : null;
 	}
 	
 	public void setStatus(TeamStatus status) {

@@ -15,7 +15,6 @@ import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.RouteCreateForm;
 import org.runcity.mvc.web.formdata.RouteItemCreateEditByRouteForm;
@@ -27,6 +26,7 @@ import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
+import org.runcity.util.ResponseClass;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class RestGameController extends AbstractRestController {
 		Game g = gameService.selectById(id, Game.SelectMode.WITH_CATEGORIES);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -103,13 +103,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			g = gameService.addOrUpdate(form.getGame());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (g == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -124,7 +124,7 @@ public class RestGameController extends AbstractRestController {
 		try {
 			gameService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;		
@@ -160,13 +160,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			g = gameService.addOrUpdate(form.getGame());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (g == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -181,7 +181,7 @@ public class RestGameController extends AbstractRestController {
 		try {
 			routeService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;		
@@ -207,7 +207,7 @@ public class RestGameController extends AbstractRestController {
 		RouteItem ri = routeService.selectItemById(id);
 		if (ri == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -232,13 +232,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			ri = routeService.addOrUpdateItem(form.getRouteItem());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (ri == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -253,7 +253,7 @@ public class RestGameController extends AbstractRestController {
 		try {
 			routeService.deleteItem(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;		
@@ -295,7 +295,7 @@ public class RestGameController extends AbstractRestController {
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -318,7 +318,7 @@ public class RestGameController extends AbstractRestController {
 
 		SecureUserDetails user = SecureUserDetails.getCurrentUser();
 		if (!user.isAdmin() && !volunteerService.isCoordinator(form.getVolunteer().getVolunteerGame(), user.getUsername())) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
 			return result;
 		}
@@ -327,13 +327,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (v == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -347,7 +347,7 @@ public class RestGameController extends AbstractRestController {
 		
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -372,13 +372,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (v == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -396,7 +396,7 @@ public class RestGameController extends AbstractRestController {
 			for (Long i : id) {
 				Volunteer v = volunteerService.selectById(i, Volunteer.SelectMode.NONE);
 				if (!volunteerService.isCoordinator(v.getVolunteerGame(), user.getUsername())) {
-					result.setResponseClass(RestResponseClass.ERROR);
+					result.setResponseClass(ResponseClass.ERROR);
 					result.addCommonMsg("common.forbidden");
 					return result;
 				}
@@ -406,7 +406,7 @@ public class RestGameController extends AbstractRestController {
 		try {
 			volunteerService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;	
@@ -433,7 +433,7 @@ public class RestGameController extends AbstractRestController {
 		Team t = teamService.selectById(id, Team.SelectMode.NONE);
 		if (t == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
@@ -458,13 +458,13 @@ public class RestGameController extends AbstractRestController {
 		try {
 			t = teamService.addOrUpdate(form.getTeam());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
 		}
 		if (t == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
@@ -479,7 +479,7 @@ public class RestGameController extends AbstractRestController {
 		try {
 			teamService.delete(id);
 		} catch (Exception e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
 		return result;		

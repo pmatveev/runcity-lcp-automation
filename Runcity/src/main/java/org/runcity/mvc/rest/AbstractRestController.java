@@ -3,10 +3,10 @@ package org.runcity.mvc.rest;
 import java.util.Locale;
 
 import org.runcity.mvc.rest.util.RestPostResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.validator.FormValidator;
 import org.runcity.mvc.web.formdata.AbstractForm;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -31,7 +31,7 @@ public abstract class AbstractRestController {
 			formValidator.validate(form, errors);
 		}
 		if (errors.hasErrors()) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.parseErrors(errors);
 		}
 		return errors;

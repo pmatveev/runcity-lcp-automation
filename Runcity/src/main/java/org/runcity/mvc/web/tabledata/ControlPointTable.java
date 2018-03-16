@@ -7,6 +7,7 @@ import java.util.Map;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Translation;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ControlPointCreateEditByGameForm;
@@ -55,7 +56,7 @@ public class ControlPointTable extends AbstractTable {
 			this.gameId = c.getGame().getId();
 			this.mainIdt = c.getParent() == null ? StringUtils.xss(c.getIdt()) : StringUtils.xss(c.getParent().getIdt());
 			this.idt = StringUtils.xss(c.getIdt());
-			this.type = StringUtils.xss(c.getType().getDisplayName(messageSource, locale));
+			this.type = StringUtils.xss(ControlPointType.getDisplayName(c.getType(), messageSource, locale));
 			this.name = StringUtils.xss(c.getName());
 			
 			this.address = localeList.prepareMap();

@@ -5,7 +5,8 @@ import java.util.Locale;
 import org.springframework.context.MessageSource;
 
 public enum EventType {
-	VOLUNTEER_AT_CP("eventType.volunteerCP", "V");
+	VOLUNTEER_AT_CP("eventType.volunteerCP", "V"),
+	TEAM_CP("eventType.teamPass", "C");
 
 	private String displayName;
 	private String storedValue;
@@ -15,17 +16,18 @@ public enum EventType {
 		this.storedValue = storedValue;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public static String getDisplayName(EventType data) {
+		return data == null ? null : data.displayName;
 	}
 	
-	public String getDisplayName(MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(displayName, null, l);
+	public static String getDisplayName(EventType data, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	public static EventType getByStoredValue(String storedValue) {
 		switch (storedValue) {
 		case "V": return VOLUNTEER_AT_CP;
+		case "C": return TEAM_CP;
 		default:
 			return null;
 		}

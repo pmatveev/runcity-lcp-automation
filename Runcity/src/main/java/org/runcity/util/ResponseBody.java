@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.ObjectError;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 public class ResponseBody {
 	@JsonView(Object.class)
-	protected RestResponseClass responseClass;
+	protected ResponseClass responseClass;
 	
 	@JsonView(Object.class)
 	protected List<String> msg;
@@ -22,7 +21,7 @@ public class ResponseBody {
 	protected Locale locale = LocaleContextHolder.getLocale();
 
 	public ResponseBody() {
-		responseClass = RestResponseClass.INFO;
+		responseClass = ResponseClass.INFO;
 	}
 	
 	public ResponseBody(MessageSource messageSource) {
@@ -33,12 +32,20 @@ public class ResponseBody {
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+	
+	public Locale getCurrentLocale() {
+		return locale;
+	}
 
-	public RestResponseClass getResponseClass() {
+	public ResponseClass getResponseClass() {
 		return responseClass;
 	}
 
-	public void setResponseClass(RestResponseClass responseClass) {
+	public void setResponseClass(ResponseClass responseClass) {
 		this.responseClass = responseClass;
 	}
 	

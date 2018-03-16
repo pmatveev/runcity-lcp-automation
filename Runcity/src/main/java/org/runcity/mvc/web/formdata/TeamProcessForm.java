@@ -1,8 +1,10 @@
 package org.runcity.mvc.web.formdata;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.db.service.TeamService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.util.ColumnDefinition;
@@ -25,6 +27,7 @@ public class TeamProcessForm extends AbstractForm {
 	
 	private Volunteer volunteer;
 	private Team team;
+	private RouteItem routeItem;
 
 	public TeamProcessForm() {
 		this(null);
@@ -72,7 +75,7 @@ public class TeamProcessForm extends AbstractForm {
 		volunteerId.validate(context, errors);
 		number.validate(context, errors);
 		
-		Volunteer volunteer = volunteerId.getVolunteer();
+		volunteer = volunteerId.getVolunteer();
 		if (volunteer != null) {
 			if (volunteer.getControlPoint() == null) {
 				errors.reject("teamProcessing.validation.noCP");
@@ -80,12 +83,15 @@ public class TeamProcessForm extends AbstractForm {
 			}
 			
 			TeamService teamService = context.getBean(TeamService.class);
-			team = teamService.selectByNumberCP(getNumber(), volunteer.getControlPoint(), Team.SelectMode.NONE);
+			TeamRouteItem tr = teamService.selectByNumberCP(getNumber(), volunteer.getControlPoint(), Team.SelectMode.NONE);
 			
-			if (team == null) {
+			if (tr == null || tr.getTeam() == null || tr.getRouteItem() == null) {
 				errors.reject("teamProcessing.validation.noTeam");
 				return;
 			}
+			
+			team = tr.getTeam();
+			routeItem = tr.getRouteItem();
 		}
 	}
 	
@@ -95,5 +101,9 @@ public class TeamProcessForm extends AbstractForm {
 	
 	public Volunteer getVolunteer() {
 		return volunteer;
+	}
+	
+	public RouteItem getRouteItem() {
+		return routeItem;
 	}
 }

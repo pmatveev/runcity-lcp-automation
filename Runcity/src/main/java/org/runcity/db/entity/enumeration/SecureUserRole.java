@@ -14,12 +14,12 @@ public enum SecureUserRole {
 		this.storedValue = storedValue;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public static String getDisplayName(SecureUserRole data) {
+		return data == null ? null : data.displayName;
 	}
 	
-	public String getDisplayName(MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(displayName, null, l);
+	public static String getDisplayName(SecureUserRole data, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	public static SecureUserRole getByStoredValue(String storedValue) {

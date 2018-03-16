@@ -7,12 +7,13 @@ import java.util.Map;
 
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
-import org.runcity.mvc.rest.util.RestResponseClass;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.RouteItemCreateEditByRouteForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
+import org.runcity.util.ResponseClass;
 import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
 
@@ -71,7 +72,7 @@ public class RouteItemTable extends AbstractTable {
 				case REGULAR:
 					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 1;
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
-						table.setResponseClass(RestResponseClass.WARNING);
+						table.setResponseClass(ResponseClass.WARNING);
 						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay(messageSource, locale) });
 					} else {
 						table.maxStage = Math.max(table.maxStage, ri.getLegNumber());
@@ -80,7 +81,7 @@ public class RouteItemTable extends AbstractTable {
 				case STAGE_END:
 					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 9;
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
-						table.setResponseClass(RestResponseClass.WARNING);
+						table.setResponseClass(ResponseClass.WARNING);
 						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay(messageSource, locale) });
 					} else {
 						table.maxStage = Math.max(table.maxStage, ri.getLegNumber());
@@ -95,7 +96,7 @@ public class RouteItemTable extends AbstractTable {
 				}
 			}
 			this.idt = StringUtils.xss(ri.getControlPoint().getIdt());
-			this.type = StringUtils.xss(ri.getControlPoint().getType().getDisplayName(messageSource, locale));
+			this.type = StringUtils.xss(ControlPointType.getDisplayName(ri.getControlPoint().getType(), messageSource, locale));
 			this.name = StringUtils.xss(ri.getControlPoint().getName());
 			this.address = StringUtils.xss(ri.getControlPoint().getLocalizedAddress(locale.toString()));
 		}
@@ -134,28 +135,28 @@ public class RouteItemTable extends AbstractTable {
 	@Override
 	public RouteItemTable validate() {
 		if (start < 1) {
-			setResponseClass(RestResponseClass.WARNING);
+			setResponseClass(ResponseClass.WARNING);
 			addCommonMsg("routeItem.validation.missingStart");
 		} else if (start > 1) {
-			setResponseClass(RestResponseClass.WARNING);
+			setResponseClass(ResponseClass.WARNING);
 			addCommonMsg("routeItem.validation.multiStart");
 		}
 		
 		if (finish < 1) {
-			setResponseClass(RestResponseClass.WARNING);
+			setResponseClass(ResponseClass.WARNING);
 			addCommonMsg("routeItem.validation.missingFinish");
 		} else if (finish > 1) {
-			setResponseClass(RestResponseClass.WARNING);
+			setResponseClass(ResponseClass.WARNING);
 			addCommonMsg("routeItem.validation.multiFinish");
 		}
 		
 		for (int i = 1; i <= maxStage; i++) {
 			int num = legEnd.getOrDefault(i, 0) + (i == maxStage ? finish : 0);
 			if (num < 1) {
-				setResponseClass(RestResponseClass.WARNING);
+				setResponseClass(ResponseClass.WARNING);
 				addCommonMsg("routeItem.validation.missingLegEnd", new Object[] { i });
 			} else if (num > 1) {
-				setResponseClass(RestResponseClass.WARNING);
+				setResponseClass(ResponseClass.WARNING);
 				addCommonMsg("routeItem.validation.multiLegEnd", new Object[] { i });
 			}
 		}

@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.springframework.context.MessageSource;
 
 public enum TeamStatus {
-	ACTIVE("teamStatus.active", "0");
+	ACTIVE("teamStatus.active", "1");
 
 	private String displayName;
 	private String storedValue;
@@ -15,12 +15,12 @@ public enum TeamStatus {
 		this.storedValue = storedValue;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public static String getDisplayName(TeamStatus data) {
+		return data == null ? null : data.displayName;
 	}
 	
-	public String getDisplayName(MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(displayName, null, l);
+	public static String getDisplayName(TeamStatus data, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	private static boolean isNumber(String value) {
@@ -30,10 +30,10 @@ public enum TeamStatus {
 		for (int i = 0; i < value.length(); i++) {
 			char c = value.charAt(i);
 			if (c < '0' || c > '9') {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public static TeamStatus getByStoredValue(String storedValue) {

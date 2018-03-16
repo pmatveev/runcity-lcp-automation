@@ -10,7 +10,7 @@ public class FormListboxSecureUserRolesColumn extends FormListboxColumn<List<Str
 	@Override
 	protected void initDictionary() {
 		for (SecureUserRole r : SecureUserRole.values()) {
-			options.put(SecureUserRole.getStoredValue(r), r.getDisplayName());
+			options.put(SecureUserRole.getStoredValue(r), SecureUserRole.getDisplayName(r));
 		}
 	}
 

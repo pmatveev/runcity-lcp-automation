@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ConsumerRole;
+import org.runcity.db.entity.enumeration.SecureUserRole;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.ChangePasswordByIdForm;
@@ -52,7 +53,7 @@ public class ConsumerTable extends AbstractTable {
 			
 			List<String> rolesTmp = new LinkedList<String>();
 			for (ConsumerRole r : c.getRoles()) {
-				rolesTmp.add(r.getRole().getDisplayName(messageSource, locale));
+				rolesTmp.add(SecureUserRole.getDisplayName(r.getRole(), messageSource, locale));
 			}
 			Collections.sort(rolesTmp);
 			this.roles = StringUtils.xss(StringUtils.toString(rolesTmp, messageSource, locale));

@@ -19,16 +19,16 @@ public enum ControlPointMode {
 		this.cls = cls;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public static String getDisplayName(ControlPointMode data) {
+		return data == null ? null : data.displayName;
 	}
 	
-	public String getDisplayName(MessageSource messageSource, Locale l) {
-		return messageSource.getMessage(displayName, null, l);
+	public static String getDisplayName(ControlPointMode data, MessageSource messageSource, Locale l) {
+		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 	
-	public String getDisplayBadge(MessageSource messageSource, Locale l) {
-		return "<span class='label " + cls + "'>" + StringUtils.xss(getDisplayName(messageSource, l)) + "</span>";
+	public static String getDisplayBadge(ControlPointMode data, MessageSource messageSource, Locale l) {
+		return "<span class='label " + data == null ? "" : data.cls + "'>" + StringUtils.xss(getDisplayName(data, messageSource, l)) + "</span>";
 	}
 
 	public static ControlPointMode getByStoredValue(String storedValue) {

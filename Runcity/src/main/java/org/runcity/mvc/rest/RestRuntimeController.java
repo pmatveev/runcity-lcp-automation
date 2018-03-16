@@ -2,13 +2,14 @@ package org.runcity.mvc.rest;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
-import org.runcity.mvc.rest.util.RestResponseClass;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.TeamProcessForm;
 import org.runcity.secure.SecureUserDetails;
+import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
@@ -26,6 +27,9 @@ public class RestRuntimeController extends AbstractRestController {
 	
 	@Autowired
 	private VolunteerService volunteerService;
+	
+	@Autowired
+	private TeamService teamService;
 	
 	public static class OnsiteRequestBody {
 		@JsonView(Views.Public.class)
@@ -63,7 +67,7 @@ public class RestRuntimeController extends AbstractRestController {
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		
 		if (request.getVolunteer() == null || request.getOnsite() == null) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
@@ -71,7 +75,7 @@ public class RestRuntimeController extends AbstractRestController {
 		Volunteer v = volunteerService.selectById(request.getVolunteer(), Volunteer.SelectMode.WITH_ACTIVE);
 		
 		if (v == null || !ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(), SecureUserDetails.getCurrentUser().getUsername())) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("jsp.controlPoint.validation.volunteerNotFound");
 			return result;
 		}
@@ -84,7 +88,7 @@ public class RestRuntimeController extends AbstractRestController {
 		try {
 			volunteerService.setCurrent(v, request.getOnsite());
 		} catch (DBException e) {
-			result.setResponseClass(RestResponseClass.ERROR);
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
 			return result;			
@@ -106,7 +110,17 @@ public class RestRuntimeController extends AbstractRestController {
 			return result;
 		}
 		
-		result.addCommonMsg("common.completed");		
+		try {
+			teamService.processTeamByVolunteer(form.getTeam(), form.getRouteItem(), form.getVolunteer(), result);
+		} catch (DBException e) {
+			logger.error(e);
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.popupProcessError");
+		}
+		
+		if (result.getResponseClass() == ResponseClass.INFO) {
+			result.addCommonMsg("common.completed");		
+		}
 		return result;
 	}
 }

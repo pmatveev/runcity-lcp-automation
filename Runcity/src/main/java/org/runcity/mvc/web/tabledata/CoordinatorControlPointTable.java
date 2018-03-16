@@ -49,7 +49,7 @@ public class CoordinatorControlPointTable extends AbstractTable {
 			this.name = StringUtils.xss(c.getName());
 			this.address = StringUtils.xss(c.getLocalizedAddress(locale.toString()));
 			this.mode = ControlPointMode.getStoredValue(c.getMode());
-			this.modeDisplay = c.getMode().getDisplayBadge(messageSource, locale);
+			this.modeDisplay = ControlPointMode.getDisplayBadge(c.getMode(), messageSource, locale);
 			this.volunteers = StringUtils.xss(active + " / " + volunteers);
 			
 			if (active == 0 && volunteers > 0) {
