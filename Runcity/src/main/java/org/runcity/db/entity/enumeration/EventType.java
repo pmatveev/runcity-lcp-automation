@@ -6,7 +6,8 @@ import org.springframework.context.MessageSource;
 
 public enum EventType {
 	VOLUNTEER_AT_CP("eventType.volunteerCP", "V"),
-	TEAM_CP("eventType.teamPass", "C");
+	TEAM_CP("eventType.teamPass", "C"),
+	TEAM_COORD("eventType.teamCoord", "R");
 
 	private String displayName;
 	private String storedValue;
@@ -26,8 +27,9 @@ public enum EventType {
 
 	public static EventType getByStoredValue(String storedValue) {
 		switch (storedValue) {
-		case "V": return VOLUNTEER_AT_CP;
 		case "C": return TEAM_CP;
+		case "V": return VOLUNTEER_AT_CP;
+		case "R": return TEAM_COORD;
 		default:
 			return null;
 		}

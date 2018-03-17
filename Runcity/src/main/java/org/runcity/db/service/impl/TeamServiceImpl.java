@@ -138,15 +138,15 @@ public class TeamServiceImpl implements TeamService {
 		default:
 			status = null;
 		}
-		processTeam(team, status, ri.getLegNumber(), volunteer, result);
+		processTeam(team, status, ri.getLegNumber(), volunteer, EventType.TEAM_CP, result);
 	}
 
 	@Override
-	public void processTeam(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException {
-		processTeam(team, status, null, volunteer, result);
+	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException {
+		processTeam(team, status, null, volunteer, EventType.TEAM_COORD, result);
 	}
 
-	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, ResponseBody result) throws DBException {
+	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, EventType eventType, ResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
 		
@@ -185,7 +185,7 @@ public class TeamServiceImpl implements TeamService {
 		
 		String toStatus = lock.getStatusData();
 		
-		Event pass = new Event(null, EventType.TEAM_CP, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus, toStatus);		
+		Event pass = new Event(null, eventType, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus, toStatus);		
 		pass = eventRepository.save(pass);
 		lock = teamRepository.save(lock);
 		if (pass == null || team == null) {

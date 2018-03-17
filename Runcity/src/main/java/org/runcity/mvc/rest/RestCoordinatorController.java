@@ -192,7 +192,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 		
 		try {
-			teamService.processTeam(form.getTeam(), TeamStatus.FINISHED, form.getVolunteer(), result);
+			teamService.setTeamStatus(form.getTeam(), TeamStatus.FINISHED, form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);

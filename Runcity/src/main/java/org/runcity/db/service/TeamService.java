@@ -31,7 +31,7 @@ public interface TeamService {
 	
 	public void processTeam(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException;
 
-	public void processTeam(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException;
+	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException;
 	
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
 }
