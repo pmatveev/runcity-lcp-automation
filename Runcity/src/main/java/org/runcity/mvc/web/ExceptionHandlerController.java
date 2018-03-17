@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class ExceptionHandlerController {
 	private static final Logger logger = Logger.getLogger(ExceptionHandlerController.class);
 
-	@RequestMapping(value = "errors", method = RequestMethod.GET)
+	@RequestMapping(value = "/errors", method = RequestMethod.GET)
 	public String renderErrorPage(HttpServletRequest httpRequest) {
 		switch (getErrorCode(httpRequest)) {
 		case 403: {
@@ -28,6 +28,11 @@ public class ExceptionHandlerController {
 		}
 		}
 		return "exception/exception";
+	}
+
+	@RequestMapping(value = "/errors")
+	public ModelAndView renderError(HttpServletRequest httpRequest) {
+		return null;
 	}
 
 	private int getErrorCode(HttpServletRequest httpRequest) {
