@@ -10,7 +10,7 @@ import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.VolunteerService;
-import org.runcity.mvc.web.formdata.TeamProcessForm;
+import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.ConsumerTable;
 import org.runcity.mvc.web.tabledata.ControlPointTable;
@@ -170,7 +170,7 @@ public class MenuController {
 		model.addAttribute("volunteer", v);
 		
 		if (v.getActive()) {
-			TeamProcessForm form = new TeamProcessForm();
+			TeamProcessByVolunteerForm form = new TeamProcessByVolunteerForm();
 			form.setVolunteerId(v.getId());
 			model.addAttribute(form.getFormName(), form);
 		}
@@ -222,7 +222,7 @@ public class MenuController {
 		controlPoints.processModel(model);
 		
 		Long maxStage = gameService.getMaxLegNumber(g);
-		CoordinatorTeamStatTable stat = new CoordinatorTeamStatTable(messageSource, localeList, maxStage, g);
+		CoordinatorTeamStatTable stat = new CoordinatorTeamStatTable(messageSource, localeList, maxStage, g, v);
 		stat.processModel(model);
 		
 		return "secure/coordinatorDetails";	

@@ -16,27 +16,27 @@ import org.springframework.validation.Errors;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class TeamProcessForm extends AbstractForm {
-	private static final Logger logger = Logger.getLogger(TeamProcessForm.class);
+public abstract class TeamProcessAbstractForm extends AbstractForm {
+	private static final Logger logger = Logger.getLogger(TeamProcessAbstractForm.class);
 
 	@JsonView(Views.Public.class)
-	private FormIdVolunteerColumn volunteerId;
+	protected FormIdVolunteerColumn volunteerId;
 
 	@JsonView(Views.Public.class)
-	private FormPlainStringColumn number;
+	protected FormPlainStringColumn number;
 	
-	private Volunteer volunteer;
-	private Team team;
-	private RouteItem routeItem;
+	protected Volunteer volunteer;
+	protected Team team;
+	protected RouteItem routeItem;
 
-	public TeamProcessForm() {
-		this(null);
+	public TeamProcessAbstractForm(String formName, String urlOnSubmitAjax, String title) {
+		this(formName, urlOnSubmitAjax, title, null);
 	}
 
-	public TeamProcessForm(DynamicLocaleList localeList) {
-		super("teamProcessForm", null, "/api/v1/teamProcess/", localeList);
+	public TeamProcessAbstractForm(String formName, String urlOnSubmitAjax, String title, DynamicLocaleList localeList) {
+		super(formName, null, urlOnSubmitAjax, localeList);
 		logger.trace("Creating form " + getFormName());
-		setTitle(null);
+		setTitle(title);
 
 		this.volunteerId = new FormIdVolunteerColumn(this, new ColumnDefinition("volunteerId", "volunteerId"));
 		this.number = new FormPlainStringColumn(this, new ColumnDefinition("number", "team.number"));
@@ -77,21 +77,25 @@ public class TeamProcessForm extends AbstractForm {
 		
 		volunteer = volunteerId.getVolunteer();
 		if (volunteer != null) {
-			if (volunteer.getControlPoint() == null) {
-				errors.reject("teamProcessing.validation.noCP");
-				return;
-			}
-			
 			TeamService teamService = context.getBean(TeamService.class);
-			TeamRouteItem tr = teamService.selectByNumberCP(getNumber(), volunteer.getControlPoint(), Team.SelectMode.NONE);
-			
-			if (tr == null || tr.getTeam() == null || tr.getRouteItem() == null) {
-				errors.reject("teamProcessing.validation.noTeam");
-				return;
+			if (volunteer.getControlPoint() != null) {
+				TeamRouteItem tr = teamService.selectByNumberCP(getNumber(), volunteer.getControlPoint(), Team.SelectMode.NONE);
+				
+				if (tr == null || tr.getTeam() == null || tr.getRouteItem() == null) {
+					errors.reject("teamProcessing.validation.noTeam");
+					return;
+				}
+				
+				team = tr.getTeam();
+				routeItem = tr.getRouteItem();
+			} else {
+				team = teamService.selectByNumberGame(getNumber(), volunteer.getVolunteerGame(), Team.SelectMode.NONE);
+				
+				if (team == null) {
+					errors.reject("teamProcessing.validation.noTeam");
+					return;
+				}
 			}
-			
-			team = tr.getTeam();
-			routeItem = tr.getRouteItem();
 		}
 	}
 	

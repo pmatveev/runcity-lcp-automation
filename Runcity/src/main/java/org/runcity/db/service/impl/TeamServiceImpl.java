@@ -1,7 +1,6 @@
 package org.runcity.db.service.impl;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -127,7 +126,27 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-	public void processTeamByVolunteer(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException {
+	public void processTeam(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException {
+		TeamStatus status;
+		switch (ri.getControlPoint().getType()) {
+		case STAGE_END:
+			status = TeamStatus.ACTIVE;
+			break;
+		case FINISH:
+			status = TeamStatus.FINISHED;
+			break;
+		default:
+			status = null;
+		}
+		processTeam(team, status, ri.getLegNumber(), volunteer, result);
+	}
+
+	@Override
+	public void processTeam(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException {
+		processTeam(team, status, null, volunteer, result);
+	}
+
+	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, ResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
 		
@@ -145,16 +164,28 @@ public class TeamServiceImpl implements TeamService {
 			return;			
 		}
 		
-		if (!ObjectUtils.nullSafeEquals(lock.getLeg(), ri.getLegNumber())) {
+		if (leg != null && !leg.equals(lock.getLeg())) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("teamProcessing.invalidLeg", lock.getLeg());
 			return;	
 		}
+
+		String fromStatus = lock.getStatusData();
 		
-		Date now = volunteer.now();
-		Event pass = new Event(null, EventType.TEAM_CP, EventStatus.POSTED, now, null, volunteer, team);
-		lock.setLeg(ri.getLegNumber() + 1);
+		switch (status) {
+		case ACTIVE:
+			lock.setLeg(leg + 1);
+			break;
+		default:
+			if (status != null) {
+				lock.setStatus(status);
+			}
+			break;
+		}
 		
+		String toStatus = lock.getStatusData();
+		
+		Event pass = new Event(null, EventType.TEAM_CP, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus, toStatus);		
 		pass = eventRepository.save(pass);
 		lock = teamRepository.save(lock);
 		if (pass == null || team == null) {

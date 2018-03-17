@@ -52,11 +52,17 @@ public class Event {
 	@JoinColumn(name = "team__id", nullable = true)
 	private Team team;
 
+	@Column(name = "status_from", length = 1, nullable = true)
+	private String fromTeamStatus;
+
+	@Column(name = "status_to", length = 1, nullable = true)
+	private String toTeamStatus;
+
 	public Event() {
 	}
 
 	public Event(Long id, EventType type, EventStatus status, Date dateFrom, Date dateTo, Volunteer volunteer,
-			Team team) {
+			Team team, String formTeamStatus, String toTeamStatus) {
 		setId(id);
 		setType(type);
 		setStatus(status);
@@ -64,6 +70,8 @@ public class Event {
 		setDateTo(dateTo);
 		setVolunteer(volunteer);
 		setTeam(team);
+		setFromTeamStatus(formTeamStatus);
+		setToTeamStatus(toTeamStatus);
 		datesUpdated = false;
 	}
 
@@ -152,6 +160,22 @@ public class Event {
 
 	public void setTeam(Team team) {
 		this.team = team;
+	}
+	
+	public String getFromTeamStatus() {
+		return fromTeamStatus;
+	}
+
+	public void setFromTeamStatus(String fromTeamStatus) {
+		this.fromTeamStatus = fromTeamStatus;
+	}
+
+	public String getToTeamStatus() {
+		return toTeamStatus;
+	}
+
+	public void setToTeamStatus(String toTeamStatus) {
+		this.toTeamStatus = toTeamStatus;
 	}
 
 	public Game getGame() {

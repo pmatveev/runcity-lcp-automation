@@ -7,7 +7,7 @@ import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.Views;
-import org.runcity.mvc.web.formdata.TeamProcessForm;
+import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +58,15 @@ public class RestRuntimeController extends AbstractRestController {
 		}
 	}
 	
+	private boolean checkVolunteer(Volunteer v) {
+		return ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(), SecureUserDetails.getCurrentUser().getUsername());
+	}
+	
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_VOLUNTEER")
-	@RequestMapping(value = "/api/v1/volunteerOnsite", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/v1/volunteer/onsite", method = RequestMethod.POST)
 	public RestPostResponseBody onsite(@RequestBody OnsiteRequestBody request) {
-		logger.info("POST /api/v1/volunteerOnsite");
+		logger.info("POST /api/v1/volunteer/onsite");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		
@@ -74,9 +78,9 @@ public class RestRuntimeController extends AbstractRestController {
 		
 		Volunteer v = volunteerService.selectById(request.getVolunteer(), Volunteer.SelectMode.WITH_ACTIVE);
 		
-		if (v == null || !ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(), SecureUserDetails.getCurrentUser().getUsername())) {
+		if (v == null || !checkVolunteer(v)) {
 			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("jsp.controlPoint.validation.volunteerNotFound");
+			result.addCommonMsg("volunteer.volunteerNotFound");
 			return result;
 		}
 		
@@ -99,9 +103,9 @@ public class RestRuntimeController extends AbstractRestController {
 	
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_VOLUNTEER")
-	@RequestMapping(value = "/api/v1/teamProcess/", method = RequestMethod.POST)
-	public RestPostResponseBody processTeam(@RequestBody TeamProcessForm form) {
-		logger.info("POST /api/v1/teamProcess");
+	@RequestMapping(value = "/api/v1/volunteer/teamProcess", method = RequestMethod.POST)
+	public RestPostResponseBody processTeam(@RequestBody TeamProcessByVolunteerForm form) {
+		logger.info("POST /api/v1/volunteer/teamProcess");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		Errors errors = validateForm(form, result);
@@ -110,8 +114,14 @@ public class RestRuntimeController extends AbstractRestController {
 			return result;
 		}
 		
+		if (!checkVolunteer(form.getVolunteer())) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("volunteer.volunteerNotFound");
+			return result;
+		}
+		
 		try {
-			teamService.processTeamByVolunteer(form.getTeam(), form.getRouteItem(), form.getVolunteer(), result);
+			teamService.processTeam(form.getTeam(), form.getRouteItem(), form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);

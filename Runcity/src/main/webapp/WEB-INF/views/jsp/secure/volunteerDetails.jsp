@@ -24,14 +24,15 @@
 		</fmt:message>
 	</h1>
 	<div class="row cp-onsite-toggle-div form-group">
+		<spring:url value="/api/v1/volunteer/onsite" var="onsiteAjax" />
 		<input type="checkbox" data-toggle="toggle" class="cp-onsite-toggle" data-on="<fmt:message key="jsp.controlPoint.onsiteAction" bundle="${msg}" />" 
 			data-off="<fmt:message key="jsp.controlPoint.offsiteAction" bundle="${msg}" />" data-onstyle="success" data-offstyle="danger" 
-			onchange="onsite($(this))" ajax-target="/Runcity/api/v1/volunteerOnsite" <c:if test="${volunteer.active}">checked</c:if> />
+			onchange="onsite($(this))" ajax-target="${onsiteAjax}" <c:if test="${volunteer.active}">checked</c:if> />
 	</div>
 	<div class="row">
 		<div class="narrow div-center">
 			<c:set value="${false}" var="modal"/>
-			<%@ include file="../forms/teamProcessForm.jsp"%>
+			<%@ include file="../forms/teamProcessByVolunteerForm.jsp"%>
 		</div>
 	</div>
 	<runcity:controlPoint bundle="${msg}" volunteer="${volunteer}"/>

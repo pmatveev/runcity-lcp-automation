@@ -7,9 +7,11 @@ import java.util.Map;
 
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.db.service.TeamService;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.TeamFinishByCoordinatorForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
@@ -59,12 +61,16 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 		}
 	}
 	
-	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game g) {
+	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game game) {
 		super("coordTeamStatTable", "teamStatistics.tableHeader", "teamStatistics.simpleTableHeader", 
-				"/api/v1/coordTeamStatTable?gameId=" + g.getId(), messageSource, localeList, g.getName());
+				"/api/v1/coordTeamStatTable?gameId=" + game.getId(), messageSource, localeList, game.getName());
 		
 		this.maxStage = maxStage == null ? 1 : maxStage;
-		
+	}
+	
+	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game game, Volunteer coordinator) {
+		this(messageSource, localeList, maxStage, game);
+
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("category", "teamStatistics.category").setSort("asc", 0));
 		this.columns.add(new ColumnDefinition("badge", "teamStatistics.badge"));
@@ -75,7 +81,13 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 		}
 		this.columns.add(new ColumnDefinition("stat." + TeamStatus.getStoredValue(TeamStatus.FINISHED), TeamStatus.getDisplayName(TeamStatus.FINISHED)));
 		
+		this.buttons.add(new ButtonDefinition("coordinator.teamFinish", null, "btn", "createform:teamFinishByCoordinatorForm", null));
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
+		
+		TeamFinishByCoordinatorForm finishForm = new TeamFinishByCoordinatorForm(localeList);
+		finishForm.setVolunteerId(coordinator.getId());
+		
+		this.relatedForms.add(finishForm);
 	}
 
 	public void fetchByGame(TeamService service, Game game) {

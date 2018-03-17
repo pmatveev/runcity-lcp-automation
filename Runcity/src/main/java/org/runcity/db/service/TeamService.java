@@ -9,6 +9,7 @@ import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.exception.DBException;
 import org.runcity.util.ResponseBody;
@@ -28,7 +29,9 @@ public interface TeamService {
 	
 	public List<Team> selectTeams(Route route, Team.SelectMode selectMode);
 	
-	public void processTeamByVolunteer(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException;
+	public void processTeam(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException;
+
+	public void processTeam(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException;
 	
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
 }

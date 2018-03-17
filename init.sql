@@ -193,6 +193,8 @@ CREATE TABLE runcity.event (
   date_to DATETIME DEFAULT NULL,
   volunteer__id INT(11) NOT NULL,
   team__id INT(11) DEFAULT NULL,
+  status_from VARCHAR(2) DEFAULT NULL,
+  status_to VARCHAR(2) DEFAULT NULL,
   PRIMARY KEY (id),
   INDEX event_volunteer (volunteer__id ASC, type ASC, status ASC),
   CONSTRAINT FK_event_volunteer

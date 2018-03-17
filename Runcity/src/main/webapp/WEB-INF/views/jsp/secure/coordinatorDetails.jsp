@@ -18,6 +18,9 @@
 			<runcity:table bundle="${msg}" table="${coordControlPointTable}" caption="false"/>
 		</div>
 		<div id="statistics" class="tab-pane">
+			<c:set value="${true}" var="modal"/>
+			<c:set value="${coordTeamStatTable}" var="currTable"/>
+			<%@ include file="../forms/teamFinishByCoordinatorForm.jsp"%>
 			<runcity:table bundle="${msg}" table="${coordTeamStatTable}" caption="false"/>
 		</div>
 	</div>
