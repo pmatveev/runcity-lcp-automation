@@ -731,6 +731,13 @@ function autofocus(form) {
 	}
 }
 
+function scroll(form) {
+	var scrollTo = form.attr("scroll");
+	if (typeof scrollTo !== 'undefined') {
+		$(document).scrollTop($(scrollTo).offset().top - parseInt($('.nav-buffer').css('margin-top'), 10));
+	} 
+}
+
 function afterOpenModal(form) {
 	showConditionalForm(form);
 	autofocus(form);
@@ -921,6 +928,7 @@ function modalFormSuccess(form, data) {
 		}
 	});
 	autofocus(form);
+	scroll(form);
 }
 
 function modalFormError(form, data) {
@@ -931,6 +939,7 @@ function modalFormError(form, data) {
 	setFormMessage(form, getHttpError(data.statusText, data.status, "POST"), "danger");
 
 	autofocus(form);
+	scroll(form);
 }
 
 function submitModalForm(form, event) {

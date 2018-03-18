@@ -18,6 +18,7 @@
 <spring:url value="/resources/css/select.bootstrap.min.css" var="dtSelectCss" />
 <spring:url value="/resources/css/bootstrap-toggle.min.css" var="bootstrapToggleCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
+<spring:url value="/resources/css/runcity-keyboard.css" var="runcityKeyboardCss" />
 <spring:url value="/resources/js/jquery.min.js" var="jqueryJs" />
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 <spring:url value="/resources/js/bootbox.min.js" var="bootboxJs" />
@@ -34,6 +35,7 @@
 <spring:url value="/resources/js/bootstrap-notify.min.js" var="bootstrapNotifyJs" />
 <spring:url value="/resources/js/bootstrap-toggle.min.js" var="bootstrapToggleJs" />
 <spring:url value="/resources/js/runcity.js" var="runcityJs" />
+<spring:url value="/resources/js/runcity-keyboard.js" var="runcityKeyboardJs" />
 
 <link rel='stylesheet' href='${bootstrapCss}'/>
 <link rel='stylesheet' href='${bootstrapThemeCss}'/>
@@ -47,6 +49,7 @@
 <link rel='stylesheet' href='${dtSelectCss}'/>
 <link rel='stylesheet' href='${bootstrapToggleCss}'/>
 <link rel='stylesheet' href='${runcityCss}'/>
+<link rel='stylesheet' href='${runcityKeyboardCss}'/>
 <script type="text/javascript" src="${jqueryJs}"></script>
 <script type="text/javascript" src="${bootstrapJs}"></script>
 <script type="text/javascript" src="${bootboxJs}"></script>
@@ -63,6 +66,7 @@
 <script type="text/javascript" src="${bootstrapNotifyJs}"></script>
 <script type="text/javascript" src="${bootstrapToggleJs}"></script>
 <script type="text/javascript" src="${runcityJs}"></script>
+<script type="text/javascript" src="${runcityKeyboardJs}"></script>
 
 <c:if test="${lang != 'en'}">
 	<spring:url value="/resources/i18n/bootstrap-datetimepicker.${lang}.js" var="bootstrapDateJsLoc" />

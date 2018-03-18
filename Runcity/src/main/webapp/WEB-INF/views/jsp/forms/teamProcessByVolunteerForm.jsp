@@ -7,7 +7,8 @@
 
 <c:set value="${teamProcessByVolunteerForm}" var="formVar"/>
 
-<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}">	
+<a id="formTop"></a>
+<runcity:form bundle="${msg}" modal="${modal}" form="${formVar}" relatedTable="${currTable}" scroll="#formTop">	
 	<runcity:form-body modal="${modal}">
 		<div class="errorHolder">
 			<form:errors cssClass="alert alert-danger" element="div"/>
@@ -22,6 +23,8 @@
 		<spring:bind path="${col.name}">
 			<runcity:input bundle="${msg}" column="${col}" status="${status.error}" autofocus="autofocus"/>
 		</spring:bind>
+		
+		<runcity:keyboard bundle="${msg}" for="${col.htmlId}" rows="${'keyboard.team.row1,keyboard.team.row2,keyboard.team.row3,keyboard.team.row4,keyboard.team.row5'}"/>
 	</runcity:form-body>
 	<runcity:form-footer bundle="${msg}" modal="${modal}"/>
 </runcity:form>

@@ -16,6 +16,7 @@ public class FormModalTag extends FormTag {
 	private LocalizationContext bundle;
 	private AbstractTable relatedTable;
 	private TagWriter tagWriter;
+	private String scroll;
 	
 	public void setForm(AbstractForm form) {
 		this.form = form;
@@ -31,6 +32,10 @@ public class FormModalTag extends FormTag {
 	
 	public void setRelatedTable(AbstractTable relatedTable) {
 		this.relatedTable = relatedTable;
+	}
+	
+	public void setScroll(String scroll) {
+		this.scroll = scroll;
 	}
 	
 	public FormModalTag() {
@@ -108,6 +113,7 @@ public class FormModalTag extends FormTag {
 		
 		setMethod("POST");
 		setModelAttribute(form.getFormName());
+		setDynamicAttribute(null, "scroll", scroll);
 		
 		Object action = pageContext.getAttribute(form.getFormName() + "_formAction");
 		if (action != null) {
