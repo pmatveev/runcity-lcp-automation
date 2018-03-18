@@ -20,7 +20,10 @@
 		<div id="statistics" class="tab-pane">
 			<c:set value="${true}" var="modal"/>
 			<c:set value="${coordTeamStatTable}" var="currTable"/>
+			<%@ include file="../forms/teamNotStartedByCoordinatorForm.jsp"%>
 			<%@ include file="../forms/teamFinishByCoordinatorForm.jsp"%>
+			<%@ include file="../forms/teamRetireByCoordinatorForm.jsp"%>
+			<%@ include file="../forms/teamDisqualifyByCoordinatorForm.jsp"%>
 			<runcity:table bundle="${msg}" table="${coordTeamStatTable}" caption="false"/>
 		</div>
 	</div>

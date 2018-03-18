@@ -146,6 +146,46 @@ public class TeamServiceImpl implements TeamService {
 		processTeam(team, status, null, volunteer, EventType.TEAM_COORD, result);
 	}
 
+	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ResponseBody result, MessageSource messageSource, Locale locale) {
+		switch (status) {
+		case ACTIVE:
+		case FINISHED:
+		case RETIRED:
+			if (team.getStatus() != TeamStatus.ACTIVE) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;			
+			}
+			if (leg != null && !leg.equals(team.getLeg())) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
+				return false;	
+			}
+			break;
+		case DISQUALIFIED:
+			if (team.getStatus() == TeamStatus.DISQUALIFIED) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;			
+			}	
+			break;
+		case NOT_STARTED:
+			if (team.getStatus() != TeamStatus.ACTIVE) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;			
+			}	
+			if (!(new Integer(TeamStatus.getStoredValue(TeamStatus.ACTIVE)).equals(team.getLeg()))) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
+				return false;	
+			}
+			break;
+		}
+		
+		return true;
+	}
+	
 	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, EventType eventType, ResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
@@ -158,18 +198,10 @@ public class TeamServiceImpl implements TeamService {
 			return;
 		}
 		
-		if (lock.getStatus() != TeamStatus.ACTIVE) {
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(lock.getStatus(), messageSource, locale));
-			return;			
+		if (!validateNewStatus(team, status, leg, result, messageSource, locale)) {
+			return;
 		}
 		
-		if (leg != null && !leg.equals(lock.getLeg())) {
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("teamProcessing.invalidLeg", lock.getLeg());
-			return;	
-		}
-
 		String fromStatus = lock.getStatusData();
 		
 		switch (status) {

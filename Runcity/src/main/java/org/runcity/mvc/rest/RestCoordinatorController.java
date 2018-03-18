@@ -16,7 +16,11 @@ import org.runcity.exception.DBException;
 import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.Views;
+import org.runcity.mvc.web.formdata.TeamDisqualifyByCoordinatorForm;
 import org.runcity.mvc.web.formdata.TeamFinishByCoordinatorForm;
+import org.runcity.mvc.web.formdata.TeamNotStartedByCoordinatorForm;
+import org.runcity.mvc.web.formdata.TeamProcessAbstractForm;
+import org.runcity.mvc.web.formdata.TeamRetireByCoordinatorForm;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.CoordinatorVolunteerTable;
@@ -173,12 +177,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		return result.validate();
 	}
 	
-	@JsonView(Views.Public.class)
-	@Secured("ROLE_VOLUNTEER")
-	@RequestMapping(value = "/api/v1/coordinator/teamFinish", method = RequestMethod.POST)
-	public RestPostResponseBody finishTeam(@RequestBody TeamFinishByCoordinatorForm form) {
-		logger.info("POST /api/v1/coordinator/teamFinish");
-
+	private RestPostResponseBody setTeamStatus(TeamProcessAbstractForm form, TeamStatus status) {
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
 		Errors errors = validateForm(form, result);
 
@@ -192,7 +191,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 		
 		try {
-			teamService.setTeamStatus(form.getTeam(), TeamStatus.FINISHED, form.getVolunteer(), result);
+			teamService.setTeamStatus(form.getTeam(), status, form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);
@@ -200,5 +199,37 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 		
 		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/coordinator/team/notStarted", method = RequestMethod.POST)
+	public RestPostResponseBody notStartedTeam(@RequestBody TeamNotStartedByCoordinatorForm form) {
+		logger.info("POST /api/v1/coordinator/team/notStarted");
+		return setTeamStatus(form, TeamStatus.NOT_STARTED);
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/coordinator/team/finish", method = RequestMethod.POST)
+	public RestPostResponseBody finishTeam(@RequestBody TeamFinishByCoordinatorForm form) {
+		logger.info("POST /api/v1/coordinator/team/finish");
+		return setTeamStatus(form, TeamStatus.FINISHED);
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/coordinator/team/retire", method = RequestMethod.POST)
+	public RestPostResponseBody retireTeam(@RequestBody TeamRetireByCoordinatorForm form) {
+		logger.info("POST /api/v1/coordinator/team/retire");
+		return setTeamStatus(form, TeamStatus.RETIRED);
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/coordinator/team/disqualify", method = RequestMethod.POST)
+	public RestPostResponseBody disqualifyTeam(@RequestBody TeamDisqualifyByCoordinatorForm form) {
+		logger.info("POST /api/v1/coordinator/team/disqualify");
+		return setTeamStatus(form, TeamStatus.DISQUALIFIED);
 	}
 }

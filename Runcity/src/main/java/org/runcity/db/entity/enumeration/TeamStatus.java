@@ -6,6 +6,9 @@ import org.springframework.context.MessageSource;
 
 public enum TeamStatus {
 	ACTIVE("teamStatus.active", "1"), 
+	NOT_STARTED("teamStatus.notStarted", "N"),
+	RETIRED("teamStatus.stopped", "R"),
+	DISQUALIFIED("teamStatus.disqualified", "D"),
 	FINISHED("teamStatus.finish", "F");
 
 	private String displayName;
@@ -42,8 +45,14 @@ public enum TeamStatus {
 			return ACTIVE;
 		}
 		switch (storedValue) {
+		case "D":
+			return DISQUALIFIED;
 		case "F":
-			return TeamStatus.FINISHED;
+			return FINISHED;
+		case "N":
+			return NOT_STARTED;
+		case "R":
+			return RETIRED;
 		default:
 			return null;
 		}

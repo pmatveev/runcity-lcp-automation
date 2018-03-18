@@ -4,16 +4,16 @@ import org.runcity.util.DynamicLocaleList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 
-public class TeamFinishByCoordinatorForm extends TeamProcessAbstractForm {
-	public TeamFinishByCoordinatorForm() {
+public class TeamRetireByCoordinatorForm extends TeamProcessAbstractForm {
+	public TeamRetireByCoordinatorForm() {
 		this(null);
 	}
 
-	public TeamFinishByCoordinatorForm(DynamicLocaleList localeList) {
-		this("teamFinishByCoordinatorForm", "/api/v1/coordinator/team/finish", "coordinator.teamFinish", localeList);
+	public TeamRetireByCoordinatorForm(DynamicLocaleList localeList) {
+		this("teamRetireByCoordinatorForm", "/api/v1/coordinator/team/retire", "coordinator.teamRetire", localeList);
 	}
 
-	private TeamFinishByCoordinatorForm(String formName, String urlOnSubmitAjax, String title, DynamicLocaleList localeList) {
+	private TeamRetireByCoordinatorForm(String formName, String urlOnSubmitAjax, String title, DynamicLocaleList localeList) {
 		super(formName, urlOnSubmitAjax, title);
 	}
 	
