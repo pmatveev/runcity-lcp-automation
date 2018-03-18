@@ -151,8 +151,8 @@ public class RouteItemTable extends AbstractTable {
 		}
 		
 		for (int i = 1; i <= maxStage; i++) {
-			int num = legEnd.getOrDefault(i, 0) + (i == maxStage ? finish : 0);
-			if (num < 1) {
+			int num = legEnd.getOrDefault(i, 0);
+			if (num + (i == maxStage ? finish : 0) < 1) {
 				setResponseClass(ResponseClass.WARNING);
 				addCommonMsg("routeItem.validation.missingLegEnd", new Object[] { i });
 			} else if (num > 1) {
