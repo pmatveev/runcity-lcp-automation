@@ -13,6 +13,7 @@ import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.enumeration.EventStatus;
 import org.runcity.db.entity.enumeration.EventType;
 import org.runcity.db.entity.enumeration.TeamStatus;
@@ -153,31 +154,31 @@ public class TeamServiceImpl implements TeamService {
 		case RETIRED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				result.addCommonMsg("teamProcessing.validation.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;			
 			}
 			if (leg != null && !leg.equals(team.getLeg())) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
+				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
 				return false;	
 			}
 			break;
 		case DISQUALIFIED:
 			if (team.getStatus() == TeamStatus.DISQUALIFIED) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				result.addCommonMsg("teamProcessing.validation.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;			
 			}	
 			break;
 		case NOT_STARTED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				result.addCommonMsg("teamProcessing.validation.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;			
 			}	
 			if (!(new Integer(TeamStatus.getStoredValue(TeamStatus.ACTIVE)).equals(team.getLeg()))) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
+				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
 				return false;	
 			}
 			break;
@@ -253,5 +254,14 @@ public class TeamServiceImpl implements TeamService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public Long selectActiveNumberByRouteItem(RouteItem routeItem) {
+		if (routeItem.getControlPoint().getType() == ControlPointType.FINISH) {
+			return teamRepository.selectActiveNumberByRoute(routeItem.getRoute()).longValue();
+		} else {
+			return teamRepository.selectActiveNumberByRouteItem(routeItem.getRoute(), routeItem.getLegNumber()).longValue();
+		}
 	}
 }

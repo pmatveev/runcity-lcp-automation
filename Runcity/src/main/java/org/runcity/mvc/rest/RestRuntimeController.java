@@ -1,10 +1,14 @@
 package org.runcity.mvc.rest;
 
 import org.apache.log4j.Logger;
+import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.exception.DBException;
+import org.runcity.mvc.rest.util.RestGetInfoResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +35,9 @@ public class RestRuntimeController extends AbstractRestController {
 	
 	@Autowired
 	private TeamService teamService;
+	
+	@Autowired
+	private ControlPointService controlPointService;
 	
 	public static class OnsiteRequestBody {
 		@JsonView(Views.Public.class)
@@ -131,6 +139,36 @@ public class RestRuntimeController extends AbstractRestController {
 		if (result.getResponseClass() == ResponseClass.INFO) {
 			result.addCommonMsg("common.completed");		
 		}
+		return result;
+	}
+	
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/volunteer/{volunteerId}/stat", method = RequestMethod.GET)
+	public RestGetInfoResponseBody getStat(@PathVariable Long volunteerId) {
+		RestGetInfoResponseBody result = new RestGetInfoResponseBody();
+		
+		Volunteer v = volunteerService.selectById(volunteerId, Volunteer.SelectMode.WITH_ACTIVE);
+		
+		if (v == null || !checkVolunteer(v)) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("volunteer.volunteerNotFound");
+			return result;
+		}
+		
+		ControlPoint cp = controlPointService.selectById(v.getControlPoint().getId(), ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
+		cp = cp.getMain();
+		
+		for (RouteItem ri : cp.getRouteItems()) {
+			result.addElement("routeCounter_" + ri.getId(), teamService.selectActiveNumberByRouteItem(ri));
+		}
+		
+		for (ControlPoint ch : cp.getChildren()) {
+			for (RouteItem ri : ch.getRouteItems()) {
+				result.addElement("routeCounter_" + ri.getId(), teamService.selectActiveNumberByRouteItem(ri));
+			}
+		}
+		
 		return result;
 	}
 }

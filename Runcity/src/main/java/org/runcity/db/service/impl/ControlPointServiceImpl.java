@@ -46,7 +46,7 @@ public class ControlPointServiceImpl implements ControlPointService {
 				c.setImageData(blobContentRepository.findOne(c.getImage()).getContent());
 			}
 			break;
-		case FOR_VOLUNTEER:
+		case WITH_CHILDREN_AND_ITEMS:
 			Hibernate.initialize(c.getChildren());
 			Hibernate.initialize(c.getRouteItems());
 			for (ControlPoint ch : c.getChildren()) {

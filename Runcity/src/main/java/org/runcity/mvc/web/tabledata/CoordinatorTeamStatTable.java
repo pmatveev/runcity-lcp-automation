@@ -19,6 +19,7 @@ import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
+import org.runcity.util.UrlUtils;
 import org.springframework.context.MessageSource;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class CoordinatorTeamStatTable extends AbstractTable {
 	@JsonView(Views.Public.class)
 	private List<TableRow> data = new LinkedList<TableRow>();
-	
+
 	private Long maxStage;
 
 	protected class TableRow {
@@ -44,38 +45,45 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 
 		@JsonView(Views.Public.class)
 		private String total;
-		
-		public TableRow(Route r, Map<String, Long> stat) {
+
+		private String getA(String uri, Object data, String status) {
+			return "<a href='" + uri + (status == null ? "" : "?status=" + status) + "'>" + data + "</a>";
+		}
+
+		public TableRow(Route r, Map<String, Long> stat, String uri) {
 			this.id = r.getId();
 			this.badge = r.getCategory().getBadge();
 			this.category = StringUtils.xss(r.getCategory().getLocalizedName(r.getGame().getLocale()));
 			this.stat = new HashMap<String, String>();
-			
+
 			for (long i = 1; i <= maxStage; i++) {
 				this.stat.put(i + "", "");
 			}
 
 			long total = 0;
 			for (String key : stat.keySet()) {
-				this.stat.put(key, stat.get(key) + "");
+				this.stat.put(key, getA(uri, stat.get(key), key));
 				total += stat.get(key);
 			}
-			this.total = total + "";
+			this.total = getA(uri, total, null);
 		}
 	}
-	
+
 	private void addTeamStatusColumn(TeamStatus status) {
-		this.columns.add(new ColumnDefinition("stat." + TeamStatus.getStoredValue(status), TeamStatus.getDisplayName(status)));		
+		this.columns.add(
+				new ColumnDefinition("stat." + TeamStatus.getStoredValue(status), TeamStatus.getDisplayName(status)));
 	}
-	
-	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game game) {
-		super("coordTeamStatTable", "teamStatistics.tableHeader", "teamStatistics.simpleTableHeader", 
+
+	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage,
+			Game game) {
+		super("coordTeamStatTable", "teamStatistics.tableHeader", "teamStatistics.simpleTableHeader",
 				"/api/v1/coordTeamStatTable?gameId=" + game.getId(), messageSource, localeList, game.getName());
-		
+
 		this.maxStage = maxStage == null ? 1 : maxStage;
 	}
-	
-	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game game, Volunteer coordinator) {
+
+	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage, Game game,
+			Volunteer coordinator) {
 		this(messageSource, localeList, maxStage, game);
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
@@ -90,25 +98,29 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 		addTeamStatusColumn(TeamStatus.FINISHED);
 		addTeamStatusColumn(TeamStatus.RETIRED);
 		addTeamStatusColumn(TeamStatus.DISQUALIFIED);
-		
-		this.buttons.add(new ButtonDefinition("coordinator.teamNotStart", null, "btn", "createform:teamNotStartedByCoordinatorForm", null));
-		this.buttons.add(new ButtonDefinition("coordinator.teamFinish", null, "btn", "createform:teamFinishByCoordinatorForm", null));
-		this.buttons.add(new ButtonDefinition("coordinator.teamRetire", null, "btn", "createform:teamRetireByCoordinatorForm", null));
-		this.buttons.add(new ButtonDefinition("coordinator.teamDisqualify", null, "btn", "createform:teamDisqualifyByCoordinatorForm", null));
+
+		this.buttons.add(new ButtonDefinition("coordinator.teamNotStart", null, "btn",
+				"createform:teamNotStartedByCoordinatorForm", null));
+		this.buttons.add(new ButtonDefinition("coordinator.teamFinish", null, "btn",
+				"createform:teamFinishByCoordinatorForm", null));
+		this.buttons.add(new ButtonDefinition("coordinator.teamRetire", null, "btn",
+				"createform:teamRetireByCoordinatorForm", null));
+		this.buttons.add(new ButtonDefinition("coordinator.teamDisqualify", null, "btn",
+				"createform:teamDisqualifyByCoordinatorForm", null));
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
-		
+
 		TeamNotStartedByCoordinatorForm notStartForm = new TeamNotStartedByCoordinatorForm(localeList);
 		notStartForm.setVolunteerId(coordinator.getId());
-		
+
 		TeamFinishByCoordinatorForm finishForm = new TeamFinishByCoordinatorForm(localeList);
 		finishForm.setVolunteerId(coordinator.getId());
-		
+
 		TeamRetireByCoordinatorForm retiredForm = new TeamRetireByCoordinatorForm(localeList);
 		retiredForm.setVolunteerId(coordinator.getId());
-		
+
 		TeamDisqualifyByCoordinatorForm disqualifiedForm = new TeamDisqualifyByCoordinatorForm(localeList);
 		disqualifiedForm.setVolunteerId(coordinator.getId());
-		
+
 		this.relatedForms.add(notStartForm);
 		this.relatedForms.add(finishForm);
 		this.relatedForms.add(retiredForm);
@@ -117,12 +129,12 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 
 	public void fetchByGame(TeamService service, Game game) {
 		Map<Route, Map<String, Long>> stat = service.selectStatsByGame(game);
-		
+
 		for (Route r : stat.keySet()) {
-			data.add(new TableRow(r, stat.get(r)));
+			data.add(new TableRow(r, stat.get(r), UrlUtils.getUrlString("/coordinator/route/" + r.getId() +"/teams")));
 		}
 	}
-	
+
 	@Override
 	public AbstractTable validate() {
 		return this;

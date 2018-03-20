@@ -1667,3 +1667,51 @@ function processToggleAjax(input, ajaxData, successHandler) {
 		}
 	});
 }
+
+function refreshPageData(elem) {
+	if (!elem.parent().hasClass('ajax-refresh-holder')) {
+		elem.wrap('<div class="ajax-refresh-holder"></div>');
+	}
+	
+	var jsonUrl = elem.attr('ajax-target');
+	if (typeof jsonUrl === 'undefined') {
+		return;
+	}
+	
+	elem.prop('disabled', true);
+	elem.parent().append("<div class='loader'></div>");
+	
+	var error = function(data) {
+		$('[refreshed-by=' + elem.attr('id') + ']').each(function() {
+			$(this).html(translations['refreshEmpty']);
+		});
+		elem.parent().find('.loader').remove();
+		elem.prop('disabled', false);
+	};
+	
+	$.ajax({
+		type : 'GET',
+		contentType : 'application/json',
+		url : jsonUrl,
+		dataType : 'json',
+		timeout : 10000,
+		success : function(data) {
+			if (data.responseClass == 'INFO') {
+				$('[refreshed-by=' + elem.attr('id') + ']').each(function() {
+					var that = $(this);
+					var val = data.data[that.attr('refresh-key')];
+					if (typeof val !== 'undefined') {
+						$(this).html(val);
+					} else {
+						$(this).html(translations['refreshEmpty']);
+					}
+				});
+				elem.prop('disabled', false);
+			} else {
+				error();
+			}
+			elem.parent().find('.loader').remove();
+		},
+		error : error
+	});
+}

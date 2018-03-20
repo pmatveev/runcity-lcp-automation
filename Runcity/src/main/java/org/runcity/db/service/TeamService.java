@@ -34,4 +34,6 @@ public interface TeamService {
 	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException;
 	
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
+	
+	public Long selectActiveNumberByRouteItem(RouteItem routeItem);
 }

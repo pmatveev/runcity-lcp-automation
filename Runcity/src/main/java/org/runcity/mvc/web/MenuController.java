@@ -28,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MenuController {
@@ -153,7 +154,7 @@ public class MenuController {
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/secure/volunteerDetails/{cpId}", method = RequestMethod.GET)
 	public String volunteerDetails(Model model, @PathVariable Long cpId) {
-		ControlPoint cp = controlPointService.selectById(cpId, ControlPoint.SelectMode.FOR_VOLUNTEER);
+		ControlPoint cp = controlPointService.selectById(cpId, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		
 		if (cp == null) {
 			return "exception/invalidUrl";			
@@ -226,5 +227,11 @@ public class MenuController {
 		stat.processModel(model);
 		
 		return "secure/coordinatorDetails";	
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/coordinator/route/{routeId}/teams", method = RequestMethod.GET)
+	public String listTeamsByRoute(Model model, @PathVariable Long routeId, @RequestParam(required = false) String status) {
+		return null;
 	}
 }
