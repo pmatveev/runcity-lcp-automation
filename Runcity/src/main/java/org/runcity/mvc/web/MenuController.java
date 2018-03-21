@@ -5,10 +5,13 @@ import java.util.List;
 import org.runcity.db.entity.Category;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.Route;
+import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
+import org.runcity.db.service.RouteService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
@@ -17,6 +20,7 @@ import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.mvc.web.tabledata.VolunteerTeamTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.mvc.web.tabledata.GameTable;
 import org.runcity.util.DynamicLocaleList;
@@ -49,6 +53,9 @@ public class MenuController {
 	
 	@Autowired 
 	private VolunteerService volunteerService;
+	
+	@Autowired 
+	private RouteService routeService;
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
@@ -230,8 +237,64 @@ public class MenuController {
 	}
 	
 	@Secured("ROLE_VOLUNTEER")
-	@RequestMapping(value = "/coordinator/route/{routeId}/teams", method = RequestMethod.GET)
+	@RequestMapping(value = "/secure/coordinator/route/{routeId}/teams", method = RequestMethod.GET)
 	public String listTeamsByRoute(Model model, @PathVariable Long routeId, @RequestParam(required = false) String status) {
-		return null;
+		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
+		
+		if (r == null) {
+			return "exception/invalidUrl";			
+		}
+
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		Volunteer v = volunteerService.selectCoordinatorByUsername(r.getGame(), username, Volunteer.SelectMode.NONE);
+		
+		if (v == null) {
+			return "exception/forbidden";		
+		}
+		
+		VolunteerTeamTable table;
+		if (status == null) {
+			table = VolunteerTeamTable.initForCoordinator(v, r, messageSource, localeList);
+		} else {
+			table = VolunteerTeamTable.initForCoordinator(v, r, status, messageSource, localeList);
+		}
+		table.processModel(model);
+		
+		return "secure/volunteerTeams";
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/controlPoint/{cpId}/teams", method = RequestMethod.GET)
+	public String listVolunteerTeamsByCP(Model model, @PathVariable Long cpId, @RequestParam(required = false) Long routeItem) {
+		ControlPoint cp = controlPointService.selectById(cpId, ControlPoint.SelectMode.WITH_CHILDREN);
+		
+		if (cp == null) {
+			return "exception/invalidUrl";			
+		}
+
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, Volunteer.SelectMode.WITH_ACTIVE);
+		
+		if (v == null) {
+			return "exception/forbidden";		
+		}
+		
+		v.setControlPoint(cp);
+		
+		VolunteerTeamTable table;
+		if (routeItem == null) {
+			table = VolunteerTeamTable.initForVolunteer(v, messageSource, localeList);
+		} else {
+			RouteItem ri = routeService.selectItemById(routeItem);
+			
+			if (ri == null) {
+				return "exception/invalidUrl";					
+			}
+			
+			table = VolunteerTeamTable.initForVolunteer(v, ri, messageSource, localeList);
+		}
+		table.processModel(model);
+		
+		return "secure/volunteerTeams";
 	}
 }

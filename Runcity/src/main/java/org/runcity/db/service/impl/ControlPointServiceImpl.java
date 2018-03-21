@@ -40,6 +40,8 @@ public class ControlPointServiceImpl implements ControlPointService {
 		if (c == null) {
 			return;
 		}
+		
+		ControlPoint main;
 		switch (selectMode) {
 		case WITH_IMAGE:
 			if (c.getImage() != null) {
@@ -47,14 +49,16 @@ public class ControlPointServiceImpl implements ControlPointService {
 			}
 			break;
 		case WITH_CHILDREN_AND_ITEMS:
-			Hibernate.initialize(c.getChildren());
-			Hibernate.initialize(c.getRouteItems());
-			for (ControlPoint ch : c.getChildren()) {
+			main = c.getMain();
+			Hibernate.initialize(main.getChildren());
+			Hibernate.initialize(main.getRouteItems());
+			for (ControlPoint ch : main.getChildren()) {
 				Hibernate.initialize(ch.getRouteItems());
 			}
 			break;
 		case WITH_CHILDREN:
-			Hibernate.initialize(c.getChildren());
+			main = c.getMain();
+			Hibernate.initialize(main.getChildren());
 		case NONE:
 			break;
 		}

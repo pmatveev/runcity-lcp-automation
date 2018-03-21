@@ -237,7 +237,7 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		return volunteers;
 	}
 	
-	public String getNameDisplay(MessageSource messageSource, Locale l) {
+	public String getNameDisplay() {
 		return StringUtils.xss(idt + " " + getName());
 	}
 	

@@ -61,4 +61,12 @@ public enum TeamStatus {
 	public static String getStoredValue(TeamStatus e) {
 		return e == null ? null : e.storedValue;
 	}
+
+	public static String getDisplayName(String status, MessageSource messageSource, Locale locale) {
+		TeamStatus s = TeamStatus.getByStoredValue(status);
+		if (s == ACTIVE) {
+			return messageSource.getMessage("teamStatus.leg", new Object[] { status }, locale);
+		}
+		return TeamStatus.getDisplayName(TeamStatus.getByStoredValue(status), messageSource, locale);
+	}
 }

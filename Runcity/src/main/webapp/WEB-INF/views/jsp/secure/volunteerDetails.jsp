@@ -45,7 +45,7 @@
 	}
 	
 	private String composeTeamsUrl(PageContext pageContext, Volunteer volunteer, RouteItem routeItem) throws JspException {
-		String url = "/volunteer/" + volunteer.getId() + "/teams" + (routeItem == null ? "" : "?routeItem=" + routeItem.getId());
+		String url = "/secure/controlPoint/" + volunteer.getControlPoint().getId() + "/teams" + (routeItem == null ? "" : "?routeItem=" + routeItem.getId());
 		UrlTag tag = new UrlTag();
 		tag.setValue(url);
 		tag.setVar("teamUrl");
@@ -217,7 +217,7 @@
 			</div>
 		</c:if>
 		<div id="info" class="tab-pane<c:if test="${not volunteer.active}"> active</c:if>">
-			<spring:url value="/api/v1/volunteer/${volunteer.id}/stat" var="refreshAjax" />
+			<spring:url value="/api/v1/controlPoint/${volunteer.controlPoint.id}/stat" var="refreshAjax" />
 			<%
 			String refreshAjax = (String) pageContext.getAttribute("refreshAjax");
 			writeInfo(pageContext, volunteer, bundle, refreshAjax);

@@ -131,7 +131,7 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 		Map<Route, Map<String, Long>> stat = service.selectStatsByGame(game);
 
 		for (Route r : stat.keySet()) {
-			data.add(new TableRow(r, stat.get(r), UrlUtils.getUrlString("/coordinator/route/" + r.getId() +"/teams")));
+			data.add(new TableRow(r, stat.get(r), UrlUtils.getUrlString("/secure/coordinator/route/" + r.getId() +"/teams")));
 		}
 	}
 

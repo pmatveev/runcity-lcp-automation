@@ -9,6 +9,7 @@ import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.Team.SelectMode;
 import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.exception.DBException;
@@ -25,9 +26,9 @@ public interface TeamService {
 
 	public void delete(List<Long> id);
 	
-	public List<Team> selectTeams(Long route, Team.SelectMode selectMode);
+	public List<Team> selectTeamsByRoute(Long route, Team.SelectMode selectMode);
 	
-	public List<Team> selectTeams(Route route, Team.SelectMode selectMode);
+	public List<Team> selectTeamsByRoute(Route route, Team.SelectMode selectMode);
 	
 	public void processTeam(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException;
 
@@ -36,4 +37,12 @@ public interface TeamService {
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
 	
 	public Long selectActiveNumberByRouteItem(RouteItem routeItem);
+	
+	public List<Team> selectPendingTeamsByCP(Long controlPoint, Team.SelectMode selectMode);
+	
+	public List<Team> selectPendingTeamsByRouteItem(Long routeItem, Team.SelectMode selectMode);
+	
+	public List<Team> selectPendingTeamsByRouteItem(RouteItem routeItem, Team.SelectMode selectMode);
+
+	public List<Team> selectTeamsByRouteWithStatus(Route route, String status, SelectMode selectMode);
 }

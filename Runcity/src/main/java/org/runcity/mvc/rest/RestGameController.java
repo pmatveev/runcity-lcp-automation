@@ -421,7 +421,7 @@ public class RestGameController extends AbstractRestController {
 		
 		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
 		TeamTable table = new TeamTable(messageSource, localeList, r);
-		table.add(teamService.selectTeams(r, Team.SelectMode.NONE));
+		table.add(teamService.selectTeamsByRoute(r, Team.SelectMode.NONE));
 
 		return table.validate();
 	}	
