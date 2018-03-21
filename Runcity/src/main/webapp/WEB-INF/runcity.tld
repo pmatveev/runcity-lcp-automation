@@ -153,39 +153,6 @@
 		</attribute>
 	</tag>
 	<tag>
-		<name>controlPoint</name>
-		<tag-class>org.runcity.jsp.VolunteerControlPointTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-			<name>ajaxTarget</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>false</required>
-			<type>java.lang.String</type>
-			<fragment>false</fragment>
-		</attribute>
-		<attribute>
-			<name>onsiteHandler</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>false</required>
-			<type>java.lang.String</type>
-			<fragment>false</fragment>
-		</attribute>
-		<attribute>
-			<name>volunteer</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>true</required>
-			<type>org.runcity.db.entity.Volunteer</type>
-			<fragment>false</fragment>
-		</attribute>
-		<attribute>
-			<name>bundle</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>true</required>
-			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
-			<fragment>false</fragment>
-		</attribute>
-	</tag>
-	<tag>
 		<name>keyboard</name>
 		<tag-class>org.runcity.jsp.KeyboardTag</tag-class>
 		<body-content>empty</body-content>

@@ -19,7 +19,9 @@ public interface VolunteerService {
 	
 	public List<Volunteer> getUpcomingCoordinations(String username, Volunteer.SelectMode selectMode);
 	
-	public Volunteer selectByControlPointAndUsername(ControlPoint cp, String username, Volunteer.SelectMode selectMode);
+	public Volunteer selectByControlPointAndUsername(Long controlPointId, String username, Volunteer.SelectMode selectMode);
+	
+	public Volunteer selectByControlPointAndUsername(ControlPoint controlPoint, String username, Volunteer.SelectMode selectMode);
 	
 	public Volunteer selectCoordinatorByUsername(Game g, String username, Volunteer.SelectMode selectMode);
 	

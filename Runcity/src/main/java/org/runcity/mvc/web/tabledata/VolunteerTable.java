@@ -67,7 +67,7 @@ public class VolunteerTable extends AbstractTable {
 			this.name = StringUtils.xss(v.getConsumer().getCredentials());
 			this.game = v.getGame() != null ? StringUtils.xss(v.getGame().getDisplay())
 					: StringUtils.xss(v.getControlPoint().getGame().getDisplay());
-			this.controlPoint = v.getControlPoint() != null ? StringUtils.xss(v.getControlPoint().getNameDisplay(messageSource, locale))
+			this.controlPoint = v.getControlPoint() != null ? StringUtils.xss(v.getControlPoint().getNameDisplay())
 					: null;
 			this.dateFrom = v.getDateFrom();
 			this.dateTo = v.getDateTo();

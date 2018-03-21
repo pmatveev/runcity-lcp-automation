@@ -1,5 +1,6 @@
 package org.runcity.db.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -12,15 +13,19 @@ import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
+import org.runcity.db.entity.Team.SelectMode;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.enumeration.EventStatus;
 import org.runcity.db.entity.enumeration.EventType;
 import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.db.entity.util.TeamAggregate;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.db.repository.EventRepository;
+import org.runcity.db.repository.RouteItemRepository;
 import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.repository.TeamRepository;
+import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.TeamService;
 import org.runcity.exception.DBException;
 import org.runcity.util.ResponseBody;
@@ -35,14 +40,20 @@ import org.springframework.util.ObjectUtils;
 @Transactional(rollbackFor = { DBException.class })
 public class TeamServiceImpl implements TeamService {
 	@Autowired
+	private ControlPointService controlPointService;
+
+	@Autowired
 	private TeamRepository teamRepository;
-	
+
 	@Autowired
 	private RouteRepository routeRepository;
-	
+
+	@Autowired
+	private RouteItemRepository routeItemRepository;
+
 	@Autowired
 	private EventRepository eventRepository;
-	
+
 	private void initialize(Team t, Team.SelectMode selectMode) {
 		if (t == null) {
 			return;
@@ -52,7 +63,7 @@ public class TeamServiceImpl implements TeamService {
 			break;
 		}
 	}
-	
+
 	private void initialize(Collection<Team> teams, Team.SelectMode selectMode) {
 		if (teams == null || selectMode == Team.SelectMode.NONE) {
 			return;
@@ -84,7 +95,7 @@ public class TeamServiceImpl implements TeamService {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public Team addOrUpdate(Team team) throws DBException {
 		try {
@@ -103,7 +114,7 @@ public class TeamServiceImpl implements TeamService {
 	private void delete(Long id) {
 		teamRepository.delete(id);
 	}
-	
+
 	@Override
 	public void delete(List<Long> id) {
 		for (Long i : id) {
@@ -112,14 +123,14 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-	public List<Team> selectTeams(Long route, Team.SelectMode selectMode) {
-		List<Team> result = selectTeams(routeRepository.findOne(route), selectMode);
+	public List<Team> selectTeamsByRoute(Long route, Team.SelectMode selectMode) {
+		List<Team> result = selectTeamsByRoute(routeRepository.findOne(route), selectMode);
 		initialize(result, selectMode);
 		return result;
 	}
 
 	@Override
-	public List<Team> selectTeams(Route route, Team.SelectMode selectMode) {
+	public List<Team> selectTeamsByRoute(Route route, Team.SelectMode selectMode) {
 		List<Team> result = teamRepository.findByRoute(route);
 		initialize(result, selectMode);
 		return result;
@@ -142,68 +153,74 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result) throws DBException {
+	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result)
+			throws DBException {
 		processTeam(team, status, null, volunteer, EventType.TEAM_COORD, result);
 	}
 
-	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ResponseBody result, MessageSource messageSource, Locale locale) {
+	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ResponseBody result,
+			MessageSource messageSource, Locale locale) {
 		switch (status) {
 		case ACTIVE:
 		case FINISHED:
 		case RETIRED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
-				return false;			
+				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;
 			}
 			if (leg != null && !leg.equals(team.getLeg())) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
-				return false;	
+				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
+				return false;
 			}
 			break;
 		case DISQUALIFIED:
 			if (team.getStatus() == TeamStatus.DISQUALIFIED) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
-				return false;			
-			}	
+				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;
+			}
 			break;
 		case NOT_STARTED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidStatus", TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
-				return false;			
-			}	
+				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
+				return false;
+			}
 			if (!(new Integer(TeamStatus.getStoredValue(TeamStatus.ACTIVE)).equals(team.getLeg()))) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.invalidLeg", team.getLeg());
-				return false;	
+				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
+				return false;
 			}
 			break;
 		}
-		
+
 		return true;
 	}
-	
-	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, EventType eventType, ResponseBody result) throws DBException {
+
+	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, EventType eventType,
+			ResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
-		
+
 		Team lock = teamRepository.selectForUpdate(team);
-		
+
 		if (!ObjectUtils.nullSafeEquals(team.getStatusData(), lock.getStatusData())) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.concurrencyError");
 			return;
 		}
-		
+
 		if (!validateNewStatus(team, status, leg, result, messageSource, locale)) {
 			return;
 		}
-		
+
 		String fromStatus = lock.getStatusData();
-		
+
 		switch (status) {
 		case ACTIVE:
 			lock.setLeg(leg + 1);
@@ -214,10 +231,11 @@ public class TeamServiceImpl implements TeamService {
 			}
 			break;
 		}
-		
+
 		String toStatus = lock.getStatusData();
-		
-		Event pass = new Event(null, eventType, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus, toStatus);		
+
+		Event pass = new Event(null, eventType, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus,
+				toStatus);
 		pass = eventRepository.save(pass);
 		lock = teamRepository.save(lock);
 		if (pass == null || team == null) {
@@ -228,30 +246,87 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game) {
 		Map<Route, Map<String, Long>> result = new HashMap<Route, Map<String, Long>>();
-		
+
 		List<TeamAggregate> aggr = teamRepository.selectStatsByGame(game);
 		for (TeamAggregate ta : aggr) {
 			Map<String, Long> map = result.get(ta.getRoute());
-			
+
 			if (map == null) {
 				map = new HashMap<String, Long>();
-				
+
 				for (TeamStatus ts : TeamStatus.values()) {
 					if (ts != TeamStatus.ACTIVE) {
 						map.put(TeamStatus.getStoredValue(ts), 0L);
 					}
 				}
-				
+
 				Long max = routeRepository.selectMaxLeg(ta.getRoute());
 				for (long i = 1; i <= (max == null ? 1 : max); i++) {
 					map.put(i + "", 0L);
 				}
 				result.put(ta.getRoute(), map);
 			}
-			
+
 			map.put(ta.getStatus(), ta.getNumber());
 		}
+
+		return result;
+	}
+
+	@Override
+	public Long selectActiveNumberByRouteItem(RouteItem routeItem) {
+		if (routeItem.getControlPoint().getType() == ControlPointType.FINISH) {
+			return teamRepository.selectActiveNumberByRoute(routeItem.getRoute()).longValue();
+		} else {
+			return teamRepository.selectActiveNumberByRouteItem(routeItem.getRoute(), routeItem.getLegNumber())
+					.longValue();
+		}
+	}
+
+	@Override
+	public List<Team> selectPendingTeamsByCP(Long controlPoint, SelectMode selectMode) {
+		ControlPoint main = controlPointService.selectById(controlPoint, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		
+		List<Team> result = new ArrayList<Team>();
+		for (RouteItem ri : main.getRouteItems()) {
+			result.addAll(selectPendingTeamsByRouteItem(ri, selectMode));
+		}
+		
+		for (ControlPoint ch : main.getChildren()) {
+			for (RouteItem ri : ch.getRouteItems()) {
+				result.addAll(selectPendingTeamsByRouteItem(ri, selectMode));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<Team> selectPendingTeamsByRouteItem(Long routeItem, SelectMode selectMode) {
+		return selectPendingTeamsByRouteItem(routeItemRepository.findOne(routeItem), selectMode);
+	}
+
+	@Override
+	public List<Team> selectPendingTeamsByRouteItem(RouteItem routeItem, SelectMode selectMode) {
+		List<Team> result;
+		if (routeItem.getControlPoint().getType() == ControlPointType.FINISH) {
+			result = teamRepository.selectPendingByRoute(routeItem.getRoute());
+		} else {
+			result = teamRepository.selectPendingByRouteItem(routeItem.getRoute(), routeItem.getLegNumber());
+		}
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Team> selectTeamsByRouteWithStatus(Route route, String status, SelectMode selectMode) {
+		List<Team> result;
+		if (status == null) {
+			result = teamRepository.findByRoute(route);
+		} else {
+			result = teamRepository.findByRouteAndStatus(route, status);
+		}
+		initialize(result, selectMode);
 		return result;
 	}
 }

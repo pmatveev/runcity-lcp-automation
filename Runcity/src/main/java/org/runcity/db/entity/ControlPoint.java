@@ -26,7 +26,7 @@ import org.springframework.context.MessageSource;
 @SQLDelete(sql = "delete cp, bc from control_point cp left outer join blob_content bc on bc.id = cp.image where cp.id = ?")
 public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	public enum SelectMode {
-		NONE, WITH_IMAGE, FOR_VOLUNTEER, WITH_CHILDREN;
+		NONE, WITH_IMAGE, WITH_CHILDREN_AND_ITEMS, WITH_CHILDREN;
 	}
 	
 	@Id
@@ -237,12 +237,16 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 		return volunteers;
 	}
 	
-	public String getNameDisplay(MessageSource messageSource, Locale l) {
+	public String getNameDisplay() {
 		return StringUtils.xss(idt + " " + getName());
 	}
 	
+	public ControlPoint getMain() {
+		return parent == null ? this : parent;
+	}
+	
 	public String getNameDisplayWithChildren() {
-		ControlPoint cp = parent == null ? this : parent;
+		ControlPoint cp = getMain();
 		StringBuilder sb = new StringBuilder(cp.idt);
 		
 		if (cp.children.size() > 0) {

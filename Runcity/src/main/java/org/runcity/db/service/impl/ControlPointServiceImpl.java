@@ -40,21 +40,25 @@ public class ControlPointServiceImpl implements ControlPointService {
 		if (c == null) {
 			return;
 		}
+		
+		ControlPoint main;
 		switch (selectMode) {
 		case WITH_IMAGE:
 			if (c.getImage() != null) {
 				c.setImageData(blobContentRepository.findOne(c.getImage()).getContent());
 			}
 			break;
-		case FOR_VOLUNTEER:
-			Hibernate.initialize(c.getChildren());
-			Hibernate.initialize(c.getRouteItems());
-			for (ControlPoint ch : c.getChildren()) {
+		case WITH_CHILDREN_AND_ITEMS:
+			main = c.getMain();
+			Hibernate.initialize(main.getChildren());
+			Hibernate.initialize(main.getRouteItems());
+			for (ControlPoint ch : main.getChildren()) {
 				Hibernate.initialize(ch.getRouteItems());
 			}
 			break;
 		case WITH_CHILDREN:
-			Hibernate.initialize(c.getChildren());
+			main = c.getMain();
+			Hibernate.initialize(main.getChildren());
 		case NONE:
 			break;
 		}

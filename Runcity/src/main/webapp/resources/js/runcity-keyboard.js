@@ -9,6 +9,7 @@ $(function(){
 		div.find('.keyrow').removeClass('hidden');
 		div.find('li.switch').html('<span class="glyphicon glyphicon-triangle-top"></span>');
 		div.prop('input').prop('readonly', true);
+		div.prop('input').closest('form').find('button[type="submit"]').addClass('hidden');
 	});
 	
 	$('div.keyboard').bind('disable', function() {
@@ -17,6 +18,7 @@ $(function(){
 		div.find('.keyrow').addClass('hidden');
 		div.find('li.switch').html('<span class="glyphicon glyphicon-triangle-bottom"></span>');
 		div.prop('input').prop('readonly', false);
+		div.prop('input').closest('form').find('button[type="submit"]').removeClass('hidden');
 	});
 	
 	$('div.keyboard').bind('init', function() {

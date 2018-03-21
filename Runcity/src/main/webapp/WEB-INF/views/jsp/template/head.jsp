@@ -99,7 +99,8 @@
 		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />',
 		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />',
 		tableDateTimeFormat      : '<fmt:message key="common.tableDateTimeFormat" bundle="${msg}" />',
-		extnTabName              : '<fmt:message key="extension.tabHeader" bundle="${msg}" />'
+		extnTabName              : '<fmt:message key="extension.tabHeader" bundle="${msg}" />',
+		refreshEmpty             : '<fmt:message key="common.refreshEmpty" bundle="${msg}" />'
 	}
 	
 	var locale = '${lang}';
