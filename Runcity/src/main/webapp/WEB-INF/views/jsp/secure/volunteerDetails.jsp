@@ -1,3 +1,4 @@
+<%@page import="org.springframework.web.servlet.tags.UrlTag"%>
 <%@page import="org.runcity.db.entity.Game"%>
 <%@page import="org.runcity.util.StringUtils"%>
 <%@page import="org.runcity.db.entity.enumeration.ControlPointType"%>
@@ -43,7 +44,19 @@
 		tagWriter.endTag();
 	}
 	
-	private void writeInfo(TagWriter tagWriter, Volunteer volunteer, LocalizationContext bundle, String refreshAjax) throws JspException {
+	private String composeTeamsUrl(PageContext pageContext, Volunteer volunteer, RouteItem routeItem) throws JspException {
+		String url = "/volunteer/" + volunteer.getId() + "/teams" + (routeItem == null ? "" : "?routeItem=" + routeItem.getId());
+		UrlTag tag = new UrlTag();
+		tag.setValue(url);
+		tag.setVar("teamUrl");
+		tag.setPageContext(pageContext);
+		tag.doStartTag();
+		tag.doEndTag();
+		return (String) pageContext.getAttribute("teamUrl");
+	}
+	
+	private void writeInfo(PageContext pageContext, Volunteer volunteer, LocalizationContext bundle, String refreshAjax) throws JspException {
+		TagWriter tagWriter = new TagWriter(pageContext);
 		ControlPoint controlPoint = volunteer.getControlPoint().getMain();
 		String locale = LocaleContextHolder.getLocale().toString();
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(localize(bundle, "common.shortDateTimeFormat"));
@@ -89,7 +102,23 @@
 		});
 
 		Game game = volunteer.getVolunteerGame();
+		tagWriter.startTag("a");
+		tagWriter.writeAttribute("href", composeTeamsUrl(pageContext, volunteer, null));
+		tagWriter.startTag("p");
+		tagWriter.writeAttribute("class", "volunteer-category");
+		tagWriter.appendValue(localize(bundle, "jsp.volunteer.total"));
+		tagWriter.appendValue("&nbsp;");
+		tagWriter.startTag("span");
+		tagWriter.writeAttribute("class", "badge");
+		tagWriter.writeAttribute("refreshed-by", "infoRefresh");
+		tagWriter.writeAttribute("refresh-key", "routeCounter_total");
+		tagWriter.endTag();
+		tagWriter.endTag();
+		tagWriter.endTag();
+		
 		for (RouteItem ri : routeItems) {
+			tagWriter.startTag("a");
+			tagWriter.writeAttribute("href", composeTeamsUrl(pageContext, volunteer, ri));
 			tagWriter.startTag("p");
 			tagWriter.writeAttribute("class", "volunteer-category");
 
@@ -116,6 +145,7 @@
 			tagWriter.writeAttribute("refresh-key", "routeCounter_" + ri.getId());
 			tagWriter.endTag();
 			tagWriter.endTag();
+			tagWriter.endTag();
 			
 			String reminder = c.getLocalizedDescription(locale);
 			if (!StringUtils.isEmpty(reminder)) {
@@ -132,7 +162,6 @@
 <%
 	LocalizationContext bundle = (LocalizationContext) pageContext.getAttribute("msg");
 	Volunteer volunteer = (Volunteer) pageContext.getAttribute("volunteer", PageContext.REQUEST_SCOPE);
-	TagWriter tagWriter = new TagWriter(pageContext);
 %>
 <script>
 	function onsite(input) {
@@ -191,7 +220,7 @@
 			<spring:url value="/api/v1/volunteer/${volunteer.id}/stat" var="refreshAjax" />
 			<%
 			String refreshAjax = (String) pageContext.getAttribute("refreshAjax");
-			writeInfo(tagWriter, volunteer, bundle, refreshAjax);
+			writeInfo(pageContext, volunteer, bundle, refreshAjax);
 			%>
 		</div>
 	</div>

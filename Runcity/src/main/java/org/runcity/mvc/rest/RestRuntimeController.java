@@ -159,15 +159,22 @@ public class RestRuntimeController extends AbstractRestController {
 		ControlPoint cp = controlPointService.selectById(v.getControlPoint().getId(), ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		cp = cp.getMain();
 		
+		Long total = 0L;
 		for (RouteItem ri : cp.getRouteItems()) {
-			result.addElement("routeCounter_" + ri.getId(), teamService.selectActiveNumberByRouteItem(ri));
+			Long stat = teamService.selectActiveNumberByRouteItem(ri);
+			total += stat;
+			result.addElement("routeCounter_" + ri.getId(), stat);
 		}
 		
 		for (ControlPoint ch : cp.getChildren()) {
 			for (RouteItem ri : ch.getRouteItems()) {
-				result.addElement("routeCounter_" + ri.getId(), teamService.selectActiveNumberByRouteItem(ri));
+				Long stat = teamService.selectActiveNumberByRouteItem(ri);
+				total += stat;
+				result.addElement("routeCounter_" + ri.getId(), stat);
 			}
 		}
+		
+		result.addElement("routeCounter_total", total);
 		
 		return result;
 	}
