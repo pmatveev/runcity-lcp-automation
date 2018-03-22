@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.runcity.util.ResponseBody;
+import org.runcity.util.ActionResponseBody;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -13,7 +13,7 @@ import org.springframework.validation.ObjectError;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class RestPostResponseBody extends ResponseBody {
+public class RestPostResponseBody extends ActionResponseBody {
 	@JsonView(Views.Public.class)
 	protected Map<String, List<String>> colErrors = new HashMap<String, List<String>>();
 

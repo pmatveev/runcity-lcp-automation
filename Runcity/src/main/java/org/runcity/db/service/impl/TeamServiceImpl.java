@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
 import org.runcity.db.entity.Game;
@@ -15,6 +16,7 @@ import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Team.SelectMode;
 import org.runcity.db.entity.Volunteer;
+import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.enumeration.EventStatus;
 import org.runcity.db.entity.enumeration.EventType;
@@ -28,8 +30,9 @@ import org.runcity.db.repository.TeamRepository;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.TeamService;
 import org.runcity.exception.DBException;
-import org.runcity.util.ResponseBody;
+import org.runcity.util.ActionResponseBody;
 import org.runcity.util.ResponseClass;
+import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -137,7 +140,8 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-	public void processTeam(Team team, RouteItem ri, Volunteer volunteer, ResponseBody result) throws DBException {
+	public void processTeam(Team team, String allowedStatus, RouteItem ri, Volunteer volunteer,
+			ActionResponseBody result) throws DBException {
 		TeamStatus status;
 		switch (ri.getControlPoint().getType()) {
 		case STAGE_END:
@@ -149,51 +153,71 @@ public class TeamServiceImpl implements TeamService {
 		default:
 			status = null;
 		}
-		processTeam(team, status, ri.getLegNumber(), volunteer, EventType.TEAM_CP, result);
+		processTeam(team, allowedStatus, status, ri.getLegNumber(), volunteer, EventType.TEAM_CP, result);
 	}
 
 	@Override
-	public void setTeamStatus(Team team, TeamStatus status, Volunteer volunteer, ResponseBody result)
-			throws DBException {
-		processTeam(team, status, null, volunteer, EventType.TEAM_COORD, result);
+	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Volunteer volunteer,
+			ActionResponseBody result) throws DBException {
+		processTeam(team, allowedStatus, status, null, volunteer, EventType.TEAM_COORD, result);
 	}
 
-	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ResponseBody result,
+	private boolean checkOfflineCp(Team team, Integer leg) {
+		Integer current = team.getLeg();
+
+		if (current == null || current >= leg) {
+			return false;
+		}
+
+		int numOf = leg - current;
+		// !! assume there is correct route configuration
+
+		Hibernate.initialize(team.getRoute().getRouteItems());
+		for (RouteItem ri : team.getRoute().getRouteItems()) {
+			if (ri.getLegNumber() != null && ri.getControlPoint().getType() == ControlPointType.STAGE_END
+					&& ri.getControlPoint().getMode() == ControlPointMode.OFFLINE) {
+				if (current <= ri.getLegNumber() && leg > ri.getLegNumber()) {
+					numOf--;
+				}
+			}
+		}
+		
+		return numOf <= 0;
+	}
+
+	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ActionResponseBody result,
 			MessageSource messageSource, Locale locale) {
 		switch (status) {
 		case ACTIVE:
 		case FINISHED:
 		case RETIRED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
-				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+				result.confirm(team.getStatusData(), "teamProcessing.validation.invalidStatus",
 						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;
 			}
 			if (leg != null && !leg.equals(team.getLeg())) {
-				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
-				return false;
+				if (!checkOfflineCp(team, leg)) {
+					result.confirm(team.getStatusData(), "teamProcessing.validation.invalidLeg", team.getLeg());
+					return false;
+				}
 			}
 			break;
 		case DISQUALIFIED:
 			if (team.getStatus() == TeamStatus.DISQUALIFIED) {
-				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+				result.confirm(team.getStatusData(), "teamProcessing.validation.invalidStatus",
 						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;
 			}
 			break;
 		case NOT_STARTED:
 			if (team.getStatus() != TeamStatus.ACTIVE) {
-				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.validation.invalidStatus",
+				result.confirm(team.getStatusData(), "teamProcessing.validation.invalidStatus",
 						TeamStatus.getDisplayName(team.getStatus(), messageSource, locale));
 				return false;
 			}
 			if (!(new Integer(TeamStatus.getStoredValue(TeamStatus.ACTIVE)).equals(team.getLeg()))) {
-				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("teamProcessing.validation.invalidLeg", team.getLeg());
+				result.confirm(team.getStatusData(), "teamProcessing.validation.invalidLeg", team.getLeg());
 				return false;
 			}
 			break;
@@ -202,8 +226,8 @@ public class TeamServiceImpl implements TeamService {
 		return true;
 	}
 
-	private void processTeam(Team team, TeamStatus status, Integer leg, Volunteer volunteer, EventType eventType,
-			ResponseBody result) throws DBException {
+	private void processTeam(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer,
+			EventType eventType, ActionResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
 
@@ -215,8 +239,17 @@ public class TeamServiceImpl implements TeamService {
 			return;
 		}
 
-		if (!validateNewStatus(team, status, leg, result, messageSource, locale)) {
-			return;
+		boolean force = false;
+		if (!StringUtils.isEmpty(allowedStatus)) {
+			if (ObjectUtils.nullSafeEquals(allowedStatus, lock.getStatusData())) {
+				force = true;
+			}
+		}
+
+		if (!force) {
+			if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
+				return;
+			}
 		}
 
 		String fromStatus = lock.getStatusData();
@@ -234,8 +267,8 @@ public class TeamServiceImpl implements TeamService {
 
 		String toStatus = lock.getStatusData();
 
-		Event pass = new Event(null, eventType, EventStatus.POSTED, volunteer.now(), null, volunteer, team, fromStatus,
-				toStatus);
+		Event pass = new Event(null, force ? eventType.getException() : eventType, EventStatus.POSTED, volunteer.now(),
+				null, volunteer, team, fromStatus, toStatus);
 		pass = eventRepository.save(pass);
 		lock = teamRepository.save(lock);
 		if (pass == null || team == null) {
@@ -285,19 +318,20 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public List<Team> selectPendingTeamsByCP(Long controlPoint, SelectMode selectMode) {
-		ControlPoint main = controlPointService.selectById(controlPoint, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
-		
+		ControlPoint main = controlPointService.selectById(controlPoint,
+				ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
+
 		List<Team> result = new ArrayList<Team>();
 		for (RouteItem ri : main.getRouteItems()) {
 			result.addAll(selectPendingTeamsByRouteItem(ri, selectMode));
 		}
-		
+
 		for (ControlPoint ch : main.getChildren()) {
 			for (RouteItem ri : ch.getRouteItems()) {
 				result.addAll(selectPendingTeamsByRouteItem(ri, selectMode));
 			}
 		}
-		
+
 		return result;
 	}
 

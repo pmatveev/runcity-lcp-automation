@@ -23,6 +23,7 @@ import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
@@ -54,7 +55,7 @@ public class RestControlPointController extends AbstractRestController {
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/controlPointsTable", method = RequestMethod.GET)
-	public RestGetResponseBody getConsumerTable(@RequestParam(required = true) Long gameId) {
+	public RestGetResponseBody getControlPointsTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/controlPointsTable");
 		logger.debug("\tgameId=" + gameId);
 		
@@ -93,7 +94,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		ControlPoint c = controlPointService.selectById(id, ControlPoint.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-		result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
+		result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
 		return result;
 	}
 	
@@ -107,7 +108,7 @@ public class RestControlPointController extends AbstractRestController {
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
-				result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
+				result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
 			}
 		}
 		return result;
@@ -127,7 +128,7 @@ public class RestControlPointController extends AbstractRestController {
 		
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
-			result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, locale));
+			result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
 		}
 		return result;
 	}

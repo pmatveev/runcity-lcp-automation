@@ -134,25 +134,6 @@
 		</attribute>
 	</tag>
 	<tag>
-		<name>volunteer</name>
-		<tag-class>org.runcity.jsp.VolunteerTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-			<name>data</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>true</required>
-			<type>java.util.Collection</type>
-			<fragment>false</fragment>
-		</attribute>
-		<attribute>
-			<name>bundle</name>
-			<rtexprvalue>true</rtexprvalue>
-			<required>true</required>
-			<type>javax.servlet.jsp.jstl.fmt.LocalizationContext</type>
-			<fragment>false</fragment>
-		</attribute>
-	</tag>
-	<tag>
 		<name>keyboard</name>
 		<tag-class>org.runcity.jsp.KeyboardTag</tag-class>
 		<body-content>empty</body-content>

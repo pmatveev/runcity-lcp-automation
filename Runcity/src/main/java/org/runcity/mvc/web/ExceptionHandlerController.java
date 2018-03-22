@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.runcity.util.StringUtils;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +46,11 @@ public class ExceptionHandlerController {
 		logger.fatal("Controller exception", e);
 
 		if (StringUtils.isEqual(request.getContentType(), "application/x-www-form-urlencoded")) {
+			if (CookieTheftException.class.isAssignableFrom(e.getClass())) {
+				ModelAndView model = new ModelAndView("redirect:/login");
+				return model;
+			}
+			
 			ModelAndView model = new ModelAndView("exception/exception");
 			model.addObject("errMsg", e.getMessage());
 

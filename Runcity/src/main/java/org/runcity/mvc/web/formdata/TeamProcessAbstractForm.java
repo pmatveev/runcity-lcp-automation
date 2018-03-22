@@ -16,7 +16,7 @@ import org.springframework.validation.Errors;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public abstract class TeamProcessAbstractForm extends AbstractForm {
+public abstract class TeamProcessAbstractForm extends AbstractConfirmableForm {
 	private static final Logger logger = Logger.getLogger(TeamProcessAbstractForm.class);
 
 	@JsonView(Views.Public.class)

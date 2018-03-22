@@ -7,7 +7,9 @@ import org.springframework.context.MessageSource;
 public enum EventType {
 	VOLUNTEER_AT_CP("eventType.volunteerCP", "V"),
 	TEAM_CP("eventType.teamPass", "C"),
-	TEAM_COORD("eventType.teamCoord", "R");
+	TEAM_COORD("eventType.teamCoord", "R"),
+	TEAM_CP_EXCEPTION("eventType.teamPassException", "c"),
+	TEAM_COORD_EXCEPTION("eventType.teamCoordException", "r");
 
 	private String displayName;
 	private String storedValue;
@@ -27,8 +29,10 @@ public enum EventType {
 
 	public static EventType getByStoredValue(String storedValue) {
 		switch (storedValue) {
+		case "c": return TEAM_CP_EXCEPTION;
 		case "C": return TEAM_CP;
 		case "V": return VOLUNTEER_AT_CP;
+		case "r": return TEAM_COORD_EXCEPTION;
 		case "R": return TEAM_COORD;
 		default:
 			return null;
@@ -37,5 +41,16 @@ public enum EventType {
 
 	public static String getStoredValue(EventType e) {
 		return e == null ? null : e.storedValue;
+	}
+	
+	public EventType getException() {
+		switch (this) {
+		case TEAM_COORD:
+			return TEAM_COORD_EXCEPTION;
+		case TEAM_CP:
+			return TEAM_CP_EXCEPTION;
+		default:
+			return this;
+		}
 	}
 }

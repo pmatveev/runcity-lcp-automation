@@ -10,7 +10,7 @@ import org.springframework.validation.ObjectError;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class ResponseBody {
+public abstract class ResponseBody {
 	@JsonView(Object.class)
 	protected ResponseClass responseClass;
 	
@@ -62,10 +62,6 @@ public class ResponseBody {
 			this.msg = new LinkedList<String>();
 		}
 		this.msg.add(messageSource.getMessage(msg, arguments, locale));
-	}
-
-	public void addCommonMsg(String msg) {
-		addCommonMsg(msg, null);
 	}
 
 	public void addCommonMsg(ObjectError msg) {

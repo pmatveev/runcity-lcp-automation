@@ -42,6 +42,27 @@ function initHtml(container, dtLocalizationLink) {
 	});
 }
 
+function showConfirmation(confirmation, callback) {
+	bootbox.confirm({
+		animate : false,
+		title : translations['confTitle'],
+		message : confirmation,
+		buttons : {
+			confirm : {
+				label : translations['modalOK'],
+				className : 'btn btn-primary'
+			},
+			cancel : {
+				label : translations['modalCancel'],
+				className : 'btn btn-link'
+			}
+		},
+		backdrop : true,
+		closeButton : false,
+		callback : callback
+	});
+}
+
 function getHttpError(statusText, status, type) {
 	var result;
 	
@@ -812,8 +833,11 @@ function getData(elem) {
 	}
 }
 
-function getFormData(form) {
+function getFormData(form, addData) {
 	var res = {};
+	if (typeof addData != 'undefined') {
+		res = addData;
+	} 
 
 	form.find("input,select,textarea").not('[type="submit"]').not(".ignore-value,.file-caption-name").each(function() {
 		var elem = $(this);
@@ -901,34 +925,61 @@ function modalFormSuccess(form, data) {
 	}
 
 	removeFormMessage(form);
-	if (data.msg) {
-		data.msg.forEach(function(item, i, arr) {
-			setFormMessage(form, item, "danger");
-		});
-	}
-	form.find("input,select,textarea").not('[type="submit"]').each(function() {
-		var elem = $(this);
-		var name = elem.attr("name");
-		
-		if (typeof name === 'undefined' || elem.attr("type") === "hidden") {
-			return;
-		}
-		removeMessage(elem);
-		
-		var index = name.indexOf("['"); 
-		if (index >= 0) {
-			name = name.substring(0, index);
-		}
-		
-		var err = data.colErrors[name];
-		if (err) {
-			err.forEach(function(item, i, arr) {
-				setMessage(elem, item, "danger");
+	
+	var printErrors = function() {
+		if (data.msg) {
+			data.msg.forEach(function(item, i, arr) {
+				setFormMessage(form, item, "danger");
 			});
 		}
-	});
-	autofocus(form);
-	scroll(form);
+		form.find("input,select,textarea").not('[type="submit"]').each(function() {
+			var elem = $(this);
+			var name = elem.attr("name");
+			
+			if (typeof name === 'undefined' || elem.attr("type") === "hidden") {
+				return;
+			}
+			removeMessage(elem);
+			
+			var index = name.indexOf("['"); 
+			if (index >= 0) {
+				name = name.substring(0, index);
+			}
+			
+			var err = data.colErrors[name];
+			if (err) {
+				err.forEach(function(item, i, arr) {
+					setMessage(elem, item, "danger");
+				});
+			}
+		});
+		autofocus(form);
+		scroll(form);
+	}
+	
+	if (data.responseClass == "CONFIRMATION") {
+		var confirmation = "";
+
+		if (data.msg) {
+			data.msg.forEach(function(item, i, arr) {
+				confirmation += item + "<br/>";
+			});
+		}
+		
+		form.closest(".modal").hide();
+		
+		showConfirmation(confirmation, function(result) {
+			form.closest(".modal").show();
+			if (result) {
+				submitModalForm(form, null, { confirmationToken : data.confirmationToken })
+			} else {
+				printErrors();
+			}
+		});
+		return;
+	}
+	
+	printErrors();
 }
 
 function modalFormError(form, data) {
@@ -942,8 +993,8 @@ function modalFormError(form, data) {
 	scroll(form);
 }
 
-function submitModalForm(form, event) {
-	if (typeof event !== 'undefined') {
+function submitModalForm(form, event, addData) {
+	if (event) {
 		event.preventDefault();		
 	}
 	
@@ -968,7 +1019,7 @@ function submitModalForm(form, event) {
 		return;
 	}
 	
-	var jsonString = JSON.stringify(getFormData(form));
+	var jsonString = JSON.stringify(getFormData(form, addData));
 
 	changeModalFormState(form, true, true, true);
 
@@ -1153,26 +1204,9 @@ function initDatatables(table, loc) {
 			if (typeof confirmation !== 'undefined') {
 				func = function(e, dt, node, config) {
 					removeTableMessage(dt);
-					bootbox.confirm({
-						animate : false,
-						title : translations['confTitle'],
-						message : confirmation,
-						buttons : {
-							confirm : {
-								label : translations['modalOK'],
-								className : 'btn btn-primary'
-							},
-							cancel : {
-								label : translations['modalCancel'],
-								className : 'btn btn-link'
-							}
-						},
-						backdrop : true,
-						closeButton : false,
-						callback : function(result) {
-							if (result) {
-								dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, button.attr("extend"));
-							}
+					showConfirmation(confirmation, function(result) {
+						if (result) {
+							dataTablesAjax(dt, ajaxMethod, ajaxAddress, refCol, button.attr("extend"));
 						}
 					});
 				}

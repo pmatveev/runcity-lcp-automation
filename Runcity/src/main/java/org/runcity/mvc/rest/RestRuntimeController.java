@@ -136,7 +136,7 @@ public class RestRuntimeController extends AbstractRestController {
 		}
 		
 		try {
-			teamService.processTeam(form.getTeam(), form.getRouteItem(), form.getVolunteer(), result);
+			teamService.processTeam(form.getTeam(), form.getConfirmationToken(), form.getRouteItem(), form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);
