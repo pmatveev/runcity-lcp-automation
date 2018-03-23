@@ -10,14 +10,19 @@ import org.springframework.validation.Errors;
 
 public class FormIdVolunteerColumn extends FormIdColumn {
 	private boolean validateUser = false;
+	private boolean validateActive = false;
 	private Volunteer volunteer;
 
 	public FormIdVolunteerColumn(AbstractForm form, ColumnDefinition definition) {
 		super(form, definition);
 	}
-	
+
 	public void setValidateUser(boolean validateUser) {
 		this.validateUser = validateUser;
+	}
+	
+	public void setValidateActive(boolean validateActive) {
+		this.validateActive = validateActive;
 	}
 
 	@Override
@@ -25,7 +30,7 @@ public class FormIdVolunteerColumn extends FormIdColumn {
 		super.validate(context, errors);
 
 		VolunteerService routeService = context.getBean(VolunteerService.class);
-		volunteer = routeService.selectById(value, Volunteer.SelectMode.NONE);
+		volunteer = routeService.selectById(value, validateActive ? Volunteer.SelectMode.WITH_ACTIVE : Volunteer.SelectMode.NONE);
 
 		if (volunteer == null) {
 			errors.reject("common.notFoundHiddenId", new Object[] { getLabel(), value }, null);
@@ -36,6 +41,10 @@ public class FormIdVolunteerColumn extends FormIdColumn {
 			if (!StringUtils.isEqual(SecureUserDetails.getCurrentUser().getUsername(), volunteer.getConsumer().getUsername())) {
 				errors.reject("common.invalidUser");
 			}
+		}
+		
+		if (validateActive && Boolean.FALSE.equals(volunteer.getActive())) {
+			errors.reject("common.invalidUser");
 		}
 	}
 	

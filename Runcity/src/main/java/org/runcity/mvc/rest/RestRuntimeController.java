@@ -160,7 +160,7 @@ public class RestRuntimeController extends AbstractRestController {
 		RestGetInfoResponseBody result = new RestGetInfoResponseBody();
 
 		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
 
 		if (v == null || !checkVolunteer(v)) {
 			result.setResponseClass(ResponseClass.ERROR);
@@ -197,7 +197,7 @@ public class RestRuntimeController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByCP(@PathVariable Long cpId) {
 		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
 
 		if (v == null || !checkVolunteer(v)) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -225,7 +225,7 @@ public class RestRuntimeController extends AbstractRestController {
 		}
 
 		Volunteer v = volunteerService.selectByControlPointAndUsername(ri.getControlPoint(),
-				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
 
 		if (v == null || !checkVolunteer(v)) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -244,7 +244,7 @@ public class RestRuntimeController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/history", method = RequestMethod.GET)
 	public RestGetResponseBody getCpHistory(@PathVariable Long cpId) {
 		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+				SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.NONE);
 
 		if (v == null || !checkVolunteer(v)) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -277,7 +277,7 @@ public class RestRuntimeController extends AbstractRestController {
 
 		if (current == null) {
 			current = volunteerService.selectByControlPointAndUsername(e.getVolunteer().getControlPoint(),
-					SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+					SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.NONE);
 			if (current == null) {
 				result.setResponseClass(ResponseClass.ERROR);
 				result.addCommonMsg("volunteer.volunteerNotFound");

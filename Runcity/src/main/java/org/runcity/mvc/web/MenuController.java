@@ -169,7 +169,7 @@ public class MenuController {
 		}
 
 		String username = SecureUserDetails.getCurrentUser().getUsername();
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, Volunteer.SelectMode.WITH_ACTIVE);
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, false, Volunteer.SelectMode.WITH_ACTIVE);
 		
 		if (v == null) {
 			return "exception/forbidden";		
@@ -277,7 +277,7 @@ public class MenuController {
 		}
 
 		String username = SecureUserDetails.getCurrentUser().getUsername();
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, Volunteer.SelectMode.WITH_ACTIVE);
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, false, Volunteer.SelectMode.WITH_ACTIVE);
 		
 		if (v == null) {
 			return "exception/forbidden";		

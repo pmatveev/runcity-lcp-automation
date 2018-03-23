@@ -11,6 +11,7 @@ public class TeamProcessByVolunteerForm extends TeamProcessAbstractForm {
 
 	public TeamProcessByVolunteerForm(DynamicLocaleList localeList) {
 		this("teamProcessByVolunteerForm", "/api/v1/volunteer/teamProcess", null, localeList);
+		this.volunteerId.setValidateActive(true);
 	}
 
 	private TeamProcessByVolunteerForm(String formName, String urlOnSubmitAjax, String title, DynamicLocaleList localeList) {

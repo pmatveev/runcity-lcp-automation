@@ -131,14 +131,24 @@ public class VolunteerServiceImpl implements VolunteerService {
 
 
 	@Override
-	public Volunteer selectByControlPointAndUsername(Long controlPointId, String username, SelectMode selectMode) {
-		return selectByControlPointAndUsername(controlPointRepository.findOne(controlPointId), username, selectMode);
+	public Volunteer selectByControlPointAndUsername(Long controlPointId, String username, boolean requireActive, SelectMode selectMode) {
+		return selectByControlPointAndUsername(controlPointRepository.findOne(controlPointId), username, requireActive, selectMode);
 	}
 
 	@Override
-	public Volunteer selectByControlPointAndUsername(ControlPoint cp, String username, Volunteer.SelectMode selectMode) {
+	public Volunteer selectByControlPointAndUsername(ControlPoint cp, String username, boolean requireActive, Volunteer.SelectMode selectMode) {
 		Volunteer result = volunteerRepository.findByCPandUsername(cp, username);
+		
 		initialize(result, selectMode);
+		if (requireActive) {
+			if (result.getActive() == null) {
+				result.setActive(eventRepository.isActiveVolunteer(result) > 0);
+			}
+			if (Boolean.FALSE.equals(result.getActive())) {
+				result = null;
+			}
+		}
+		
 		return result;
 	}
 

@@ -168,7 +168,7 @@ public class FrameController {
 
 		if (current == null) {
 			current = volunteerService.selectByControlPointAndUsername(e.getVolunteer().getControlPoint(),
-					SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+					SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.WITH_ACTIVE);
 			if (current == null) {
 				return "exception/forbiddenSub";
 			}

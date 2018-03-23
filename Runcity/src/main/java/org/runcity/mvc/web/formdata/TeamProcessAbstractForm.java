@@ -39,6 +39,7 @@ public abstract class TeamProcessAbstractForm extends AbstractConfirmableForm {
 		setTitle(title);
 
 		this.volunteerId = new FormIdVolunteerColumn(this, new ColumnDefinition("volunteerId", "volunteerId"));
+		this.volunteerId.setValidateUser(true);
 		this.number = new FormPlainStringColumn(this, new ColumnDefinition("number", "team.number"));
 		this.number.setRequired(true);
 		this.number.setMaxLength(32);
