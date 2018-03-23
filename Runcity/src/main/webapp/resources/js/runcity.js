@@ -106,11 +106,16 @@ function parseDate(datestr) {
 function formatDate(date, format, locale) {
 	var dateUTC = new Date(date.valueOf() - date.getTimezoneOffset() * 60000);
 	var dpg = $.fn.datetimepicker.DPGlobal;
-	if (format === "DATE") {
+	switch (format) {
+	case "DATE":
 		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableDateFormat'], 'standard'), locale, 'standard');
-	} else {
+	case "DATETIME":	
 		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableDateTimeFormat'], 'standard'), locale, 'standard');
-	}	
+	case "DATETIMESTAMP":	
+		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableDateTimeStampFormat'], 'standard'), locale, 'standard');
+	case "TIMESTAMP":	
+		return dpg.formatDate(dateUTC, dpg.parseFormat(translations['tableTimeStampFormat'], 'standard'), locale, 'standard');
+	}
 }
 
 function removeFormFieldErrorMessage(form) {
@@ -788,7 +793,11 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 
 	if (loader) {
 		if (!submit.parent().find(".loader").length) {
-			submit.parent().prepend("<div class='loader'></div>");
+			if (submit.hasClass("loader-right")) {
+				submit.parent().append("<div class='loader'></div>");
+			} else {
+				submit.parent().prepend("<div class='loader'></div>");
+			}
 		}
 	} else {
 		submit.parent().find(".loader").remove();
@@ -1019,15 +1028,26 @@ function submitModalForm(form, event, addData) {
 		return;
 	}
 	
-	var jsonString = JSON.stringify(getFormData(form, addData));
+	var data = getFormData(form, addData);
+	var type = "POST";
+	if (typeof data._method !== 'undefined') {
+		type = data._method;
+		delete data._method;
+	}
+	
+	var jsonString = JSON.stringify(data);
 
 	changeModalFormState(form, true, true, true);
 
 	var csrfToken = $("meta[name='_csrf']").attr("content");
 	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	if (typeof data._csrf !== 'undefined') {
+		csrfToken = data._csrf;
+		delete data._csrf;
+	} 
 
 	$.ajax({
-		type : "POST",
+		type : type,
 		contentType : "application/json",
 		url : form.attr("action"),
 		data : jsonString,
@@ -1302,7 +1322,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 		var cd = $(this);
 		
 		var format = cd.attr("format");
-		if (format === "DATE" || format == "DATETIME") {
+		if (format === "DATE" || format == "DATETIME" || format == "DATETIMESTAMP" || format == "TIMESTAMP") {
 			columnDefs.push({
 				data : cd.attr("mapping"),
 				name : cd.attr("mapping"),
@@ -1453,8 +1473,9 @@ function initDatatablesWithButtons(table, buttons, loc) {
 			} else {
 				processedLink = link + "&referrer=" + encodeURIComponent(prefix);
 			}
+			processedLink += "&table=" + encodeURIComponent(table.attr('id'));
 			
-			var divId = "expand" + processedLink.replace(/[\/\?\=]/g, '_');
+			var divId = "expand" + processedLink.replace(/[\/\?\&\=]/g, '_');
 			
 			var expandData, expandRef;
 			var expandTemplate = $('#' + table.attr("id") + "_extension");
@@ -1469,7 +1490,7 @@ function initDatatablesWithButtons(table, buttons, loc) {
 					});
 					
 					var format = elem.attr("format");
-					if (format === "DATE" || format === "DATETIME") {
+					if (format === "DATE" || format == "DATETIME" || format == "DATETIMESTAMP" || format == "TIMESTAMP") {
 						val = formatDate(parseDate(val), format, locale);
 					} else if (format === "IMAGE") {
 						val = displayDtImage(val, elem.attr("image-url"), data);

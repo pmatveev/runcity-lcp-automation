@@ -62,11 +62,12 @@ public class RestCoordinatorController extends AbstractRestController {
 	private TeamService teamService;
 
 	private boolean isCoordinator(Game game) {
-		return volunteerService.isCoordinator(game, SecureUserDetails.getCurrentUser().getUsername());
+		return volunteerService.selectCoordinatorByUsername(game, SecureUserDetails.getCurrentUser().getUsername(),
+				Volunteer.SelectMode.NONE) != null;
 	}
 
 	private boolean isCoordinator(ControlPoint controlPoint) {
-		return volunteerService.isCoordinator(controlPoint.getGame(), SecureUserDetails.getCurrentUser().getUsername());
+		return isCoordinator(controlPoint.getGame());
 	}
 
 	@JsonView(Views.Public.class)

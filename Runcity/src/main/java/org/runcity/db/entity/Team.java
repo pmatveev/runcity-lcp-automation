@@ -136,6 +136,10 @@ public class Team {
 		return getStatus() == TeamStatus.ACTIVE ? new Integer(status) : null;
 	}
 	
+	public void setStatusData(String status) {
+		this.status = status;
+	}
+	
 	public void setStatus(TeamStatus status) {
 		this.status = TeamStatus.getStoredValue(status);
 	}

@@ -14,6 +14,10 @@ import org.springframework.util.ObjectUtils;
 @Entity
 @Table(name = "event")
 public class Event {
+	public enum SelectMode {
+		NONE, WITH_DELETE;
+	}
+	
 	@Transient
 	private boolean datesUpdated = false;
 
@@ -49,6 +53,10 @@ public class Event {
 	private Volunteer volunteer;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
+	@JoinColumn(name = "closed_by", nullable = true)
+	private Volunteer closedBy;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@JoinColumn(name = "team__id", nullable = true)
 	private Team team;
 
@@ -57,6 +65,9 @@ public class Event {
 
 	@Column(name = "status_to", length = 1, nullable = true)
 	private String toTeamStatus;
+
+	@Transient
+	private Boolean canDelete;
 
 	public Event() {
 	}
@@ -154,6 +165,14 @@ public class Event {
 		this.volunteer = volunteer;
 	}
 
+	public Volunteer getClosedBy() {
+		return closedBy;
+	}
+
+	public void setClosedBy(Volunteer closedBy) {
+		this.closedBy = closedBy;
+	}
+
 	public Team getTeam() {
 		return team;
 	}
@@ -180,5 +199,13 @@ public class Event {
 
 	public Game getGame() {
 		return volunteer.getVolunteerGame();
+	}
+
+	public Boolean getCanDelete() {
+		return canDelete;
+	}
+
+	public void setCanDelete(Boolean canDelete) {
+		this.canDelete = canDelete;
 	}
 }

@@ -192,6 +192,7 @@ CREATE TABLE runcity.event (
   date_from DATETIME NOT NULL,
   date_to DATETIME DEFAULT NULL,
   volunteer__id INT(11) NOT NULL,
+  closed_by INT(11) DEFAULT NULL,
   team__id INT(11) DEFAULT NULL,
   status_from VARCHAR(2) DEFAULT NULL,
   status_to VARCHAR(2) DEFAULT NULL,
@@ -199,6 +200,9 @@ CREATE TABLE runcity.event (
   INDEX event_volunteer (volunteer__id ASC, type ASC, status ASC),
   CONSTRAINT FK_event_volunteer
     FOREIGN KEY (volunteer__id)
+    REFERENCES runcity.volunteer (id),
+  CONSTRAINT FK_event_closed_volunteer
+    FOREIGN KEY (closed_by)
     REFERENCES runcity.volunteer (id),
   INDEX event_team (team__id ASC, type ASC, status ASC),
   CONSTRAINT FK_event_team

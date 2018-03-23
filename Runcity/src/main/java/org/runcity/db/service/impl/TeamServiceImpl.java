@@ -76,6 +76,33 @@ public class TeamServiceImpl implements TeamService {
 		}
 	}
 
+
+	private void initialize(Event e, Event.SelectMode selectMode) {
+		if (e == null) {
+			return;
+		}
+		switch (selectMode) {
+		case NONE:
+			break;
+		case WITH_DELETE:
+			if (e.getTeam() != null) {
+				Long lastId = eventRepository.selectLastActiveTeamEvent(e.getTeam());
+				e.setCanDelete(ObjectUtils.nullSafeEquals(lastId, e.getId()));
+			} else {
+				e.setCanDelete(false);
+			}
+		}
+	}
+
+	private void initialize(Collection<Event> events, Event.SelectMode selectMode) {
+		if (events == null || selectMode == Event.SelectMode.NONE) {
+			return;
+		}
+		for (Event e : events) {
+			initialize(e, selectMode);
+		}
+	}
+
 	@Override
 	public Team selectById(Long id, Team.SelectMode selectMode) {
 		Team result = teamRepository.findOne(id);
@@ -231,49 +258,88 @@ public class TeamServiceImpl implements TeamService {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
 
-		Team lock = teamRepository.selectForUpdate(team);
-
-		if (!ObjectUtils.nullSafeEquals(team.getStatusData(), lock.getStatusData())) {
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("common.concurrencyError");
-			return;
-		}
-
-		boolean force = false;
-		if (!StringUtils.isEmpty(allowedStatus)) {
-			if (ObjectUtils.nullSafeEquals(allowedStatus, lock.getStatusData())) {
-				force = true;
-			}
-		}
-
-		if (!force) {
-			if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
+		try {
+			Team lock = teamRepository.selectForUpdate(team);
+	
+			if (!ObjectUtils.nullSafeEquals(team.getStatusData(), lock.getStatusData())) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("common.concurrencyError");
 				return;
 			}
-		}
-
-		String fromStatus = lock.getStatusData();
-
-		switch (status) {
-		case ACTIVE:
-			lock.setLeg(leg + 1);
-			break;
-		default:
-			if (status != null) {
-				lock.setStatus(status);
+	
+			boolean force = false;
+			if (!StringUtils.isEmpty(allowedStatus)) {
+				if (ObjectUtils.nullSafeEquals(allowedStatus, lock.getStatusData())) {
+					force = true;
+				}
 			}
-			break;
+	
+			if (!force) {
+				if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
+					return;
+				}
+			}
+	
+			String fromStatus = lock.getStatusData();
+	
+			switch (status) {
+			case ACTIVE:
+				lock.setLeg(leg + 1);
+				break;
+			default:
+				if (status != null) {
+					lock.setStatus(status);
+				}
+				break;
+			}
+	
+			String toStatus = lock.getStatusData();
+	
+			Event pass = new Event(null, force ? eventType.getException() : eventType, EventStatus.POSTED, volunteer.now(),
+					null, volunteer, team, fromStatus, toStatus);
+			pass = eventRepository.save(pass);
+			lock = teamRepository.save(lock);
+			if (pass == null || team == null) {
+				throw new RuntimeException("Team processing failed");
+			}
+		} catch (Throwable t) {
+			throw new DBException(t);
 		}
+	}
 
-		String toStatus = lock.getStatusData();
-
-		Event pass = new Event(null, force ? eventType.getException() : eventType, EventStatus.POSTED, volunteer.now(),
-				null, volunteer, team, fromStatus, toStatus);
-		pass = eventRepository.save(pass);
-		lock = teamRepository.save(lock);
-		if (pass == null || team == null) {
-			throw new DBException();
+	@Override
+	public void rollbackTeamEvent(Event event, Volunteer performer, ActionResponseBody result) throws DBException {
+		Team lock = teamRepository.selectForUpdate(event.getTeam());
+		Long lastEvent = eventRepository.selectLastActiveTeamEvent(lock);
+		
+		try {
+			if (!ObjectUtils.nullSafeEquals(event.getId(), lastEvent)) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("event.validation.cantDeleteNotLast");
+				return;
+			}
+	
+			Event current = eventRepository.findOne(event.getId());
+			if (current == null || current.getStatus() != EventStatus.POSTED) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("event.validation.inActive");
+				return;			
+			}
+			
+			current.setStatus(EventStatus.REVERSED);
+			current.setDateTo(performer.now());
+			current.setClosedBy(performer);
+			current.getTeam().setStatusData(current.getFromTeamStatus());
+			current = eventRepository.save(current);
+			
+			if (current == null) {
+				throw new DBException("Event rollback failed");
+			}
+		} catch (Throwable t) {
+			throw new DBException(t);
 		}
+		
+		return;
 	}
 
 	@Override
@@ -360,6 +426,26 @@ public class TeamServiceImpl implements TeamService {
 		} else {
 			result = teamRepository.findByRouteAndStatus(route, status);
 		}
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public Event selectTeamEvent(Long id, Event.SelectMode selectMode) {
+		Event e = eventRepository.findOne(id);
+		
+		if (e != null && e.getTeam() == null) {
+			e = null;
+		}
+		
+		initialize(e, selectMode);
+		
+		return e;
+	}
+
+	@Override
+	public List<Event> selectTeamEvents(ControlPoint controlPoint, Event.SelectMode selectMode) {
+		List<Event> result = eventRepository.selectTeamEvents(controlPoint);
 		initialize(result, selectMode);
 		return result;
 	}

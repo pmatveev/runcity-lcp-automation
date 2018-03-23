@@ -45,22 +45,22 @@ import com.fasterxml.jackson.annotation.JsonView;
 @RestController
 public class RestGameController extends AbstractRestController {
 	private static final Logger logger = Logger.getLogger(RestGameController.class);
-	
+
 	@Autowired
 	private GameService gameService;
-	
+
 	@Autowired
 	private RouteService routeService;
-	
+
 	@Autowired
 	private TeamService teamService;
-	
-	@Autowired 
+
+	@Autowired
 	private VolunteerService volunteerService;
-	
+
 	@Autowired
 	private ApplicationContext context;
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameTable", method = RequestMethod.GET)
@@ -69,12 +69,12 @@ public class RestGameController extends AbstractRestController {
 		GameTable table = new GameTable(messageSource, localeList);
 		table.fetchAll(gameService, localeList);
 		return table.validate();
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameCreateEdit/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initGameCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initGameCreateEditForm(@PathVariable Long id) {
 		Game g = gameService.selectById(id, Game.SelectMode.WITH_CATEGORIES);
 		if (g == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -85,7 +85,7 @@ public class RestGameController extends AbstractRestController {
 
 		return new GameCreateEditForm(g, localeList);
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameCreateEdit", method = RequestMethod.POST)
@@ -98,7 +98,7 @@ public class RestGameController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		Game g = null;
 		try {
 			g = gameService.addOrUpdate(form.getGame());
@@ -106,7 +106,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (g == null) {
 			result.setResponseClass(ResponseClass.ERROR);
@@ -114,7 +114,7 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/gameDelete", method = RequestMethod.DELETE)
@@ -127,7 +127,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
-		return result;		
+		return result;
 	}
 
 	@JsonView(RouteTable.ByGame.class)
@@ -136,13 +136,13 @@ public class RestGameController extends AbstractRestController {
 	public RouteTable getRouteTableByGame(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/routeTableByGame");
 		logger.debug("\tgameId=" + gameId);
-		
+
 		Game game = gameService.selectById(gameId, Game.SelectMode.WITH_CATEGORIES);
 		RouteTable table = new RouteTable(messageSource, localeList, game);
 		table.fill(game, context);
 		return table.validate();
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeCreate", method = RequestMethod.POST)
@@ -155,7 +155,7 @@ public class RestGameController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		Game g = null;
 		try {
 			g = gameService.addOrUpdate(form.getGame());
@@ -163,7 +163,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (g == null) {
 			result.setResponseClass(ResponseClass.ERROR);
@@ -171,7 +171,7 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeDelete/", method = RequestMethod.DELETE)
@@ -184,7 +184,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
-		return result;		
+		return result;
 	}
 
 	@JsonView(Views.Public.class)
@@ -193,17 +193,17 @@ public class RestGameController extends AbstractRestController {
 	public RouteItemTable getRouteItemTable(@RequestParam(required = true) Long routeId) {
 		logger.info("GET /api/v1/routeTable");
 		logger.debug("\trouteId=" + routeId);
-		
+
 		Route r = routeService.selectById(routeId, Route.SelectMode.WITH_ITEMS);
 		RouteItemTable table = new RouteItemTable(messageSource, localeList, r);
 		table.fill(r);
 		return table.validate();
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemCreateEdit/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initRouteItemCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initRouteItemCreateEditForm(@PathVariable Long id) {
 		RouteItem ri = routeService.selectItemById(id);
 		if (ri == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -211,14 +211,14 @@ public class RestGameController extends AbstractRestController {
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
-		
+
 		return new RouteItemCreateEditByRouteForm(ri, localeList);
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemCreateEdit", method = RequestMethod.POST)
-	public RestPostResponseBody routeItemCreateEdit(@RequestBody RouteItemCreateEditByRouteForm form) {		
+	public RestPostResponseBody routeItemCreateEdit(@RequestBody RouteItemCreateEditByRouteForm form) {
 		logger.info("POST /api/v1/routeItemCreateEdit");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -227,7 +227,7 @@ public class RestGameController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		RouteItem ri = null;
 		try {
 			ri = routeService.addOrUpdateItem(form.getRouteItem());
@@ -235,7 +235,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (ri == null) {
 			result.setResponseClass(ResponseClass.ERROR);
@@ -243,7 +243,7 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/routeItemDelete/", method = RequestMethod.DELETE)
@@ -256,43 +256,43 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
-		return result;		
+		return result;
 	}
-	
+
 	@JsonView(VolunteerTable.ByGame.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/coordinatorTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getCoordinatorsTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/coordinatorTableByGame");
 		logger.debug("\tgameId=" + gameId);
-		
+
 		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
-		
+
 		VolunteerTable table = VolunteerTable.initCoordinatorsByGame(messageSource, localeList, g);
 		table.add(volunteerService.selectCoordinatorsByGame(g, Volunteer.SelectMode.NONE));
 		return table.validate();
-	}	
-	
+	}
+
 	@JsonView(VolunteerTable.ByGameControlPoint.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerTableByGame", method = RequestMethod.GET)
 	public VolunteerTable getVolunteersTable(@RequestParam(required = true) Long gameId) {
 		logger.info("GET /api/v1/volunteerTableByGame");
 		logger.debug("\tgameId=" + gameId);
-		
+
 		Game g = gameService.selectById(gameId, Game.SelectMode.NONE);
 
 		VolunteerTable table = VolunteerTable.initVolunteersByGame(messageSource, localeList, g);
 		table.add(volunteerService.selectVolunteersByGame(g, Volunteer.SelectMode.NONE));
 		return table.validate();
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initVolunteerCreateEditForm(@PathVariable Long id) {
 		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
-		
+
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
@@ -302,7 +302,7 @@ public class RestGameController extends AbstractRestController {
 
 		return new VolunteerCreateEditByGameCPForm(v, localeList);
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCP", method = RequestMethod.POST)
@@ -317,12 +317,13 @@ public class RestGameController extends AbstractRestController {
 		}
 
 		SecureUserDetails user = SecureUserDetails.getCurrentUser();
-		if (!user.isAdmin() && !volunteerService.isCoordinator(form.getVolunteer().getVolunteerGame(), user.getUsername())) {
+		if (!user.isAdmin() && volunteerService.selectCoordinatorByUsername(form.getVolunteer().getVolunteerGame(),
+				user.getUsername(), Volunteer.SelectMode.NONE) == null) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
 			return result;
 		}
-		
+
 		Volunteer v = null;
 		try {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
@@ -330,21 +331,21 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (v == null) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initCoordinatorCreateEditForm(@PathVariable Long id) {
 		Volunteer v = volunteerService.selectById(id, Volunteer.SelectMode.NONE);
-		
+
 		if (v == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
@@ -354,7 +355,7 @@ public class RestGameController extends AbstractRestController {
 
 		return new VolunteerCreateEditByGameCoordForm(v, localeList);
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/volunteerCreateEditByGameCoord", method = RequestMethod.POST)
@@ -367,7 +368,7 @@ public class RestGameController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		Volunteer v = null;
 		try {
 			v = volunteerService.addOrUpdate(form.getVolunteer());
@@ -375,61 +376,62 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (v == null) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
 		return result;
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured({ "ROLE_ADMIN", "ROLE_VOLUNTEER" })
 	@RequestMapping(value = "/api/v1/volunteerDelete/", method = RequestMethod.DELETE)
 	public RestPostResponseBody volunteerDelete(@RequestBody List<Long> id) {
 		logger.info("DELETE /api/v1/volunteerDelete");
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
-		
+
 		SecureUserDetails user = SecureUserDetails.getCurrentUser();
 		if (!user.isAdmin()) {
 			for (Long i : id) {
 				Volunteer v = volunteerService.selectById(i, Volunteer.SelectMode.NONE);
-				if (!volunteerService.isCoordinator(v.getVolunteerGame(), user.getUsername())) {
+				if (volunteerService.selectCoordinatorByUsername(v.getVolunteerGame(), user.getUsername(),
+						Volunteer.SelectMode.NONE) == null) {
 					result.setResponseClass(ResponseClass.ERROR);
 					result.addCommonMsg("common.forbidden");
 					return result;
 				}
 			}
 		}
-		
+
 		try {
 			volunteerService.delete(id);
 		} catch (Exception e) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
-		return result;	
+		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/teamTableByRoute", method = RequestMethod.GET)
 	public TeamTable getTeamsTableByRoute(@RequestParam(required = true) Long routeId) {
 		logger.info("GET /api/v1/teamTableByRoute");
 		logger.debug("\tgameId=" + routeId);
-		
+
 		Route r = routeService.selectById(routeId, Route.SelectMode.NONE);
 		TeamTable table = new TeamTable(messageSource, localeList, r);
 		table.add(teamService.selectTeamsByRoute(r, Team.SelectMode.NONE));
 
 		return table.validate();
-	}	
-	
+	}
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/teamCreateEdit/{id}", method = RequestMethod.GET)
-	public RestGetResponseBody initTeamCreateEditForm(@PathVariable Long id) {		
+	public RestGetResponseBody initTeamCreateEditForm(@PathVariable Long id) {
 		Team t = teamService.selectById(id, Team.SelectMode.NONE);
 		if (t == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
@@ -437,14 +439,14 @@ public class RestGameController extends AbstractRestController {
 			result.addCommonMsg("common.popupFetchError");
 			return result;
 		}
-		
+
 		return new TeamCreateEditByRouteForm(t, localeList);
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/teamCreateEdit", method = RequestMethod.POST)
-	public RestPostResponseBody teamCreateEdit(@RequestBody TeamCreateEditByRouteForm form) {		
+	public RestPostResponseBody teamCreateEdit(@RequestBody TeamCreateEditByRouteForm form) {
 		logger.info("POST /api/v1/teamCreateEdit");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
@@ -453,7 +455,7 @@ public class RestGameController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		Team t = null;
 		try {
 			t = teamService.addOrUpdate(form.getTeam());
@@ -461,7 +463,7 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
 		if (t == null) {
 			result.setResponseClass(ResponseClass.ERROR);
@@ -469,7 +471,7 @@ public class RestGameController extends AbstractRestController {
 		}
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/api/v1/teamDelete/", method = RequestMethod.DELETE)
@@ -482,6 +484,6 @@ public class RestGameController extends AbstractRestController {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("commom.db.deleteConstraint");
 		}
-		return result;		
+		return result;
 	}
 }

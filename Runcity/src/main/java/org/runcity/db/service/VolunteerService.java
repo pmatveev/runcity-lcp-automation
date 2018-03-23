@@ -25,8 +25,6 @@ public interface VolunteerService {
 	
 	public Volunteer selectCoordinatorByUsername(Game g, String username, Volunteer.SelectMode selectMode);
 	
-	public boolean isCoordinator(Game g, String username);
-	
 	public void setCurrent(Volunteer v, boolean isActive) throws DBException;
 	
 	public Volunteer getCurrentByUsername(String username);

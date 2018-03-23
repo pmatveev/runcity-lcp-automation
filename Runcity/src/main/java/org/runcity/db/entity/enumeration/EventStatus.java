@@ -6,7 +6,8 @@ import org.springframework.context.MessageSource;
 
 public enum EventStatus {
 	CLOSED("eventStatus.closed", "C"),
-	POSTED("eventStatus.posted", "P");
+	POSTED("eventStatus.posted", "P"),
+	REVERSED("eventStatus.reversed", "R");
 
 	private String displayName;
 	private String storedValue;
@@ -28,6 +29,7 @@ public enum EventStatus {
 		switch (storedValue) {
 		case "C": return CLOSED;
 		case "P": return POSTED;
+		case "R": return REVERSED;
 		default:
 			return null;
 		}

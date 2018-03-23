@@ -146,7 +146,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 	public void setCurrent(Volunteer v, boolean isActive) throws DBException {
 		try {
 			Date now = v.now();
-			eventRepository.closeActive(v.getConsumer(), now);
+			eventRepository.closeActive(v, v.getConsumer(), now);
 			
 			if (isActive) {
 				Event e = new Event();
@@ -184,14 +184,9 @@ public class VolunteerServiceImpl implements VolunteerService {
 
 	@Override
 	public Volunteer selectCoordinatorByUsername(Game g, String username, SelectMode selectMode) {
-		Volunteer result = volunteerRepository.findByGameandUsername(g, username);
+		Volunteer result = volunteerRepository.findByGameAndUsername(g, username);
 		initialize(result, selectMode);
 		return result;
-	}
-
-	@Override
-	public boolean isCoordinator(Game g, String username) {
-		return selectCoordinatorByUsername(g, username, Volunteer.SelectMode.NONE) != null;
 	}
 	
 	@Override

@@ -76,6 +76,10 @@ public class VolunteerTeamTable extends AbstractTable {
 		}
 	}
 
+	private VolunteerTeamTable(MessageSource messageSource) {
+		super(null, null, null, null, messageSource, null, null);
+	}
+	
 	protected VolunteerTeamTable(String id, String title, String simpleTitle, String ajaxData,
 			MessageSource messageSource, DynamicLocaleList localeList, Object... titleArgs) {
 		super(id, title, simpleTitle, ajaxData, messageSource, localeList, titleArgs);
@@ -153,7 +157,7 @@ public class VolunteerTeamTable extends AbstractTable {
 	}
 	
 	public static VolunteerTeamTable initRestResponse(MessageSource messageSource) {
-		return new VolunteerTeamTable(null, null, null, null, messageSource, null, null);
+		return new VolunteerTeamTable(messageSource);
 	}
 
 	public void add(Collection<Team> teams) {

@@ -46,7 +46,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 	public Volunteer findByCPandUsername(@Param("cp") ControlPoint controlPoint, @Param("user") String username);
 	
 	@Query("select v from Volunteer v, Consumer c where v.game = :game and c = v.consumer and c.username = :user")
-	public Volunteer findByGameandUsername(@Param("game") Game game, @Param("user") String username);
+	public Volunteer findByGameAndUsername(@Param("game") Game game, @Param("user") String username);
 	
 	@Query("select v from Volunteer v, Consumer c, Event e "
 			+ "where c = v.consumer "

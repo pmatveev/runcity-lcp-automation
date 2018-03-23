@@ -2,6 +2,7 @@ package org.runcity.mvc.rest;
 
 import org.apache.log4j.Logger;
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.Event;
 import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
@@ -15,6 +16,7 @@ import org.runcity.mvc.rest.util.RestGetResponseBody;
 import org.runcity.mvc.rest.util.RestPostResponseBody;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
+import org.runcity.mvc.web.tabledata.TeamEventTable;
 import org.runcity.mvc.web.tabledata.VolunteerTeamTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseClass;
@@ -33,26 +35,26 @@ import com.fasterxml.jackson.annotation.JsonView;
 @RestController
 public class RestRuntimeController extends AbstractRestController {
 	private static final Logger logger = Logger.getLogger(RestRuntimeController.class);
-	
+
 	@Autowired
 	private VolunteerService volunteerService;
-	
+
 	@Autowired
 	private TeamService teamService;
-	
+
 	@Autowired
 	private ControlPointService controlPointService;
-	
+
 	@Autowired
 	private RouteService routeService;
-	
+
 	public static class OnsiteRequestBody {
 		@JsonView(Views.Public.class)
 		private Long volunteer;
-		
+
 		@JsonView(Views.Public.class)
 		private Boolean onsite;
-		
+
 		public OnsiteRequestBody() {
 		}
 
@@ -72,11 +74,12 @@ public class RestRuntimeController extends AbstractRestController {
 			this.onsite = onsite;
 		}
 	}
-	
+
 	private boolean checkVolunteer(Volunteer v) {
-		return ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(), SecureUserDetails.getCurrentUser().getUsername());
+		return ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(),
+				SecureUserDetails.getCurrentUser().getUsername());
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/volunteer/onsite", method = RequestMethod.POST)
@@ -84,38 +87,38 @@ public class RestRuntimeController extends AbstractRestController {
 		logger.info("POST /api/v1/volunteer/onsite");
 
 		RestPostResponseBody result = new RestPostResponseBody(messageSource);
-		
+
 		if (request.getVolunteer() == null || request.getOnsite() == null) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
-		
+
 		Volunteer v = volunteerService.selectById(request.getVolunteer(), Volunteer.SelectMode.WITH_ACTIVE);
-		
+
 		if (v == null || !checkVolunteer(v)) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("volunteer.volunteerNotFound");
 			return result;
 		}
-		
+
 		if (ObjectUtils.nullSafeEquals(request.getOnsite(), v.getActive())) {
 			// no action needed
 			return result;
 		}
-		
+
 		try {
 			volunteerService.setCurrent(v, request.getOnsite());
 		} catch (DBException e) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
 			logger.error("DB exception", e);
-			return result;			
+			return result;
 		}
-		
+
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/volunteer/teamProcess", method = RequestMethod.POST)
@@ -128,27 +131,28 @@ public class RestRuntimeController extends AbstractRestController {
 		if (errors.hasErrors()) {
 			return result;
 		}
-		
+
 		if (!checkVolunteer(form.getVolunteer())) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("volunteer.volunteerNotFound");
 			return result;
 		}
-		
+
 		try {
-			teamService.processTeam(form.getTeam(), form.getConfirmationToken(), form.getRouteItem(), form.getVolunteer(), result);
+			teamService.processTeam(form.getTeam(), form.getConfirmationToken(), form.getRouteItem(),
+					form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.popupProcessError");
 		}
-		
+
 		if (result.getResponseClass() == ResponseClass.INFO) {
-			result.addCommonMsg("common.completed");		
+			result.addCommonMsg("common.completed");
 		}
 		return result;
 	}
-	
+
 	@JsonView(Views.Public.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/stat", method = RequestMethod.GET)
@@ -157,23 +161,24 @@ public class RestRuntimeController extends AbstractRestController {
 
 		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
 				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
-		
+
 		if (v == null || !checkVolunteer(v)) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("volunteer.volunteerNotFound");
 			return result;
 		}
-		
-		ControlPoint cp = controlPointService.selectById(v.getControlPoint().getId(), ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
+
+		ControlPoint cp = controlPointService.selectById(v.getControlPoint().getId(),
+				ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		cp = cp.getMain();
-		
+
 		Long total = 0L;
 		for (RouteItem ri : cp.getRouteItems()) {
 			Long stat = teamService.selectActiveNumberByRouteItem(ri);
 			total += stat;
 			result.addElement("routeCounter_" + ri.getId(), stat);
 		}
-		
+
 		for (ControlPoint ch : cp.getChildren()) {
 			for (RouteItem ri : ch.getRouteItems()) {
 				Long stat = teamService.selectActiveNumberByRouteItem(ri);
@@ -181,26 +186,26 @@ public class RestRuntimeController extends AbstractRestController {
 				result.addElement("routeCounter_" + ri.getId(), stat);
 			}
 		}
-		
+
 		result.addElement("routeCounter_total", total);
-		
+
 		return result;
 	}
-	
+
 	@JsonView(VolunteerTeamTable.ForVolunteer.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByCP(@PathVariable Long cpId) {
 		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
 				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
-		
+
 		if (v == null || !checkVolunteer(v)) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("volunteer.volunteerNotFound");
+			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
-		
+
 		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		result.add(teamService.selectPendingTeamsByCP(cpId, Team.SelectMode.NONE));
 		return result.validate();
@@ -211,17 +216,17 @@ public class RestRuntimeController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/routeItem/{routeItemId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByRouteItem(@PathVariable Long routeItemId) {
 		RouteItem ri = routeService.selectItemById(routeItemId);
-		
+
 		if (ri == null) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("volunteer.volunteerNotFound");
+			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
-		
+
 		Volunteer v = volunteerService.selectByControlPointAndUsername(ri.getControlPoint(),
 				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
-		
+
 		if (v == null || !checkVolunteer(v)) {
 			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
@@ -232,5 +237,61 @@ public class RestRuntimeController extends AbstractRestController {
 		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		result.add(teamService.selectPendingTeamsByRouteItem(ri, Team.SelectMode.NONE));
 		return result.validate();
+	}
+
+	@JsonView(TeamEventTable.ForCP.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/history", method = RequestMethod.GET)
+	public RestGetResponseBody getCpHistory(@PathVariable Long cpId) {
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
+				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+
+		if (v == null || !checkVolunteer(v)) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.invalidRequest");
+			return result;
+		}
+
+		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
+		result.add(teamService.selectTeamEvents(v.getControlPoint(), Event.SelectMode.NONE));
+		return result.validate();
+	}
+
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/teamEvent/{eventId}", method = RequestMethod.DELETE)
+	public RestPostResponseBody rollbackTeamEvent(@PathVariable Long eventId) {
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+
+		Event e = teamService.selectTeamEvent(eventId, Event.SelectMode.NONE);
+
+		if (e == null) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.invalidRequest");
+			return result;
+		}
+
+		Volunteer current = volunteerService.selectCoordinatorByUsername(e.getVolunteer().getVolunteerGame(),
+				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+
+		if (current == null) {
+			current = volunteerService.selectByControlPointAndUsername(e.getVolunteer().getControlPoint(),
+					SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+			if (current == null) {
+				result.setResponseClass(ResponseClass.ERROR);
+				result.addCommonMsg("volunteer.volunteerNotFound");
+				return result;
+			}
+		}
+
+		try {
+			teamService.rollbackTeamEvent(e, current, result);
+		} catch (DBException e1) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.db.fail");
+			return result;
+		}
+		return result;
 	}
 }

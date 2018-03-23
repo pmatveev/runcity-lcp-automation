@@ -20,6 +20,7 @@ import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
+import org.runcity.mvc.web.tabledata.TeamEventTable;
 import org.runcity.mvc.web.tabledata.VolunteerTeamTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.mvc.web.tabledata.GameTable;
@@ -182,6 +183,9 @@ public class MenuController {
 			form.setVolunteerId(v.getId());
 			model.addAttribute(form.getFormName(), form);
 		}
+		
+		TeamEventTable events = new TeamEventTable(cp, messageSource, localeList);
+		events.processModel(model);
 		
 		return "secure/volunteerDetails";	
 	}

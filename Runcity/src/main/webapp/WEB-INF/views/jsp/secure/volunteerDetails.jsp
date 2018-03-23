@@ -1,3 +1,4 @@
+<%@page import="java.util.TimeZone"%>
 <%@page import="org.springframework.web.servlet.tags.UrlTag"%>
 <%@page import="org.runcity.db.entity.Game"%>
 <%@page import="org.runcity.util.StringUtils"%>
@@ -60,7 +61,7 @@
 		ControlPoint controlPoint = volunteer.getControlPoint().getMain();
 		String locale = LocaleContextHolder.getLocale().toString();
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(localize(bundle, "common.shortDateTimeFormat"));
-		dateTimeFormat.setTimeZone(volunteer.getTz());
+		dateTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		
 		// basic info
 		tagWriter.startTag("form");
@@ -70,8 +71,8 @@
 		tagWriter.endTag();
 		writeField(tagWriter, "address", localize(bundle, "jsp.controlPoint.address"), controlPoint.getLocalizedAddress(locale));
 		writeField(tagWriter, "datefrom", localize(bundle, "jsp.volunteer.from"),
-				dateTimeFormat.format(volunteer.getUtcDateFrom()));
-		writeField(tagWriter, "dateto", localize(bundle, "jsp.volunteer.to"), dateTimeFormat.format(volunteer.getUtcDateTo()));
+				dateTimeFormat.format(volunteer.getDateFrom()));
+		writeField(tagWriter, "dateto", localize(bundle, "jsp.volunteer.to"), dateTimeFormat.format(volunteer.getDateTo()));
 		tagWriter.endTag();
 		
 		// categories
@@ -205,6 +206,9 @@
 		<li<c:if test="${not volunteer.active}"> class="active"</c:if>>
 			<a data-toggle="tab" href="#info"><fmt:message key="jsp.volunteer.infoTab" bundle="${msg}" /></a>
 		</li>
+		<c:if test="${volunteer.active}">
+			<li><a data-toggle="tab" href="#history"><fmt:message key="${teamEventTable.simpleTitle}" bundle="${msg}" /></a></li>
+		</c:if>
 	</ul>
 	
 	<div class="tab-content">
@@ -223,6 +227,11 @@
 			writeInfo(pageContext, volunteer, bundle, refreshAjax);
 			%>
 		</div>
+		<c:if test="${volunteer.active}">
+			<div id="history" class="tab-pane">
+				<runcity:table bundle="${msg}" table="${teamEventTable}" caption="false"/>
+			</div>
+		</c:if>
 	</div>
 </div>
 <%@ include file="../template/foot.jsp"%>

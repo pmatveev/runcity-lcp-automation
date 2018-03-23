@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.runcity.db.entity.ControlPoint;
+import org.runcity.db.entity.Event;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
@@ -33,6 +34,8 @@ public interface TeamService {
 	public void processTeam(Team team, String allowedStatus, RouteItem ri, Volunteer volunteer, ActionResponseBody result) throws DBException;
 
 	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Volunteer volunteer, ActionResponseBody result) throws DBException;
+
+	void rollbackTeamEvent(Event event, Volunteer performer, ActionResponseBody result) throws DBException;
 	
 	public Map<Route, Map<String, Long>> selectStatsByGame(Game game);
 	
@@ -45,4 +48,8 @@ public interface TeamService {
 	public List<Team> selectPendingTeamsByRouteItem(RouteItem routeItem, Team.SelectMode selectMode);
 
 	public List<Team> selectTeamsByRouteWithStatus(Route route, String status, SelectMode selectMode);
+	
+	public Event selectTeamEvent(Long id, Event.SelectMode selectMode);
+	
+	public List<Event> selectTeamEvents(ControlPoint controlPoint, Event.SelectMode selectMode);
 }

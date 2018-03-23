@@ -14,7 +14,6 @@
 <spring:url value="/resources/css/bootstrap-colorpicker.min.css" var="bootstrapColorCss" />
 <spring:url value="/resources/css/dataTables.bootstrap.min.css" var="dtCss" />
 <spring:url value="/resources/css/buttons.bootstrap.min.css" var="dtButtonsCss" />
-<spring:url value="/resources/css/fixedHeader.bootstrap.min.css" var="dtFixedHeaderCss" />
 <spring:url value="/resources/css/select.bootstrap.min.css" var="dtSelectCss" />
 <spring:url value="/resources/css/bootstrap-toggle.min.css" var="bootstrapToggleCss" />
 <spring:url value="/resources/css/runcity.css" var="runcityCss" />
@@ -30,7 +29,6 @@
 <spring:url value="/resources/js/dataTables.bootstrap.min.js" var="dtJs" />
 <spring:url value="/resources/js/dataTables.buttons.min.js" var="dtButtonsMainJs" />
 <spring:url value="/resources/js/buttons.bootstrap.min.js" var="dtButtonsJs" />
-<spring:url value="/resources/js/dataTables.fixedHeader.min.js" var="dtFinedHeaderJs" />
 <spring:url value="/resources/js/dataTables.select.min.js" var="dtSelectJs" />
 <spring:url value="/resources/js/bootstrap-notify.min.js" var="bootstrapNotifyJs" />
 <spring:url value="/resources/js/bootstrap-toggle.min.js" var="bootstrapToggleJs" />
@@ -45,7 +43,6 @@
 <link rel='stylesheet' href='${bootstrapColorCss}'/>
 <link rel='stylesheet' href='${dtCss}'/>
 <link rel='stylesheet' href='${dtButtonsCss}'/>
-<link rel='stylesheet' href='${dtFixedHeaderCss}'/>
 <link rel='stylesheet' href='${dtSelectCss}'/>
 <link rel='stylesheet' href='${bootstrapToggleCss}'/>
 <link rel='stylesheet' href='${runcityCss}'/>
@@ -61,7 +58,6 @@
 <script type="text/javascript" src="${dtJs}"></script>
 <script type="text/javascript" src="${dtButtonsMainJs}"></script>
 <script type="text/javascript" src="${dtButtonsJs}"></script>
-<script type="text/javascript" src="${dtFinedHeaderJs}"></script>
 <script type="text/javascript" src="${dtSelectJs}"></script>
 <script type="text/javascript" src="${bootstrapNotifyJs}"></script>
 <script type="text/javascript" src="${bootstrapToggleJs}"></script>
@@ -99,6 +95,8 @@
 		modalOK                  : '<fmt:message key="common.submitForm" bundle="${msg}" />',
 		tableDateFormat          : '<fmt:message key="common.tableDateFormat" bundle="${msg}" />',
 		tableDateTimeFormat      : '<fmt:message key="common.tableDateTimeFormat" bundle="${msg}" />',
+		tableDateTimeStampFormat : '<fmt:message key="common.tableDateTimeStampFormat" bundle="${msg}" />',
+		tableTimeStampFormat     : '<fmt:message key="common.tableTimeStampFormat" bundle="${msg}" />',
 		extnTabName              : '<fmt:message key="extension.tabHeader" bundle="${msg}" />',
 		refreshEmpty             : '<fmt:message key="common.refreshEmpty" bundle="${msg}" />'
 	}

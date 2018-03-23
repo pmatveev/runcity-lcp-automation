@@ -172,12 +172,14 @@ p.required-mark {
 }
 
 form.read-form div.form-group {
-	margin-bottom: 0;
+	margin: 0;
+	width: 100%;
 }
 
-form.read-form label {
+form.read-form label.control-label {
 	margin-bottom: 0;
 	padding-left: 0;
+	text-align: left;
 }
 
 p.volunteer-category-reminder {

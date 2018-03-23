@@ -1,3 +1,4 @@
+<%@page import="java.util.TimeZone"%>
 <%@page import="org.springframework.context.i18n.LocaleContextHolder"%>
 <%@page import="org.springframework.util.ObjectUtils"%>
 <%@page import="java.util.Date"%>
@@ -30,6 +31,7 @@
 	private void writeEvents(PageContext pageContext, LocalizationContext bundle, Collection<Volunteer> data) throws JspException  {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(localize(bundle, "common.shortDateFormat"));
 		SimpleDateFormat timeFormat = new SimpleDateFormat(localize(bundle, "common.shortTimeFormat"));
+		
 		TagWriter tagWriter = new TagWriter(pageContext);
 
 		if (data == null || data.size() == 0) {
@@ -55,8 +57,8 @@
 			String url = pageContext.getAttribute("vurl").toString();
 
 			Game g = v.getVolunteerGame();
-			dateFormat.setTimeZone(g.getTz());
-			timeFormat.setTimeZone(g.getTz());
+			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 			tagWriter.startTag("div");
 			tagWriter.writeAttribute("class", "volunteer-entry");
@@ -102,8 +104,8 @@
 			
 			tagWriter.endTag();
 
-			Date from = v.getUtcDateFrom();
-			Date to = v.getUtcDateTo();
+			Date from = v.getDateFrom();
+			Date to = v.getDateTo();
 			String dateFrom = dateFormat.format(from);
 			String timeFrom = timeFormat.format(from);
 			String dateTo = dateFormat.format(to);

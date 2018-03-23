@@ -32,6 +32,8 @@ public class SpringRootConfig {
 	public static final String DATE_FORMAT_JS = "yyyy mm dd";
 	public static final String DATE_TIME_FORMAT = "yyyy MM dd HH mm";
 	public static final String DATE_TIME_FORMAT_JS = "yyyy mm dd hh ii";
+	public static final String DATE_TIMESTAMP_FORMAT = "yyyy MM dd HH mm ss";
+	public static final String TIMESTAMP_FORMAT = "HH mm ss";
 
 	@Resource
 	private Environment env;
