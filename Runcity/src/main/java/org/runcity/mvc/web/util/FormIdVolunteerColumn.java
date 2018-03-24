@@ -29,8 +29,8 @@ public class FormIdVolunteerColumn extends FormIdColumn {
 	public void validate(ApplicationContext context, Errors errors) {
 		super.validate(context, errors);
 
-		VolunteerService routeService = context.getBean(VolunteerService.class);
-		volunteer = routeService.selectById(value, validateActive ? Volunteer.SelectMode.WITH_ACTIVE : Volunteer.SelectMode.NONE);
+		VolunteerService volunteerService = context.getBean(VolunteerService.class);
+		volunteer = volunteerService.selectById(value, validateActive ? Volunteer.SelectMode.WITH_ACTIVE : Volunteer.SelectMode.NONE);
 
 		if (volunteer == null) {
 			errors.reject("common.notFoundHiddenId", new Object[] { getLabel(), value }, null);

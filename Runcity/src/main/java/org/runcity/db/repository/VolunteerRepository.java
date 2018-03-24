@@ -54,4 +54,14 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 			+ "and e.volunteer = v "
 			+ "and e.status = 'P' and e.type = 'V'")
 	public Volunteer findCurrentByUsername(@Param("user") String username);
+	
+	@Query("select count(v) from Volunteer v, Consumer c where v.game = :game and c = v.consumer and c.username = :user")
+	public Long countCoordinators(@Param("user") String username, @Param("game") Game game);
+	
+	@Query("select count(v) from Volunteer v, ControlPoint cp, Consumer c "
+			+ "where cp = v.controlPoint "
+			+ "and cp.game = :game "
+			+ "and c = v.consumer "
+			+ "and c.username = :user")
+	public Long countVolunteers(@Param("user") String username, @Param("game") Game game);
 }

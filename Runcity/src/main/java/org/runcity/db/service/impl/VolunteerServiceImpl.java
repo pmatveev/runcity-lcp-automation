@@ -191,6 +191,16 @@ public class VolunteerServiceImpl implements VolunteerService {
 	public Volunteer getCurrentByUsername(String username) {
 		return volunteerRepository.findCurrentByUsername(username);
 	}
+	
+	@Override
+	public boolean isVolunteerForGame(String username, Game game) {
+		return volunteerRepository.countVolunteers(username, game) > 0;
+	}
+	
+	@Override
+	public boolean isCoordinatorForGame(String username, Game game) {
+		return volunteerRepository.countCoordinators(username, game) > 0;
+	}
 
 	@Override
 	public Volunteer selectCoordinatorByUsername(Game g, String username, SelectMode selectMode) {

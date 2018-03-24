@@ -91,4 +91,9 @@ public class RouteServiceImpl implements RouteService {
 	public Long selectTeamNumber(Route r) {
 		return routeRepository.selectTeamCount(r);
 	}
+
+	@Override
+	public Long selectMaxLeg(Route route) {
+		return routeRepository.selectMaxLeg(route);
+	}
 }

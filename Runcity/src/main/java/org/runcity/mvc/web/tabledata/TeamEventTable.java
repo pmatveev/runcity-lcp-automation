@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
+import org.runcity.db.entity.Team;
 import org.runcity.db.entity.enumeration.EventStatus;
+import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
@@ -39,6 +41,15 @@ public class TeamEventTable extends AbstractTable {
 		@JsonView(ForCP.class)
 		private String teamNumber;
 
+		@JsonView(ForTeam.class)
+		private String controlPoint;
+
+		@JsonView(ForTeam.class)
+		private String fromStatus;
+
+		@JsonView(ForTeam.class)
+		private String toStatus;
+
 		@JsonView({ ForCP.class, ForTeam.class })
 		private String status;
 
@@ -46,6 +57,11 @@ public class TeamEventTable extends AbstractTable {
 			this.id = e.getId();
 			this.time = e.getDateFrom();
 			this.teamNumber = StringUtils.xss(e.getTeam().getNumber());
+			if (e.getVolunteer().getControlPoint() != null) {
+				this.controlPoint = StringUtils.xss(e.getVolunteer().getControlPoint().getNameDisplay());
+			}
+			this.fromStatus = TeamStatus.getDisplayName(e.getFromTeamStatus(), messageSource, locale);
+			this.toStatus = TeamStatus.getDisplayName(e.getToTeamStatus(), messageSource, locale);
 			this.status = StringUtils.xss(EventStatus.getDisplayName(e.getStatus(), messageSource, locale));
 		}
 	}
@@ -66,6 +82,23 @@ public class TeamEventTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));
 		this.columns.add(new ColumnDefinition("teamNumber", "event.teamNumber"));
+		this.columns.add(new ColumnDefinition("status", "event.status"));
+
+		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
+		
+		this.expandFrame = "/secure/iframe/teamEvent/{0}:id";
+	}
+
+	public TeamEventTable(Team team, MessageSource messageSource, DynamicLocaleList localeList) {
+		super("teamEventTable", "teamEvent.headerByTeam", "teamEvent.simpleHeader",
+				"/api/v1/team/" + team.getId() + "/history", messageSource, localeList,
+				team.getNumber());
+
+		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
+		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("controlPoint", "event.controlPoint"));
+		this.columns.add(new ColumnDefinition("fromStatus", "event.fromStatus"));
+		this.columns.add(new ColumnDefinition("toStatus", "event.toStatus"));
 		this.columns.add(new ColumnDefinition("status", "event.status"));
 
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));

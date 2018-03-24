@@ -8,6 +8,7 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#volunteers"><fmt:message key="${coordControlPointTable.simpleTitle}" bundle="${msg}" /></a></li>
 		<li><a data-toggle="tab" href="#statistics"><fmt:message key="${coordTeamStatTable.simpleTitle}" bundle="${msg}" /></a></li>
+		<li><a data-toggle="tab" href="#teamsearch"><fmt:message key="jsp.volunteer.searchTeam" bundle="${msg}" /></a></li>
 	</ul>
 
 	<div class="tab-content">
@@ -25,6 +26,10 @@
 			<%@ include file="../forms/teamRetireByCoordinatorForm.jsp"%>
 			<%@ include file="../forms/teamDisqualifyByCoordinatorForm.jsp"%>
 			<runcity:table bundle="${msg}" table="${coordTeamStatTable}" caption="false"/>
+		</div>
+		<div id="teamsearch" class="tab-pane">
+			<c:set var="searchGameId" value="${volunteer.game.id}"/>
+			<%@ include file="../forms/teamSearch.jsp"%>		
 		</div>
 	</div>
 </div>

@@ -24,6 +24,7 @@ import org.runcity.mvc.web.formdata.TeamFinishByCoordinatorForm;
 import org.runcity.mvc.web.formdata.TeamNotStartedByCoordinatorForm;
 import org.runcity.mvc.web.formdata.TeamProcessAbstractForm;
 import org.runcity.mvc.web.formdata.TeamRetireByCoordinatorForm;
+import org.runcity.mvc.web.formdata.TeamSetStatusByCoordinatorForm;
 import org.runcity.mvc.web.tabledata.CoordinatorControlPointTable;
 import org.runcity.mvc.web.tabledata.CoordinatorTeamStatTable;
 import org.runcity.mvc.web.tabledata.CoordinatorVolunteerTable;
@@ -200,7 +201,8 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 
 		try {
-			teamService.setTeamStatus(form.getTeam(), form.getConfirmationToken(), status, form.getVolunteer(), result);
+			teamService.setTeamStatus(form.getTeam(), form.getConfirmationToken(), status, null, form.getVolunteer(),
+					result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);
@@ -242,7 +244,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		return setTeamStatus(form, TeamStatus.DISQUALIFIED);
 	}
 
-	@JsonView(VolunteerTeamTable.ForCoordinator.class)
+	@JsonView(VolunteerTeamTable.ForCategory.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/coordinator/route/{routeId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByRoute(@PathVariable Long routeId,
@@ -265,5 +267,39 @@ public class RestCoordinatorController extends AbstractRestController {
 		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		result.add(teamService.selectTeamsByRouteWithStatus(r, status, Team.SelectMode.NONE));
 		return result.validate();
+	}
+
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/coordinator/team/setStatus", method = RequestMethod.POST)
+	public RestPostResponseBody setTeamStatus(@RequestBody TeamSetStatusByCoordinatorForm form) {
+		logger.info("POST /api/v1/coordinator/team/setStatus");
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+		Errors errors = validateForm(form, result);
+
+		if (errors.hasErrors()) {
+			return result;
+		}
+
+		if (!isCoordinator(form.getVolunteer().getVolunteerGame())) {
+			result.addCommonMsg("common.forbidden");
+			return result;
+		}
+
+		try {
+			teamService.setTeamStatus(form.getTeam(), form.getConfirmationToken(),
+					TeamStatus.getByStoredValue(form.getStatus()), form.getLeg() == null ? null : form.getLeg() - 1,
+					form.getVolunteer(), result);
+		} catch (DBException e) {
+			logger.error(e);
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.popupProcessError");
+		}
+
+		if (result.getResponseClass() == ResponseClass.INFO) {
+			result.addCommonMsg("common.completed");
+		}
+		return result;
 	}
 }

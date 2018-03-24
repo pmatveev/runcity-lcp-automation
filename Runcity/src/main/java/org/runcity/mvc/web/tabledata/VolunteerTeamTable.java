@@ -1,7 +1,6 @@
 package org.runcity.mvc.web.tabledata;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,69 +9,44 @@ import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.db.entity.enumeration.TeamStatus;
-import org.runcity.mvc.config.SpringRootConfig;
+import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class VolunteerTeamTable extends AbstractTable {
 
-	public class ForVolunteer {
+	public class ForCP {
 	}
 
-	public class ForCoordinator {
+	public class ForCategory {
 	}
 
-	@JsonView({ ForVolunteer.class, ForCoordinator.class })
+	@JsonView({ ForCP.class, ForCategory.class })
 	private List<TableRow> data = new LinkedList<TableRow>();
 
 	protected class TableRow {
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
+		@JsonView({ ForCP.class, ForCategory.class })
 		private Long id;
 
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
-		private String category;
-
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
+		@JsonView({ ForCP.class, ForCategory.class })
 		private String number;
 
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
-		private String name;
-
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
-		private Date start;
-
-		@JsonView(ForCoordinator.class)
-		private String contact;
-
-		@JsonView(ForCoordinator.class)
-		private String addData;
-
-		@JsonView({ ForVolunteer.class, ForCoordinator.class })
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIME_FORMAT)
+		@JsonView({ ForCP.class, ForCategory.class })
 		private String status;
+
+		@JsonView(ForCP.class)
+		private String category;
 
 		public TableRow(Team t) {
 			this.id = t.getId();
-			this.category = StringUtils.xss(t.getRoute().getCategory().getLocalizedName(t.getRoute().getGame().getLocale()));
 			this.number = StringUtils.xss(t.getNumber());
-			this.name = StringUtils.xss(t.getName());
-			this.start = t.getStart();
-			this.contact = StringUtils.xss(t.getContact());
-			this.addData = StringUtils.xss(t.getAddData());
-
-			TeamStatus status = t.getStatus();
-			if (status == TeamStatus.ACTIVE) {
-				this.status = messageSource.getMessage("teamStatus.leg", new Object[] { t.getLeg() }, locale);
-			} else {
-				this.status = TeamStatus.getDisplayName(status, messageSource, locale);
-			}
+			this.status = StringUtils.xss(TeamStatus.getDisplayName(t.getStatusData(), messageSource, locale));
+			this.category = StringUtils.xss(t.getRoute().getCategory().getLocalizedName(t.getRoute().getGame().getLocale()));
 		}
 	}
 
@@ -93,9 +67,9 @@ public class VolunteerTeamTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("number", "team.number").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("status", "team.status").setSort("desc", 0));
 
-		this.extensions.add(new ColumnDefinition("name", "team.name"));
-		this.extensions.add(new ColumnDefinition("start", "team.start").setDateTimeFormat());
-		this.expandFrame = ":id";
+		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
+
+		this.expandFrame = "/secure/iframe/team/{0}:id";
 	}
 
 	private void initCoordinatorTable() {
@@ -103,11 +77,9 @@ public class VolunteerTeamTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("number", "team.number").setSort("asc", 1));
 		this.columns.add(new ColumnDefinition("status", "team.status").setSort("desc", 0));
 
-		this.extensions.add(new ColumnDefinition("name", "team.name"));
-		this.extensions.add(new ColumnDefinition("start", "team.start").setDateTimeFormat());
-		this.extensions.add(new ColumnDefinition("contact", "team.contact"));
-		this.extensions.add(new ColumnDefinition("addData", "team.addData"));
-		this.expandFrame = ":id";
+		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
+
+		this.expandFrame = "/secure/iframe/team/{0}:id";
 	}
 
 	public static VolunteerTeamTable initForVolunteer(Volunteer volunteer, MessageSource messageSource,

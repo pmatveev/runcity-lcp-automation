@@ -1,6 +1,9 @@
 package org.runcity.db.entity.enumeration;
 
+import java.text.MessageFormat;
 import java.util.Locale;
+
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 import org.springframework.context.MessageSource;
 
@@ -25,6 +28,10 @@ public enum TeamStatus {
 
 	public static String getDisplayName(TeamStatus data, MessageSource messageSource, Locale l) {
 		return messageSource.getMessage(getDisplayName(data), null, l);
+	}
+
+	public static String getDisplayName(TeamStatus data, LocalizationContext bundle) {
+		return bundle.getResourceBundle().getString(getDisplayName(data));
 	}
 
 	private static boolean isNumber(String value) {
@@ -68,5 +75,14 @@ public enum TeamStatus {
 			return messageSource.getMessage("teamStatus.leg", new Object[] { status }, locale);
 		}
 		return TeamStatus.getDisplayName(TeamStatus.getByStoredValue(status), messageSource, locale);
+	}
+
+	public static String getDisplayName(String status, LocalizationContext bundle) {
+		TeamStatus s = TeamStatus.getByStoredValue(status);
+		if (s == ACTIVE) {
+			String result = bundle.getResourceBundle().getString("teamStatus.leg");
+			return MessageFormat.format(result, status);
+		}
+		return TeamStatus.getDisplayName(TeamStatus.getByStoredValue(status), bundle);
 	}
 }

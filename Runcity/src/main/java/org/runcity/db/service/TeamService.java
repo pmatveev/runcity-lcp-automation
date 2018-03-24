@@ -19,6 +19,8 @@ import org.runcity.util.ActionResponseBody;
 public interface TeamService {
 	public Team selectById(Long id, Team.SelectMode selectMode);
 
+	public Team selectByNumberGame(String number, Long game, Team.SelectMode selectMode);
+
 	public Team selectByNumberGame(String number, Game game, Team.SelectMode selectMode);
 	
 	public TeamRouteItem selectByNumberCP(String number, ControlPoint controlPoint, Team.SelectMode selectMode);
@@ -33,7 +35,7 @@ public interface TeamService {
 	
 	public void processTeam(Team team, String allowedStatus, RouteItem ri, Volunteer volunteer, ActionResponseBody result) throws DBException;
 
-	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Volunteer volunteer, ActionResponseBody result) throws DBException;
+	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer, ActionResponseBody result) throws DBException;
 
 	void rollbackTeamEvent(Event event, Volunteer performer, ActionResponseBody result) throws DBException;
 	
@@ -52,4 +54,6 @@ public interface TeamService {
 	public Event selectTeamEvent(Long id, Event.SelectMode selectMode);
 	
 	public List<Event> selectTeamEvents(ControlPoint controlPoint, Event.SelectMode selectMode);
+	
+	public List<Event> selectTeamEvents(Team team, Event.SelectMode selectMode);
 }

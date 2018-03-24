@@ -24,6 +24,7 @@ import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.db.entity.util.TeamAggregate;
 import org.runcity.db.entity.util.TeamRouteItem;
 import org.runcity.db.repository.EventRepository;
+import org.runcity.db.repository.GameRepository;
 import org.runcity.db.repository.RouteItemRepository;
 import org.runcity.db.repository.RouteRepository;
 import org.runcity.db.repository.TeamRepository;
@@ -56,6 +57,9 @@ public class TeamServiceImpl implements TeamService {
 
 	@Autowired
 	private EventRepository eventRepository;
+
+	@Autowired
+	private GameRepository gameRepository;
 
 	private void initialize(Team t, Team.SelectMode selectMode) {
 		if (t == null) {
@@ -108,6 +112,11 @@ public class TeamServiceImpl implements TeamService {
 		Team result = teamRepository.findOne(id);
 		initialize(result, selectMode);
 		return result;
+	}
+
+	@Override
+	public Team selectByNumberGame(String number, Long game, Team.SelectMode selectMode) {
+		return selectByNumberGame(number, gameRepository.findOne(game), selectMode);
 	}
 
 	@Override
@@ -184,9 +193,9 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Volunteer volunteer,
+	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer,
 			ActionResponseBody result) throws DBException {
-		processTeam(team, allowedStatus, status, null, volunteer, EventType.TEAM_COORD, result);
+		processTeam(team, allowedStatus, status, leg, volunteer, EventType.TEAM_COORD, result);
 	}
 
 	private boolean checkOfflineCp(Team team, Integer leg) {
@@ -446,6 +455,13 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<Event> selectTeamEvents(ControlPoint controlPoint, Event.SelectMode selectMode) {
 		List<Event> result = eventRepository.selectTeamEvents(controlPoint);
+		initialize(result, selectMode);
+		return result;
+	}
+
+	@Override
+	public List<Event> selectTeamEvents(Team team, Event.SelectMode selectMode) {
+		List<Event> result = eventRepository.selectTeamEvents(team);
 		initialize(result, selectMode);
 		return result;
 	}

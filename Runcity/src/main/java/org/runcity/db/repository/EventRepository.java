@@ -29,6 +29,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 	@Query("select e from Event e, Volunteer v where e.team is not null and e.volunteer = v and v.controlPoint = :cp")
     public List<Event> selectTeamEvents(@Param("cp") ControlPoint controlPoint);
 
+	@Query("select e from Event e where e.team = :team")
+    public List<Event> selectTeamEvents(@Param("team") Team team);
+
 	@Query("select max(e.id) from Event e where e.status = 'P' and e.team = :team")
     public Long selectLastActiveTeamEvent(@Param("team") Team team);
 }

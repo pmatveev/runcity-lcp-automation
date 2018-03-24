@@ -221,11 +221,22 @@
 			</div>
 		</c:if>
 		<div id="info" class="tab-pane<c:if test="${not volunteer.active}"> active</c:if>">
-			<spring:url value="/api/v1/controlPoint/${volunteer.controlPoint.id}/stat" var="refreshAjax" />
-			<%
-			String refreshAjax = (String) pageContext.getAttribute("refreshAjax");
-			writeInfo(pageContext, volunteer, bundle, refreshAjax);
-			%>
+			<div class="row">
+				<spring:url value="/api/v1/controlPoint/${volunteer.controlPoint.id}/stat" var="refreshAjax" />
+				<%
+				String refreshAjax = (String) pageContext.getAttribute("refreshAjax");
+				writeInfo(pageContext, volunteer, bundle, refreshAjax);
+				%>
+			</div>
+			<c:if test="${volunteer.active}">
+				<div class="row">
+					<div class="col-sm-12">
+						<h3><fmt:message key="jsp.volunteer.searchTeam" bundle="${msg}" /></h3>
+						<c:set var="searchGameId" value="<%=volunteer.getVolunteerGame().getId()%>"/>
+						<%@ include file="../forms/teamSearch.jsp"%>						
+					</div>
+				</div>
+			</c:if>
 		</div>
 		<c:if test="${volunteer.active}">
 			<div id="history" class="tab-pane">

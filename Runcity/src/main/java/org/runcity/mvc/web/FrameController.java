@@ -5,6 +5,7 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
+import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.ConsumerService;
 import org.runcity.db.service.ControlPointService;
@@ -12,8 +13,10 @@ import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
 import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
+import org.runcity.mvc.web.formdata.TeamSetStatusByCoordinatorForm;
 import org.runcity.mvc.web.tabledata.CoordinatorVolunteerTable;
 import org.runcity.mvc.web.tabledata.RouteItemTable;
+import org.runcity.mvc.web.tabledata.TeamEventTable;
 import org.runcity.mvc.web.tabledata.TeamTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
@@ -71,7 +74,7 @@ public class FrameController {
 		teamTable.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
-		return "/sub/routeDetails";
+		return "sub/routeDetails";
 	}
 
 	@Secured("ROLE_ADMIN")
@@ -91,7 +94,7 @@ public class FrameController {
 		volunteersTable.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
-		return "/sub/gameDetails";
+		return "sub/gameDetails";
 	}
 
 	@Secured("ROLE_ADMIN")
@@ -108,7 +111,7 @@ public class FrameController {
 		table.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
-		return "/sub/controlPointDetails";
+		return "sub/controlPointDetails";
 	}
 
 	@Secured("ROLE_ADMIN")
@@ -128,7 +131,7 @@ public class FrameController {
 		volunteersTable.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
-		return "/sub/consumerDetails";
+		return "sub/consumerDetails";
 	}
 
 	@Secured("ROLE_VOLUNTEER")
@@ -150,7 +153,7 @@ public class FrameController {
 		table.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
-		return "/sub/coordControlPointDetails";
+		return "sub/coordControlPointDetails";
 	}
 
 	@Secured("ROLE_VOLUNTEER")
@@ -169,8 +172,8 @@ public class FrameController {
 		if (current == null) {
 			current = volunteerService.selectByControlPointAndUsername(e.getVolunteer().getControlPoint(),
 					SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.WITH_ACTIVE);
-			if (current == null) {
-				return "exception/forbiddenSub";
+			if (current == null || Boolean.FALSE.equals(current.getActive())) {
+				e.setCanDelete(false);
 			}
 		}
 
@@ -178,6 +181,39 @@ public class FrameController {
 		model.addAttribute("table", table);
 		model.addAttribute("event", e);
 
-		return "/sub/teamEvent";
+		return "sub/teamEvent";
+	}
+
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/iframe/team/{teamId}", method = RequestMethod.GET)
+	public String teamDetails(Model model, @PathVariable Long teamId, @RequestParam(required = true) String referrer,
+			@RequestParam(required = false) String table) {
+		Team team = teamService.selectById(teamId, Team.SelectMode.NONE);
+		
+		if (team == null) {
+			return "exception/invalidUrlSub";			
+		}
+		
+		Volunteer coordinator = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(), SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+		if (coordinator == null && !volunteerService.isVolunteerForGame(SecureUserDetails.getCurrentUser().getUsername(), team.getRoute().getGame())) {
+			return "exception/forbiddenSub";
+		}
+		
+		if (coordinator != null) {
+			TeamSetStatusByCoordinatorForm statusForm = new TeamSetStatusByCoordinatorForm(localeList);
+			statusForm.setVolunteerId(coordinator.getId());
+			statusForm.setTeamId(team.getId());
+			model.addAttribute(statusForm.getFormName(), statusForm);
+			statusForm.prefix(referrer);
+			model.addAttribute("statusFormId", statusForm.getHtmlId());
+		}
+		
+		TeamEventTable events = new TeamEventTable(team, messageSource, localeList);
+		events.processModel(model, referrer);
+
+		model.addAttribute("prefix", referrer);
+		model.addAttribute("coordinator", coordinator != null);
+		model.addAttribute("team", team);
+		return "sub/team";
 	}
 }

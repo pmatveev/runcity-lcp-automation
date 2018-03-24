@@ -18,6 +18,7 @@ public abstract class FormColumn<T> {
 	
 	// conditional fields
 	protected String showCondition;
+	protected FormColumn<?>[] conditionArgs;
 	
 	protected FormColumn(AbstractForm form, ColumnDefinition definition) {
 		this.form = form;
@@ -73,14 +74,19 @@ public abstract class FormColumn<T> {
 	}
 	
 	public void setShowCondition(String js, FormColumn<?> ... args) {
-		showCondition = js;
-		for (int i = 0; i < args.length; i++) {
-			showCondition = showCondition.replace("{" + i + "}", "getData($('#" + args[i].getHtmlId() + "'))");
-		}
+		this.showCondition = js;
+		this.conditionArgs = args;
 	}
 	
 	public String getShowCondition() {
-		return showCondition;
+		String js = showCondition;
+
+		if (conditionArgs != null) {
+			for (int i = 0; i < conditionArgs.length; i++) {
+				js = js.replace("{" + i + "}", "getData($('#" + conditionArgs[i].getHtmlId() + "'))");
+			}
+		}
+		return js;
 	}
 	
 	@Override

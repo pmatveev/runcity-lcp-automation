@@ -29,6 +29,10 @@ public interface VolunteerService {
 	
 	public Volunteer getCurrentByUsername(String username);
 	
+	public boolean isVolunteerForGame(String username, Game game);
+	
+	public boolean isCoordinatorForGame(String username, Game game);
+	
 	public List<Volunteer> selectByControlPoint(Long controlPoint, Volunteer.SelectMode selectMode);
 
 	public List<Volunteer> selectByControlPoint(ControlPoint controlPoint, Volunteer.SelectMode selectMode);

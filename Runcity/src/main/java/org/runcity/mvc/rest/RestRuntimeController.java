@@ -192,7 +192,7 @@ public class RestRuntimeController extends AbstractRestController {
 		return result;
 	}
 
-	@JsonView(VolunteerTeamTable.ForVolunteer.class)
+	@JsonView(VolunteerTeamTable.ForCP.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByCP(@PathVariable Long cpId) {
@@ -211,7 +211,7 @@ public class RestRuntimeController extends AbstractRestController {
 		return result.validate();
 	}
 
-	@JsonView(VolunteerTeamTable.ForVolunteer.class)
+	@JsonView(VolunteerTeamTable.ForCP.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/routeItem/{routeItemId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByRouteItem(@PathVariable Long routeItemId) {
@@ -255,6 +255,25 @@ public class RestRuntimeController extends AbstractRestController {
 
 		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
 		result.add(teamService.selectTeamEvents(v.getControlPoint(), Event.SelectMode.NONE));
+		return result.validate();
+	}
+	
+	// /api/v1/team/2/history
+	@JsonView(TeamEventTable.ForTeam.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/team/{teamId}/history", method = RequestMethod.GET)
+	public RestGetResponseBody getTeamHistory(@PathVariable Long teamId) {
+		Team team = teamService.selectById(teamId, Team.SelectMode.NONE); 
+
+		if (team == null) {
+			RestGetResponseBody result = new RestGetResponseBody(messageSource);
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.invalidRequest");
+			return result;
+		}
+
+		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
+		result.add(teamService.selectTeamEvents(team, Event.SelectMode.NONE));
 		return result.validate();
 	}
 

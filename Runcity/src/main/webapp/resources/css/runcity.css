@@ -118,6 +118,7 @@ table.dt-expand tr td {
 
 .narrow {
 	max-width : 300px;
+	margin: auto;
 }
 
 .nav-tabs {

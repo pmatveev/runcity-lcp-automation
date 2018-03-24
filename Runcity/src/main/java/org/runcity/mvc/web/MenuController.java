@@ -7,11 +7,13 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
 import org.runcity.db.entity.Route;
 import org.runcity.db.entity.RouteItem;
+import org.runcity.db.entity.Team;
 import org.runcity.db.entity.Volunteer;
 import org.runcity.db.service.CategoryService;
 import org.runcity.db.service.ControlPointService;
 import org.runcity.db.service.GameService;
 import org.runcity.db.service.RouteService;
+import org.runcity.db.service.TeamService;
 import org.runcity.db.service.VolunteerService;
 import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
@@ -57,6 +59,12 @@ public class MenuController {
 	
 	@Autowired 
 	private RouteService routeService;
+	
+	@Autowired 
+	private TeamService teamService;
+	
+	@Autowired 
+	private FrameController frameController;
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String redirectHome() {
@@ -300,5 +308,37 @@ public class MenuController {
 		table.processModel(model);
 		
 		return "secure/volunteerTeams";
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/team/{teamId}", method = RequestMethod.GET)
+	public String teamDetails(Model model, @PathVariable Long teamId) {
+		String result = frameController.teamDetails(model, teamId, null, null);
+
+		switch (result) {
+		case "sub/team":
+			result = "secure/team";
+			break;
+		case "exception/invalidUrlSub":
+			result = "exception/invalidUrl";
+			break;
+		case "exception/forbiddenSub":
+			result = "exception/forbidden";
+			break;
+		}
+		
+		return result;
+	}
+	
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/secure/team", method = RequestMethod.GET)
+	public String teamDetailsByNumber(Model model, @RequestParam(required = true) Long game, @RequestParam(required = true) String number) {
+		Team team = teamService.selectByNumberGame(number, game, Team.SelectMode.NONE);
+		
+		if (team == null) {
+			return "exception/invalidUrl";
+		}
+		
+		return teamDetails(model, team.getId());
 	}
 }

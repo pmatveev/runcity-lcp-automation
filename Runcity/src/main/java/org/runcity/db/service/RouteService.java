@@ -17,5 +17,7 @@ public interface RouteService {
 	
 	public void deleteItem(List<Long> id);
 	
-	public Long selectTeamNumber(Route r);
+	public Long selectTeamNumber(Route route);
+	
+	public Long selectMaxLeg(Route route);
 }
