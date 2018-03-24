@@ -27,10 +27,16 @@ public enum TeamStatus {
 	}
 
 	public static String getDisplayName(TeamStatus data, MessageSource messageSource, Locale l) {
+		if (data == null) {
+			return "";
+		}
 		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	public static String getDisplayName(TeamStatus data, LocalizationContext bundle) {
+		if (data == null) {
+			return "";
+		}
 		return bundle.getResourceBundle().getString(getDisplayName(data));
 	}
 
@@ -48,20 +54,18 @@ public enum TeamStatus {
 	}
 
 	public static TeamStatus getByStoredValue(String storedValue) {
+		if (storedValue == null) {
+			return null;
+		}
 		if (isNumber(storedValue)) {
 			return ACTIVE;
 		}
 		switch (storedValue) {
-		case "D":
-			return DISQUALIFIED;
-		case "F":
-			return FINISHED;
-		case "N":
-			return NOT_STARTED;
-		case "R":
-			return RETIRED;
-		default:
-			return null;
+		case "D": return DISQUALIFIED;
+		case "F": return FINISHED;
+		case "N": return NOT_STARTED;
+		case "R": return RETIRED;
+		default: return null;
 		}
 	}
 

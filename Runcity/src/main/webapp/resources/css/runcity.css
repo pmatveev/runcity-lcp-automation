@@ -204,3 +204,7 @@ p.volunteer-category-reminder {
 .ajax-refresh-holder {
 	display: inline;
 }
+
+form.form-inline {
+	display: inline-block;
+}

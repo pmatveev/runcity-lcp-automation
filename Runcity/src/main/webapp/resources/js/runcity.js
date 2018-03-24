@@ -86,7 +86,13 @@ function emptyValue(val) {
 }
 
 function removeFormMessage(form) {
-	form.find(".errorHolder").html("");
+	var holder = form.attr("error-holder");
+	
+	if (typeof holder !== 'undefined') {
+		$("#" + holder).html("");
+	} else {	
+		form.find(".errorHolder").html("");
+	}
 }
 
 function parseDate(datestr) {
@@ -125,7 +131,13 @@ function removeFormFieldErrorMessage(form) {
 }
 
 function setFormMessage(form, message, cls) {
-	var errHolder = form.find(".errorHolder");
+	var holder = form.attr("error-holder");
+	var errHolder;
+	if (typeof holder !== 'undefined') {
+		errHolder = $("#" + holder);
+	} else {
+		errHolder = form.find(".errorHolder");
+	}
 	var errDiv = errHolder.find(".alert-" + cls);
 	if (!errDiv.length) {
 		errHolder.append('<div class="alert alert-' + cls + '">' + message + '</div>');
@@ -619,9 +631,13 @@ function initAjaxSourced(form, elem, dataIn, val) {
 function setDefaults(form, persistCreate) {
 	form.find("input,select,textarea").not('[type="submit"]').each(function() {
 		var elem = $(this);
+		if (elem.hasClass("preserve-value")) {
+			return;
+		}
 		if (elem.prop("tagName") === 'SELECT' && elem.attr('force-refresh') == 'true') {
 			elem.attr('loaded-from', '');
 		}
+		
 		var val = elem.attr('default');
 		
 		if (!(persistCreate && elem.hasClass("create-another"))) {
@@ -792,7 +808,7 @@ function changeModalFormState(form, submitDisabled, loader, keepOnScreen) {
 	form.find('[data-dismiss="modal"]').prop("disabled", keepOnScreen);
 
 	if (loader) {
-		if (!submit.parent().find(".loader").length) {
+		if (!submit.parent().find(".loader").length && !form.hasClass("form-inline")) {
 			if (submit.hasClass("loader-right")) {
 				submit.parent().append("<div class='loader'></div>");
 			} else {

@@ -22,10 +22,16 @@ public enum EventStatus {
 	}
 	
 	public static String getDisplayName(EventStatus data, MessageSource messageSource, Locale l) {
+		if (data == null) {
+			return "";
+		}
 		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	public static EventStatus getByStoredValue(String storedValue) {
+		if (storedValue == null) {
+			return null;
+		}
 		switch (storedValue) {
 		case "C": return CLOSED;
 		case "P": return POSTED;

@@ -19,17 +19,20 @@ public enum SecureUserRole {
 	}
 	
 	public static String getDisplayName(SecureUserRole data, MessageSource messageSource, Locale l) {
+		if (data == null) {
+			return "";
+		}
 		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 
 	public static SecureUserRole getByStoredValue(String storedValue) {
-		switch (storedValue) {
-		case "ADMIN":
-			return ADMIN;
-		case "VOLUNTEER":
-			return VOLUNTEER;
-		default:
+		if (storedValue == null) {
 			return null;
+		}
+		switch (storedValue) {
+		case "ADMIN": return ADMIN;
+		case "VOLUNTEER": return VOLUNTEER;
+		default: return null;
 		}
 	}
 

@@ -10,6 +10,7 @@
 	SimpleDateFormat dateTimeFormat = new SimpleDateFormat(bundle.getResourceBundle().getString("common.shortTimeStampFormat"));
 	dateTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 %>
+<div id="${prefix}rollbackErrorHolder" class="errorHolder"></div>
 <div class="row">
 	<form class="form-horizontal read-form col-sm-6">
 		<div class="form-group">
@@ -44,10 +45,9 @@
 </div>
 <c:if test="${event.canDelete}">
 	<spring:url value="/api/v1/teamEvent/${event.id}" var="rollbackUrl"/>
-	<form:form id="${prefix}eventRollbackForm"
+	<form:form id="${prefix}eventRollbackForm" error-holder="${prefix}rollbackErrorHolder"
 		action="${rollbackUrl}" method="DELETE" related-table="${table}"
 		onsubmit="return submitModalForm($('#${prefix}eventRollbackForm'), event)">
-		<div class="errorHolder"></div>
 		<div>
 			<button type="submit" class="btn btn-danger loader-right">
 				<fmt:message key="jsp.volunteer.rollbackEvent" bundle="${msg}" />

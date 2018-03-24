@@ -36,6 +36,8 @@ public interface TeamService {
 	public void processTeam(Team team, String allowedStatus, RouteItem ri, Volunteer volunteer, ActionResponseBody result) throws DBException;
 
 	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer, ActionResponseBody result) throws DBException;
+	
+	public void verifyTeam(Team team, Volunteer volunteer) throws DBException;
 
 	void rollbackTeamEvent(Event event, Volunteer performer, ActionResponseBody result) throws DBException;
 	

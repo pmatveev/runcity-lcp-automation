@@ -80,7 +80,6 @@ public class TeamServiceImpl implements TeamService {
 		}
 	}
 
-
 	private void initialize(Event e, Event.SelectMode selectMode) {
 		if (e == null) {
 			return;
@@ -89,11 +88,20 @@ public class TeamServiceImpl implements TeamService {
 		case NONE:
 			break;
 		case WITH_DELETE:
-			if (e.getTeam() != null) {
-				Long lastId = eventRepository.selectLastActiveTeamEvent(e.getTeam());
+			switch (e.getType()) {
+			case TEAM_ACTIVE:
+				e.setCanDelete(e.getStatus() == EventStatus.POSTED);
+				break;
+			case TEAM_COORD:
+			case TEAM_COORD_EXCEPTION:
+			case TEAM_CP:
+			case TEAM_CP_EXCEPTION:
+				Long lastId = eventRepository.selectLastActiveStatusChangingEvent(e.getTeam());
 				e.setCanDelete(ObjectUtils.nullSafeEquals(lastId, e.getId()));
-			} else {
+				break;
+			case VOLUNTEER_AT_CP:
 				e.setCanDelete(false);
+				break;
 			}
 		}
 	}
@@ -217,7 +225,7 @@ public class TeamServiceImpl implements TeamService {
 				}
 			}
 		}
-		
+
 		return numOf <= 0;
 	}
 
@@ -269,28 +277,28 @@ public class TeamServiceImpl implements TeamService {
 
 		try {
 			Team lock = teamRepository.selectForUpdate(team);
-	
+
 			if (!ObjectUtils.nullSafeEquals(team.getStatusData(), lock.getStatusData())) {
 				result.setResponseClass(ResponseClass.ERROR);
 				result.addCommonMsg("common.concurrencyError");
 				return;
 			}
-	
+
 			boolean force = false;
 			if (!StringUtils.isEmpty(allowedStatus)) {
 				if (ObjectUtils.nullSafeEquals(allowedStatus, lock.getStatusData())) {
 					force = true;
 				}
 			}
-	
+
 			if (!force) {
 				if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
 					return;
 				}
 			}
-	
+
 			String fromStatus = lock.getStatusData();
-	
+
 			switch (status) {
 			case ACTIVE:
 				lock.setLeg(leg + 1);
@@ -301,11 +309,11 @@ public class TeamServiceImpl implements TeamService {
 				}
 				break;
 			}
-	
+
 			String toStatus = lock.getStatusData();
-	
-			Event pass = new Event(null, force ? eventType.getException() : eventType, EventStatus.POSTED, volunteer.now(),
-					null, volunteer, team, fromStatus, toStatus);
+
+			Event pass = new Event(null, force ? eventType.getException() : eventType, EventStatus.POSTED,
+					volunteer.now(), null, volunteer, team, fromStatus, toStatus);
 			pass = eventRepository.save(pass);
 			lock = teamRepository.save(lock);
 			if (pass == null || team == null) {
@@ -317,37 +325,54 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
+	public void verifyTeam(Team team, Volunteer volunteer) throws DBException {
+		try {
+			Event event = new Event(null, EventType.TEAM_ACTIVE, EventStatus.POSTED, volunteer.now(), null, volunteer,
+					team, null, null);
+			event = eventRepository.save(event);
+
+			if (event == null) {
+				throw new RuntimeException("Cannot save event");
+			}
+		} catch (Throwable t) {
+			throw new DBException(t);
+		}
+	}
+
+	@Override
 	public void rollbackTeamEvent(Event event, Volunteer performer, ActionResponseBody result) throws DBException {
 		Team lock = teamRepository.selectForUpdate(event.getTeam());
-		Long lastEvent = eventRepository.selectLastActiveTeamEvent(lock);
-		
+		Long lastEvent = eventRepository.selectLastActiveStatusChangingEvent(lock);
+
 		try {
-			if (!ObjectUtils.nullSafeEquals(event.getId(), lastEvent)) {
+			if (event.getType() != EventType.TEAM_ACTIVE && !ObjectUtils.nullSafeEquals(event.getId(), lastEvent)) {
 				result.setResponseClass(ResponseClass.ERROR);
 				result.addCommonMsg("event.validation.cantDeleteNotLast");
 				return;
 			}
-	
+
 			Event current = eventRepository.findOne(event.getId());
 			if (current == null || current.getStatus() != EventStatus.POSTED) {
 				result.setResponseClass(ResponseClass.ERROR);
 				result.addCommonMsg("event.validation.inActive");
-				return;			
+				return;
 			}
-			
+
 			current.setStatus(EventStatus.REVERSED);
 			current.setDateTo(performer.now());
 			current.setClosedBy(performer);
-			current.getTeam().setStatusData(current.getFromTeamStatus());
+			if (current.getFromTeamStatus() != null) {
+				current.getTeam().setStatusData(current.getFromTeamStatus());
+			}
 			current = eventRepository.save(current);
-			
+
 			if (current == null) {
 				throw new DBException("Event rollback failed");
 			}
 		} catch (Throwable t) {
 			throw new DBException(t);
 		}
-		
+
 		return;
 	}
 
@@ -442,13 +467,13 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public Event selectTeamEvent(Long id, Event.SelectMode selectMode) {
 		Event e = eventRepository.findOne(id);
-		
+
 		if (e != null && e.getTeam() == null) {
 			e = null;
 		}
-		
+
 		initialize(e, selectMode);
-		
+
 		return e;
 	}
 

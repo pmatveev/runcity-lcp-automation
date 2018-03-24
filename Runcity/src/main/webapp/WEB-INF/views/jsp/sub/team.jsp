@@ -22,10 +22,27 @@
 <div class="tab-content">
 	<div id="${prefix}teaminfo" class="tab-pane active">
 		<c:if test="${coordinator}">
-			<button class="btn btn-default" data-toggle="modal" data-target="#modal_${teamSetStatusByCoordinatorForm.htmlId}" 
-				onclick="beforeOpenModal($('#${teamSetStatusByCoordinatorForm.htmlId}'), null)">
-				<fmt:message key="${teamSetStatusByCoordinatorForm.title}" bundle="${msg}" />
-			</button>
+			<div id="${prefix}errorHolder" class="errorHolder"></div>
+			<div class="row">
+				<div class="col-sm-12">
+					<button class="btn btn-default" data-toggle="modal" data-target="#modal_${teamSetStatusByCoordinatorForm.htmlId}" 
+						onclick="beforeOpenModal($('#${teamSetStatusByCoordinatorForm.htmlId}'), null)">
+						<fmt:message key="${teamSetStatusByCoordinatorForm.title}" bundle="${msg}" />
+					</button>
+					
+					<spring:url value="/api/v1/team/active" var="activeUrl"/>
+					<form:form id="${prefix}teamActiveForm" class="form-inline"
+						action="${activeUrl}" method="POST" error-holder="${prefix}errorHolder"
+						onsubmit="return submitModalForm($('#${prefix}teamActiveForm'), event)">
+						<input class="preserve-value" type="hidden" name="teamId" value="${team.id}"/>
+						<div>
+							<button type="submit" class="btn btn-default">
+								<fmt:message key="coordinator.teamVerify" bundle="${msg}" />
+							</button>
+						</div>
+					</form:form>
+				</div>
+			</div>
 		</c:if>
 		<c:if test="${not empty prefix}">
 			<spring:url value="/secure/team/${team.id}" var="teamLink"/>

@@ -9,6 +9,7 @@ import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
 import org.runcity.db.entity.Team;
 import org.runcity.db.entity.enumeration.EventStatus;
+import org.runcity.db.entity.enumeration.EventType;
 import org.runcity.db.entity.enumeration.TeamStatus;
 import org.runcity.mvc.config.SpringRootConfig;
 import org.runcity.mvc.web.util.ButtonDefinition;
@@ -38,6 +39,9 @@ public class TeamEventTable extends AbstractTable {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = SpringRootConfig.DATE_TIMESTAMP_FORMAT)
 		private Date time;
 
+		@JsonView(ForTeam.class)
+		private String eventType;
+
 		@JsonView(ForCP.class)
 		private String teamNumber;
 
@@ -56,6 +60,7 @@ public class TeamEventTable extends AbstractTable {
 		public TableRow(Event e) {
 			this.id = e.getId();
 			this.time = e.getDateFrom();
+			this.eventType = EventType.getDisplayName(e.getType(), messageSource, locale); 
 			this.teamNumber = StringUtils.xss(e.getTeam().getNumber());
 			if (e.getVolunteer().getControlPoint() != null) {
 				this.controlPoint = StringUtils.xss(e.getVolunteer().getControlPoint().getNameDisplay());
@@ -96,6 +101,7 @@ public class TeamEventTable extends AbstractTable {
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));
+		this.columns.add(new ColumnDefinition("eventType", "event.type"));
 		this.columns.add(new ColumnDefinition("controlPoint", "event.controlPoint"));
 		this.columns.add(new ColumnDefinition("fromStatus", "event.fromStatus"));
 		this.columns.add(new ColumnDefinition("toStatus", "event.toStatus"));

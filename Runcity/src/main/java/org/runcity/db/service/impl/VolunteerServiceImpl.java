@@ -140,7 +140,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 		Volunteer result = volunteerRepository.findByCPandUsername(cp, username);
 		
 		initialize(result, selectMode);
-		if (requireActive) {
+		if (result != null && requireActive) {
 			if (result.getActive() == null) {
 				result.setActive(eventRepository.isActiveVolunteer(result) > 0);
 			}

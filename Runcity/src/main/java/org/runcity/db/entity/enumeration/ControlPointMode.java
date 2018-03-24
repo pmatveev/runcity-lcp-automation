@@ -24,6 +24,9 @@ public enum ControlPointMode {
 	}
 	
 	public static String getDisplayName(ControlPointMode data, MessageSource messageSource, Locale l) {
+		if (data == null) {
+			return "";
+		}
 		return messageSource.getMessage(getDisplayName(data), null, l);
 	}
 	
@@ -32,6 +35,9 @@ public enum ControlPointMode {
 	}
 
 	public static ControlPointMode getByStoredValue(String storedValue) {
+		if (storedValue == null) {
+			return null;
+		}
 		switch (storedValue) {
 		case "Y": return ONLINE;
 		case "N": return OFFLINE;

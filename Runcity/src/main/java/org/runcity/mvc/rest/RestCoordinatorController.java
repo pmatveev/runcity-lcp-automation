@@ -283,6 +283,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 
 		if (!isCoordinator(form.getVolunteer().getVolunteerGame())) {
+			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
 			return result;
 		}
@@ -300,6 +301,60 @@ public class RestCoordinatorController extends AbstractRestController {
 		if (result.getResponseClass() == ResponseClass.INFO) {
 			result.addCommonMsg("common.completed");
 		}
+		return result;
+	}
+
+	public static class TeamVerificationBody {
+		@JsonView(Views.Public.class)
+		private Long teamId;
+
+		public TeamVerificationBody() {
+		}
+
+		public Long getTeamId() {
+			return teamId;
+		}
+
+		public void setTeamId(Long teamId) {
+			this.teamId = teamId;
+		}
+	}
+
+	@JsonView(Views.Public.class)
+	@Secured("ROLE_VOLUNTEER")
+	@RequestMapping(value = "/api/v1/team/active", method = RequestMethod.POST)
+	public RestPostResponseBody teamVerification(@RequestBody TeamVerificationBody request) {
+		Team team = teamService.selectById(request.getTeamId(), Team.SelectMode.NONE);
+
+		RestPostResponseBody result = new RestPostResponseBody(messageSource);
+
+		if (team == null) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.invalidRequest");
+			return result;
+		}
+
+		Volunteer current = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(),
+				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+		
+		if (current == null) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.forbidden");
+			return result;
+		}
+
+		try {
+			teamService.verifyTeam(team, current);
+		} catch (DBException e) {
+			logger.error(e);
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.popupProcessError");
+		}
+
+		if (result.getResponseClass() == ResponseClass.INFO) {
+			result.addCommonMsg("common.completed");
+		}
+		
 		return result;
 	}
 }
