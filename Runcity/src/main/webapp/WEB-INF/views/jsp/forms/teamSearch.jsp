@@ -10,7 +10,8 @@
            <div class="form-group">
            	<input type="hidden" name="game" value="${searchGameId}"/>
                <div class="input-group">
-                   <input id="teamsearch" name="number" type="text" class="form-control" placeholder="<fmt:message key="team.number" bundle="${msg}" />"/>
+                   <input id="teamsearch" name="number" type="text" class="form-control" autofocus="autofocus"
+                   	placeholder="<fmt:message key="team.number" bundle="${msg}" />"/>
                    <span class="input-group-btn">
                     <button class="btn btn-default" type="submit">
                        	<span class="glyphicon glyphicon-search"></span>

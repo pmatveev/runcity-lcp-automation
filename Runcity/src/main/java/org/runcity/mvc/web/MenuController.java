@@ -285,10 +285,13 @@ public class MenuController {
 		}
 
 		String username = SecureUserDetails.getCurrentUser().getUsername();
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, false, Volunteer.SelectMode.WITH_ACTIVE);
+		Volunteer v = volunteerService.selectByControlPointAndUsername(cp, username, false, Volunteer.SelectMode.NONE);
 		
 		if (v == null) {
-			return "exception/forbidden";		
+			v = volunteerService.selectCoordinatorByUsername(cp.getGame(), username, Volunteer.SelectMode.NONE);
+			if (v == null) {
+				return "exception/forbidden";
+			}
 		}
 		
 		v.setControlPoint(cp);

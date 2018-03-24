@@ -19,6 +19,7 @@ import org.runcity.mvc.web.formdata.TeamProcessByVolunteerForm;
 import org.runcity.mvc.web.tabledata.TeamEventTable;
 import org.runcity.mvc.web.tabledata.VolunteerTeamTable;
 import org.runcity.secure.SecureUserDetails;
+import org.runcity.util.ResponseBody;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -48,6 +49,36 @@ public class RestRuntimeController extends AbstractRestController {
 	@Autowired
 	private RouteService routeService;
 
+	private boolean checkVolunteer(Volunteer v) {
+		return ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(),
+				SecureUserDetails.getCurrentUser().getUsername());
+	}
+
+	private ControlPoint getAllowedControlPoint(Long controlPointId, ControlPoint.SelectMode selectMode,
+			boolean requireActive, ResponseBody response) {
+		ControlPoint controlPoint = controlPointService.selectById(controlPointId, selectMode);
+
+		if (controlPoint == null) {
+			response.setResponseClass(ResponseClass.ERROR);
+			response.addCommonMsg("common.invalidRequest");
+			return null;
+		}
+
+		String username = SecureUserDetails.getCurrentUser().getUsername();
+		Volunteer v = volunteerService.selectByControlPointAndUsername(controlPoint, username, requireActive,
+				Volunteer.SelectMode.NONE);
+		if (v == null) {
+			v = volunteerService.selectCoordinatorByUsername(controlPoint.getGame(), username,
+					Volunteer.SelectMode.NONE);
+			if (v == null) {
+				response.setResponseClass(ResponseClass.ERROR);
+				response.addCommonMsg("common.forbidden");
+				return null;
+			}
+		}
+		return controlPoint;
+	}
+
 	public static class OnsiteRequestBody {
 		@JsonView(Views.Public.class)
 		private Long volunteer;
@@ -73,11 +104,6 @@ public class RestRuntimeController extends AbstractRestController {
 		public void setOnsite(Boolean onsite) {
 			this.onsite = onsite;
 		}
-	}
-
-	private boolean checkVolunteer(Volunteer v) {
-		return ObjectUtils.nullSafeEquals(v.getConsumer().getUsername(),
-				SecureUserDetails.getCurrentUser().getUsername());
 	}
 
 	@JsonView(Views.Public.class)
@@ -158,18 +184,12 @@ public class RestRuntimeController extends AbstractRestController {
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/stat", method = RequestMethod.GET)
 	public RestGetInfoResponseBody getStat(@PathVariable Long cpId) {
 		RestGetInfoResponseBody result = new RestGetInfoResponseBody();
+		ControlPoint cp = getAllowedControlPoint(cpId, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS, false, result);
 
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
-
-		if (v == null || !checkVolunteer(v)) {
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("volunteer.volunteerNotFound");
+		if (cp == null) {
 			return result;
 		}
 
-		ControlPoint cp = controlPointService.selectById(v.getControlPoint().getId(),
-				ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		cp = cp.getMain();
 
 		Long total = 0L;
@@ -196,17 +216,13 @@ public class RestRuntimeController extends AbstractRestController {
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByCP(@PathVariable Long cpId) {
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
+		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 
-		if (v == null || !checkVolunteer(v)) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("common.invalidRequest");
+		ControlPoint cp = getAllowedControlPoint(cpId, ControlPoint.SelectMode.NONE, false, result);
+		if (cp == null) {
 			return result;
 		}
 
-		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		result.add(teamService.selectPendingTeamsByCP(cpId, Team.SelectMode.NONE));
 		return result.validate();
 	}
@@ -215,26 +231,21 @@ public class RestRuntimeController extends AbstractRestController {
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/routeItem/{routeItemId}/teamTable", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamsByRouteItem(@PathVariable Long routeItemId) {
+		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		RouteItem ri = routeService.selectItemById(routeItemId);
 
 		if (ri == null) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
 
-		Volunteer v = volunteerService.selectByControlPointAndUsername(ri.getControlPoint(),
-				SecureUserDetails.getCurrentUser().getUsername(), false, Volunteer.SelectMode.NONE);
-
-		if (v == null || !checkVolunteer(v)) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("volunteer.volunteerNotFound");
+		ControlPoint cp = getAllowedControlPoint(ri.getControlPoint().getId(), ControlPoint.SelectMode.NONE, false,
+				result);
+		if (cp == null) {
 			return result;
 		}
 
-		VolunteerTeamTable result = VolunteerTeamTable.initRestResponse(messageSource);
 		result.add(teamService.selectPendingTeamsByRouteItem(ri, Team.SelectMode.NONE));
 		return result.validate();
 	}
@@ -243,36 +254,39 @@ public class RestRuntimeController extends AbstractRestController {
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/controlPoint/{cpId}/history", method = RequestMethod.GET)
 	public RestGetResponseBody getCpHistory(@PathVariable Long cpId) {
-		Volunteer v = volunteerService.selectByControlPointAndUsername(cpId,
-				SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.NONE);
+		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
 
-		if (v == null || !checkVolunteer(v)) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
-			result.setResponseClass(ResponseClass.ERROR);
-			result.addCommonMsg("common.invalidRequest");
+		ControlPoint cp = getAllowedControlPoint(cpId, ControlPoint.SelectMode.NONE, true, result);
+		if (cp == null) {
 			return result;
 		}
 
-		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
-		result.add(teamService.selectTeamEvents(v.getControlPoint(), Event.SelectMode.NONE));
+		result.add(teamService.selectTeamEvents(cp, Event.SelectMode.NONE));
 		return result.validate();
 	}
-	
-	// /api/v1/team/2/history
+
 	@JsonView(TeamEventTable.ForTeam.class)
 	@Secured("ROLE_VOLUNTEER")
 	@RequestMapping(value = "/api/v1/team/{teamId}/history", method = RequestMethod.GET)
 	public RestGetResponseBody getTeamHistory(@PathVariable Long teamId) {
-		Team team = teamService.selectById(teamId, Team.SelectMode.NONE); 
+		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
+		Team team = teamService.selectById(teamId, Team.SelectMode.NONE);
 
 		if (team == null) {
-			RestGetResponseBody result = new RestGetResponseBody(messageSource);
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.invalidRequest");
 			return result;
 		}
 
-		TeamEventTable result = TeamEventTable.initRestResponse(messageSource);
+		Volunteer coordinator = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(),
+				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+		if (coordinator == null && !volunteerService
+				.isVolunteerForGame(SecureUserDetails.getCurrentUser().getUsername(), team.getRoute().getGame())) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("common.forbidden");
+			return result;
+		}
+
 		result.add(teamService.selectTeamEvents(team, Event.SelectMode.NONE));
 		return result.validate();
 	}
@@ -299,7 +313,7 @@ public class RestRuntimeController extends AbstractRestController {
 					SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.NONE);
 			if (current == null) {
 				result.setResponseClass(ResponseClass.ERROR);
-				result.addCommonMsg("volunteer.volunteerNotFound");
+				result.addCommonMsg("common.forbidden");
 				return result;
 			}
 		}

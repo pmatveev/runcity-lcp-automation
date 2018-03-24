@@ -40,6 +40,12 @@ function initHtml(container, dtLocalizationLink) {
 	container.find('.fileinput').each(function() {
 		initFileInput($(this), '', false);
 	});
+	container.find(".nav-tabs a").click(function(e) {
+		var focus = $($(this).attr("href")).find('[autofocus="autofocus"]')[0];
+		if (focus) {
+			focus.focus();
+		}
+	});
 }
 
 function showConfirmation(confirmation, callback) {
@@ -1750,7 +1756,12 @@ function refreshPageData(elem) {
 	}
 	
 	elem.prop('disabled', true);
-	elem.parent().append("<div class='loader'></div>");
+
+	if (elem.hasClass("loader-right")) {
+		elem.parent().append("<div class='loader'></div>");
+	} else {
+		elem.parent().prepend("<div class='loader'></div>");
+	}
 	
 	var error = function(data) {
 		$('[refreshed-by=' + elem.attr('id') + ']').each(function() {

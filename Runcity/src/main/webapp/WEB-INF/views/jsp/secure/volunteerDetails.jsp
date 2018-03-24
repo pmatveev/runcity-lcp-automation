@@ -83,7 +83,7 @@
 		tagWriter.appendValue("&nbsp;");
 		tagWriter.startTag("button");
 		tagWriter.writeAttribute("id", "infoRefresh");
-		tagWriter.writeAttribute("class", "btn btn-sm btn-default ajax-refresh");
+		tagWriter.writeAttribute("class", "btn btn-sm btn-default ajax-refresh loader-right");
 		tagWriter.writeAttribute("onclick", "refreshPageData($(this))");
 		tagWriter.writeAttribute("ajax-target", refreshAjax);
 		tagWriter.appendValue(localize(bundle, "common.refresh"));

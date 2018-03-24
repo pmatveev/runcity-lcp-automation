@@ -138,7 +138,7 @@ public class FrameController {
 	@RequestMapping(value = "/secure/iframe/coordination/controlPoint/{controlPointId}", method = RequestMethod.GET)
 	public String coordControlPointDetails(Model model, @PathVariable Long controlPointId,
 			@RequestParam(required = true) String referrer) {
-		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.NONE);
+		ControlPoint cp = controlPointService.selectById(controlPointId, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 
 		if (cp == null) {
 			return "exception/invalidUrlSub";
@@ -153,6 +153,7 @@ public class FrameController {
 		table.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
+		model.addAttribute("controlPoint", cp);
 		return "sub/coordControlPointDetails";
 	}
 
@@ -189,16 +190,18 @@ public class FrameController {
 	public String teamDetails(Model model, @PathVariable Long teamId, @RequestParam(required = true) String referrer,
 			@RequestParam(required = false) String table) {
 		Team team = teamService.selectById(teamId, Team.SelectMode.NONE);
-		
+
 		if (team == null) {
-			return "exception/invalidUrlSub";			
+			return "exception/invalidUrlSub";
 		}
-		
-		Volunteer coordinator = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(), SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
-		if (coordinator == null && !volunteerService.isVolunteerForGame(SecureUserDetails.getCurrentUser().getUsername(), team.getRoute().getGame())) {
+
+		Volunteer coordinator = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(),
+				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
+		if (coordinator == null && !volunteerService
+				.isVolunteerForGame(SecureUserDetails.getCurrentUser().getUsername(), team.getRoute().getGame())) {
 			return "exception/forbiddenSub";
 		}
-		
+
 		if (coordinator != null) {
 			TeamSetStatusByCoordinatorForm statusForm = new TeamSetStatusByCoordinatorForm(localeList);
 			statusForm.setVolunteerId(coordinator.getId());
@@ -207,7 +210,7 @@ public class FrameController {
 			statusForm.prefix(referrer);
 			model.addAttribute("statusFormId", statusForm.getHtmlId());
 		}
-		
+
 		TeamEventTable events = new TeamEventTable(team, messageSource, localeList);
 		events.processModel(model, referrer);
 
