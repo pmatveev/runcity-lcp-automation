@@ -208,3 +208,14 @@ p.volunteer-category-reminder {
 form.form-inline {
 	display: inline-block;
 }
+
+.team-route {
+	text-align: center;
+}
+
+.team-route span.label {
+	display: inline-block;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	font-size: 16px;
+}

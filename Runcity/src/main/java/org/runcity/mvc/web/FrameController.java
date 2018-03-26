@@ -192,7 +192,7 @@ public class FrameController {
 	@RequestMapping(value = "/secure/iframe/team/{teamId}", method = RequestMethod.GET)
 	public String teamDetails(Model model, @PathVariable Long teamId, @RequestParam(required = true) String referrer,
 			@RequestParam(required = false) String table) {
-		Team team = teamService.selectById(teamId, Team.SelectMode.NONE);
+		Team team = teamService.selectById(teamId, Team.SelectMode.WITH_ITEMS);
 
 		if (team == null) {
 			return "exception/invalidUrlSub";

@@ -1,5 +1,6 @@
 package org.runcity.db.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -29,7 +30,7 @@ public class Route {
 	private Category category;
 	
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "route")
-	private Set<RouteItem> routeItems;
+	private List<RouteItem> routeItems;
 	
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "route")
 	private Set<Team> teams;
@@ -70,7 +71,7 @@ public class Route {
 		this.category = category;
 	}
 	
-	public Set<RouteItem> getRouteItems() {
+	public List<RouteItem> getRouteItems() {
 		return routeItems;
 	}
 	

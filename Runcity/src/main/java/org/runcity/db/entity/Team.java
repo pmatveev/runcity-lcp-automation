@@ -11,7 +11,7 @@ import org.runcity.db.entity.enumeration.TeamStatus;
 @Table(name = "team")
 public class Team {
 	public enum SelectMode {
-		NONE;
+		NONE, WITH_ITEMS;
 	}
 	
 	@Id

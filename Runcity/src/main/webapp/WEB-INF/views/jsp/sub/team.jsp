@@ -1,3 +1,7 @@
+<%@page import="org.springframework.web.servlet.tags.form.TagWriter"%>
+<%@page import="org.runcity.db.entity.RouteItem"%>
+<%@page import="java.util.Comparator"%>
+<%@page import="java.util.Collections"%>
 <%@page import="javax.servlet.jsp.jstl.fmt.LocalizationContext"%>
 <%@page import="org.runcity.db.entity.enumeration.TeamStatus"%>
 <%@page import="org.runcity.util.StringUtils"%>
@@ -48,50 +52,134 @@
 			<spring:url value="/secure/team/${team.id}" var="teamLink"/>
 			<a class="pull-right" href="${teamLink}"><span class="glyphicon glyphicon-link"></span><fmt:message key="common.permLink" bundle="${msg}" /></a>
 		</c:if>
-		<form class="form-horizontal read-form row">
-			<div class="col-sm-6">
-				<div class="form-group">
-					<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.category" bundle="${msg}" /></label>
-					<div>
-						<p class="form-control-static" id="eventVolunteer">
-						<%=StringUtils.xss(team.getRoute().getCategory().getLocalizedName(team.getRoute().getGame().getLocale())) %>
-						</p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.number" bundle="${msg}" /></label>
-					<div>
-						<p class="form-control-static" id="eventVolunteer"><c:out value="${team.number}"/></p>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.name" bundle="${msg}" /></label>
-					<div>
-						<p class="form-control-static" id="eventVolunteer"><c:out value="${team.name}"/></p>
-					</div>
+		<form class="form-horizontal read-form">
+			<div class="row">
+				<div class="col-sm-12">
+					<h3><fmt:message key="jsp.team.information" bundle="${msg}" /></h3>
 				</div>
 			</div>
-			<div class="col-sm-6">
-				<div class="form-group">
-					<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.status" bundle="${msg}" /></label>
-					<div>
-						<p class="form-control-static" id="eventVolunteer"><%=StringUtils.xss(TeamStatus.getDisplayName(team.getStatusData(), bundle)) %></p>
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message key="team.category" bundle="${msg}" /></label>
+						<div>
+							<p class="form-control-static" id="eventVolunteer">
+							<%=StringUtils.xss(team.getRoute().getCategory().getLocalizedName(team.getRoute().getGame().getLocale())) %>
+							</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.number" bundle="${msg}" /></label>
+						<div>
+							<p class="form-control-static" id="eventVolunteer"><c:out value="${team.number}"/></p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.name" bundle="${msg}" /></label>
+						<div>
+							<p class="form-control-static" id="eventVolunteer"><c:out value="${team.name}"/></p>
+						</div>
 					</div>
 				</div>
-				<c:if test="${coordinator}">
-					<div class="form-group">
-						<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.contact" bundle="${msg}" /></label>
-						<div>
-							<p class="form-control-static" id="eventVolunteer"><c:out value="${team.contact}"/></p>
+				<div class="col-sm-6">
+					<c:if test="${not (team.status == TeamStatus.ACTIVE) }">
+						<div class="form-group">
+							<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.status" bundle="${msg}" /></label>
+							<div>
+								<p class="form-control-static" id="eventVolunteer"><%=StringUtils.xss(TeamStatus.getDisplayName(team.getStatusData(), bundle)) %></p>
+							</div>
 						</div>
-					</div>
-					<div class="form-group">
-						<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.addData" bundle="${msg}" /></label>
-						<div>
-							<p class="form-control-static" id="eventVolunteer"><c:out value="${team.addData}"/></p>
+					</c:if>
+					<c:if test="${coordinator}">
+						<div class="form-group">
+							<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.contact" bundle="${msg}" /></label>
+							<div>
+								<p class="form-control-static" id="eventVolunteer"><c:out value="${team.contact}"/></p>
+							</div>
 						</div>
-					</div>
-				</c:if>
+						<div class="form-group">
+							<label for="eventVolunteer" class="control-label col-sm-5"><fmt:message	key="team.addData" bundle="${msg}" /></label>
+							<div>
+								<p class="form-control-static" id="eventVolunteer"><c:out value="${team.addData}"/></p>
+							</div>
+						</div>
+					</c:if>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<h3><fmt:message key="jsp.team.route" bundle="${msg}" /></h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 team-route">
+					<%
+						TagWriter tagWriter = new TagWriter(pageContext);
+						Collections.sort(team.getRoute().getRouteItems(), new Comparator<RouteItem>() {
+							@Override
+							public int compare(RouteItem o1, RouteItem o2) {
+								return new Integer(o1.getSortIndex()).compareTo(o2.getSortIndex());
+							}
+						});
+					
+						tagWriter.startTag("div");
+						tagWriter.writeAttribute("class", "visible-xs");
+						for (int i = 0; i < team.getRoute().getRouteItems().size(); i++) {
+							if (i > 0) {
+								tagWriter.startTag("span");
+								tagWriter.writeAttribute("class", "glyphicon glyphicon-arrow-down");
+								tagWriter.appendValue("");
+								tagWriter.endTag();
+								tagWriter.startTag("br");
+								tagWriter.endTag();
+							}
+							
+							RouteItem ri = team.getRoute().getRouteItems().get(i);
+							String cls;
+							if (team.getLeg() == null || team.getLeg() > ri.getSafeLegIndex()) {
+								cls = "label label-default";
+							} else if (team.getLeg() == ri.getSafeLegIndex()) {
+								cls = "label label-success";
+							} else {
+								cls = "label label-info";
+							}
+							tagWriter.startTag("span");
+							tagWriter.writeAttribute("class", cls);
+							tagWriter.appendValue(ri.getControlPoint().getNameDisplay());
+							tagWriter.endTag();
+							tagWriter.startTag("br");
+							tagWriter.endTag();
+						}
+						tagWriter.endTag();
+					
+						tagWriter.startTag("div");
+						tagWriter.writeAttribute("class", "hidden-xs");
+						for (int i = 0; i < team.getRoute().getRouteItems().size(); i++) {
+							if (i > 0) {
+								tagWriter.appendValue(" ");
+								tagWriter.startTag("span");
+								tagWriter.writeAttribute("class", "glyphicon glyphicon-arrow-right");
+								tagWriter.appendValue("");
+								tagWriter.endTag();
+								tagWriter.appendValue(" ");
+							}
+							RouteItem ri = team.getRoute().getRouteItems().get(i);
+							String cls;
+							if (team.getLeg() == null || team.getLeg() > ri.getSafeLegIndex()) {
+								cls = "label label-default";
+							} else if (team.getLeg() == ri.getSafeLegIndex()) {
+								cls = "label label-success";
+							} else {
+								cls = "label label-info";
+							}
+							tagWriter.startTag("span");
+							tagWriter.writeAttribute("class", cls);
+							tagWriter.appendValue(ri.getControlPoint().getNameDisplay());
+							tagWriter.endTag();
+						}
+						tagWriter.endTag();
+					%>
+				</div>
 			</div>
 		</form>
 	</div>

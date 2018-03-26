@@ -68,6 +68,9 @@ public class TeamServiceImpl implements TeamService {
 		switch (selectMode) {
 		case NONE:
 			break;
+		case WITH_ITEMS:
+			Hibernate.initialize(t.getRoute().getRouteItems());
+			break;
 		}
 	}
 

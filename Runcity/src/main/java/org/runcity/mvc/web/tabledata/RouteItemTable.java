@@ -29,7 +29,6 @@ public class RouteItemTable extends AbstractTable {
 	private Map<Integer, Integer> legEnd = new HashMap<Integer, Integer>();
 	
 	protected class TableRow {
-		private static final int MAX_SORT = 9999;
 		private final RouteItemTable table = RouteItemTable.this;
 		
 		@JsonView(Views.Public.class)
@@ -56,21 +55,19 @@ public class RouteItemTable extends AbstractTable {
 		public TableRow(RouteItem ri) {
 			this.id = ri.getId();
 			this.legNum = ri.getLegNumber();
+			this.sort = ri.getSortIndex();
 			if (ri.getControlPoint() != null) {
 				switch (ri.getControlPoint().getType()) {
 				case START:
 					table.start++;
-					this.sort = 0;
 					this.legNum = null;
 					break;
 				case BONUS:
-					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10;
 					if (ri.getLegNumber() != null) {
 						table.maxStage = Math.max(table.maxStage, ri.getLegNumber());
 					}
 					break;
 				case REGULAR:
-					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 1;
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
 						table.setResponseClass(ResponseClass.WARNING);
 						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay() });
@@ -79,7 +76,6 @@ public class RouteItemTable extends AbstractTable {
 					}
 					break;
 				case STAGE_END:
-					this.sort = ri.getLegNumber() == null ? 0 : ri.getLegNumber() * 10 + 9;
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
 						table.setResponseClass(ResponseClass.WARNING);
 						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay() });
@@ -90,7 +86,6 @@ public class RouteItemTable extends AbstractTable {
 					break;
 				case FINISH:
 					table.finish++;
-					this.sort = MAX_SORT;
 					this.legNum = null;
 					break;
 				}
