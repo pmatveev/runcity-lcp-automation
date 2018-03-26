@@ -151,6 +151,9 @@ public class FrameController {
 
 		CoordinatorVolunteerTable table = new CoordinatorVolunteerTable(messageSource, localeList, cp);
 		table.processModel(model, referrer);
+		
+		TeamEventTable events = new TeamEventTable(cp, messageSource, localeList);
+		events.processModel(model, referrer);
 
 		model.addAttribute("prefix", referrer);
 		model.addAttribute("controlPoint", cp);

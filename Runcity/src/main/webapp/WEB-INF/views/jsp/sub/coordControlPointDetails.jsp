@@ -125,6 +125,7 @@
 <ul class="nav nav-tabs">
 	<li class="active"><a data-toggle="tab" href="#${prefix}volTab"><fmt:message key="${coordVolunteerTableByCP.simpleTitle}" bundle="${msg}" /></a></li>
 	<li><a data-toggle="tab" href="#${prefix}statisticsTab"><fmt:message key="coordinator.cpStats" bundle="${msg}" /></a></li>
+	<li><a data-toggle="tab" href="#${prefix}history"><fmt:message key="${teamEventTable.simpleTitle}" bundle="${msg}" /></a></li>
 </ul>
 
 <div id="${prefix}modalForms" class="div-modal">
@@ -143,5 +144,8 @@
 			String refreshAjax = (String) pageContext.getAttribute("refreshAjax");
 			writeInfo(pageContext, controlPoint, bundle, refreshAjax); 
 		%>
+	</div>
+	<div id="${prefix}history" class="tab-pane">
+		<runcity:table bundle="${msg}" table="${teamEventTable}" caption="false"/>
 	</div>
 </div>

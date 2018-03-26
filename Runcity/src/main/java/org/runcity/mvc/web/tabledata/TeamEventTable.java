@@ -16,6 +16,7 @@ import org.runcity.mvc.web.util.ButtonDefinition;
 import org.runcity.mvc.web.util.ColumnDefinition;
 import org.runcity.util.DynamicLocaleList;
 import org.runcity.util.StringUtils;
+import org.runcity.util.UrlUtils;
 import org.springframework.context.MessageSource;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -60,8 +61,9 @@ public class TeamEventTable extends AbstractTable {
 		public TableRow(Event e) {
 			this.id = e.getId();
 			this.time = e.getDateFrom();
-			this.eventType = EventType.getDisplayName(e.getType(), messageSource, locale); 
-			this.teamNumber = StringUtils.xss(e.getTeam().getNumber());
+			this.eventType = EventType.getDisplayName(e.getType(), messageSource, locale);
+			this.teamNumber = "<a href='" + UrlUtils.getUrlString("/secure/team/") + e.getTeam().getId() + "'>"
+					+ StringUtils.xss(e.getTeam().getNumber()) + "</a>";
 			if (e.getVolunteer().getControlPoint() != null) {
 				this.controlPoint = StringUtils.xss(e.getVolunteer().getControlPoint().getNameDisplay());
 			}
@@ -74,7 +76,7 @@ public class TeamEventTable extends AbstractTable {
 	private TeamEventTable(MessageSource messageSource) {
 		super(null, null, null, null, messageSource, null, null);
 	}
-	
+
 	public static TeamEventTable initRestResponse(MessageSource messageSource) {
 		return new TeamEventTable(messageSource);
 	}
@@ -90,14 +92,13 @@ public class TeamEventTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("status", "event.status"));
 
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
-		
+
 		this.expandFrame = "/secure/iframe/teamEvent/{0}:id";
 	}
 
 	public TeamEventTable(Team team, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("teamEventTable", "teamEvent.headerByTeam", "teamEvent.simpleHeader",
-				"/api/v1/team/" + team.getId() + "/history", messageSource, localeList,
-				team.getNumber());
+				"/api/v1/team/" + team.getId() + "/history", messageSource, localeList, team.getNumber());
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));
@@ -108,10 +109,10 @@ public class TeamEventTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("status", "event.status"));
 
 		this.buttons.add(new ButtonDefinition("common.refresh", null, "btn pull-right", "refresh", null));
-		
+
 		this.expandFrame = "/secure/iframe/teamEvent/{0}:id";
 	}
-	
+
 	public void add(Collection<Event> events) {
 		for (Event e : events) {
 			this.data.add(new TableRow(e));
