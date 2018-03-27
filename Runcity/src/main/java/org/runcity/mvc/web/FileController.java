@@ -24,7 +24,7 @@ public class FileController {
 
 	@Autowired
 	private ControlPointService controlPointService;
-
+    
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/secure/controlPointImage", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<byte[]> getImageAsByteArray(@RequestParam(required = true) Long id) {

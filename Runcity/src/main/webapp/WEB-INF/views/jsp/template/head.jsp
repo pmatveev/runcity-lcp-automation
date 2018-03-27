@@ -145,6 +145,8 @@
 		initHtml($("body"), '${datatablesLoc}');
 	});
 </script>
+<spring:url value="/resources/img/favicon.ico" var="icon" />
+<link rel="shortcut icon" href="${icon}" />
 </head>
 
 <body>
