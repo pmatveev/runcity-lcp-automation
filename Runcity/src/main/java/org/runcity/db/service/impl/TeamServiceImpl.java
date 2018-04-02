@@ -233,7 +233,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ActionResponseBody result,
-			MessageSource messageSource, Locale locale) {
+			MessageSource messageSource, Locale locale) {		
 		switch (status) {
 		case ACTIVE:
 		case FINISHED:
@@ -294,23 +294,23 @@ public class TeamServiceImpl implements TeamService {
 				}
 			}
 
-			if (!force) {
-				if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
-					return;
-				}
-			}
-
 			String fromStatus = lock.getStatusData();
 
-			switch (status) {
-			case ACTIVE:
-				lock.setLeg(leg + 1);
-				break;
-			default:
-				if (status != null) {
-					lock.setStatus(status);
+			if (status != null) {
+				if (!force) {
+					if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
+						return;
+					}
 				}
-				break;
+	
+				switch (status) {
+				case ACTIVE:
+					lock.setLeg(leg + 1);
+					break;
+				default:
+					lock.setStatus(status);
+					break;
+				}
 			}
 
 			String toStatus = lock.getStatusData();
