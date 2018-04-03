@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.runcity</groupId>
 	<artifactId>Runcity</artifactId>
-	<version>ALERION-R1-04</version>
+	<version>ALERION-R1-05</version>
 	<packaging>war</packaging>
 	<properties>
 		<jdk.version>1.7</jdk.version>

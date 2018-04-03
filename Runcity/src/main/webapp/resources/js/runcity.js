@@ -1560,9 +1560,9 @@ function initDatatablesWithButtons(table, buttons, loc) {
 						div.attr('id', null);						
 					}
 				});
-				return "<div class='container container-full container-main' id='" + divId + "' prefix='" + prefix + "'></div>";
+				return "<div class='container-main container-sub' id='" + divId + "' prefix='" + prefix + "'></div>";
 			} else {
-				return "<div class='container container-full container-main'>" 
+				return "<div class='container-main container-sub'>" 
 				    + "<ul class='nav nav-tabs'><li class='active'><a data-toggle='tab' href='#" 
 					+ expandRef
 					+ "'>"
