@@ -1,6 +1,6 @@
 <%@ include file="../template/head.jsp"%>
 <spring:url value="/j_spring_security_check" var="doLogin" />
-<fmt:message key="user.username" bundle="${msg}" var="msgUsername"/>
+<fmt:message key="login.username" bundle="${msg}" var="msgUsername"/>
 <fmt:message key="user.password" bundle="${msg}" var="msgPassword"/>
 <fmt:message key="login.keepLogin" bundle="${msg}" var="msgKeepLogin"/>
 <div class="container form-container narrow static-margin-top">

@@ -21,20 +21,24 @@ public class ConsumerDetailsServiceImpl implements UserDetailsService {
 	private VolunteerService volunteerService;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Consumer c = consumerService.selectByUsername(username, Consumer.SelectMode.WITH_ROLES);
+	public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+		Consumer c = consumerService.selectByEmail(identifier, Consumer.SelectMode.WITH_ROLES);
 
 		if (c == null) {
-			throw new UsernameNotFoundException(username);
+			c = consumerService.selectByUsername(identifier, Consumer.SelectMode.WITH_ROLES);
 		}
 
+		if (c == null) {
+			throw new UsernameNotFoundException(identifier);
+		}
+		
 		// user can login - delete recovery tokens
 		try {
 			consumerService.invalidateRecoveryTokens(c);
 		} catch (DBException e) {
 		}
 		
-		Volunteer v = volunteerService.getCurrentByUsername(username);
+		Volunteer v = volunteerService.getCurrentByUsername(c.getUsername());
 		
 		SecureUserDetails details = new SecureUserDetails(c.getId(), c.getUsername(), c.isActive(), c.getPassHash(),
 				c.getCredentials(), c.getEmail(), c.getLocale(), c.getRoleEnum(), v);
