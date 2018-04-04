@@ -32,6 +32,7 @@ import org.runcity.mvc.web.tabledata.VolunteerTeamTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -333,9 +334,16 @@ public class RestCoordinatorController extends AbstractRestController {
 			return result;
 		}
 
+		if (team.getStatus() != TeamStatus.ACTIVE) {
+			result.setResponseClass(ResponseClass.ERROR);
+			result.addCommonMsg("teamProcessing.validation.invalidStatus",
+					TeamStatus.getDisplayName(team.getStatus(), messageSource, LocaleContextHolder.getLocale()));
+			return result;
+		}
+
 		Volunteer current = volunteerService.selectCoordinatorByUsername(team.getRoute().getGame(),
 				SecureUserDetails.getCurrentUser().getUsername(), Volunteer.SelectMode.NONE);
-		
+
 		if (current == null) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.forbidden");
@@ -353,7 +361,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		if (result.getResponseClass() == ResponseClass.INFO) {
 			result.addCommonMsg("common.completed");
 		}
-		
+
 		return result;
 	}
 }
