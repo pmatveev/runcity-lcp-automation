@@ -39,11 +39,21 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 	@Query(value = "select count(t.id) from team t where t.route__id = :route and t.status > 0 and t.status <= :leg", nativeQuery = true)
 	public BigInteger selectActiveNumberByRouteItem(@Param("route") Route route, @Param("leg") Integer leg);
 	
+	@Query(value = "select count(t.id) from team t where t.route__id = :route and t.status > 0 and t.status <= :leg "
+			+ "and not exists (select * from event e, volunteer v where e.team__id = t.id and e.status = 'P' "
+			+ "and v.id = e.volunteer__id and v.control_point__id = :cp)", nativeQuery = true)
+	public BigInteger selectActiveNumberByRouteCP(@Param("route") Route route, @Param("leg") Integer leg, @Param("cp") ControlPoint controlPoint);
+	
 	@Query(value = "select count(t.id) from team t where t.route__id = :route and t.status > 0", nativeQuery = true)
 	public BigInteger selectActiveNumberByRoute(@Param("route") Route route);
 	
 	@Query(value = "select t.* from team t where t.route__id = :route and t.status > 0 and t.status <= :leg", nativeQuery = true)
-	public List<Team> selectPendingByRouteItem(@Param("route") Route route, @Param("leg") Integer leg);
+	public List<Team> selectPendingByRouteLeg(@Param("route") Route route, @Param("leg") Integer leg);
+	
+	@Query(value = "select t.* from team t where t.route__id = :route and t.status > 0 and t.status <= :leg "
+			+ "and not exists (select * from event e, volunteer v where e.team__id = t.id and e.status = 'P' "
+			+ "and v.id = e.volunteer__id and v.control_point__id = :cp)", nativeQuery = true)
+	public List<Team> selectPendingByRouteCP(@Param("route") Route route, @Param("leg") Integer leg, @Param("cp") ControlPoint controlPoint);
 	
 	@Query(value = "select t.* from team t where t.route__id = :route and t.status > 0", nativeQuery = true)
 	public List<Team> selectPendingByRoute(@Param("route") Route route);

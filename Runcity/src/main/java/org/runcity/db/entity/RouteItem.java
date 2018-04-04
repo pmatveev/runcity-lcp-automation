@@ -8,7 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "route_item",  
 	uniqueConstraints = @UniqueConstraint(columnNames = {"route__id", "control_point__id"}))
 public class RouteItem {
-	private static final int MAX_SORT = 9999;
+	public static final int MAX_SORT = 9999;
 	
 	@Id
 	@GeneratedValue(generator = "increment")

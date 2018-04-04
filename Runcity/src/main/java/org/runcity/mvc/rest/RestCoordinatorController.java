@@ -290,8 +290,7 @@ public class RestCoordinatorController extends AbstractRestController {
 
 		try {
 			teamService.setTeamStatus(form.getTeam(), form.getConfirmationToken(),
-					TeamStatus.getByStoredValue(form.getStatus()), form.getLeg() == null ? null : form.getLeg() - 1,
-					form.getVolunteer(), result);
+					TeamStatus.getByStoredValue(form.getStatus()), form.getLeg(), form.getVolunteer(), result);
 		} catch (DBException e) {
 			logger.error(e);
 			result.setResponseClass(ResponseClass.ERROR);

@@ -189,24 +189,36 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public void processTeam(Team team, String allowedStatus, RouteItem ri, Volunteer volunteer,
 			ActionResponseBody result) throws DBException {
-		TeamStatus status;
+		TeamStatus status = null;
+		Integer newLeg = null;
 		switch (ri.getControlPoint().getType()) {
+		case BONUS:
+		case REGULAR:
+		case START:
+			status = TeamStatus.ACTIVE;
+			break;
 		case STAGE_END:
 			status = TeamStatus.ACTIVE;
+			newLeg = ri.getLegNumber() + 1;
 			break;
 		case FINISH:
 			status = TeamStatus.FINISHED;
 			break;
-		default:
-			status = null;
 		}
-		processTeam(team, allowedStatus, status, ri.getLegNumber(), volunteer, EventType.TEAM_CP, result);
+
+		if (allowedStatus != null) {
+			if (status == TeamStatus.ACTIVE && newLeg == null) {
+				newLeg = ri.getLegNumber() == null ? 1 : ri.getLegNumber();
+			}
+		}
+
+		processTeam(team, allowedStatus, status, ri.getLegNumber(), newLeg, volunteer, EventType.TEAM_CP, result);
 	}
 
 	@Override
 	public void setTeamStatus(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer,
 			ActionResponseBody result) throws DBException {
-		processTeam(team, allowedStatus, status, leg, volunteer, EventType.TEAM_COORD, result);
+		processTeam(team, allowedStatus, status, null, leg, volunteer, EventType.TEAM_COORD, result);
 	}
 
 	private boolean checkOfflineCp(Team team, Integer leg) {
@@ -233,7 +245,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	private boolean validateNewStatus(Team team, TeamStatus status, Integer leg, ActionResponseBody result,
-			MessageSource messageSource, Locale locale) {		
+			MessageSource messageSource, Locale locale) {
 		switch (status) {
 		case ACTIVE:
 		case FINISHED:
@@ -273,8 +285,8 @@ public class TeamServiceImpl implements TeamService {
 		return true;
 	}
 
-	private void processTeam(Team team, String allowedStatus, TeamStatus status, Integer leg, Volunteer volunteer,
-			EventType eventType, ActionResponseBody result) throws DBException {
+	private void processTeam(Team team, String allowedStatus, TeamStatus status, Integer currLeg, Integer newLeg,
+			Volunteer volunteer, EventType eventType, ActionResponseBody result) throws DBException {
 		MessageSource messageSource = result.getMessageSource();
 		Locale locale = result.getCurrentLocale();
 
@@ -298,14 +310,16 @@ public class TeamServiceImpl implements TeamService {
 
 			if (status != null) {
 				if (!force) {
-					if (!validateNewStatus(lock, status, leg, result, messageSource, locale)) {
+					if (!validateNewStatus(lock, status, currLeg, result, messageSource, locale)) {
 						return;
 					}
 				}
-	
+
 				switch (status) {
 				case ACTIVE:
-					lock.setLeg(leg + 1);
+					if (newLeg != null) {
+						lock.setLeg(newLeg);
+					}
 					break;
 				default:
 					lock.setStatus(status);
@@ -411,11 +425,16 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public Long selectActiveNumberByRouteItem(RouteItem routeItem) {
-		if (routeItem.getControlPoint().getType() == ControlPointType.FINISH) {
+		switch (routeItem.getControlPoint().getType()) {
+		case FINISH:
 			return teamRepository.selectActiveNumberByRoute(routeItem.getRoute()).longValue();
-		} else {
+		case STAGE_END:
 			return teamRepository.selectActiveNumberByRouteItem(routeItem.getRoute(), routeItem.getLegNumber())
 					.longValue();
+		default:
+			return teamRepository.selectActiveNumberByRouteCP(routeItem.getRoute(),
+					routeItem.getLegNumber() == null ? RouteItem.MAX_SORT : routeItem.getLegNumber(),
+					routeItem.getControlPoint()).longValue();
 		}
 	}
 
@@ -446,11 +465,20 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<Team> selectPendingTeamsByRouteItem(RouteItem routeItem, SelectMode selectMode) {
 		List<Team> result;
-		if (routeItem.getControlPoint().getType() == ControlPointType.FINISH) {
+
+		switch (routeItem.getControlPoint().getType()) {
+		case FINISH:
 			result = teamRepository.selectPendingByRoute(routeItem.getRoute());
-		} else {
-			result = teamRepository.selectPendingByRouteItem(routeItem.getRoute(), routeItem.getLegNumber());
+			break;
+		case STAGE_END:
+			result = teamRepository.selectPendingByRouteLeg(routeItem.getRoute(), routeItem.getLegNumber());
+			break;
+		default:
+			result = teamRepository.selectPendingByRouteCP(routeItem.getRoute(),
+					routeItem.getLegNumber() == null ? RouteItem.MAX_SORT : routeItem.getLegNumber(),
+					routeItem.getControlPoint().getMain());
 		}
+
 		initialize(result, selectMode);
 		return result;
 	}
