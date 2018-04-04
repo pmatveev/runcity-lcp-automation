@@ -125,6 +125,9 @@
 
 			Category c = ri.getRoute().getCategory();
 
+			tagWriter.appendValue(c.getBadge());
+			tagWriter.appendValue("&nbsp;");
+			
 			switch (ri.getControlPoint().getType()) {
 			case START:
 			case BONUS:
