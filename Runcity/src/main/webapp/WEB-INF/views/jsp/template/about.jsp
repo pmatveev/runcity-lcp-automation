@@ -19,11 +19,13 @@
          		<tr>
          			<td><b><fmt:message key="common.credits" bundle="${msg}" /></b></td>
          			<td>
+         				<fmt:message key="common.credits.coord.KT" bundle="${msg}" /><br/>
          				<fmt:message key="common.credits.arch.PM" bundle="${msg}" /><br/>
          				<fmt:message key="common.credits.ba.OK" bundle="${msg}" /><br/>
          				<fmt:message key="common.credits.sa.AZ" bundle="${msg}" /><br/>
          				<fmt:message key="common.credits.dev.PM" bundle="${msg}" /><br/>
-         				<fmt:message key="common.credits.dev.VA" bundle="${msg}" />
+         				<fmt:message key="common.credits.dev.VA" bundle="${msg}" /><br/>
+         				<fmt:message key="common.credits.loc.VK" bundle="${msg}" />
          			</td>
          		</tr>
          	</table>

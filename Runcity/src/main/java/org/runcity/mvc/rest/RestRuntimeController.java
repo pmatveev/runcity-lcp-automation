@@ -22,6 +22,7 @@ import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseBody;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
@@ -176,6 +177,7 @@ public class RestRuntimeController extends AbstractRestController {
 		if (result.getResponseClass() == ResponseClass.INFO) {
 			result.addCommonMsg("common.completed");
 		}
+		
 		return result;
 	}
 
