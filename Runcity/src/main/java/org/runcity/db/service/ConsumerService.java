@@ -1,7 +1,6 @@
 package org.runcity.db.service;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.Token;
@@ -37,7 +36,7 @@ public interface ConsumerService {
 	
 	public List<Consumer> updatePassword(List<Long> id, String newPassword) throws DBException;
 
-	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource, Locale locale) throws DBException, EMailException;
+	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource) throws DBException, EMailException;
 	
 	public Token getPasswordResetToken(String token, String check);
 	

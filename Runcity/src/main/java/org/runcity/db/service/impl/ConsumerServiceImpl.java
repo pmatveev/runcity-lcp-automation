@@ -28,6 +28,7 @@ import org.runcity.util.CommonProperties;
 import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.session.SessionInformation;
@@ -273,8 +274,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
-	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource,
-			Locale locale) throws DBException, EMailException {
+	public void recoverPassword(Consumer c, CommonProperties commonProperties, MessageSource messageSource) throws DBException, EMailException {
 		Date dateFrom = new Date();
 		Calendar dateToCal = Calendar.getInstance();
 		dateToCal.add(Calendar.SECOND, commonProperties.getPasswordTokenLifetime());
@@ -303,29 +303,28 @@ public class ConsumerServiceImpl implements ConsumerService {
 			throw new DBException("Could not create password recovery token");
 		}
 
-		Locale messageLocale = null;
-		try {
-			messageLocale = org.springframework.util.StringUtils
-					.parseLocaleString(SecureUserDetails.getCurrentUserLocale());
-		} catch (Throwable t) {
+		Locale messageLocale;
+		if (c.getLocale() == null) {
+			messageLocale = LocaleContextHolder.getLocale();
+		} else {
+			messageLocale = org.springframework.util.StringUtils.parseLocaleString(c.getLocale());
 		}
-
-		messageLocale = messageLocale == null ? locale : messageLocale;
-
+		
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper;
 		try {
 			helper = new MimeMessageHelper(message, false, "utf-8");
+			
 			helper.setFrom(commonProperties.getEmailFrom(),
-					messageSource.getMessage("passwordRecovery.emailSource", null, locale));
+					messageSource.getMessage("passwordRecovery.emailSource", null, messageLocale));
 			helper.setTo(c.getEmail());
-			helper.setSubject(messageSource.getMessage("passwordRecovery.emailSubject", null, locale));
+			helper.setSubject(messageSource.getMessage("passwordRecovery.emailSubject", null, messageLocale));
 			message.setContent(
 					messageSource.getMessage(
 							"passwordRecovery.emailText", new Object[] { c.getCredentials(), commonProperties.getUrl()
 									+ "recoverPassword?token=" + token.getToken() + "&check=" + token.check() },
 							messageLocale),
-					"text/html");
+					"text/html; charset=utf-8");
 			mailSender.send(message);
 		} catch (Throwable t) {
 			throw new EMailException(t);

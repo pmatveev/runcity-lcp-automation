@@ -23,7 +23,6 @@ import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.CommonProperties;
 import org.runcity.util.ResponseClass;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Errors;
@@ -258,7 +257,7 @@ public class RestConsumerController extends AbstractRestController {
 		}
 
 		try {
-			consumerService.recoverPassword(form.getConsumer(), commonProperties, messageSource,  LocaleContextHolder.getLocale());
+			consumerService.recoverPassword(form.getConsumer(), commonProperties, messageSource);
 		} catch (DBException | EMailException e) {
 			result.setResponseClass(ResponseClass.ERROR);
 			result.addCommonMsg("common.db.fail");
