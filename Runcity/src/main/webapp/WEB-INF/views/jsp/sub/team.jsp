@@ -48,16 +48,20 @@
 				</div>
 			</div>
 		</c:if>
-		<c:if test="${not empty prefix}">
-			<spring:url value="/secure/team/${team.id}" var="teamLink"/>
-			<a class="pull-right" href="${teamLink}"><span class="glyphicon glyphicon-link"></span><fmt:message key="common.permLink" bundle="${msg}" /></a>
-		</c:if>
 		<form class="form-horizontal read-form">
 			<div class="row">
 				<div class="col-sm-12">
 					<h3><fmt:message key="jsp.team.information" bundle="${msg}" /></h3>
 				</div>
 			</div>
+			<c:if test="${not empty prefix}">
+				<div class="row">
+					<div class="col-sm-6">
+						<spring:url value="/secure/team/${team.id}" var="teamLink"/>
+						<a href="${teamLink}"><span class="glyphicon glyphicon-link"></span><fmt:message key="common.permLink" bundle="${msg}" /></a>
+					</div>
+				</div>
+			</c:if>
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="form-group">
