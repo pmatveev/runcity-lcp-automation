@@ -1,3 +1,4 @@
+<%@page import="java.text.MessageFormat"%>
 <%@page import="java.util.TimeZone"%>
 <%@page import="org.springframework.context.i18n.LocaleContextHolder"%>
 <%@page import="org.springframework.util.ObjectUtils"%>
@@ -10,8 +11,14 @@
 <%@page import="javax.servlet.jsp.jstl.fmt.LocalizationContext"%>
 <%@page import="java.util.Collection"%>
 <%!
-	private String localize(LocalizationContext bundle, String message) {
-		return bundle.getResourceBundle().getString(message);
+	private String localize(LocalizationContext bundle, String message, Object... args) {
+		String result = bundle.getResourceBundle().getString(message);
+	
+		if (args == null) {
+			return result;
+		}
+	
+		return MessageFormat.format(result, args);
 	}
 	
 	private void processUrl(PageContext pageContext, String url, String var) throws JspException {
@@ -84,7 +91,7 @@
 			if (v.getControlPoint() == null) {
 				tagWriter.appendValue(g.getName());
 			} else {
-				tagWriter.appendValue(g.getName() + " (" + v.getControlPoint().getName() + ")");
+				tagWriter.appendValue(g.getName() + ", " + localize(bundle, "jsp.controlPoint.header", v.getControlPoint().getNameDisplayWithChildren()));
 			}
 			tagWriter.endTag();
 			tagWriter.appendValue(" ");

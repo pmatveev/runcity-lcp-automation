@@ -43,13 +43,15 @@
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(localize(bundle, "common.shortDateTimeFormat"));
 		dateTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 			
+		String prefix = (String) pageContext.getAttribute("prefix", PageContext.REQUEST_SCOPE);
+		
 		// categories
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", "volunteer-categories");
 		tagWriter.startTag("div");
 		tagWriter.writeAttribute("class", "pull-right");
 		tagWriter.startTag("button");
-		tagWriter.writeAttribute("id", "infoRefresh");
+		tagWriter.writeAttribute("id", prefix + "infoRefresh");
 		tagWriter.writeAttribute("class", "btn btn-default ajax-refresh");
 		tagWriter.writeAttribute("onclick", "refreshPageData($(this))");
 		tagWriter.writeAttribute("ajax-target", refreshAjax);
@@ -78,7 +80,7 @@
 		tagWriter.appendValue("&nbsp;");
 		tagWriter.startTag("span");
 		tagWriter.writeAttribute("class", "badge");
-		tagWriter.writeAttribute("refreshed-by", "infoRefresh");
+		tagWriter.writeAttribute("refreshed-by", prefix + "infoRefresh");
 		tagWriter.writeAttribute("refresh-key", "routeCounter_total");
 		tagWriter.endTag();
 		tagWriter.endTag();
@@ -109,7 +111,7 @@
 			tagWriter.appendValue("&nbsp;");
 			tagWriter.startTag("span");
 			tagWriter.writeAttribute("class", "badge");
-			tagWriter.writeAttribute("refreshed-by", "infoRefresh");
+			tagWriter.writeAttribute("refreshed-by", prefix + "infoRefresh");
 			tagWriter.writeAttribute("refresh-key", "routeCounter_" + ri.getId());
 			tagWriter.endTag();
 			tagWriter.endTag();
@@ -118,6 +120,11 @@
 		tagWriter.endTag();
 	}
 %>
+<script>	
+	$(function() {
+		$('#${prefix}infoRefresh').click();
+	});
+</script>
 <%
 	LocalizationContext bundle = (LocalizationContext) pageContext.getAttribute("msg");
 	ControlPoint controlPoint = (ControlPoint) pageContext.getAttribute("controlPoint", PageContext.REQUEST_SCOPE);

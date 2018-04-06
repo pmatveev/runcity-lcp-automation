@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.runcity.db.entity.Consumer;
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Event;
@@ -58,7 +59,13 @@ public class VolunteerServiceImpl implements VolunteerService {
 		case WITH_ACTIVE :
 			v.setActive(eventRepository.isActiveVolunteer(v) > 0);
 			break;
+		case WITH_ACTIVE_AND_CP_CHILDREN:
+			v.setActive(eventRepository.isActiveVolunteer(v) > 0);
+			Hibernate.initialize(v.getControlPoint().getChildren());
+			break;
 		case NONE:
+			break;
+		default:
 			break;
 		}
 	}

@@ -14,7 +14,7 @@ import org.springframework.util.ObjectUtils;
 @Table(name = "volunteer")
 public class Volunteer {
 	public enum SelectMode {
-		NONE, WITH_ACTIVE;
+		NONE, WITH_ACTIVE, WITH_ACTIVE_AND_CP_CHILDREN;
 	}
 	
 	@Transient

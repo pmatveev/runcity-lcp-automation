@@ -158,7 +158,7 @@ public class MenuController {
 	@RequestMapping(value = "/secure/volunteer", method = RequestMethod.GET)
 	public String volunteer(Model model) {
 		String username = SecureUserDetails.getCurrentUser().getUsername();
-		List<Volunteer> volunteer = volunteerService.getUpcomingVolunteers(username, Volunteer.SelectMode.WITH_ACTIVE);
+		List<Volunteer> volunteer = volunteerService.getUpcomingVolunteers(username, Volunteer.SelectMode.WITH_ACTIVE_AND_CP_CHILDREN);
 		List<Volunteer> coordinator = volunteerService.getUpcomingCoordinations(username, Volunteer.SelectMode.NONE);
 		
 		model.addAttribute("volunteerData", volunteer);
