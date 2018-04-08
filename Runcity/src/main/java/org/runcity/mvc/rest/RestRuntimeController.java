@@ -312,7 +312,7 @@ public class RestRuntimeController extends AbstractRestController {
 		if (current == null) {
 			current = volunteerService.selectByControlPointAndUsername(e.getVolunteer().getControlPoint(),
 					SecureUserDetails.getCurrentUser().getUsername(), true, Volunteer.SelectMode.NONE);
-			if (current == null) {
+			if (current == null || Boolean.FALSE.equals(current.getActive())) {
 				result.setResponseClass(ResponseClass.ERROR);
 				result.addCommonMsg("common.forbidden");
 				return result;
