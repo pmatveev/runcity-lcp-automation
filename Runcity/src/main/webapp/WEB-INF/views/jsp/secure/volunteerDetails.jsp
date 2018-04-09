@@ -97,8 +97,8 @@
 		Collections.sort(routeItems, new Comparator<RouteItem>() {
 			@Override
 			public int compare(RouteItem o1, RouteItem o2) {
-				return o1.getRoute().getCategory().getLocalizedName(locale)
-						.compareTo(o2.getRoute().getCategory().getLocalizedName(locale));
+				return o1.getRoute().getCategory().getPrefix()
+						.compareTo(o2.getRoute().getCategory().getPrefix());
 			}
 		});
 
