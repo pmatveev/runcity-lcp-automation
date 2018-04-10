@@ -87,7 +87,7 @@ public class VolunteerTeamTable extends AbstractTable {
 		VolunteerTeamTable table = new VolunteerTeamTable("volunteerTeamTable", "jsp.volunteer.teamsCP.header",
 				"jsp.volunteer.teams.simpleHeader",
 				"/api/v1/controlPoint/" + volunteer.getControlPoint().getId() + "/teamTable", messageSource, localeList,
-				volunteer.getControlPoint().getNameDisplayWithChildren());
+				StringUtils.xss(volunteer.getControlPoint().getNameDisplayWithChildren()));
 
 		table.initVolunteerTable(true);
 		return table;
@@ -97,8 +97,8 @@ public class VolunteerTeamTable extends AbstractTable {
 			MessageSource messageSource, DynamicLocaleList localeList) {
 		VolunteerTeamTable table = new VolunteerTeamTable("volunteerTeamTable", "jsp.volunteer.teamsCPCat.header",
 				"jsp.volunteer.teams.simpleHeader", "/api/v1/routeItem/" + routeItem.getId() + "/teamTable",
-				messageSource, localeList, volunteer.getControlPoint().getNameDisplayWithChildren(),
-				routeItem.getRoute().getCategory().getLocalizedName(volunteer.getVolunteerGame().getLocale()));
+				messageSource, localeList, StringUtils.xss(volunteer.getControlPoint().getNameDisplayWithChildren()),
+				StringUtils.xss(routeItem.getRoute().getCategory().getLocalizedName(volunteer.getVolunteerGame().getLocale())));
 
 		table.initVolunteerTable(false);
 		return table;
@@ -108,8 +108,8 @@ public class VolunteerTeamTable extends AbstractTable {
 			DynamicLocaleList localeList) {
 		VolunteerTeamTable table = new VolunteerTeamTable("volunteerTeamTable", "jsp.volunteer.teamsGameRoute.header",
 				"jsp.volunteer.teams.simpleHeader", "/api/v1/coordinator/route/" + route.getId() + "/teamTable",
-				messageSource, localeList, coordinator.getVolunteerGame().getName(),
-				route.getCategory().getLocalizedName(coordinator.getVolunteerGame().getLocale()));
+				messageSource, localeList, StringUtils.xss(coordinator.getVolunteerGame().getName()),
+				StringUtils.xss(route.getCategory().getLocalizedName(coordinator.getVolunteerGame().getLocale())));
 
 		table.initCoordinatorTable();
 		return table;
@@ -120,8 +120,8 @@ public class VolunteerTeamTable extends AbstractTable {
 		VolunteerTeamTable table = new VolunteerTeamTable("volunteerTeamTable",
 				"jsp.volunteer.teamsGameRouteStatus.header", "jsp.volunteer.teams.simpleHeader",
 				"/api/v1/coordinator/route/" + route.getId() + "/teamTable?status=" + status, messageSource, localeList,
-				coordinator.getVolunteerGame().getName(),
-				route.getCategory().getLocalizedName(coordinator.getVolunteerGame().getLocale()),
+				StringUtils.xss(coordinator.getVolunteerGame().getName()),
+				StringUtils.xss(route.getCategory().getLocalizedName(coordinator.getVolunteerGame().getLocale())),
 				TeamStatus.getDisplayName(status, messageSource, LocaleContextHolder.getLocale()));
 
 		table.initCoordinatorTable();

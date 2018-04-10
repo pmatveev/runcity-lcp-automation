@@ -56,7 +56,7 @@ public class TeamTable extends AbstractTable {
 
 	public TeamTable(MessageSource messageSource, DynamicLocaleList localeList, Route r) {
 		super("teamTable", "team.tableHeaderByRoute", "team.simpleTableHeaderByRoute",
-				"/api/v1/teamTableByRoute?routeId=" + r.getId(), messageSource, localeList, r.getControlPointName());
+				"/api/v1/teamTableByRoute?routeId=" + r.getId(), messageSource, localeList, StringUtils.xss(r.getControlPointName()));
 		
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("number", "team.number").setSort("asc", 0));

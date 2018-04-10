@@ -93,7 +93,7 @@ public class FormDddwCategoriesColumn extends FormDddwColumn<List<Long>> {
 				for (Route gc : g.getCategories()) {
 					if (categories.contains(gc.getCategory())) {
 						errors.rejectValue(getName(), "common.illegalValue",
-								new Object[] { gc.getCategory().getLocalizedName(g.getLocale()) }, null);
+								new Object[] { StringUtils.xss(gc.getCategory().getLocalizedName(g.getLocale())) }, null);
 					}
 				}
 			}

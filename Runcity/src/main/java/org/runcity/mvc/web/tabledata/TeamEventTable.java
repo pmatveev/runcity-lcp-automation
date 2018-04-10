@@ -84,7 +84,7 @@ public class TeamEventTable extends AbstractTable {
 	public TeamEventTable(ControlPoint controlPoint, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("teamEventTable", "teamEvent.headerByCP", "teamEvent.simpleHeader",
 				"/api/v1/controlPoint/" + controlPoint.getId() + "/history", messageSource, localeList,
-				controlPoint.getName());
+				StringUtils.xss(controlPoint.getName()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));
@@ -98,7 +98,7 @@ public class TeamEventTable extends AbstractTable {
 
 	public TeamEventTable(Team team, MessageSource messageSource, DynamicLocaleList localeList) {
 		super("teamEventTable", "teamEvent.headerByTeam", "teamEvent.simpleHeader",
-				"/api/v1/team/" + team.getId() + "/history", messageSource, localeList, team.getNumber());
+				"/api/v1/team/" + team.getId() + "/history", messageSource, localeList, StringUtils.xss(team.getNumber()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("time", "event.time").setTimeStampFormat().setSort("desc", 0));

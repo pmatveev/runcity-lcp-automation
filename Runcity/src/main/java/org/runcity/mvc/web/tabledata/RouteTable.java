@@ -84,7 +84,7 @@ public class RouteTable extends AbstractTable {
 
 	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
 		super("routeTable", "route.tableHeaderByGame", "route.simpleTableHeader", "/api/v1/routeTableByGame?gameId=" + g.getId(), messageSource, localeList,
-				g.getName());
+				StringUtils.xss(g.getName()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("categoryBadge", "category.badge"));
@@ -106,7 +106,7 @@ public class RouteTable extends AbstractTable {
 
 	public RouteTable(MessageSource messageSource, DynamicLocaleList localeList, Category c) {
 		super("routeTable", "route.tableHeaderByCategory", "route.simpleTableHeader", "/api/v1/routeTableByCategory?categoryId=" + c.getId(), messageSource,
-				localeList, c.getLocalizedName(LocaleContextHolder.getLocale().toString()));
+				localeList, StringUtils.xss(c.getLocalizedName(LocaleContextHolder.getLocale().toString())));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("game", "route.game"));

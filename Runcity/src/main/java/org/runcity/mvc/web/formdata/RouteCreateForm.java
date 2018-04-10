@@ -81,8 +81,8 @@ public class RouteCreateForm extends AbstractForm {
 				if (StringUtils.startsWith(r.getCategory().getPrefix(), c.getPrefix())
 						|| StringUtils.startsWith(c.getPrefix(), r.getCategory().getPrefix())) {
 					errors.rejectValue(categories.getName(), "game.validation.prefixUsed",
-							new Object[] { c.getLocalizedName(locale), r.getControlPointName(), c.getPrefix(),
-									r.getCategory().getPrefix() },
+							new Object[] { StringUtils.xss(c.getLocalizedName(locale)), StringUtils.xss(r.getControlPointName()), StringUtils.xss(c.getPrefix()),
+									StringUtils.xss(r.getCategory().getPrefix()) },
 							null);
 				}
 			}
