@@ -77,7 +77,7 @@ public class CoordinatorTeamStatTable extends AbstractTable {
 	public CoordinatorTeamStatTable(MessageSource messageSource, DynamicLocaleList localeList, Long maxStage,
 			Game game) {
 		super("coordTeamStatTable", "teamStatistics.tableHeader", "teamStatistics.simpleTableHeader",
-				"/api/v1/coordTeamStatTable?gameId=" + game.getId(), messageSource, localeList, game.getName());
+				"/api/v1/coordTeamStatTable?gameId=" + game.getId(), messageSource, localeList, StringUtils.xss(game.getName()));
 
 		this.maxStage = maxStage == null ? 1 : maxStage;
 	}

@@ -170,6 +170,6 @@ public class Translation {
 			}
 		}
 
-		return StringUtils.xss(second != null ? second : any);
+		return second != null ? second : any;
 	}
 }

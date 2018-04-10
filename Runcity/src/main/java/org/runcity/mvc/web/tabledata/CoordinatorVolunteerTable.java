@@ -58,7 +58,7 @@ public class CoordinatorVolunteerTable extends AbstractTable {
 
 	public CoordinatorVolunteerTable(MessageSource messageSource, DynamicLocaleList localeList, ControlPoint c) {
 		super("coordVolunteerTableByCP", "volunteer.tableHeaderByControlPoint", "volunteer.simpleTableHeaderByControlPoint",
-				"/api/v1/coordVolunteerTableByCP?controlPointId=" + c.getId(), messageSource, localeList, c.getName());
+				"/api/v1/coordVolunteerTableByCP?controlPointId=" + c.getId(), messageSource, localeList, StringUtils.xss(c.getName()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("name", "volunteer.name").setSort("asc", 0));

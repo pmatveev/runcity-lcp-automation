@@ -22,6 +22,7 @@ import org.runcity.mvc.web.tabledata.ControlPointTable;
 import org.runcity.mvc.web.tabledata.VolunteerTable;
 import org.runcity.secure.SecureUserDetails;
 import org.runcity.util.ResponseClass;
+import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.annotation.Secured;
@@ -94,7 +95,7 @@ public class RestControlPointController extends AbstractRestController {
 
 		ControlPoint c = controlPointService.selectById(id, ControlPoint.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
-		result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
+		result.addOption(c.getId(), StringUtils.xss(c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale())));
 		return result;
 	}
 
@@ -109,7 +110,7 @@ public class RestControlPointController extends AbstractRestController {
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
 			if (!ObjectUtils.nullSafeEquals(self, c.getId())) {
-				result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
+				result.addOption(c.getId(), StringUtils.xss(c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale())));
 			}
 		}
 		return result;
@@ -131,7 +132,7 @@ public class RestControlPointController extends AbstractRestController {
 
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (ControlPoint c : controlPoints) {
-			result.addOption(c.getId(), c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale()));
+			result.addOption(c.getId(), StringUtils.xss(c.getNameDisplayWithType(messageSource, LocaleContextHolder.getLocale())));
 		}
 		return result;
 	}

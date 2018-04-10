@@ -16,6 +16,7 @@ import org.runcity.mvc.web.formdata.CategoryCreateEditForm;
 import org.runcity.mvc.web.tabledata.CategoryTable;
 import org.runcity.mvc.web.tabledata.RouteTable;
 import org.runcity.util.ResponseClass;
+import org.runcity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
@@ -116,7 +117,7 @@ public class RestCategoryController extends AbstractRestController {
 		Iterable<Category> categories = categoryService.selectById(id, Category.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
-			result.addOption(c.getId(), c.getLocalizedName(locale));
+			result.addOption(c.getId(), StringUtils.xss(c.getLocalizedName(locale)));
 		}
 		return result;
 	}
@@ -130,7 +131,7 @@ public class RestCategoryController extends AbstractRestController {
 		List<Category> categories = categoryService.selectAll(Category.SelectMode.NONE);
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
-			result.addOption(c.getId(), c.getLocalizedName(locale));
+			result.addOption(c.getId(), StringUtils.xss(c.getLocalizedName(locale)));
 		}
 		return result;
 	}
@@ -146,7 +147,7 @@ public class RestCategoryController extends AbstractRestController {
 		
 		RestGetDddwResponseBody<Long> result = new RestGetDddwResponseBody<Long>(messageSource);
 		for (Category c : categories) {
-			result.addOption(c.getId(), c.getLocalizedName(game.getLocale()));
+			result.addOption(c.getId(), StringUtils.xss(c.getLocalizedName(game.getLocale())));
 		}
 		return result;
 	}

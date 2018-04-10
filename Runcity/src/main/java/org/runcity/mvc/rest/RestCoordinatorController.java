@@ -93,7 +93,7 @@ public class RestCoordinatorController extends AbstractRestController {
 		}
 
 		CoordinatorControlPointTable result = new CoordinatorControlPointTable(messageSource, localeList, g);
-		result.fetchByGame(controlPointService, g);
+		result.fetchByGame(controlPointService, teamService, g);
 		return result.validate();
 	}
 

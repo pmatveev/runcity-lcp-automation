@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.runcity.db.entity.ControlPoint;
 import org.runcity.db.entity.Game;
+import org.runcity.db.entity.RouteItem;
 import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.service.ControlPointService;
+import org.runcity.db.service.TeamService;
 import org.runcity.mvc.rest.util.Views;
 import org.runcity.mvc.web.formdata.VolunteerCreateEditByGameCPForm;
 import org.runcity.mvc.web.util.ButtonDefinition;
@@ -43,9 +45,12 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		@JsonView(Views.Public.class)
 		private String volunteers;
 
-		public TableRow(ControlPoint c, Long volunteers, Long active) {
+		@JsonView(Views.Public.class)
+		private Long teams;
+
+		public TableRow(ControlPoint c, Long volunteers, Long active, Long teams) {
 			this.id = c.getId();
-			this.idt = StringUtils.xss(c.getNameDisplayWithChildren());
+			this.idt = StringUtils.xss(c.getIdtWithChildren());
 			this.name = StringUtils.xss(c.getName());
 			this.address = StringUtils.xss(c.getLocalizedAddress(locale.toString()));
 			this.mode = ControlPointMode.getStoredValue(c.getMode());
@@ -59,12 +64,14 @@ public class CoordinatorControlPointTable extends AbstractTable {
 			} else {
 				this.volunteers = "<span class='label label-warning'>" + this.volunteers + "</span>";
 			}
+			
+			this.teams = teams;
 		}
 	}
 	
 	public CoordinatorControlPointTable(MessageSource messageSource, DynamicLocaleList localeList, Game g) {
 		super("coordControlPointTable", "controlPoint.tableHeader", "controlPoint.simpleTableHeader", 
-				"/api/v1/coordControlPointsTable?gameId=" + g.getId(), messageSource, localeList, g.getName());
+				"/api/v1/coordControlPointsTable?gameId=" + g.getId(), messageSource, localeList, StringUtils.xss(g.getName()));
 
 		this.columns.add(new ColumnDefinition("id", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("idt", "controlPoint.idt").setSort("asc", 0));
@@ -73,6 +80,7 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		this.columns.add(new ColumnDefinition("mode", null).setHidden(true));
 		this.columns.add(new ColumnDefinition("modeDisplay", "controlPoint.mode"));
 		this.columns.add(new ColumnDefinition("volunteers", "controlPoint.volunteers"));
+		this.columns.add(new ColumnDefinition("teams", "controlPoint.teamsLeft"));
 
 		this.buttons.add(new ButtonDefinition("coordinator.createVolunteer", null, "btn", "createform:volunteerCreateEditByGameCPForm", null));
 		this.buttons.add(new ButtonDefinition("coordinator.cpOnline", null, "btn", "ajax:POST:/api/v1/cpOnline/:id", null).setJsCondition("row.mode == 'N'"));
@@ -88,10 +96,24 @@ public class CoordinatorControlPointTable extends AbstractTable {
 		this.expandFrame = "/secure/iframe/coordination/controlPoint/{0}:id";
 	}
 	
-	public void fetchByGame(ControlPointService service, Game game) {
-		List<ControlPoint> controlPoints = service.selectLiveByGame(game, ControlPoint.SelectMode.WITH_CHILDREN);
+	public void fetchByGame(ControlPointService service, TeamService teamService, Game game) {
+		List<ControlPoint> controlPoints = service.selectLiveByGame(game, ControlPoint.SelectMode.WITH_CHILDREN_AND_ITEMS);
 		for (ControlPoint c : controlPoints) {
-			data.add(new TableRow(c, service.countVolunteers(c), service.countActiveVolunteers(c)));
+			Long teams = 0L;
+			
+			for (RouteItem ri : c.getRouteItems()) {
+				Long stat = teamService.selectActiveNumberByRouteItem(ri);
+				teams += stat;
+			}
+
+			for (ControlPoint ch : c.getChildren()) {
+				for (RouteItem ri : ch.getRouteItems()) {
+					Long stat = teamService.selectActiveNumberByRouteItem(ri);
+					teams += stat;
+				}
+			}
+			
+			data.add(new TableRow(c, service.countVolunteers(c), service.countActiveVolunteers(c), teams));
 		}
 	}	
 	

@@ -70,7 +70,7 @@ public class RouteItemTable extends AbstractTable {
 				case REGULAR:
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
 						table.setResponseClass(ResponseClass.WARNING);
-						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay() });
+						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { StringUtils.xss(ri.getControlPoint().getNameDisplay()) });
 					} else {
 						table.maxStage = Math.max(table.maxStage, ri.getLegNumber());
 					}
@@ -78,7 +78,7 @@ public class RouteItemTable extends AbstractTable {
 				case STAGE_END:
 					if (ri.getLegNumber() == null || ri.getLegNumber() < 1) {
 						table.setResponseClass(ResponseClass.WARNING);
-						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { ri.getControlPoint().getNameDisplay() });
+						table.addCommonMsg("routeItem.validation.invalidLegNumber", new Object[] { StringUtils.xss(ri.getControlPoint().getNameDisplay()) });
 					} else {
 						table.maxStage = Math.max(table.maxStage, ri.getLegNumber());
 						table.legEnd.put(ri.getLegNumber(), table.legEnd.getOrDefault(ri.getLegNumber(), 0) + 1);

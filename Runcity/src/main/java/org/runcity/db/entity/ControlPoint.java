@@ -18,7 +18,6 @@ import org.runcity.db.entity.enumeration.ControlPointMode;
 import org.runcity.db.entity.enumeration.ControlPointType;
 import org.runcity.db.entity.util.TranslatedEntity;
 import org.runcity.util.CollectionUtils;
-import org.runcity.util.StringUtils;
 import org.springframework.context.MessageSource;
 
 @Entity
@@ -238,14 +237,14 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 	}
 	
 	public String getNameDisplay() {
-		return StringUtils.xss(idt + " " + getName());
+		return idt + " " + getName();
 	}
 	
 	public ControlPoint getMain() {
 		return parent == null ? this : parent;
 	}
 	
-	public String getNameDisplayWithChildren() {
+	public String getIdtWithChildren() {
 		ControlPoint cp = getMain();
 		StringBuilder sb = new StringBuilder(cp.idt);
 		
@@ -266,14 +265,15 @@ public class ControlPoint extends TranslatedEntity<ControlPoint> {
 			sb.append(")");
 		}
 		
-		sb.append(" ");
-		sb.append(cp.getName());
-		
-		return StringUtils.xss(sb.toString());
+		return sb.toString();
+	}
+	
+	public String getNameDisplayWithChildren() {
+		return getIdtWithChildren() + " " + getName();
 	}
 	
 	public String getNameDisplayWithType(MessageSource messageSource, Locale l) {
-		return StringUtils.xss(idt + " (" + ControlPointType.getDisplayName(getType(), messageSource, l) + ") " + getName());
+		return idt + " (" + ControlPointType.getDisplayName(getType(), messageSource, l) + ") " + getName();
 	}
 
 	@Override
