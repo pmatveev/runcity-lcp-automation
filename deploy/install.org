@@ -1,0 +1,53 @@
+* Настройка сервера
+Ubuntu 18.04
+
+#+BEGIN_code shell
+ssh-copy-id root@server
+ssh root@ser
+apt update
+apt dist-upgrade
+apt install python
+#+END_code
+
+* Настройка ansible
+Заполнить файл ~hosts~ следующим образом
+#+BEGIN_code ini
+[lcp]
+<server>
+#+END_code
+
+Проверка работоспособности
+#+BEGIN_code shell
+ansible -i hosts lcp -m ping
+#+END_code
+
+Ответ
+#+BEGIN_code
+<server> | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+#+END_code
+
+Установить hostname на сервере
+#+BEGIN_code
+ansible -i hosts lcp -m hostname -a name=runcity-kzn2018
+#+END_code
+
+Ответ
+#+BEGIN_code
+<server> | SUCCESS => {
+    "ansible_facts": {
+        "ansible_domain": "com",
+        "ansible_fqdn": "bjjjournal.com",
+        "ansible_hostname": "runcity-kzn2018",
+        "ansible_nodename": "runcity-kzn2018"
+    },
+    "changed": true,
+    "name": "runcity-kzn2018"
+}
+#+END_code
+* Запуск ansible
+#+BEGIN_code shell
+ansible-playbook -i hosts lcp.yml
+#+END_code
