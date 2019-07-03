@@ -3,64 +3,70 @@
 
 Ubuntu 18.04
 
-<div class="code">
-
-ssh-copy-id root@server ssh root@ser apt update apt dist-upgrade apt
-install python
-
-</div>
+```bash
+ssh-copy-id root@server 
+ssh root@server 
+apt update 
+apt dist-upgrade 
+apt install python2.7
+ln -s /usr/bin/python2.7 /usr/bin/python
+```
 
 Настройка ansible
 =================
 
 Заполнить файл `hosts` следующим образом
 
-<div class="code">
+```
+[lcp] 
+<server>
+```
 
-\[lcp\] &lt;server&gt;
+Например,
 
-</div>
+```
+[lcp]
+1.2.3.4
+10.20.30.40 ansible_ssh_user=root
+```
 
 Проверка работоспособности
 
-<div class="code">
-
+```bash
 ansible -i hosts lcp -m ping
-
-</div>
+```
 
 Ответ
 
-<div class="code">
-
-&lt;server&gt; | SUCCESS =&gt; { "changed": false, "ping": "pong" }
-
-</div>
+```
+<server> | SUCCESS => { "changed": false, "ping": "pong" }
+```
 
 Установить hostname на сервере
 
-<div class="code">
-
+```
 ansible -i hosts lcp -m hostname -a name=runcity-kzn2018
-
-</div>
+```
 
 Ответ
 
-<div class="code">
-
-&lt;server&gt; | SUCCESS =&gt; { "ansible~facts~": { "ansible~domain~":
-"com", "ansible~fqdn~": "bjjjournal.com", "ansible~hostname~":
-"runcity-kzn2018", "ansible~nodename~": "runcity-kzn2018" }, "changed":
-true, "name": "runcity-kzn2018" }
-
-</div>
+```
+<server> | CHANGED => {
+    "ansible_facts": {
+        "ansible_domain": "com",
+        "ansible_fqdn": "gperfume.com",
+        "ansible_hostname": "runcity-ulsk2019",
+        "ansible_nodename": "runcity-ulsk2019",
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": true,
+    "name": "runcity-ulsk2019"
+}
+```
 
 Запуск ansible
 ==============
 
-<div class="code">
-
+```bash
 ansible-playbook -i hosts lcp.yml
-
-</div>
+```
