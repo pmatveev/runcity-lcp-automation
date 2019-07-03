@@ -9,8 +9,9 @@
     tomcat_port: 8080
   tasks:
     - name: install packages
-      apt: name={{ item }} state=present
-      with_items:
+      apt: 
+        state: present
+        name:
         - openjdk-8-jdk
         - java-common
         - maven
@@ -19,6 +20,9 @@
         - mysql-server
         - git-core
         - nginx
+        - mysql-client
+        - mysql-server
+        - python-pymysql
         - python-mysqldb
 
     - name: select java 1.8.0
@@ -29,7 +33,16 @@
       lineinfile: backup=yes path=/etc/environment line="JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64"
 
     - name: clone git repo
-      git: repo=https://github.com/pmatveev/runcity-lcp-automation.git dest={{ repo_path }}
+      git: 
+        repo: "https://github.com/pmatveev/runcity-lcp-automation.git" 
+        dest: "{{ repo_path }}"
+        force: yes
+    - name: change URL to server ip
+      lineinfile: 
+        backup: yes 
+        path: "{{ repo_path }}/Runcity/src/main/webapp/WEB-INF/conf/app.properties" 
+        regexp: "^runcity\\.url=" 
+        line: "runcity.url=http://{{ ansible_default_ipv4.address }}:8080/Runcity/"
     - name: build project
       command: mvn package
       args:
@@ -37,15 +50,15 @@
         chdir: "{{ repo_path }}/Runcity/"
 
     - name: set up global timezone
-      mysql_variables: variable=time_zone value="+0:00"
-      loop: "{{ global_vars|dict2items }}"
-      vars:
-        global_vars:
-          time_zone: "+0:00"
+      mysql_variables: variable=time_zone value="+0:00" login_unix_socket=/var/run/mysqld/mysqld.sock
+      #loop: "{{ global_vars|dict2items }}"
+      #vars:
+        #global_vars:
+          #time_zone: "+0:00"
     - name: set up mysql database
-      mysql_db: name={{ mysql_database }} encoding=utf8 collation=utf8_general_ci # state=import target="{{ repo_path }}/init.sql"
+      mysql_db: name={{ mysql_database }} encoding=utf8 collation=utf8_general_ci login_unix_socket=/var/run/mysqld/mysqld.sock # state=import target="{{ repo_path }}/init.sql"
     - name: set up mysql user
-      mysql_user: name={{ mysql_user }} password={{ mysql_pass }} priv="{{ mysql_database }}.*:ALL"
+      mysql_user: name={{ mysql_user }} password={{ mysql_pass }} priv="{{ mysql_database }}.*:ALL" login_unix_socket=/var/run/mysqld/mysqld.sock
     # we can't do this in "set up mysql database" step because of first lines of script
     - name: load initial sql
       shell: tail -n+3 {{ repo_path }}/init.sql | mysql -h localhost -u {{ mysql_user }} -p{{ mysql_pass }} -D {{ mysql_database }}
