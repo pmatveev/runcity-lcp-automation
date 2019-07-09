@@ -1,0 +1,79 @@
+---
+- hosts: lcp
+  vars:
+    repo_url: https://github.com/pmatveev/runcity-lcp-automation.git
+    repo_path: /var/tmp/lcp
+    install_path: /var/lib/tomcat8
+    mysql_user: dev
+    mysql_pass: abwx
+    mysql_database: runcity
+    tomcat_port: 8080
+  tasks:
+    - name: install packages
+      apt: 
+        state: present
+        name:
+        - openjdk-8-jdk
+        - java-common
+        - maven
+        - tomcat8
+        - tomcat8-user
+        - mysql-server
+        - git-core
+        - nginx
+        - mysql-client
+        - mysql-server
+        - python-pymysql
+        - python-mysqldb
+
+    - name: select java 1.8.0
+      command: update-java-alternatives -s java-1.8.0-openjdk-amd64
+    - name: link default java
+      file: src=/usr/lib/jvm/java-1.8.0-openjdk-amd64 path=/usr/lib/jvm/default-java state=link
+    - name: set JAVA_HOME
+      lineinfile: backup=yes path=/etc/environment line="JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64"
+
+    - name: clone git repo
+      git: 
+        repo: "{{ repo_url }}" 
+        dest: "{{ repo_path }}"
+        force: yes
+    - name: change URL to server ip
+      lineinfile: 
+        backup: yes 
+        path: "{{ repo_path }}/Runcity/src/main/webapp/WEB-INF/conf/app.properties" 
+        regexp: "^runcity\\.url=" 
+        line: "runcity.url=http://{{ ansible_default_ipv4.address }}:8080/Runcity/"
+    - name: change logfile path
+      lineinfile: 
+        backup: yes 
+        path: "{{ repo_path }}/Runcity/src/main/resources/log4j.properties" 
+        regexp: "^log4j\\.appender\\.file\\.File=" 
+        line: "log4j.appender.file.File={{ install_path }}/logs/runcity.log"
+    - name: build project
+      command: mvn package
+      args:
+        creates: target/Runcity.war
+        chdir: "{{ repo_path }}/Runcity/"
+
+    - name: set up global timezone
+      mysql_variables: variable=time_zone value="+0:00" login_unix_socket=/var/run/mysqld/mysqld.sock
+    - name: set up global encoding
+      mysql_variables: variable=collation_server value="utf8_general_ci" login_unix_socket=/var/run/mysqld/mysqld.sock
+    - name: set up mysql database
+      mysql_db: name={{ mysql_database }} encoding=utf8 collation=utf8_general_ci login_unix_socket=/var/run/mysqld/mysqld.sock # state=import target="{{ repo_path }}/init.sql"
+    - name: set up mysql user
+      mysql_user: name={{ mysql_user }} password={{ mysql_pass }} priv="{{ mysql_database }}.*:ALL" login_unix_socket=/var/run/mysqld/mysqld.sock
+    # we can't do this in "set up mysql database" step because of first lines of script
+    - name: load initial sql
+      shell: tail -n+3 {{ repo_path }}/init.sql | mysql -h localhost -u {{ mysql_user }} -p{{ mysql_pass }} -D {{ mysql_database }}
+      args:
+        chdir: "{{ install_path }}"
+
+    - name: deploy project to tomcat
+      copy: remote_src=yes src="{{ repo_path }}/Runcity/target/Runcity.war" dest="{{ install_path }}/webapps/Runcity.war" owner=tomcat8
+      notify:
+        - restart tomcat
+  handlers:
+    - name: restart tomcat
+      service: name=tomcat8 state=restarted enabled=yes
