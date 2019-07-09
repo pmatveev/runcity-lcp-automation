@@ -1,6 +1,7 @@
 ---
 - hosts: lcp
   vars:
+    repo_url: https://github.com/pmatveev/runcity-lcp-automation.git
     repo_path: /var/tmp/lcp
     install_path: /var/lib/tomcat8
     mysql_user: dev
@@ -34,7 +35,7 @@
 
     - name: clone git repo
       git: 
-        repo: "https://github.com/pmatveev/runcity-lcp-automation.git" 
+        repo: "{{ repo_url }}" 
         dest: "{{ repo_path }}"
         force: yes
     - name: change URL to server ip
@@ -43,6 +44,12 @@
         path: "{{ repo_path }}/Runcity/src/main/webapp/WEB-INF/conf/app.properties" 
         regexp: "^runcity\\.url=" 
         line: "runcity.url=http://{{ ansible_default_ipv4.address }}:8080/Runcity/"
+    - name: change logfile path
+      lineinfile: 
+        backup: yes 
+        path: "{{ repo_path }}/Runcity/src/main/resources/log4j.properties" 
+        regexp: "^log4j\\.appender\\.file\\.File=" 
+        line: "log4j.appender.file.File={{ install_path }}/logs/runcity.log"
     - name: build project
       command: mvn package
       args:
@@ -51,10 +58,8 @@
 
     - name: set up global timezone
       mysql_variables: variable=time_zone value="+0:00" login_unix_socket=/var/run/mysqld/mysqld.sock
-      #loop: "{{ global_vars|dict2items }}"
-      #vars:
-        #global_vars:
-          #time_zone: "+0:00"
+    - name: set up global encoding
+      mysql_variables: variable=collation_server value="utf8_general_ci" login_unix_socket=/var/run/mysqld/mysqld.sock
     - name: set up mysql database
       mysql_db: name={{ mysql_database }} encoding=utf8 collation=utf8_general_ci login_unix_socket=/var/run/mysqld/mysqld.sock # state=import target="{{ repo_path }}/init.sql"
     - name: set up mysql user
