@@ -14,7 +14,7 @@
 		<jstl.version>1.2</jstl.version>
 		<servletapi.version>3.1.0</servletapi.version>
 		<spring.data>1.3.4.RELEASE</spring.data>
-		<jackson.version>2.6.3</jackson.version>
+		<jackson.version>2.10.0</jackson.version>
 		<cache2k-version>1.0.0.Final</cache2k-version>
 	</properties>
 
